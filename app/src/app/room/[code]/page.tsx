@@ -27,7 +27,7 @@ const emptyAnswers = (): Record<Category, string> => ({
   Rostlina: "",
 });
 
-const emptyScores = (): Record<Category, 0 | 5 | 10> => ({
+const emptyScores = (): Record<Category, -10 | 0 | 5 | 10> => ({
   Země: 0,
   Město: 0,
   Jméno: 0,
@@ -52,7 +52,7 @@ export default function RoomPage() {
   const [answers, setAnswers] = useState<Record<Category, string>>(emptyAnswers());
   const [allAnswers, setAllAnswers] = useState<AnswerRow[]>([]);
 
-  const [scores, setScores] = useState<Record<Category, 0 | 5 | 10>>(emptyScores());
+  const [scores, setScores] = useState<Record<Category, -10 | 0 | 5 | 10>>(emptyScores());
   const [allScores, setAllScores] = useState<ScoreRow[]>([]);
   const [myScoreSubmitted, setMyScoreSubmitted] = useState(false);
 
@@ -70,8 +70,11 @@ export default function RoomPage() {
   }
 
   function getRoomUrl() {
-    if (typeof window === "undefined") return "";
-    return window.location.href;
+    const publicBaseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (typeof window !== "undefined" ? window.location.origin : "");
+
+    return `${publicBaseUrl}/room/${code.toUpperCase()}`;
   }
 
   async function copyInviteLink() {
@@ -233,19 +236,24 @@ export default function RoomPage() {
     const rows = (data ?? []) as ScoreRow[];
     setAllScores(rows);
 
-    if (myPlayer) {
-      const mine = rows.filter((s) => s.player_id === myPlayer.id);
-      const next = emptyScores();
+    if (!myPlayer) return;
 
-      for (const row of mine) {
-        if (CATEGORIES.includes(row.category as Category)) {
-          next[row.category as Category] = row.points as 0 | 5 | 10;
-        }
+    const mine = rows.filter((s) => s.player_id === myPlayer.id);
+    setMyScoreSubmitted(mine.length >= CATEGORIES.length);
+
+    // Důležité:
+    // Dokud hráč bodování neodeslal, nepřepisujeme mu rozpracované hodnoty.
+    if (mine.length === 0) return;
+
+    const next = emptyScores();
+
+    for (const row of mine) {
+      if (CATEGORIES.includes(row.category as Category)) {
+        next[row.category as Category] = row.points as -10 | 0 | 5 | 10;
       }
-
-      setScores(next);
-      setMyScoreSubmitted(mine.length >= CATEGORIES.length);
     }
+
+    setScores(next);
   }
 
   useEffect(() => {
@@ -603,11 +611,12 @@ export default function RoomPage() {
                     onChange={(e) =>
                       setScores((prev) => ({
                         ...prev,
-                        [category]: Number(e.target.value) as 0 | 5 | 10,
+                        [category]: Number(e.target.value) as -10 | 0 | 5 | 10,
                       }))
                     }
                     style={{ display: "block", padding: 10, marginTop: 4, width: "100%" }}
                   >
+                    <option value={-10}>-10 bodů</option>
                     <option value={0}>0 bodů</option>
                     <option value={5}>5 bodů</option>
                     <option value={10}>10 bodů</option>
