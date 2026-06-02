@@ -608,6 +608,7 @@ export default function RoomPage() {
                   {category}
                   <select
                     value={scores[category]}
+                    disabled={myScoreSubmitted}
                     onChange={(e) =>
                       setScores((prev) => ({
                         ...prev,
@@ -616,17 +617,21 @@ export default function RoomPage() {
                     }
                     style={{ display: "block", padding: 10, marginTop: 4, width: "100%" }}
                   >
-                    <option value={-10}>-10 bodů</option>
                     <option value={0}>0 bodů</option>
                     <option value={5}>5 bodů</option>
                     <option value={10}>10 bodů</option>
+                    <option value={-10}>-10 bodů</option>
                   </select>
                 </label>
               ))}
 
-              <button onClick={submitScores} style={{ marginTop: 16, padding: 16 }}>
-                {myScoreSubmitted ? "Upravit bodování" : "Odeslat bodování"}
-              </button>
+              {!myScoreSubmitted ? (
+                <button onClick={submitScores} style={{ marginTop: 16, padding: 16 }}>
+                  Odeslat bodování
+                </button>
+              ) : (
+                <p style={{ marginTop: 16 }}>✅ Bodování odesláno. Úprava už není možná.</p>
+              )
             </>
           ) : (
             <p>Přihlaš se jménem nahoře, abys mohl odeslat bodování.</p>
