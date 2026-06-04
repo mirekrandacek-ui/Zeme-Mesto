@@ -59,7 +59,22 @@ export default function RoomPage() {
   const [rollingLetter, setRollingLetter] = useState("A");
   const rollIntervalRef = useRef<number | null>(null);
 
+  function normalizeAnswerStart(value: string) {
+    return value
+      .trim()
+      .charAt(0)
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase();
+  }
+
   const allAnswersFilled = CATEGORIES.every((c) => answers[c].trim().length > 0);
+
+  const allAnswersStartWithLetter =
+    Boolean(letter) &&
+    CATEGORIES.every((c) => normalizeAnswerStart(answers[c]) === letter);
+
+  const canStop = allAnswersFilled && allAnswersStartWithLetter;
 
   function myKey(rid: string) {
     return `zm_myPlayer_${rid}`;
@@ -594,13 +609,19 @@ export default function RoomPage() {
 
               <button
                 onClick={stopRound}
-                disabled={!allAnswersFilled}
+                disabled={!canStop}
                 style={{ marginTop: 16, padding: 16 }}
               >
                 STOP
               </button>
 
-              {!allAnswersFilled && <p>STOP půjde zmáčknout až po vyplnění všech polí. Pole musí začínat vylosovaným písmenem.</p>}
+              {!allAnswersFilled && (
+                <p>STOP půjde zmáčknout až po vyplnění všech polí.</p>
+              )}
+
+              {allAnswersFilled && !allAnswersStartWithLetter && (
+                <p>Každé pole musí začínat vylosovaným písmenem.</p>
+              )}
             </>
           )}
 
