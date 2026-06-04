@@ -308,6 +308,17 @@ export default function RoomPage() {
     stopRolling();
   }, [roomStatus, letter]);
 
+  // Při novém kole vyčisti lokální odpovědi a bodování u všech hráčů
+  useEffect(() => {
+    if (!round?.id) return;
+
+    setAnswers(emptyAnswers());
+    setScores(emptyScores());
+    setAllAnswers([]);
+    setAllScores([]);
+    setMyScoreSubmitted(false);
+  }, [round?.id]);
+
   async function joinRoom() {
     if (!roomId) return;
 
