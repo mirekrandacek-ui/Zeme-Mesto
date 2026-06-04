@@ -646,6 +646,15 @@ export default function RoomPage() {
           <h2>Bodování</h2>
           <p>Odesláno: {scoredPlayerIds.size}/{players.length}</p>
 
+          <ul style={{ paddingLeft: 20 }}>
+            {players.map((p) => (
+              <li key={p.id}>
+                {scoredPlayerIds.has(p.id) ? "✅" : "⏳"} {p.name}
+                {scoredPlayerIds.has(p.id) ? " – odeslal" : " – čekáme"}
+              </li>
+            ))}
+          </ul>
+
           <h3>Odpovědi hráčů</h3>
           <div style={{ overflowX: "auto" }}>
             <table style={{ borderCollapse: "collapse", minWidth: 700 }}>
