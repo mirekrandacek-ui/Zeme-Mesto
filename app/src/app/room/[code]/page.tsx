@@ -684,6 +684,11 @@ export default function RoomPage() {
         <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
           <h2 style={{ marginTop: 0 }}>Pravidla</h2>
           <p>
+            Ten, kdo místnost vytvoří, pošle ostatním hráčům odkaz pomocí tlačítka Kopírovat odkaz
+            nebo Sdílet. Ostatní hráči odkaz otevřou, zadají své jméno a připojí se do stejné místnosti.
+          </p>
+
+          <p>
             Hráči společně hrají na vylosované písmeno. Každý vyplní odpovědi do kategorií.
             Kdo má všechna pole vyplněná, stiskne STOP. Odpovědi musí začínat vylosovaným písmenem
             a pole musí obsahovat minimálně dvě písmena pro odeslání odpovědí.
