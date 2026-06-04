@@ -358,6 +358,12 @@ export default function RoomPage() {
     }
   }, [roomStatus, letter, round?.id]);
 
+  useEffect(() => {
+    if ((roomStatus === "scoring" || roomStatus === "finished") && stoppedByName) {
+      setMsg(`✅ STOP stiskl ${stoppedByName}`);
+    }
+  }, [roomStatus, stoppedByName, round?.id]);
+
   // Při losování sjednoť hlášku všem hráčům podle typu akce
   useEffect(() => {
     if (roomStatus !== "drawing") return;
@@ -841,12 +847,6 @@ export default function RoomPage() {
       {roomStatus === "scoring" && (
         <>
           <h2>Bodování</h2>
-
-          {stoppedByName && (
-            <p>
-              STOP stiskl: <b>{stoppedByName}</b>
-            </p>
-          )}
 
           <p>Odesláno: {scoredPlayerIds.size}/{players.length}</p>
 
