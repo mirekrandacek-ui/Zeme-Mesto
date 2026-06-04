@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 
-type RoomStatus = "lobby" | "playing" | "scoring" | "finished";
+type RoomStatus = "lobby" | "drawing" | "playing" | "scoring" | "finished";
 type Player = { id: string; name: string };
 type MyPlayer = { id: string; name: string };
 type RoundLite = { id: string; round_no: number; letter: string; status: string };
@@ -343,13 +343,13 @@ export default function RoomPage() {
   }, [roomId, round?.round_no, myPlayer?.id]);
 
   useEffect(() => {
-    if (roomStatus === "playing" && letter === null) {
+    if (roomStatus === "drawing") {
       startRollingVisual();
       return;
     }
 
     stopRolling();
-  }, [roomStatus, letter]);
+  }, [roomStatus]);
 
   // Jakmile je v novém kole vylosované finální písmeno, sjednoť hlášku všem hráčům
   useEffect(() => {
@@ -462,28 +462,35 @@ export default function RoomPage() {
   async function startGame() {
     if (!roomId) return;
 
+    const rid = roomId;
+
     setMsg("… losujeme");
-    setRoomStatus("playing");
+    setRoomStatus("drawing");
     setLetter(null);
 
-    const { error: startError } = await supabase
+    const { data: locked, error: lockError } = await supabase
       .from("rooms")
-      .update({ status: "playing", letter: null })
-      .eq("id", roomId);
+      .update({ status: "drawing", letter: null })
+      .eq("id", rid)
+      .eq("status", "lobby")
+      .select("id")
+      .maybeSingle();
 
-    if (startError) {
-      setMsg(`❌ start: ${startError.message}`);
-      setRoomStatus("lobby");
+    if (lockError || !locked) {
+      setMsg("ℹ️ Losování už spustil jiný hráč.");
       return;
     }
 
-    const finalLetter = await pickLetter(roomId);
-
     window.setTimeout(async () => {
-      const newRound = await createRound(roomId, finalLetter);
+      const finalLetter = await pickLetter(rid);
+      const newRound = await createRound(rid, finalLetter);
       if (!newRound) return;
 
-      await supabase.from("rooms").update({ letter: finalLetter }).eq("id", roomId);
+      await supabase
+        .from("rooms")
+        .update({ status: "playing", letter: finalLetter })
+        .eq("id", rid)
+        .eq("status", "drawing");
 
       setAnswers(emptyAnswers());
       setScores(emptyScores());
@@ -495,14 +502,13 @@ export default function RoomPage() {
   }
 
   async function redrawLetter() {
-    if (!roomId) return;
+    if (!roomId || !round?.id) return;
 
-    if (round?.id) {
-      await supabase.from("rounds").update({ status: "skipped" }).eq("id", round.id);
-    }
+    const rid = roomId;
+    const currentRoundId = round.id;
 
     setMsg("… losujeme znovu");
-    setRoomStatus("playing");
+    setRoomStatus("drawing");
     setLetter(null);
     setAnswers(emptyAnswers());
     setScores(emptyScores());
@@ -510,22 +516,31 @@ export default function RoomPage() {
     setAllScores([]);
     setMyScoreSubmitted(false);
 
-    const { error: startError } = await supabase
+    const { data: locked, error: lockError } = await supabase
       .from("rooms")
-      .update({ status: "playing", letter: null })
-      .eq("id", roomId);
+      .update({ status: "drawing", letter: null })
+      .eq("id", rid)
+      .eq("status", "playing")
+      .select("id")
+      .maybeSingle();
 
-    if (startError) {
-      setMsg(`❌ opakované losování: ${startError.message}`);
+    if (lockError || !locked) {
+      setMsg("ℹ️ Losování už spustil jiný hráč.");
       return;
     }
 
+    await supabase.from("rounds").update({ status: "skipped" }).eq("id", currentRoundId);
+
     window.setTimeout(async () => {
-      const finalLetter = await pickLetter(roomId);
-      const newRound = await createRound(roomId, finalLetter);
+      const finalLetter = await pickLetter(rid);
+      const newRound = await createRound(rid, finalLetter);
       if (!newRound) return;
 
-      await supabase.from("rooms").update({ letter: finalLetter }).eq("id", roomId);
+      await supabase
+        .from("rooms")
+        .update({ status: "playing", letter: finalLetter })
+        .eq("id", rid)
+        .eq("status", "drawing");
 
       setMsg("✅ vylosováno");
     }, ROLL_MS);
@@ -595,8 +610,46 @@ export default function RoomPage() {
   async function nextRound() {
     if (!roomId || !round?.id || !everyoneScored) return;
 
-    await supabase.from("rounds").update({ status: "done" }).eq("id", round.id);
-    await startGame();
+    const rid = roomId;
+    const currentRoundId = round.id;
+
+    setMsg("… losujeme další kolo");
+    setRoomStatus("drawing");
+    setLetter(null);
+    setAnswers(emptyAnswers());
+    setScores(emptyScores());
+    setAllAnswers([]);
+    setAllScores([]);
+    setMyScoreSubmitted(false);
+
+    const { data: locked, error: lockError } = await supabase
+      .from("rooms")
+      .update({ status: "drawing", letter: null })
+      .eq("id", rid)
+      .eq("status", "scoring")
+      .select("id")
+      .maybeSingle();
+
+    if (lockError || !locked) {
+      setMsg("ℹ️ Další kolo už spustil jiný hráč.");
+      return;
+    }
+
+    await supabase.from("rounds").update({ status: "done" }).eq("id", currentRoundId);
+
+    window.setTimeout(async () => {
+      const finalLetter = await pickLetter(rid);
+      const newRound = await createRound(rid, finalLetter);
+      if (!newRound) return;
+
+      await supabase
+        .from("rooms")
+        .update({ status: "playing", letter: finalLetter })
+        .eq("id", rid)
+        .eq("status", "drawing");
+
+      setMsg("✅ vylosováno");
+    }, ROLL_MS);
   }
 
   function answerFor(playerId: string, category: Category) {
@@ -686,19 +739,19 @@ export default function RoomPage() {
         </>
       )}
 
-      {roomStatus === "playing" && (
+      {(roomStatus === "drawing" || roomStatus === "playing") && (
         <>
-          <h2>Hrajeme</h2>
+          <h2>{roomStatus === "drawing" ? "Losujeme…" : "Hrajeme"}</h2>
 
           <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
 
-          {letter && (
+          {roomStatus === "playing" && letter && (
             <button onClick={redrawLetter} style={{ marginTop: 12, padding: 12 }}>
               Losovat znovu
             </button>
           )}
 
-          {letter && myPlayer && round && (
+          {roomStatus === "playing" && letter && myPlayer && round && (
             <>
               {CATEGORIES.map((category) => (
                 <input
@@ -732,7 +785,7 @@ export default function RoomPage() {
             </>
           )}
 
-          {letter && !myPlayer && <p>Přihlaš se jménem nahoře, abys mohl psát odpovědi.</p>}
+          {roomStatus === "playing" && letter && !myPlayer && <p>Přihlaš se jménem nahoře, abys mohl psát odpovědi.</p>}
         </>
       )}
 
