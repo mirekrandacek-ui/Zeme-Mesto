@@ -619,7 +619,7 @@ export default function RoomPage() {
     }
 
     setMyScoreSubmitted(true);
-    setMsg("✅ bodování odesláno");
+    setMsg("");
     await loadAllScores(roomId, round.round_no);
   }
 
