@@ -549,7 +549,10 @@ export default function RoomPage() {
   }
 
   async function startGame() {
-    if (!roomId) return;
+    if (!roomId || !myPlayer) {
+      setMsg("❗ nejdřív se připoj jménem");
+      return;
+    }
 
     const rid = roomId;
 
@@ -591,7 +594,10 @@ export default function RoomPage() {
   }
 
   async function redrawLetter() {
-    if (!roomId || !round?.id) return;
+    if (!roomId || !round?.id || !myPlayer) {
+      setMsg("❗ nejdřív se připoj jménem");
+      return;
+    }
 
     const rid = roomId;
     const currentRoundId = round.id;
@@ -745,7 +751,10 @@ export default function RoomPage() {
   ).sort((a, b) => a - b);
 
   async function nextRound() {
-    if (!roomId || !round?.id || !everyoneScored) return;
+    if (!roomId || !round?.id || !everyoneScored || !myPlayer) {
+      setMsg("❗ nejdřív se připoj jménem");
+      return;
+    }
 
     const rid = roomId;
     const currentRoundId = round.id;
@@ -884,7 +893,11 @@ export default function RoomPage() {
 
           <p>Kategorie: {CATEGORIES.join(" / ")}</p>
 
-          <button onClick={startGame}>START</button>
+          {myPlayer ? (
+            <button onClick={startGame}>START</button>
+          ) : (
+            <p>Připoj se jménem, aby šlo spustit hru.</p>
+          )}
         </>
       )}
 
@@ -894,7 +907,7 @@ export default function RoomPage() {
 
           <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
 
-          {roomStatus === "playing" && letter && (
+          {roomStatus === "playing" && letter && myPlayer && (
             <button onClick={redrawLetter} style={{ marginTop: 12, padding: 12 }}>
               Losovat znovu
             </button>
