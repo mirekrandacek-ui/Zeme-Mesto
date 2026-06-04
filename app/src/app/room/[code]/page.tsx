@@ -335,6 +335,35 @@ export default function RoomPage() {
       .single();
 
     if (error || !data) {
+      const isDuplicateName =
+        error?.code === "23505" ||
+        error?.message?.includes("duplicate key") ||
+        error?.message?.includes("players_room_id_name_key");
+
+      if (isDuplicateName) {
+        const existing = await supabase
+          .from("players")
+          .select("id,name")
+          .eq("room_id", roomId)
+          .eq("name", trimmed)
+          .maybeSingle();
+
+        if (existing.data) {
+          saveMyPlayer(roomId, {
+            id: existing.data.id,
+            name: existing.data.name,
+          });
+
+          setNameInput("");
+          setMsg(`✅ ${trimmed} znovu připojen`);
+          await loadPlayers(roomId);
+          return;
+        }
+
+        setMsg("❌ Tohle jméno už v místnosti existuje. Zadej jiné.");
+        return;
+      }
+
       setMsg(`❌ připojení: ${error?.message ?? "neznámá chyba"}`);
       return;
     }
