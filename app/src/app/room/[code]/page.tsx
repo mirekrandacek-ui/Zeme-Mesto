@@ -47,6 +47,7 @@ export default function RoomPage() {
   const [nameInput, setNameInput] = useState("");
   const [myPlayer, setMyPlayer] = useState<MyPlayer | null>(null);
   const [msg, setMsg] = useState("");
+  const [showRules, setShowRules] = useState(false);
 
   const [round, setRound] = useState<RoundLite | null>(null);
   const [answers, setAnswers] = useState<Record<Category, string>>(emptyAnswers());
@@ -557,11 +558,30 @@ export default function RoomPage() {
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <button onClick={() => setShowRules((v) => !v)}>Pravidla</button>
           <button onClick={copyInviteLink}>Kopírovat odkaz</button>
           <button onClick={shareInviteLink}>Sdílet</button>
           {myPlayer && <button onClick={signOut}>Odpojit</button>}
         </div>
       </header>
+
+      {showRules && (
+        <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
+          <h2 style={{ marginTop: 0 }}>Pravidla</h2>
+          <p>
+            Hráči společně hrají na vylosované písmeno. Každý vyplní odpovědi do kategorií.
+            Kdo má všechna pole vyplněná, může stisknout STOP. Odpovědi musí začínat vylosovaným písmenem.
+          </p>
+
+          <h3>Bodování</h3>
+          <ul>
+            <li><b>10 bodů</b> – unikátní odpověď, kterou nikdo jiný nemá.</li>
+            <li><b>5 bodů</b> – odpověď, kterou má i někdo jiný.</li>
+            <li><b>0 bodů</b> – žádná odpověď.</li>
+            <li><b>-5 bodů</b> a <b>-10 bodů</b> – penalizace za neúplnou, chybnou nebo ostatními hráči neuznanou odpověď.</li>
+          </ul>
+        </section>
+      )}
 
       {msg && <p>{msg}</p>}
 
