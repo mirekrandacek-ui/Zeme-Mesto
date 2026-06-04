@@ -571,7 +571,7 @@ export default function RoomPage() {
                 STOP
               </button>
 
-              {!allAnswersFilled && <p>STOP půjde zmáčknout až po vyplnění všech polí.</p>}
+              {!allAnswersFilled && <p>STOP půjde zmáčknout až po vyplnění všech polí. Pole musí začínat vylosovaným písmenem.</p>}
             </>
           )}
 
