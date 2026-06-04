@@ -70,11 +70,13 @@ export default function RoomPage() {
 
   const allAnswersFilled = CATEGORIES.every((c) => answers[c].trim().length > 0);
 
+  const allAnswersAtLeastTwoChars = CATEGORIES.every((c) => answers[c].trim().length >= 2);
+
   const allAnswersStartWithLetter =
     Boolean(letter) &&
     CATEGORIES.every((c) => normalizeAnswerStart(answers[c]) === letter);
 
-  const canStop = allAnswersFilled && allAnswersStartWithLetter;
+  const canStop = allAnswersFilled && allAnswersAtLeastTwoChars && allAnswersStartWithLetter;
 
   function myKey(rid: string) {
     return `zm_myPlayer_${rid}`;
@@ -626,7 +628,11 @@ export default function RoomPage() {
                 <p>STOP půjde zmáčknout až po vyplnění všech polí.</p>
               )}
 
-              {allAnswersFilled && !allAnswersStartWithLetter && (
+              {allAnswersFilled && !allAnswersAtLeastTwoChars && (
+                <p>Každé pole musí mít alespoň dvě písmena.</p>
+              )}
+
+              {allAnswersFilled && allAnswersAtLeastTwoChars && !allAnswersStartWithLetter && (
                 <p>Každé pole musí začínat vylosovaným písmenem.</p>
               )}
             </>
