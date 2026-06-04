@@ -570,7 +570,14 @@ export default function RoomPage() {
           <h2 style={{ marginTop: 0 }}>Pravidla</h2>
           <p>
             Hráči společně hrají na vylosované písmeno. Každý vyplní odpovědi do kategorií.
-            Kdo má všechna pole vyplněná, může stisknout STOP. Odpovědi musí začínat vylosovaným písmenem.
+            Kdo má všechna pole vyplněná, stiskne STOP. Odpovědi musí začínat vylosovaným písmenem
+            a pole musí obsahovat minimálně dvě písmena pro odeslání odpovědí.
+          </p>
+
+          <p>
+            Losování písmen probíhá tak, že jakmile se každé písmeno z abecedy vylosuje alespoň jednou,
+            losuje se znovu celá abeceda. Pokud vám písmeno nevyhovuje, lze losování opakovat
+            a vyřazené písmeno bude pro toto kolo abecedy vyřazeno.
           </p>
 
           <h3>Bodování</h3>
