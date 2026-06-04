@@ -323,6 +323,13 @@ export default function RoomPage() {
     stopRolling();
   }, [roomStatus, letter]);
 
+  // Jakmile je v novém kole vylosované finální písmeno, sjednoť hlášku všem hráčům
+  useEffect(() => {
+    if (roomStatus === "playing" && letter) {
+      setMsg("✅ vylosováno");
+    }
+  }, [roomStatus, letter, round?.id]);
+
   // Při novém kole vyčisti lokální odpovědi a bodování u všech hráčů
   useEffect(() => {
     if (!round?.id) return;
