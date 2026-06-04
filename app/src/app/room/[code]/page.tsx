@@ -407,6 +407,27 @@ export default function RoomPage() {
     setMyScoreSubmitted(false);
   }, [round?.id]);
 
+  async function resetRoomData(rid: string) {
+    await supabase.from("scores").delete().eq("room_id", rid);
+    await supabase.from("answers").delete().eq("room_id", rid);
+    await supabase.from("rounds").delete().eq("room_id", rid);
+
+    await supabase
+      .from("rooms")
+      .update({ status: "lobby", letter: null })
+      .eq("id", rid);
+
+    setRoomStatus("lobby");
+    setLetter(null);
+    setRound(null);
+    setAnswers(emptyAnswers());
+    setScores(emptyScores());
+    setAllAnswers([]);
+    setAllScores([]);
+    setAllRoomScores([]);
+    setMyScoreSubmitted(false);
+  }
+
   async function joinRoom() {
     if (!roomId) return;
 
@@ -414,6 +435,15 @@ export default function RoomPage() {
     if (!trimmed) {
       setMsg("❗ napiš jméno");
       return;
+    }
+
+    const { count: existingPlayersCount } = await supabase
+      .from("players")
+      .select("id", { count: "exact", head: true })
+      .eq("room_id", roomId);
+
+    if ((existingPlayersCount ?? 0) === 0) {
+      await resetRoomData(roomId);
     }
 
     const { data, error } = await supabase
@@ -465,9 +495,30 @@ export default function RoomPage() {
   async function signOut() {
     if (!roomId || !myPlayer) return;
 
-    await supabase.from("players").delete().eq("id", myPlayer.id);
-    clearMyPlayer(roomId);
-    await loadPlayers(roomId);
+    const rid = roomId;
+
+    const { error } = await supabase.from("players").delete().eq("id", myPlayer.id);
+
+    if (error) {
+      setMsg(`❌ odpojení: ${error.message}`);
+      return;
+    }
+
+    clearMyPlayer(rid);
+
+    const { count: remainingPlayersCount } = await supabase
+      .from("players")
+      .select("id", { count: "exact", head: true })
+      .eq("room_id", rid);
+
+    if ((remainingPlayersCount ?? 0) === 0) {
+      await resetRoomData(rid);
+      setPlayers([]);
+      setMsg("✅ odpojeno, místnost vyčištěna");
+      return;
+    }
+
+    await loadPlayers(rid);
     setMsg("✅ odpojeno");
   }
 
