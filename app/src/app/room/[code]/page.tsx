@@ -27,7 +27,7 @@ const emptyAnswers = (): Record<Category, string> => ({
   Rostlina: "",
 });
 
-const emptyScores = (): Record<Category, -10 | 0 | 5 | 10> => ({
+const emptyScores = (): Record<Category, -10 | -5 | 0 | 5 | 10> => ({
   Země: 0,
   Město: 0,
   Jméno: 0,
@@ -52,7 +52,7 @@ export default function RoomPage() {
   const [answers, setAnswers] = useState<Record<Category, string>>(emptyAnswers());
   const [allAnswers, setAllAnswers] = useState<AnswerRow[]>([]);
 
-  const [scores, setScores] = useState<Record<Category, -10 | 0 | 5 | 10>>(emptyScores());
+  const [scores, setScores] = useState<Record<Category, -10 | -5 | 0 | 5 | 10>>(emptyScores());
   const [allScores, setAllScores] = useState<ScoreRow[]>([]);
   const [myScoreSubmitted, setMyScoreSubmitted] = useState(false);
 
@@ -266,7 +266,7 @@ export default function RoomPage() {
 
     for (const row of mine) {
       if (CATEGORIES.includes(row.category as Category)) {
-        next[row.category as Category] = row.points as -10 | 0 | 5 | 10;
+        next[row.category as Category] = row.points as -10 | -5 | 0 | 5 | 10;
       }
     }
 
@@ -554,7 +554,6 @@ export default function RoomPage() {
               <>Nepřihlášen</>
             )}
           </p>
-          <p style={{ marginTop: 0, opacity: 0.75 }}>Kód: {code.toUpperCase()}</p>
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -686,7 +685,7 @@ export default function RoomPage() {
                     onChange={(e) =>
                       setScores((prev) => ({
                         ...prev,
-                        [category]: Number(e.target.value) as -10 | 0 | 5 | 10,
+                        [category]: Number(e.target.value) as -10 | -5 | 0 | 5 | 10,
                       }))
                     }
                     style={{ display: "block", padding: 10, marginTop: 4, width: "100%" }}
@@ -694,6 +693,7 @@ export default function RoomPage() {
                     <option value={0}>0 bodů</option>
                     <option value={5}>5 bodů</option>
                     <option value={10}>10 bodů</option>
+                    <option value={-5}>-5 bodů</option>
                     <option value={-10}>-10 bodů</option>
                   </select>
                 </label>
