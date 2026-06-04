@@ -9,7 +9,7 @@ type Player = { id: string; name: string };
 type MyPlayer = { id: string; name: string };
 type RoundLite = { id: string; round_no: number; letter: string; status: string };
 type AnswerRow = { player_id: string; category: string; value: string };
-type ScoreRow = { player_id: string; category: string; points: number };
+type ScoreRow = { player_id: string; round?: number; category: string; points: number };
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const ROLL_MS = 5000;
@@ -48,6 +48,7 @@ export default function RoomPage() {
   const [myPlayer, setMyPlayer] = useState<MyPlayer | null>(null);
   const [msg, setMsg] = useState("");
   const [showRules, setShowRules] = useState(false);
+  const [showRoundHistory, setShowRoundHistory] = useState(false);
 
   const [round, setRound] = useState<RoundLite | null>(null);
   const [answers, setAnswers] = useState<Record<Category, string>>(emptyAnswers());
@@ -55,6 +56,7 @@ export default function RoomPage() {
 
   const [scores, setScores] = useState<Record<Category, -10 | -5 | 0 | 5 | 10>>(emptyScores());
   const [allScores, setAllScores] = useState<ScoreRow[]>([]);
+  const [allRoomScores, setAllRoomScores] = useState<ScoreRow[]>([]);
   const [myScoreSubmitted, setMyScoreSubmitted] = useState(false);
 
   const [rollingLetter, setRollingLetter] = useState("A");
@@ -299,6 +301,21 @@ export default function RoomPage() {
     setScores(next);
   }
 
+  async function loadRoomScores(rid: string) {
+    const { data, error } = await supabase
+      .from("scores")
+      .select("player_id,round,category,points")
+      .eq("room_id", rid)
+      .order("round", { ascending: true });
+
+    if (error) {
+      setMsg(`❌ celkové body: ${error.message}`);
+      return;
+    }
+
+    setAllRoomScores((data ?? []) as ScoreRow[]);
+  }
+
   useEffect(() => {
     let cancelled = false;
 
@@ -307,6 +324,7 @@ export default function RoomPage() {
       if (cancelled || !rid) return;
       await loadPlayers(rid);
       await loadCurrentRound(rid);
+      await loadRoomScores(rid);
     })();
 
     return () => {
@@ -336,7 +354,10 @@ export default function RoomPage() {
       if (round?.round_no) {
         await loadAllAnswers(roomId, round.round_no);
         await loadAllScores(roomId, round.round_no);
+    await loadRoomScores(roomId);
       }
+
+      await loadRoomScores(roomId);
     }, 1000);
 
     return () => window.clearInterval(poll);
@@ -638,6 +659,7 @@ export default function RoomPage() {
     setMyScoreSubmitted(true);
     setMsg("");
     await loadAllScores(roomId, round.round_no);
+    await loadRoomScores(roomId);
   }
 
   const scoredPlayerIds = new Set(
@@ -650,6 +672,26 @@ export default function RoomPage() {
 
   const stoppedByName =
     allAnswers.find((a) => a.category === "__STOP_BY__")?.value ?? "";
+
+  function playerRoundPoints(playerId: string, roundNo: number) {
+    return allRoomScores
+      .filter((s) => s.player_id === playerId && s.round === roundNo)
+      .reduce((sum, s) => sum + Number(s.points ?? 0), 0);
+  }
+
+  function playerTotalPoints(playerId: string) {
+    return allRoomScores
+      .filter((s) => s.player_id === playerId)
+      .reduce((sum, s) => sum + Number(s.points ?? 0), 0);
+  }
+
+  const scoredRoundNumbers = Array.from(
+    new Set(
+      allRoomScores
+        .map((s) => s.round)
+        .filter((roundNo): roundNo is number => typeof roundNo === "number")
+    )
+  ).sort((a, b) => a - b);
 
   async function nextRound() {
     if (!roomId || !round?.id || !everyoneScored) return;
@@ -869,6 +911,7 @@ export default function RoomPage() {
                   {CATEGORIES.map((c) => (
                     <th key={c} style={{ border: "1px solid #ccc", padding: 8 }}>{c}</th>
                   ))}
+                  <th style={{ border: "1px solid #ccc", padding: 8 }}>Body celkem</th>
                 </tr>
               </thead>
               <tbody>
@@ -880,10 +923,54 @@ export default function RoomPage() {
                         {answerFor(p.id, c)}
                       </td>
                     ))}
+                    <td style={{ border: "1px solid #ccc", padding: 8 }}>
+                      <b>{playerTotalPoints(p.id)}</b>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div style={{ marginTop: 16 }}>
+            <button onClick={() => setShowRoundHistory((v) => !v)} style={{ padding: 12 }}>
+              {showRoundHistory ? "Skrýt historii kol" : "Zobrazit historii kol"}
+            </button>
+
+            {showRoundHistory && (
+              <div style={{ overflowX: "auto", marginTop: 12 }}>
+                {scoredRoundNumbers.length === 0 ? (
+                  <p>Zatím nejsou uložené body za žádné kolo.</p>
+                ) : (
+                  <table style={{ borderCollapse: "collapse", minWidth: 500 }}>
+                    <thead>
+                      <tr>
+                        <th style={{ border: "1px solid #ccc", padding: 8 }}>Kolo</th>
+                        {players.map((p) => (
+                          <th key={p.id} style={{ border: "1px solid #ccc", padding: 8 }}>
+                            {p.name}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {scoredRoundNumbers.map((roundNo) => (
+                        <tr key={roundNo}>
+                          <td style={{ border: "1px solid #ccc", padding: 8 }}>
+                            {roundNo}
+                          </td>
+                          {players.map((p) => (
+                            <td key={p.id} style={{ border: "1px solid #ccc", padding: 8 }}>
+                              {playerRoundPoints(p.id, roundNo)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            )}
           </div>
 
           {myPlayer ? (
