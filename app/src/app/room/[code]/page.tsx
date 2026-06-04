@@ -577,7 +577,7 @@ export default function RoomPage() {
           <p>
             Losování písmen probíhá tak, že jakmile se každé písmeno z abecedy vylosuje alespoň jednou,
             losuje se znovu celá abeceda. Pokud vám písmeno nevyhovuje, lze losování opakovat
-            a vyřazené písmeno bude pro toto kolo abecedy vyřazeno.
+            a vyřazené písmeno bude pro toto kolo abecedy automaticky vyřazeno.
           </p>
 
           <h3>Bodování</h3>
