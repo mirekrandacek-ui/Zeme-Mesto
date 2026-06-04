@@ -83,8 +83,33 @@ export default function RoomPage() {
     return `zm_myPlayer_${rid}`;
   }
 
-  function pickLetter() {
-    return LETTERS[Math.floor(Math.random() * LETTERS.length)];
+  async function pickLetter(rid: string) {
+    const { data } = await supabase
+      .from("rounds")
+      .select("letter")
+      .eq("room_id", rid)
+      .order("round_no", { ascending: true });
+
+    let usedInCurrentCycle = new Set<string>();
+
+    for (const row of data ?? []) {
+      const usedLetter = String((row as { letter: string }).letter ?? "").toUpperCase();
+
+      if (usedInCurrentCycle.size >= LETTERS.length) {
+        usedInCurrentCycle = new Set<string>();
+      }
+
+      if (LETTERS.includes(usedLetter)) {
+        usedInCurrentCycle.add(usedLetter);
+      }
+    }
+
+    const availableLetters =
+      usedInCurrentCycle.size >= LETTERS.length
+        ? LETTERS
+        : LETTERS.filter((ltr) => !usedInCurrentCycle.has(ltr));
+
+    return availableLetters[Math.floor(Math.random() * availableLetters.length)];
   }
 
   function getRoomUrl() {
@@ -452,7 +477,7 @@ export default function RoomPage() {
       return;
     }
 
-    const finalLetter = pickLetter();
+    const finalLetter = await pickLetter(roomId);
 
     window.setTimeout(async () => {
       const newRound = await createRound(roomId, finalLetter);
@@ -465,6 +490,43 @@ export default function RoomPage() {
       setAllAnswers([]);
       setAllScores([]);
       setMyScoreSubmitted(false);
+      setMsg("✅ vylosováno");
+    }, ROLL_MS);
+  }
+
+  async function redrawLetter() {
+    if (!roomId) return;
+
+    if (round?.id) {
+      await supabase.from("rounds").update({ status: "skipped" }).eq("id", round.id);
+    }
+
+    setMsg("… losujeme znovu");
+    setRoomStatus("playing");
+    setLetter(null);
+    setAnswers(emptyAnswers());
+    setScores(emptyScores());
+    setAllAnswers([]);
+    setAllScores([]);
+    setMyScoreSubmitted(false);
+
+    const { error: startError } = await supabase
+      .from("rooms")
+      .update({ status: "playing", letter: null })
+      .eq("id", roomId);
+
+    if (startError) {
+      setMsg(`❌ opakované losování: ${startError.message}`);
+      return;
+    }
+
+    window.setTimeout(async () => {
+      const finalLetter = await pickLetter(roomId);
+      const newRound = await createRound(roomId, finalLetter);
+      if (!newRound) return;
+
+      await supabase.from("rooms").update({ letter: finalLetter }).eq("id", roomId);
+
       setMsg("✅ vylosováno");
     }, ROLL_MS);
   }
@@ -577,7 +639,7 @@ export default function RoomPage() {
           <p>
             Losování písmen probíhá tak, že jakmile se každé písmeno z abecedy vylosuje alespoň jednou,
             losuje se znovu celá abeceda. Pokud vám písmeno nevyhovuje, lze losování opakovat
-            a vyřazené písmeno bude pro toto kolo abecedy automaticky vyřazeno.
+            a vyřazené písmeno bude pro toto kolo abecedy automaticky vyřazeno. Bude opět dostupné, jakmile se vyčerpá celá abeceda.
           </p>
 
           <h3>Bodování</h3>
@@ -629,6 +691,12 @@ export default function RoomPage() {
           <h2>Hrajeme</h2>
 
           <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
+
+          {letter && (
+            <button onClick={redrawLetter} style={{ marginTop: 12, padding: 12 }}>
+              Losovat znovu
+            </button>
+          )}
 
           {letter && myPlayer && round && (
             <>
