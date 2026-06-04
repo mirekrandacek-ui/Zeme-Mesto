@@ -706,10 +706,12 @@ export default function RoomPage() {
     return allAnswers.find((a) => a.player_id === playerId && a.category === category)?.value ?? "";
   }
 
-  const displayMsg =
+  const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
       ? `✅ STOP stiskl ${stoppedByName}`
-      : msg;
+      : roomStatus === "playing" && letter
+        ? "✅ vylosováno"
+        : msg;
 
   return (
     <main style={{ padding: 24, fontFamily: "system-ui" }}>
@@ -765,7 +767,7 @@ export default function RoomPage() {
         </section>
       )}
 
-      {displayMsg && <p>{displayMsg}</p>}
+      {statusMessage && <p>{statusMessage}</p>}
 
       {roomId && !myPlayer && (
         <section style={{ border: "1px solid #ddd", padding: 12, margin: "16px 0" }}>
