@@ -358,6 +358,23 @@ export default function RoomPage() {
     }
   }, [roomStatus, letter, round?.id]);
 
+  // Při losování sjednoť hlášku všem hráčům podle typu akce
+  useEffect(() => {
+    if (roomStatus !== "drawing") return;
+
+    if (round?.status === "skipped") {
+      setMsg("… losujeme znovu");
+      return;
+    }
+
+    if (round?.status === "done") {
+      setMsg("… losujeme další kolo");
+      return;
+    }
+
+    setMsg("… losujeme");
+  }, [roomStatus, round?.status, round?.id]);
+
   // Při novém kole vyčisti lokální odpovědi a bodování u všech hráčů
   useEffect(() => {
     if (!round?.id) return;
