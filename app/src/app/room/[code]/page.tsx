@@ -565,12 +565,36 @@ export default function RoomPage() {
   }
 
   async function stopRound() {
-    if (!roomId || !round?.id) return;
+    if (!roomId || !round?.id || !round?.round_no || !myPlayer) return;
+
+    const { data: locked, error: lockError } = await supabase
+      .from("rooms")
+      .update({ status: "scoring" })
+      .eq("id", roomId)
+      .eq("status", "playing")
+      .select("id")
+      .maybeSingle();
+
+    if (lockError || !locked) {
+      setMsg("ℹ️ STOP už stiskl jiný hráč.");
+      return;
+    }
+
+    await supabase.from("answers").upsert(
+      {
+        room_id: roomId,
+        player_id: myPlayer.id,
+        round: round.round_no,
+        category: "__STOP_BY__",
+        value: myPlayer.name,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "room_id,player_id,round,category" }
+    );
 
     await supabase.from("rounds").update({ status: "scoring" }).eq("id", round.id);
-    await supabase.from("rooms").update({ status: "scoring" }).eq("id", roomId);
 
-    setMsg("✅ STOP – jdeme bodovat");
+    setMsg(`✅ STOP stiskl ${myPlayer.name}`);
   }
 
   async function submitScores() {
@@ -606,6 +630,9 @@ export default function RoomPage() {
   );
 
   const everyoneScored = players.length > 0 && scoredPlayerIds.size === players.length;
+
+  const stoppedByName =
+    allAnswers.find((a) => a.category === "__STOP_BY__")?.value ?? "";
 
   async function nextRound() {
     if (!roomId || !round?.id || !everyoneScored) return;
@@ -797,6 +824,13 @@ export default function RoomPage() {
       {roomStatus === "scoring" && (
         <>
           <h2>Bodování</h2>
+
+          {stoppedByName && (
+            <p>
+              STOP stiskl: <b>{stoppedByName}</b>
+            </p>
+          )}
+
           <p>Odesláno: {scoredPlayerIds.size}/{players.length}</p>
 
           <ul style={{ paddingLeft: 20 }}>
