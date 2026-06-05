@@ -16,7 +16,43 @@ const ROLL_MS = 5000;
 const TICK_MS = 35;
 
 const DEFAULT_ACTIVE_CATEGORIES = ["Země", "Město", "Jméno"];
+
+const PREMIUM_CATEGORIES = ["Země", "Město", "Jméno", "Zvíře", "Věc", "Rostlina"];
+
+const SUPER_PREMIUM_EXTRA_CATEGORIES = [
+  "Film / Seriál",
+  "Herec / Herečka",
+  "Zpěvák / Zpěvačka / Kapela",
+  "Sport",
+  "Značka",
+  "Auto / Moto",
+  "Řeka / Hora",
+  "Povolání",
+  "Barva",
+];
+
+const ALL_PREDEFINED_CATEGORIES = [...PREMIUM_CATEGORIES, ...SUPER_PREMIUM_EXTRA_CATEGORIES];
+
+type RoomTier = "free" | "premium" | "super_premium";
 type Category = string;
+
+function uniqueNonEmpty(values: string[]) {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const value of values) {
+    const cleaned = value.trim();
+    if (!cleaned) continue;
+
+    const key = cleaned.toLocaleLowerCase("cs-CZ");
+    if (seen.has(key)) continue;
+
+    seen.add(key);
+    result.push(cleaned);
+  }
+
+  return result;
+}
 
 function emptyAnswers(categories: string[] = DEFAULT_ACTIVE_CATEGORIES): Record<Category, string> {
   return Object.fromEntries(categories.map((category) => [category, ""])) as Record<Category, string>;
@@ -34,6 +70,8 @@ export default function RoomPage() {
   const [letter, setLetter] = useState<string | null>(null);
   const [activeCategories, setActiveCategories] = useState<string[]>(DEFAULT_ACTIVE_CATEGORIES);
   const [maxPlayers, setMaxPlayers] = useState(3);
+  const [roomTier, setRoomTier] = useState<RoomTier>("free");
+  const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [nameInput, setNameInput] = useState("");
@@ -206,11 +244,20 @@ export default function RoomPage() {
         ? ((data as any).active_categories as string[])
         : DEFAULT_ACTIVE_CATEGORIES;
 
+    const customCategories = roomCategories
+      .filter((category) => !ALL_PREDEFINED_CATEGORIES.includes(category))
+      .slice(0, 5);
+
     setRoomId(data.id);
     setRoomStatus(data.status as RoomStatus);
     setLetter((data.letter ?? null) as string | null);
     setActiveCategories(roomCategories);
     setMaxPlayers(Number((data as any).max_players ?? 3));
+    setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
+    setRoomCustomCategories([
+      ...customCategories,
+      ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
+    ].slice(0, 5));
 
     const saved = loadMyPlayer(data.id);
     if (saved) setMyPlayer(saved);
@@ -558,6 +605,60 @@ export default function RoomPage() {
     const nextRound = data as RoundLite;
     setRound(nextRound);
     return nextRound;
+  }
+
+  async function updateRoomCategories(predefinedCategories: string[], customCategories: string[]) {
+    if (!roomId || roomStatus !== "lobby") return;
+
+    const cleanedCustomCategories = uniqueNonEmpty(customCategories).slice(0, 5);
+    const finalCategories = uniqueNonEmpty([...predefinedCategories, ...cleanedCustomCategories]);
+
+    if (finalCategories.length === 0) {
+      setMsg("❗ Vyber alespoň jednu kategorii.");
+      return;
+    }
+
+    setActiveCategories(finalCategories);
+    setRoomCustomCategories([
+      ...cleanedCustomCategories,
+      ...Array(Math.max(0, 5 - cleanedCustomCategories.length)).fill(""),
+    ].slice(0, 5));
+
+    const { error } = await supabase
+      .from("rooms")
+      .update({
+        active_categories: finalCategories,
+        custom_category: cleanedCustomCategories.join(" | ") || null,
+      })
+      .eq("id", roomId);
+
+    if (error) {
+      setMsg(`❌ kategorie: ${error.message}`);
+    }
+  }
+
+  function toggleRoomCategory(category: string) {
+    const selectedPredefined = activeCategories.filter((item) =>
+      ALL_PREDEFINED_CATEGORIES.includes(item)
+    );
+
+    const nextPredefined = selectedPredefined.includes(category)
+      ? selectedPredefined.filter((item) => item !== category)
+      : [...selectedPredefined, category];
+
+    void updateRoomCategories(nextPredefined, roomCustomCategories);
+  }
+
+  function updateRoomCustomCategory(index: number, value: string) {
+    const next = [...roomCustomCategories];
+    next[index] = value;
+    setRoomCustomCategories(next);
+
+    const selectedPredefined = activeCategories.filter((item) =>
+      ALL_PREDEFINED_CATEGORIES.includes(item)
+    );
+
+    void updateRoomCategories(selectedPredefined, next);
   }
 
   async function startGame() {
@@ -920,6 +1021,55 @@ export default function RoomPage() {
           </ul>
 
           <p>Kategorie: {activeCategories.join(" / ")}</p>
+
+          {roomTier === "super_premium" && myPlayer && (
+            <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
+              <h3 style={{ marginTop: 0 }}>Nastavení kategorií Super Premium</h3>
+
+              <p style={{ opacity: 0.75 }}>
+                Vyber kategorie pro tuto místnost. Tyto kategorie uvidí všichni hráči v místnosti.
+              </p>
+
+              <h4>Základní kategorie</h4>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {PREMIUM_CATEGORIES.map((category) => (
+                  <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <input
+                      type="checkbox"
+                      checked={activeCategories.includes(category)}
+                      onChange={() => toggleRoomCategory(category)}
+                    />
+                    {category}
+                  </label>
+                ))}
+              </div>
+
+              <h4 style={{ marginTop: 16 }}>Rozšířené kategorie</h4>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
+                  <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <input
+                      type="checkbox"
+                      checked={activeCategories.includes(category)}
+                      onChange={() => toggleRoomCategory(category)}
+                    />
+                    {category}
+                  </label>
+                ))}
+              </div>
+
+              <h4 style={{ marginTop: 16 }}>Vlastní kategorie</h4>
+              {roomCustomCategories.map((value, index) => (
+                <input
+                  key={index}
+                  placeholder={`Vlastní kategorie ${index + 1}`}
+                  value={value}
+                  onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
+                  style={{ display: "block", marginTop: 8, padding: 12, width: "100%" }}
+                />
+              ))}
+            </section>
+          )}
 
           {myPlayer ? (
             <button onClick={startGame}>START</button>
