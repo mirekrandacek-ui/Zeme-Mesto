@@ -407,6 +407,14 @@ export default function RoomPage() {
     setMyScoreSubmitted(false);
   }, [round?.id]);
 
+  // Při vstupu do bodování nového kola začni vždy s nulovým bodováním
+  useEffect(() => {
+    if (roomStatus !== "scoring" || !round?.id) return;
+
+    setScores(emptyScores());
+    setMyScoreSubmitted(false);
+  }, [roomStatus, round?.id]);
+
   async function resetRoomData(rid: string) {
     await supabase.from("scores").delete().eq("room_id", rid);
     await supabase.from("answers").delete().eq("room_id", rid);
@@ -688,6 +696,10 @@ export default function RoomPage() {
     );
 
     await supabase.from("rounds").update({ status: "scoring" }).eq("id", round.id);
+
+    setRoomStatus("scoring");
+    setScores(emptyScores());
+    setMyScoreSubmitted(false);
 
     setMsg(`✅ STOP stiskl ${myPlayer.name}`);
   }
