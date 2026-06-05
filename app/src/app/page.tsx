@@ -10,13 +10,7 @@ const FREE_CATEGORIES = ["Země", "Město", "Jméno"];
 
 const PREMIUM_CATEGORIES = ["Země", "Město", "Jméno", "Zvíře", "Věc", "Rostlina"];
 
-const SUPER_PREMIUM_BASE_CATEGORIES = [
-  "Země",
-  "Město",
-  "Jméno",
-  "Zvíře",
-  "Věc",
-  "Rostlina",
+const SUPER_PREMIUM_EXTRA_CATEGORIES = [
   "Film / Seriál",
   "Herec / Herečka",
   "Zpěvák / Zpěvačka / Kapela",
@@ -26,6 +20,11 @@ const SUPER_PREMIUM_BASE_CATEGORIES = [
   "Řeka / Hora",
   "Povolání",
   "Barva",
+];
+
+const SUPER_PREMIUM_ALL_CATEGORIES = [
+  ...PREMIUM_CATEGORIES,
+  ...SUPER_PREMIUM_EXTRA_CATEGORIES,
 ];
 
 function createRoomCode() {
@@ -68,8 +67,9 @@ export default function Home() {
 
   const [premiumCustomCategory, setPremiumCustomCategory] = useState("");
 
+  // Super Premium: defaultně zapnuté jen základní kategorie.
   const [superSelectedCategories, setSuperSelectedCategories] = useState<string[]>(
-    SUPER_PREMIUM_BASE_CATEGORIES
+    PREMIUM_CATEGORIES
   );
 
   const [superCustomCategories, setSuperCustomCategories] = useState(["", "", "", "", ""]);
@@ -191,36 +191,63 @@ export default function Home() {
             onChange={(e) => setTier(e.target.value as Tier)}
             style={{ display: "block", marginTop: 6, padding: 12, width: "100%" }}
           >
-            <option value="free">Free – až 3 hráči, Země / Město / Jméno</option>
-            <option value="premium">Premium – až 5 hráčů, Země / Město / Jméno / Zvíře / Věc / Rostlina + 1 vlastní</option>
-            <option value="super_premium">Super Premium – neomezeně hráčů, vlastní výběr kategorií</option>
+            <option value="free">Free</option>
+            <option value="premium">Premium</option>
+            <option value="super_premium">Super Premium</option>
           </select>
         </label>
+
+        {tier === "free" && (
+          <p style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
+            Free: reklamy, až 3 hráči, pevné kategorie Země / Město / Jméno.
+          </p>
+        )}
 
         {tier === "premium" && (
           <>
             <p style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
-              Premium obsahuje: Země / Město / Jméno / Zvíře / Věc / Rostlina.
+              Premium: bez reklam, až 5 hráčů, pevné kategorie Země / Město / Jméno /
+              Zvíře / Věc / Rostlina + 1 vlastní volitelná kategorie.
             </p>
 
             <label style={{ display: "block", marginTop: 12 }}>
               Vlastní volitelná kategorie
-            <input
-              placeholder="Např. Jídlo"
-              value={premiumCustomCategory}
-              onChange={(e) => setPremiumCustomCategory(e.target.value)}
-              style={{ display: "block", marginTop: 6, padding: 12, width: "100%" }}
-            />
-          </label>
+              <input
+                placeholder="Např. Jídlo"
+                value={premiumCustomCategory}
+                onChange={(e) => setPremiumCustomCategory(e.target.value)}
+                style={{ display: "block", marginTop: 6, padding: 12, width: "100%" }}
+              />
+            </label>
           </>
         )}
 
         {tier === "super_premium" && (
           <div style={{ marginTop: 16 }}>
-            <h3>Výběr kategorií Super Premium</h3>
+            <p style={{ opacity: 0.75, fontSize: 14 }}>
+              Super Premium: bez reklam, neomezený počet hráčů, vlastní výběr kategorií,
+              vlastní pořadí později, až 5 vlastních kategorií.
+            </p>
 
-            <div style={{ display: "grid", gap: 8 }}>
-              {SUPER_PREMIUM_BASE_CATEGORIES.map((category) => (
+            <h3>Základní kategorie</h3>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {PREMIUM_CATEGORIES.map((category) => (
+                <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <input
+                    type="checkbox"
+                    checked={superSelectedCategories.includes(category)}
+                    onChange={() => toggleSuperCategory(category)}
+                  />
+                  {category}
+                </label>
+              ))}
+            </div>
+
+            <h3 style={{ marginTop: 16 }}>Rozšířené kategorie</h3>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
                 <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
                   <input
                     type="checkbox"
