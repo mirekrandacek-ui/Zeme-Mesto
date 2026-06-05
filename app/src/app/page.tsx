@@ -10,7 +10,7 @@ const FREE_CATEGORIES = ["Země", "Město", "Jméno"];
 
 const PREMIUM_CATEGORIES = ["Země", "Město", "Jméno", "Zvíře", "Věc", "Rostlina"];
 
-const SUPER_PREMIUM_CATEGORIES = [
+const SUPER_PREMIUM_BASE_CATEGORIES = [
   "Země",
   "Město",
   "Jméno",
@@ -38,6 +38,24 @@ function tierLabel(tier: Tier) {
   return "Free";
 }
 
+function uniqueNonEmpty(values: string[]) {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const value of values) {
+    const cleaned = value.trim();
+    if (!cleaned) continue;
+
+    const key = cleaned.toLocaleLowerCase("cs-CZ");
+    if (seen.has(key)) continue;
+
+    seen.add(key);
+    result.push(cleaned);
+  }
+
+  return result;
+}
+
 export default function Home() {
   const router = useRouter();
 
@@ -47,27 +65,53 @@ export default function Home() {
 
   // Dočasný testovací přepínač, než napojíme skutečné platby.
   const [tier, setTier] = useState<Tier>("free");
+
   const [premiumCustomCategory, setPremiumCustomCategory] = useState("");
+
+  const [superSelectedCategories, setSuperSelectedCategories] = useState<string[]>(
+    SUPER_PREMIUM_BASE_CATEGORIES
+  );
+
+  const [superCustomCategories, setSuperCustomCategories] = useState(["", "", "", "", ""]);
+
+  function toggleSuperCategory(category: string) {
+    setSuperSelectedCategories((prev) => {
+      if (prev.includes(category)) {
+        return prev.filter((item) => item !== category);
+      }
+
+      return [...prev, category];
+    });
+  }
 
   function getRoomSettings() {
     if (tier === "premium") {
       const custom = premiumCustomCategory.trim();
+      const activeCategories = uniqueNonEmpty(
+        custom ? [...PREMIUM_CATEGORIES, custom] : PREMIUM_CATEGORIES
+      );
 
       return {
         creator_tier: "premium",
         max_players: 5,
-        active_categories: custom ? [...PREMIUM_CATEGORIES, custom] : PREMIUM_CATEGORIES,
+        active_categories: activeCategories,
         custom_category: custom || null,
         ads_enabled: false,
       };
     }
 
     if (tier === "super_premium") {
+      const customCategories = uniqueNonEmpty(superCustomCategories);
+      const activeCategories = uniqueNonEmpty([
+        ...superSelectedCategories,
+        ...customCategories,
+      ]);
+
       return {
         creator_tier: "super_premium",
         max_players: 999,
-        active_categories: SUPER_PREMIUM_CATEGORIES,
-        custom_category: null,
+        active_categories: activeCategories.length > 0 ? activeCategories : ["Země"],
+        custom_category: customCategories.join(" | ") || null,
         ads_enabled: false,
       };
     }
@@ -149,7 +193,7 @@ export default function Home() {
           >
             <option value="free">Free – 3 hráči, Země / Město / Jméno</option>
             <option value="premium">Premium – 5 hráčů, 6 kategorií + 1 vlastní</option>
-            <option value="super_premium">Super Premium – neomezeně hráčů, rozšířené kategorie</option>
+            <option value="super_premium">Super Premium – neomezeně hráčů, vlastní výběr</option>
           </select>
         </label>
 
@@ -163,6 +207,44 @@ export default function Home() {
               style={{ display: "block", marginTop: 6, padding: 12, width: "100%" }}
             />
           </label>
+        )}
+
+        {tier === "super_premium" && (
+          <div style={{ marginTop: 16 }}>
+            <h3>Výběr kategorií Super Premium</h3>
+
+            <div style={{ display: "grid", gap: 8 }}>
+              {SUPER_PREMIUM_BASE_CATEGORIES.map((category) => (
+                <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <input
+                    type="checkbox"
+                    checked={superSelectedCategories.includes(category)}
+                    onChange={() => toggleSuperCategory(category)}
+                  />
+                  {category}
+                </label>
+              ))}
+            </div>
+
+            <h3 style={{ marginTop: 16 }}>Vlastní kategorie</h3>
+            <p style={{ opacity: 0.75 }}>
+              Můžeš přidat až 5 vlastních kategorií.
+            </p>
+
+            {superCustomCategories.map((value, index) => (
+              <input
+                key={index}
+                placeholder={`Vlastní kategorie ${index + 1}`}
+                value={value}
+                onChange={(e) => {
+                  const next = [...superCustomCategories];
+                  next[index] = e.target.value;
+                  setSuperCustomCategories(next);
+                }}
+                style={{ display: "block", marginTop: 8, padding: 12, width: "100%" }}
+              />
+            ))}
+          </div>
         )}
 
         <p style={{ opacity: 0.75, marginBottom: 0 }}>
