@@ -15,14 +15,14 @@ const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const ROLL_MS = 5000;
 const TICK_MS = 35;
 
-const DEFAULT_ACTIVE_activeCategories = ["Země", "Město", "Jméno"];
+const DEFAULT_ACTIVE_CATEGORIES = ["Země", "Město", "Jméno"];
 type Category = string;
 
-function emptyAnswers(categories: string[] = DEFAULT_ACTIVE_activeCategories): Record<Category, string> {
+function emptyAnswers(categories: string[] = DEFAULT_ACTIVE_CATEGORIES): Record<Category, string> {
   return Object.fromEntries(categories.map((category) => [category, ""])) as Record<Category, string>;
 }
 
-function emptyScores(categories: string[] = DEFAULT_ACTIVE_activeCategories): Record<Category, -10 | -5 | 0 | 5 | 10> {
+function emptyScores(categories: string[] = DEFAULT_ACTIVE_CATEGORIES): Record<Category, -10 | -5 | 0 | 5 | 10> {
   return Object.fromEntries(categories.map((category) => [category, 0])) as Record<Category, -10 | -5 | 0 | 5 | 10>;
 }
 
@@ -32,7 +32,7 @@ export default function RoomPage() {
   const [roomId, setRoomId] = useState<string | null>(null);
   const [roomStatus, setRoomStatus] = useState<RoomStatus>("lobby");
   const [letter, setLetter] = useState<string | null>(null);
-  const [activeCategories, setActiveCategories] = useState<string[]>(DEFAULT_ACTIVE_activeCategories);
+  const [activeCategories, setActiveCategories] = useState<string[]>(DEFAULT_ACTIVE_CATEGORIES);
   const [maxPlayers, setMaxPlayers] = useState(3);
 
   const [players, setPlayers] = useState<Player[]>([]);
