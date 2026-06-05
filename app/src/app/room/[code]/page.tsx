@@ -661,6 +661,55 @@ export default function RoomPage() {
     void updateRoomCategories(selectedPredefined, next);
   }
 
+  async function saveRoomCategoryOrder(nextCategories: string[]) {
+    if (!roomId || roomStatus !== "lobby") return;
+
+    const finalCategories = uniqueNonEmpty(nextCategories);
+
+    if (finalCategories.length === 0) {
+      setMsg("❗ Vyber alespoň jednu kategorii.");
+      return;
+    }
+
+    const customCategories = finalCategories
+      .filter((category) => !ALL_PREDEFINED_CATEGORIES.includes(category))
+      .slice(0, 5);
+
+    setActiveCategories(finalCategories);
+    setRoomCustomCategories([
+      ...customCategories,
+      ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
+    ].slice(0, 5));
+
+    const { error } = await supabase
+      .from("rooms")
+      .update({
+        active_categories: finalCategories,
+        custom_category: customCategories.join(" | ") || null,
+      })
+      .eq("id", roomId);
+
+    if (error) {
+      setMsg(`❌ pořadí kategorií: ${error.message}`);
+    }
+  }
+
+  function moveRoomCategory(category: string, direction: -1 | 1) {
+    const currentIndex = activeCategories.indexOf(category);
+    if (currentIndex < 0) return;
+
+    const nextIndex = currentIndex + direction;
+    if (nextIndex < 0 || nextIndex >= activeCategories.length) return;
+
+    const nextCategories = [...activeCategories];
+    const moved = nextCategories[currentIndex];
+
+    nextCategories[currentIndex] = nextCategories[nextIndex];
+    nextCategories[nextIndex] = moved;
+
+    void saveRoomCategoryOrder(nextCategories);
+  }
+
   async function startGame() {
     if (!roomId || !myPlayer) {
       setMsg("❗ nejdřív se připoj jménem");
@@ -1027,7 +1076,7 @@ export default function RoomPage() {
               <h3 style={{ marginTop: 0 }}>Nastavení kategorií Super Premium</h3>
 
               <p style={{ opacity: 0.75 }}>
-                Vyber kategorie pro tuto místnost. Tyto kategorie uvidí všichni hráči v místnosti.
+                Vyber kategorie pro tuto místnost. Tyto kategorie uvidí všichni hráči v místnosti. Pořadí kategorií můžeš upravit níže.
               </p>
 
               <h4>Základní kategorie</h4>
@@ -1068,6 +1117,45 @@ export default function RoomPage() {
                   style={{ display: "block", marginTop: 8, padding: 12, width: "100%" }}
                 />
               ))}
+
+              <h4 style={{ marginTop: 16 }}>Pořadí kategorií</h4>
+              <p style={{ opacity: 0.75 }}>
+                Tlačítky ↑ a ↓ nastav pořadí, ve kterém se budou kategorie zobrazovat ve hře.
+              </p>
+
+              <ol style={{ paddingLeft: 20 }}>
+                {activeCategories.map((category, index) => (
+                  <li
+                    key={category}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: 8,
+                      marginTop: 8,
+                    }}
+                  >
+                    <span>
+                      {index + 1}. {category}
+                    </span>
+
+                    <span style={{ display: "flex", gap: 6 }}>
+                      <button
+                        onClick={() => moveRoomCategory(category, -1)}
+                        disabled={index === 0}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        onClick={() => moveRoomCategory(category, 1)}
+                        disabled={index === activeCategories.length - 1}
+                      >
+                        ↓
+                      </button>
+                    </span>
+                  </li>
+                ))}
+              </ol>
             </section>
           )}
 

@@ -183,7 +183,7 @@ export default function Home() {
 
         {tier === "super_premium" && (
           <p style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
-            Super Premium: bez reklam, neomezený počet hráčů. Kategorie si nastavíš po vytvoření místnosti v lobby.
+            Super Premium: bez reklam, neomezený počet hráčů. Kategorie, jejich počet i pořadí si nastavíš po vytvoření místnosti v lobby.
           </p>
         )}
 
