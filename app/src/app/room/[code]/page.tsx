@@ -1081,7 +1081,7 @@ export default function RoomPage() {
                   Odeslat bodování
                 </button>
               ) : (
-                <p style={{ marginTop: 16 }}>✅ Bodování odesláno. Úprava už není možná.</p>
+                <p style={{ marginTop: 16 }}>✅ Bodování odesláno.</p>
               )}
             </>
           ) : (
