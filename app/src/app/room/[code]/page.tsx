@@ -15,26 +15,16 @@ const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const ROLL_MS = 5000;
 const TICK_MS = 35;
 
-const CATEGORIES = ["Země", "Město", "Jméno", "Zvíře", "Věc", "Rostlina"] as const;
-type Category = (typeof CATEGORIES)[number];
+const DEFAULT_ACTIVE_activeCategories = ["Země", "Město", "Jméno"];
+type Category = string;
 
-const emptyAnswers = (): Record<Category, string> => ({
-  Země: "",
-  Město: "",
-  Jméno: "",
-  Zvíře: "",
-  Věc: "",
-  Rostlina: "",
-});
+function emptyAnswers(categories: string[] = DEFAULT_ACTIVE_activeCategories): Record<Category, string> {
+  return Object.fromEntries(categories.map((category) => [category, ""])) as Record<Category, string>;
+}
 
-const emptyScores = (): Record<Category, -10 | -5 | 0 | 5 | 10> => ({
-  Země: 0,
-  Město: 0,
-  Jméno: 0,
-  Zvíře: 0,
-  Věc: 0,
-  Rostlina: 0,
-});
+function emptyScores(categories: string[] = DEFAULT_ACTIVE_activeCategories): Record<Category, -10 | -5 | 0 | 5 | 10> {
+  return Object.fromEntries(categories.map((category) => [category, 0])) as Record<Category, -10 | -5 | 0 | 5 | 10>;
+}
 
 export default function RoomPage() {
   const { code } = useParams<{ code: string }>();
@@ -42,6 +32,8 @@ export default function RoomPage() {
   const [roomId, setRoomId] = useState<string | null>(null);
   const [roomStatus, setRoomStatus] = useState<RoomStatus>("lobby");
   const [letter, setLetter] = useState<string | null>(null);
+  const [activeCategories, setActiveCategories] = useState<string[]>(DEFAULT_ACTIVE_activeCategories);
+  const [maxPlayers, setMaxPlayers] = useState(3);
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [nameInput, setNameInput] = useState("");
@@ -71,13 +63,13 @@ export default function RoomPage() {
       .toUpperCase();
   }
 
-  const allAnswersFilled = CATEGORIES.every((c) => answers[c].trim().length > 0);
+  const allAnswersFilled = activeCategories.every((c) => answers[c].trim().length > 0);
 
-  const allAnswersAtLeastTwoChars = CATEGORIES.every((c) => answers[c].trim().length >= 2);
+  const allAnswersAtLeastTwoChars = activeCategories.every((c) => answers[c].trim().length >= 2);
 
   const allAnswersStartWithLetter =
     Boolean(letter) &&
-    CATEGORIES.every((c) => normalizeAnswerStart(answers[c]) === letter);
+    activeCategories.every((c) => normalizeAnswerStart(answers[c]) === letter);
 
   const canStop = allAnswersFilled && allAnswersAtLeastTwoChars && allAnswersStartWithLetter;
 
@@ -199,7 +191,7 @@ export default function RoomPage() {
   async function loadRoomByCode() {
     const { data, error } = await supabase
       .from("rooms")
-      .select("id,status,letter")
+      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled")
       .eq("code", code)
       .single();
 
@@ -209,9 +201,16 @@ export default function RoomPage() {
       return null;
     }
 
+    const roomCategories =
+      Array.isArray((data as any).active_categories) && (data as any).active_categories.length > 0
+        ? ((data as any).active_categories as string[])
+        : DEFAULT_ACTIVE_CATEGORIES;
+
     setRoomId(data.id);
     setRoomStatus(data.status as RoomStatus);
     setLetter((data.letter ?? null) as string | null);
+    setActiveCategories(roomCategories);
+    setMaxPlayers(Number((data as any).max_players ?? 3));
 
     const saved = loadMyPlayer(data.id);
     if (saved) setMyPlayer(saved);
@@ -284,7 +283,7 @@ export default function RoomPage() {
     if (!myPlayer) return;
 
     const mine = rows.filter((s) => s.player_id === myPlayer.id);
-    setMyScoreSubmitted(mine.length >= CATEGORIES.length);
+    setMyScoreSubmitted(mine.length >= activeCategories.length);
 
     // Důležité:
     // Dokud hráč bodování neodeslal, nepřepisujeme mu rozpracované hodnoty.
@@ -293,7 +292,7 @@ export default function RoomPage() {
     const next = emptyScores();
 
     for (const row of mine) {
-      if (CATEGORIES.includes(row.category as Category)) {
+      if (activeCategories.includes(row.category as Category)) {
         next[row.category as Category] = row.points as -10 | -5 | 0 | 5 | 10;
       }
     }
@@ -400,8 +399,8 @@ export default function RoomPage() {
   useEffect(() => {
     if (!round?.id) return;
 
-    setAnswers(emptyAnswers());
-    setScores(emptyScores());
+    setAnswers(emptyAnswers(activeCategories));
+    setScores(emptyScores(activeCategories));
     setAllAnswers([]);
     setAllScores([]);
     setMyScoreSubmitted(false);
@@ -411,7 +410,7 @@ export default function RoomPage() {
   useEffect(() => {
     if (roomStatus !== "scoring" || !round?.id) return;
 
-    setScores(emptyScores());
+    setScores(emptyScores(activeCategories));
     setMyScoreSubmitted(false);
   }, [roomStatus, round?.id]);
 
@@ -428,8 +427,8 @@ export default function RoomPage() {
     setRoomStatus("lobby");
     setLetter(null);
     setRound(null);
-    setAnswers(emptyAnswers());
-    setScores(emptyScores());
+    setAnswers(emptyAnswers(activeCategories));
+    setScores(emptyScores(activeCategories));
     setAllAnswers([]);
     setAllScores([]);
     setAllRoomScores([]);
@@ -452,6 +451,11 @@ export default function RoomPage() {
 
     if ((existingPlayersCount ?? 0) === 0) {
       await resetRoomData(roomId);
+    }
+
+    if ((existingPlayersCount ?? 0) >= maxPlayers) {
+      setMsg(`❌ Místnost je plná. Limit této místnosti je ${maxPlayers} hráči.`);
+      return;
     }
 
     const { data, error } = await supabase
@@ -592,8 +596,8 @@ export default function RoomPage() {
         .eq("id", rid)
         .eq("status", "drawing");
 
-      setAnswers(emptyAnswers());
-      setScores(emptyScores());
+      setAnswers(emptyAnswers(activeCategories));
+      setScores(emptyScores(activeCategories));
       setAllAnswers([]);
       setAllScores([]);
       setMyScoreSubmitted(false);
@@ -613,8 +617,8 @@ export default function RoomPage() {
     setMsg("… losujeme znovu");
     setRoomStatus("drawing");
     setLetter(null);
-    setAnswers(emptyAnswers());
-    setScores(emptyScores());
+    setAnswers(emptyAnswers(activeCategories));
+    setScores(emptyScores(activeCategories));
     setAllAnswers([]);
     setAllScores([]);
     setMyScoreSubmitted(false);
@@ -698,7 +702,7 @@ export default function RoomPage() {
     await supabase.from("rounds").update({ status: "scoring" }).eq("id", round.id);
 
     setRoomStatus("scoring");
-    setScores(emptyScores());
+    setScores(emptyScores(activeCategories));
     setMyScoreSubmitted(false);
 
     setMsg(`✅ STOP stiskl ${myPlayer.name}`);
@@ -707,7 +711,7 @@ export default function RoomPage() {
   async function submitScores() {
     if (!roomId || !myPlayer || !round?.round_no) return;
 
-    const rows = CATEGORIES.map((category) => ({
+    const rows = activeCategories.map((category) => ({
       room_id: roomId,
       player_id: myPlayer.id,
       round: round.round_no,
@@ -733,7 +737,7 @@ export default function RoomPage() {
 
   const scoredPlayerIds = new Set(
     players
-      .filter((p) => CATEGORIES.every((c) => allScores.some((s) => s.player_id === p.id && s.category === c)))
+      .filter((p) => activeCategories.every((c) => allScores.some((s) => s.player_id === p.id && s.category === c)))
       .map((p) => p.id)
   );
 
@@ -774,8 +778,8 @@ export default function RoomPage() {
     setMsg("… losujeme další kolo");
     setRoomStatus("drawing");
     setLetter(null);
-    setAnswers(emptyAnswers());
-    setScores(emptyScores());
+    setAnswers(emptyAnswers(activeCategories));
+    setScores(emptyScores(activeCategories));
     setAllAnswers([]);
     setAllScores([]);
     setMyScoreSubmitted(false);
@@ -903,7 +907,7 @@ export default function RoomPage() {
             ))}
           </ul>
 
-          <p>Kategorie: {CATEGORIES.join(" / ")}</p>
+          <p>Kategorie: {activeCategories.join(" / ")}</p>
 
           {myPlayer ? (
             <button onClick={startGame}>START</button>
@@ -927,7 +931,7 @@ export default function RoomPage() {
 
           {roomStatus === "playing" && letter && myPlayer && round && (
             <>
-              {CATEGORIES.map((category) => (
+              {activeCategories.map((category) => (
                 <input
                   key={category}
                   placeholder={category}
@@ -984,7 +988,7 @@ export default function RoomPage() {
               <thead>
                 <tr>
                   <th style={{ border: "1px solid #ccc", padding: 8 }}>Hráč</th>
-                  {CATEGORIES.map((c) => (
+                  {activeCategories.map((c) => (
                     <th key={c} style={{ border: "1px solid #ccc", padding: 8 }}>{c}</th>
                   ))}
                   <th style={{ border: "1px solid #ccc", padding: 8 }}>Body celkem</th>
@@ -994,7 +998,7 @@ export default function RoomPage() {
                 {players.map((p) => (
                   <tr key={p.id}>
                     <td style={{ border: "1px solid #ccc", padding: 8 }}>{p.name}</td>
-                    {CATEGORIES.map((c) => (
+                    {activeCategories.map((c) => (
                       <td key={c} style={{ border: "1px solid #ccc", padding: 8 }}>
                         {answerFor(p.id, c)}
                       </td>
@@ -1053,7 +1057,7 @@ export default function RoomPage() {
             <>
               <h3>Moje bodování</h3>
 
-              {CATEGORIES.map((category) => (
+              {activeCategories.map((category) => (
                 <label key={category} style={{ display: "block", marginTop: 12 }}>
                   {category}
                   <select

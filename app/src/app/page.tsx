@@ -29,6 +29,11 @@ export default function Home() {
         code: roomCode,
         status: "lobby",
         letter: null,
+        creator_tier: "free",
+        max_players: 3,
+        active_categories: ["Země", "Město", "Jméno"],
+        custom_category: null,
+        ads_enabled: true,
       });
 
       if (!error) {
