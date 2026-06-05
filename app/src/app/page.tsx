@@ -191,15 +191,20 @@ export default function Home() {
             onChange={(e) => setTier(e.target.value as Tier)}
             style={{ display: "block", marginTop: 6, padding: 12, width: "100%" }}
           >
-            <option value="free">Free – 3 hráči, Země / Město / Jméno</option>
-            <option value="premium">Premium – 5 hráčů, 6 kategorií + 1 vlastní</option>
-            <option value="super_premium">Super Premium – neomezeně hráčů, vlastní výběr</option>
+            <option value="free">Free – až 3 hráči, Země / Město / Jméno</option>
+            <option value="premium">Premium – až 5 hráčů, Země / Město / Jméno / Zvíře / Věc / Rostlina + 1 vlastní</option>
+            <option value="super_premium">Super Premium – neomezeně hráčů, vlastní výběr kategorií</option>
           </select>
         </label>
 
         {tier === "premium" && (
-          <label style={{ display: "block", marginTop: 12 }}>
-            Vlastní kategorie Premium
+          <>
+            <p style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
+              Premium obsahuje: Země / Město / Jméno / Zvíře / Věc / Rostlina.
+            </p>
+
+            <label style={{ display: "block", marginTop: 12 }}>
+              Vlastní volitelná kategorie
             <input
               placeholder="Např. Jídlo"
               value={premiumCustomCategory}
@@ -207,6 +212,7 @@ export default function Home() {
               style={{ display: "block", marginTop: 6, padding: 12, width: "100%" }}
             />
           </label>
+          </>
         )}
 
         {tier === "super_premium" && (
