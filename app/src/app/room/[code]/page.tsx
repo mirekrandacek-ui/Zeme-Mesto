@@ -454,7 +454,7 @@ export default function RoomPage() {
     }
 
     if ((existingPlayersCount ?? 0) >= maxPlayers) {
-      setMsg(`❌ Místnost je plná. Limit této místnosti je ${maxPlayers} hráči.`);
+      setMsg(`❌ Místnost je plná. Free verze umožňuje max. ${maxPlayers} hráče. Pro více hráčů si kup Premium. Víc hráčů, větší zábava! :-)`);
       return;
     }
 
@@ -818,6 +818,8 @@ export default function RoomPage() {
     return allAnswers.find((a) => a.player_id === playerId && a.category === category)?.value ?? "";
   }
 
+  const roomIsFull = !myPlayer && players.length >= maxPlayers;
+
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
       ? `✅ STOP stiskl ${stoppedByName}`
@@ -884,15 +886,25 @@ export default function RoomPage() {
       {roomId && !myPlayer && (
         <section style={{ border: "1px solid #ddd", padding: 12, margin: "16px 0" }}>
           <h2 style={{ marginTop: 0 }}>Připojit se do hry</h2>
-          <input
-            placeholder="Tvoje jméno"
-            value={nameInput}
-            onChange={(e) => setNameInput(e.target.value)}
-            style={{ padding: 12, width: "100%", maxWidth: 320 }}
-          />
-          <button onClick={joinRoom} style={{ display: "block", marginTop: 10, padding: 12 }}>
-            Připojit se
-          </button>
+
+          {roomIsFull ? (
+            <p>
+              ❌ Místnost je plná. Free verze umožňuje max. {maxPlayers} hráče.
+              Pro více hráčů si kup Premium. Víc hráčů, větší zábava! :-)
+            </p>
+          ) : (
+            <>
+              <input
+                placeholder="Tvoje jméno"
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                style={{ padding: 12, width: "100%", maxWidth: 320 }}
+              />
+              <button onClick={joinRoom} style={{ display: "block", marginTop: 10, padding: 12 }}>
+                Připojit se
+              </button>
+            </>
+          )}
         </section>
       )}
 
