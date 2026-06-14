@@ -36,11 +36,13 @@ const ALL_PREDEFINED_CATEGORIES = [...PREMIUM_CATEGORIES, ...SUPER_PREMIUM_EXTRA
 type RoomTier = "free" | "premium" | "super_premium";
 type Category = string;
 
-function uniqueNonEmpty(values: string[]) {
+function uniqueNonEmpty(values: unknown[]) {
   const seen = new Set<string>();
   const result: string[] = [];
 
   for (const value of values) {
+    if (typeof value !== "string") continue;
+
     const cleaned = value.trim();
     if (!cleaned) continue;
 
@@ -56,13 +58,11 @@ function uniqueNonEmpty(values: string[]) {
 
 function safeCategoryList(values: unknown, fallback: string[] = DEFAULT_ACTIVE_CATEGORIES) {
   const source = Array.isArray(values) ? values : fallback;
-  const cleaned = uniqueNonEmpty(
-    source
-      .filter((value): value is string => typeof value === "string")
-      .map((value) => value.trim())
-  );
+  const cleaned = uniqueNonEmpty(source);
 
-  return cleaned.length > 0 ? cleaned : fallback;
+  if (cleaned.length > 0) return cleaned;
+
+  return uniqueNonEmpty(fallback).length > 0 ? uniqueNonEmpty(fallback) : ["Země"];
 }
 
 function emptyAnswers(categories: string[] = DEFAULT_ACTIVE_CATEGORIES): Record<Category, string> {
@@ -678,7 +678,7 @@ export default function RoomPage() {
 
   function updateRoomCustomCategory(index: number, value: string) {
     const next = [...roomCustomCategories];
-    next[index] = value;
+    next[index] = value ?? "";
     setRoomCustomCategories(next);
 
     const selectedPredefined = activeCategories.filter((item) =>
@@ -1154,7 +1154,7 @@ export default function RoomPage() {
                 <input
                   key={index}
                   placeholder={`Vlastní kategorie ${index + 1}`}
-                  value={value}
+                  value={value ?? ""}
                   onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
                   style={{ display: "block", marginTop: 8, padding: 12, width: "100%" }}
                 />
