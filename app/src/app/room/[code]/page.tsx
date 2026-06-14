@@ -1168,7 +1168,7 @@ export default function RoomPage() {
               <ol style={{ paddingLeft: 20 }}>
                 {activeCategories.map((category, index) => (
                   <li
-                    key={`${category}-${index}`}
+                    key={category}
                     style={{
                       display: "flex",
                       justifyContent: "space-between",

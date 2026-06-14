@@ -21,6 +21,11 @@ export default function RoomError({
         Místnost se nepodařilo správně načíst. Zkus stránku obnovit, případně se vrať na hlavní stránku a připoj se znovu přes kód místnosti.
       </p>
 
+      <details style={{ marginTop: 12, marginBottom: 12 }}>
+        <summary>Technický detail chyby</summary>
+        <pre style={{ whiteSpace: "pre-wrap" }}>{error.message}</pre>
+      </details>
+
       <button onClick={reset} style={{ padding: 12, marginRight: 8 }}>
         Zkusit znovu
       </button>
