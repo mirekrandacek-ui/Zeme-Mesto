@@ -54,6 +54,17 @@ function uniqueNonEmpty(values: string[]) {
   return result;
 }
 
+function safeCategoryList(values: unknown, fallback: string[] = DEFAULT_ACTIVE_CATEGORIES) {
+  const source = Array.isArray(values) ? values : fallback;
+  const cleaned = uniqueNonEmpty(
+    source
+      .filter((value): value is string => typeof value === "string")
+      .map((value) => value.trim())
+  );
+
+  return cleaned.length > 0 ? cleaned : fallback;
+}
+
 function emptyAnswers(categories: string[] = DEFAULT_ACTIVE_CATEGORIES): Record<Category, string> {
   return Object.fromEntries(categories.map((category) => [category, ""])) as Record<Category, string>;
 }
@@ -72,6 +83,7 @@ export default function RoomPage() {
   const [maxPlayers, setMaxPlayers] = useState(3);
   const [roomTier, setRoomTier] = useState<RoomTier>("free");
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
+  const [categorySaving, setCategorySaving] = useState(false);
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [nameInput, setNameInput] = useState("");
@@ -244,14 +256,16 @@ export default function RoomPage() {
         ? ((data as any).active_categories as string[])
         : DEFAULT_ACTIVE_CATEGORIES;
 
-    const customCategories = roomCategories
+    const safeRoomCategories = safeCategoryList(roomCategories, DEFAULT_ACTIVE_CATEGORIES);
+
+    const customCategories = safeRoomCategories
       .filter((category) => !ALL_PREDEFINED_CATEGORIES.includes(category))
       .slice(0, 5);
 
     setRoomId(data.id);
     setRoomStatus(data.status as RoomStatus);
     setLetter((data.letter ?? null) as string | null);
-    setActiveCategories(roomCategories);
+    setActiveCategories(safeRoomCategories);
     setMaxPlayers(Number((data as any).max_players ?? 3));
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
     setRoomCustomCategories([
@@ -608,32 +622,45 @@ export default function RoomPage() {
   }
 
   async function updateRoomCategories(predefinedCategories: string[], customCategories: string[]) {
-    if (!roomId || roomStatus !== "lobby") return;
+    if (!roomId || roomStatus !== "lobby" || categorySaving) return;
 
-    const cleanedCustomCategories = uniqueNonEmpty(customCategories).slice(0, 5);
-    const finalCategories = uniqueNonEmpty([...predefinedCategories, ...cleanedCustomCategories]);
+    setCategorySaving(true);
 
-    if (finalCategories.length === 0) {
-      setMsg("❗ Vyber alespoň jednu kategorii.");
-      return;
-    }
+    try {
+      const selectedPredefined = safeCategoryList(predefinedCategories, [])
+        .filter((category) => ALL_PREDEFINED_CATEGORIES.includes(category));
 
-    setActiveCategories(finalCategories);
-    setRoomCustomCategories([
-      ...cleanedCustomCategories,
-      ...Array(Math.max(0, 5 - cleanedCustomCategories.length)).fill(""),
-    ].slice(0, 5));
+      const cleanedCustomCategories = safeCategoryList(customCategories, [])
+        .filter((category) => !ALL_PREDEFINED_CATEGORIES.includes(category))
+        .slice(0, 5);
 
-    const { error } = await supabase
-      .from("rooms")
-      .update({
-        active_categories: finalCategories,
-        custom_category: cleanedCustomCategories.join(" | ") || null,
-      })
-      .eq("id", roomId);
+      const finalCategories = safeCategoryList(
+        [...selectedPredefined, ...cleanedCustomCategories],
+        ["Země"]
+      );
 
-    if (error) {
-      setMsg(`❌ kategorie: ${error.message}`);
+      setActiveCategories(finalCategories);
+      setRoomCustomCategories([
+        ...cleanedCustomCategories,
+        ...Array(Math.max(0, 5 - cleanedCustomCategories.length)).fill(""),
+      ].slice(0, 5));
+
+      const { error } = await supabase
+        .from("rooms")
+        .update({
+          active_categories: finalCategories,
+          custom_category: cleanedCustomCategories.join(" | ") || null,
+        })
+        .eq("id", roomId);
+
+      if (error) {
+        setMsg(`❌ kategorie: ${error.message}`);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "neznámá chyba";
+      setMsg(`❌ kategorie: ${message}`);
+    } finally {
+      setCategorySaving(false);
     }
   }
 
@@ -662,35 +689,42 @@ export default function RoomPage() {
   }
 
   async function saveRoomCategoryOrder(nextCategories: string[]) {
-    if (!roomId || roomStatus !== "lobby") return;
+    if (!roomId || roomStatus !== "lobby" || categorySaving) return;
 
-    const finalCategories = uniqueNonEmpty(nextCategories);
+    setCategorySaving(true);
 
-    if (finalCategories.length === 0) {
-      setMsg("❗ Vyber alespoň jednu kategorii.");
-      return;
-    }
+    try {
+      const finalCategories = safeCategoryList(
+        nextCategories,
+        activeCategories.length > 0 ? activeCategories : ["Země"]
+      );
 
-    const customCategories = finalCategories
-      .filter((category) => !ALL_PREDEFINED_CATEGORIES.includes(category))
-      .slice(0, 5);
+      const customCategories = finalCategories
+        .filter((category) => !ALL_PREDEFINED_CATEGORIES.includes(category))
+        .slice(0, 5);
 
-    setActiveCategories(finalCategories);
-    setRoomCustomCategories([
-      ...customCategories,
-      ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
-    ].slice(0, 5));
+      setActiveCategories(finalCategories);
+      setRoomCustomCategories([
+        ...customCategories,
+        ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
+      ].slice(0, 5));
 
-    const { error } = await supabase
-      .from("rooms")
-      .update({
-        active_categories: finalCategories,
-        custom_category: customCategories.join(" | ") || null,
-      })
-      .eq("id", roomId);
+      const { error } = await supabase
+        .from("rooms")
+        .update({
+          active_categories: finalCategories,
+          custom_category: customCategories.join(" | ") || null,
+        })
+        .eq("id", roomId);
 
-    if (error) {
-      setMsg(`❌ pořadí kategorií: ${error.message}`);
+      if (error) {
+        setMsg(`❌ pořadí kategorií: ${error.message}`);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "neznámá chyba";
+      setMsg(`❌ pořadí kategorií: ${message}`);
+    } finally {
+      setCategorySaving(false);
     }
   }
 
@@ -1079,6 +1113,12 @@ export default function RoomPage() {
                 Vyber kategorie pro tuto místnost. Tyto kategorie uvidí všichni hráči v místnosti. Pořadí kategorií můžeš upravit níže.
               </p>
 
+              {categorySaving && (
+                <p style={{ opacity: 0.75 }}>
+                  Ukládám změny…
+                </p>
+              )}
+
               <h4>Základní kategorie</h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {PREMIUM_CATEGORIES.map((category) => (
@@ -1086,6 +1126,7 @@ export default function RoomPage() {
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
+                      disabled={categorySaving}
                       onChange={() => toggleRoomCategory(category)}
                     />
                     {category}
@@ -1100,6 +1141,7 @@ export default function RoomPage() {
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
+                      disabled={categorySaving}
                       onChange={() => toggleRoomCategory(category)}
                     />
                     {category}
@@ -1126,7 +1168,7 @@ export default function RoomPage() {
               <ol style={{ paddingLeft: 20 }}>
                 {activeCategories.map((category, index) => (
                   <li
-                    key={category}
+                    key={`${category}-${index}`}
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
@@ -1141,14 +1183,16 @@ export default function RoomPage() {
 
                     <span style={{ display: "flex", gap: 6 }}>
                       <button
+                        type="button"
                         onClick={() => moveRoomCategory(category, -1)}
-                        disabled={index === 0}
+                        disabled={categorySaving || index === 0}
                       >
                         ↑
                       </button>
                       <button
+                        type="button"
                         onClick={() => moveRoomCategory(category, 1)}
-                        disabled={index === activeCategories.length - 1}
+                        disabled={categorySaving || index === activeCategories.length - 1}
                       >
                         ↓
                       </button>
