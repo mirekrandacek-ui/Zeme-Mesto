@@ -14,6 +14,14 @@ function createRoomCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
+function createCreatorToken() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 function tierLabel(tier: Tier) {
   if (tier === "premium") return "Premium";
   if (tier === "super_premium") return "Super Premium";
@@ -94,17 +102,19 @@ export default function Home() {
 
     for (let attempt = 1; attempt <= 5; attempt++) {
       const roomCode = createRoomCode();
+      const creatorToken = createCreatorToken();
 
       const { error } = await supabase.from("rooms").insert({
         code: roomCode,
         status: "lobby",
         letter: null,
+        creator_token: creatorToken,
         ...roomSettings,
       });
 
       if (!error) {
         if (typeof window !== "undefined") {
-          localStorage.setItem(`zm_roomCreator_${roomCode}`, "1");
+          localStorage.setItem(`zm_roomCreatorToken_${roomCode}`, creatorToken);
         }
 
         router.push(`/room/${roomCode}`);

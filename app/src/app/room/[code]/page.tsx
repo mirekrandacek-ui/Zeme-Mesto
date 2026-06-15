@@ -72,7 +72,8 @@ export default function RoomPage() {
   const [maxPlayers, setMaxPlayers] = useState(3);
   const [roomTier, setRoomTier] = useState<RoomTier>("free");
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
-  const [isLocalRoomCreator, setIsLocalRoomCreator] = useState(false);
+  const [localCreatorToken, setLocalCreatorToken] = useState<string | null>(null);
+  const [roomCreatorToken, setRoomCreatorToken] = useState<string | null>(null);
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [nameInput, setNameInput] = useState("");
@@ -230,13 +231,13 @@ export default function RoomPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    setIsLocalRoomCreator(localStorage.getItem(`zm_roomCreator_${code}`) === "1");
+    setLocalCreatorToken(localStorage.getItem(`zm_roomCreatorToken_${code}`));
   }, [code]);
 
   async function loadRoomByCode() {
     const { data, error } = await supabase
       .from("rooms")
-      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled")
+      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token")
       .eq("code", code)
       .single();
 
@@ -614,9 +615,8 @@ export default function RoomPage() {
     return nextRound;
   }
 
-  const organizerPlayerId = players[0]?.id ?? null;
   const isOrganizer = Boolean(
-    myPlayer && (isLocalRoomCreator || myPlayer.id === organizerPlayerId)
+    myPlayer && localCreatorToken && roomCreatorToken && localCreatorToken === roomCreatorToken
   );
 
   async function updateRoomCategories(predefinedCategories: string[], customCategories: string[]) {
