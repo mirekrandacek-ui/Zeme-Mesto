@@ -1102,6 +1102,11 @@ export default function RoomPage() {
                       readOnly={!isOrganizer}
                       aria-disabled={!isOrganizer}
                       tabIndex={isOrganizer ? 0 : -1}
+                      style={{
+                        accentColor: "#2563eb",
+                        pointerEvents: isOrganizer ? "auto" : "none",
+                        cursor: isOrganizer ? "pointer" : "default",
+                      }}
                       onClick={(event) => {
                         if (!isOrganizer) event.preventDefault();
                       }}
@@ -1124,6 +1129,11 @@ export default function RoomPage() {
                       readOnly={!isOrganizer}
                       aria-disabled={!isOrganizer}
                       tabIndex={isOrganizer ? 0 : -1}
+                      style={{
+                        accentColor: "#2563eb",
+                        pointerEvents: isOrganizer ? "auto" : "none",
+                        cursor: isOrganizer ? "pointer" : "default",
+                      }}
                       onClick={(event) => {
                         if (!isOrganizer) event.preventDefault();
                       }}
