@@ -20,13 +20,11 @@ function tierLabel(tier: Tier) {
   return "Free";
 }
 
-function uniqueNonEmpty(values: unknown[]) {
+function uniqueNonEmpty(values: string[]) {
   const seen = new Set<string>();
   const result: string[] = [];
 
   for (const value of values) {
-    if (typeof value !== "string") continue;
-
     const cleaned = value.trim();
     if (!cleaned) continue;
 
