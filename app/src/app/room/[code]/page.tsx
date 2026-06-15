@@ -262,6 +262,7 @@ export default function RoomPage() {
     setActiveCategories(roomCategories);
     setMaxPlayers(Number((data as any).max_players ?? 3));
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
+    setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
     setRoomCustomCategories([
       ...customCategories,
       ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
