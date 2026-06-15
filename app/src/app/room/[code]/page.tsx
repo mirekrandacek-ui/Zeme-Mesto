@@ -1096,24 +1096,42 @@ export default function RoomPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {PREMIUM_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    {isOrganizer ? (
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
-                      readOnly={!isOrganizer}
-                      aria-disabled={!isOrganizer}
-                      tabIndex={isOrganizer ? 0 : -1}
                       style={{
                         accentColor: "#2563eb",
-                        pointerEvents: isOrganizer ? "auto" : "none",
-                        cursor: isOrganizer ? "pointer" : "default",
+                        cursor: "pointer",
                       }}
-                      onClick={(event) => {
-                        if (!isOrganizer) event.preventDefault();
-                      }}
-                      onChange={() => {
-                        if (isOrganizer) toggleRoomCategory(category);
-                      }}
+                      onChange={() => toggleRoomCategory(category)}
                     />
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: 14,
+                        height: 14,
+                        borderRadius: 3,
+                        border: activeCategories.includes(category)
+                          ? "1px solid #2563eb"
+                          : "1px solid #767676",
+                        background: activeCategories.includes(category) ? "#2563eb" : "#fff",
+                        color: "#fff",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        flex: "0 0 14px",
+                        pointerEvents: "none",
+                        userSelect: "none",
+                      }}
+                    >
+                      {activeCategories.includes(category) ? "✓" : ""}
+                    </span>
+                  )}
                     {category}
                   </label>
                 ))}
@@ -1123,24 +1141,42 @@ export default function RoomPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    {isOrganizer ? (
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
-                      readOnly={!isOrganizer}
-                      aria-disabled={!isOrganizer}
-                      tabIndex={isOrganizer ? 0 : -1}
                       style={{
                         accentColor: "#2563eb",
-                        pointerEvents: isOrganizer ? "auto" : "none",
-                        cursor: isOrganizer ? "pointer" : "default",
+                        cursor: "pointer",
                       }}
-                      onClick={(event) => {
-                        if (!isOrganizer) event.preventDefault();
-                      }}
-                      onChange={() => {
-                        if (isOrganizer) toggleRoomCategory(category);
-                      }}
+                      onChange={() => toggleRoomCategory(category)}
                     />
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: 14,
+                        height: 14,
+                        borderRadius: 3,
+                        border: activeCategories.includes(category)
+                          ? "1px solid #2563eb"
+                          : "1px solid #767676",
+                        background: activeCategories.includes(category) ? "#2563eb" : "#fff",
+                        color: "#fff",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        flex: "0 0 14px",
+                        pointerEvents: "none",
+                        userSelect: "none",
+                      }}
+                    >
+                      {activeCategories.includes(category) ? "✓" : ""}
+                    </span>
+                  )}
                     {category}
                   </label>
                 ))}
