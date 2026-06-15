@@ -105,9 +105,9 @@ export default function RoomPage() {
       .toUpperCase();
   }
 
-  const allAnswersFilled = activeCategories.every((c) => answers[c].trim().length > 0);
+  const allAnswersFilled = activeCategories.every((c) => (answers[c] ?? "").trim().length > 0);
 
-  const allAnswersAtLeastTwoChars = activeCategories.every((c) => answers[c].trim().length >= 2);
+  const allAnswersAtLeastTwoChars = activeCategories.every((c) => (answers[c] ?? "").trim().length >= 2);
 
   const allAnswersStartWithLetter =
     Boolean(letter) &&
