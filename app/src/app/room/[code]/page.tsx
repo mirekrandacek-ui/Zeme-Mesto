@@ -1032,6 +1032,21 @@ export default function RoomPage() {
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <a
+            href="/"
+            style={{
+              display: "inline-block",
+              padding: "2px 8px",
+              border: "1px solid #888",
+              borderRadius: 3,
+              color: "inherit",
+              textDecoration: "none",
+              background: "#f5f5f5",
+              marginRight: 4,
+            }}
+          >
+            Nová hra
+          </a>
           <button onClick={() => setShowRules((v) => !v)}>Pravidla</button>
           <button onClick={copyInviteLink}>Kopírovat odkaz</button>
           <button onClick={shareInviteLink}>Sdílet</button>
