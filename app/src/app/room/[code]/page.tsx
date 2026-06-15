@@ -56,6 +56,24 @@ function uniqueNonEmpty(values: unknown[]) {
   return result;
 }
 
+function alignStringRecord(
+  current: Record<string, string>,
+  categories: string[]
+): Record<string, string> {
+  return Object.fromEntries(
+    categories.map((category) => [category, current[category] ?? ""])
+  );
+}
+
+function alignScoreRecord(
+  current: Record<string, -10 | -5 | 0 | 5 | 10>,
+  categories: string[]
+): Record<string, -10 | -5 | 0 | 5 | 10> {
+  return Object.fromEntries(
+    categories.map((category) => [category, current[category] ?? 0])
+  ) as Record<string, -10 | -5 | 0 | 5 | 10>;
+}
+
 function emptyAnswers(categories: string[] = DEFAULT_ACTIVE_CATEGORIES): Record<Category, string> {
   return Object.fromEntries(categories.map((category) => [category, ""])) as Record<Category, string>;
 }
@@ -235,6 +253,11 @@ export default function RoomPage() {
 
     setLocalCreatorToken(localStorage.getItem(`zm_roomCreatorToken_${code}`));
   }, [code]);
+
+  useEffect(() => {
+    setAnswers((current) => alignStringRecord(current, activeCategories));
+    setScores((current) => alignScoreRecord(current, activeCategories));
+  }, [activeCategories]);
 
   async function loadRoomByCode() {
     const { data, error } = await supabase
