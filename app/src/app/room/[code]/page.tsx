@@ -1099,8 +1099,15 @@ export default function RoomPage() {
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
-                      disabled={!isOrganizer}
-                      onChange={() => toggleRoomCategory(category)}
+                      readOnly={!isOrganizer}
+                      aria-disabled={!isOrganizer}
+                      tabIndex={isOrganizer ? 0 : -1}
+                      onClick={(event) => {
+                        if (!isOrganizer) event.preventDefault();
+                      }}
+                      onChange={() => {
+                        if (isOrganizer) toggleRoomCategory(category);
+                      }}
                     />
                     {category}
                   </label>
@@ -1114,8 +1121,15 @@ export default function RoomPage() {
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
-                      disabled={!isOrganizer}
-                      onChange={() => toggleRoomCategory(category)}
+                      readOnly={!isOrganizer}
+                      aria-disabled={!isOrganizer}
+                      tabIndex={isOrganizer ? 0 : -1}
+                      onClick={(event) => {
+                        if (!isOrganizer) event.preventDefault();
+                      }}
+                      onChange={() => {
+                        if (isOrganizer) toggleRoomCategory(category);
+                      }}
                     />
                     {category}
                   </label>
