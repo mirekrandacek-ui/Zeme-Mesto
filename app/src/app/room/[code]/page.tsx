@@ -36,11 +36,13 @@ const ALL_PREDEFINED_CATEGORIES = [...PREMIUM_CATEGORIES, ...SUPER_PREMIUM_EXTRA
 type RoomTier = "free" | "premium" | "super_premium";
 type Category = string;
 
-function uniqueNonEmpty(values: string[]) {
+function uniqueNonEmpty(values: unknown[]) {
   const seen = new Set<string>();
   const result: string[] = [];
 
   for (const value of values) {
+    if (typeof value !== "string") continue;
+
     const cleaned = value.trim();
     if (!cleaned) continue;
 
