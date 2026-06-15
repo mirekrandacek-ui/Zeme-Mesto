@@ -103,6 +103,10 @@ export default function Home() {
       });
 
       if (!error) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem(`zm_roomCreator_${roomCode}`, "1");
+        }
+
         router.push(`/room/${roomCode}`);
         return;
       }
