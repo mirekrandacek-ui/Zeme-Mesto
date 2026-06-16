@@ -57,20 +57,14 @@ export default function Home() {
 
   // Dočasný testovací přepínač, než napojíme skutečné platby.
   const [tier, setTier] = useState<Tier>("free");
-  const [premiumCustomCategory, setPremiumCustomCategory] = useState("");
 
   function getRoomSettings() {
     if (tier === "premium") {
-      const custom = premiumCustomCategory.trim();
-      const activeCategories = uniqueNonEmpty(
-        custom ? [...PREMIUM_CATEGORIES, custom] : PREMIUM_CATEGORIES
-      );
-
       return {
         creator_tier: "premium",
         max_players: 5,
-        active_categories: activeCategories,
-        custom_category: custom || null,
+        active_categories: PREMIUM_CATEGORIES,
+        custom_category: null,
         ads_enabled: false,
       };
     }
@@ -179,22 +173,10 @@ export default function Home() {
         )}
 
         {tier === "premium" && (
-          <>
-            <p style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
-              Premium: bez reklam, až 5 hráčů, pevné kategorie Země / Město / Jméno /
-              Zvíře / Věc / Rostlina + 1 vlastní volitelná kategorie.
-            </p>
-
-            <label style={{ display: "block", marginTop: 12 }}>
-              Vlastní volitelná kategorie
-              <input
-                placeholder="Např. Jídlo"
-                value={premiumCustomCategory}
-                onChange={(e) => setPremiumCustomCategory(e.target.value)}
-                style={{ display: "block", marginTop: 6, padding: 12, width: "100%" }}
-              />
-            </label>
-          </>
+          <p style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
+            Premium: bez reklam, až 5 hráčů. Kategorie nastavíš po vytvoření místnosti v lobby:
+            Země / Město / Jméno / Zvíře / Věc / Rostlina + 1 vlastní volitelná kategorie.
+          </p>
         )}
 
         {tier === "super_premium" && (

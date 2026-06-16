@@ -1032,21 +1032,23 @@ export default function RoomPage() {
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-          <a
-            href="/"
-            style={{
-              display: "inline-block",
-              padding: "2px 8px",
-              border: "1px solid #888",
-              borderRadius: 3,
-              color: "inherit",
-              textDecoration: "none",
-              background: "#f5f5f5",
-              marginRight: 4,
-            }}
-          >
-            Nová hra
-          </a>
+          {isOrganizer && (
+            <a
+              href="/"
+              style={{
+                display: "inline-block",
+                padding: "2px 8px",
+                border: "1px solid #888",
+                borderRadius: 3,
+                color: "inherit",
+                textDecoration: "none",
+                background: "#f5f5f5",
+                marginRight: 4,
+              }}
+            >
+              Nová hra
+            </a>
+          )}
           <button onClick={() => setShowRules((v) => !v)}>Pravidla</button>
           <button onClick={copyInviteLink}>Kopírovat odkaz</button>
           <button onClick={shareInviteLink}>Sdílet</button>
@@ -1122,13 +1124,15 @@ export default function RoomPage() {
             ))}
           </ul>
 
-          {roomTier === "super_premium" && myPlayer && (
+          {(roomTier === "premium" || roomTier === "super_premium") && myPlayer && (
             <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
               <h3 style={{ marginTop: 0 }}>Kategorie místnosti</h3>
 
               <p style={{ opacity: 0.75 }}>
                 {isOrganizer
-                  ? "Vyber kategorie pro tuto místnost. Tyto kategorie uvidí všichni hráči. Pořadí kategorií můžeš upravit níže."
+                  ? roomTier === "premium"
+                    ? "Premium: základní kategorie jsou pevné. Můžeš přidat 1 vlastní kategorii a upravit pořadí."
+                    : "Vyber kategorie pro tuto místnost. Tyto kategorie uvidí všichni hráči. Pořadí kategorií můžeš upravit níže."
                   : "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit."}
               </p>
 
@@ -1136,7 +1140,7 @@ export default function RoomPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {PREMIUM_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {isOrganizer ? (
+                    {isOrganizer && roomTier === "super_premium" ? (
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
@@ -1181,7 +1185,7 @@ export default function RoomPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {isOrganizer ? (
+                    {isOrganizer && roomTier === "super_premium" ? (
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
@@ -1223,7 +1227,7 @@ export default function RoomPage() {
               </div>
 
               <h4 style={{ marginTop: 16 }}>Vlastní kategorie</h4>
-              {roomCustomCategories.map((value, index) => (
+              {roomCustomCategories.slice(0, roomTier === "premium" ? 1 : 5).map((value, index) => (
                 <input
                   key={index}
                   placeholder={`Vlastní kategorie ${index + 1}`}
@@ -1235,9 +1239,6 @@ export default function RoomPage() {
               ))}
 
               <h4 style={{ marginTop: 16 }}>Pořadí kategorií</h4>
-              <p style={{ opacity: 0.75 }}>
-                Tlačítky ↑ a ↓ nastav pořadí, ve kterém se budou kategorie zobrazovat ve hře.
-              </p>
 
               <ol style={{ paddingLeft: 20 }}>
                 {activeCategories.map((category, index) => (
