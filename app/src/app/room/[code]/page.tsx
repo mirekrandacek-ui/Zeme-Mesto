@@ -1033,6 +1033,12 @@ export default function RoomPage() {
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           {isOrganizer && (
+            <span style={{ fontWeight: 700, alignSelf: "center" }}>
+              Šéf místnosti
+            </span>
+          )}
+
+          {isOrganizer && (
             <a
               href="/"
               style={{
@@ -1131,7 +1137,7 @@ export default function RoomPage() {
               <p style={{ opacity: 0.75 }}>
                 {isOrganizer
                   ? roomTier === "premium"
-                    ? "Premium: základní kategorie jsou pevné. Můžeš přidat 1 vlastní kategorii a upravit pořadí."
+                    ? "Premium: vyber základní kategorie pro tuto místnost. Můžeš přidat 1 vlastní kategorii a upravit pořadí."
                     : "Vyber kategorie pro tuto místnost. Tyto kategorie uvidí všichni hráči. Pořadí kategorií můžeš upravit níže."
                   : "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit."}
               </p>
@@ -1140,7 +1146,7 @@ export default function RoomPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {PREMIUM_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {isOrganizer && roomTier === "super_premium" ? (
+                    {isOrganizer ? (
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
@@ -1181,6 +1187,8 @@ export default function RoomPage() {
                 ))}
               </div>
 
+              {roomTier === "super_premium" && (
+                <>
               <h4 style={{ marginTop: 16 }}>Rozšířené kategorie</h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
@@ -1226,6 +1234,9 @@ export default function RoomPage() {
                 ))}
               </div>
 
+                </>
+              )}
+
               <h4 style={{ marginTop: 16 }}>Vlastní kategorie</h4>
               {roomCustomCategories.slice(0, roomTier === "premium" ? 1 : 5).map((value, index) => (
                 <input
@@ -1256,22 +1267,24 @@ export default function RoomPage() {
                       {index + 1}. {category}
                     </span>
 
-                    <span style={{ display: "flex", gap: 6 }}>
-                      <button
-                        type="button"
-                        onClick={() => moveRoomCategory(category, -1)}
-                        disabled={index === 0}
-                      >
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveRoomCategory(category, 1)}
-                        disabled={index === activeCategories.length - 1}
-                      >
-                        ↓
-                      </button>
-                    </span>
+                    {isOrganizer && (
+                      <span style={{ display: "flex", gap: 6 }}>
+                        <button
+                          type="button"
+                          onClick={() => moveRoomCategory(category, -1)}
+                          disabled={index === 0}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveRoomCategory(category, 1)}
+                          disabled={index === activeCategories.length - 1}
+                        >
+                          ↓
+                        </button>
+                      </span>
+                    )}
                   </li>
                 ))}
               </ol>
