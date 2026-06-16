@@ -1529,7 +1529,7 @@ export default function RoomPage() {
                   Odeslat bodování
                 </button>
               ) : (
-                <p style={{ marginTop: 16 }}>✅ Bodování odesláno. V tuto chvíli se mohou připojit do místnosti další hráči.</p>
+                <p style={{ marginTop: 16 }}>✅ Bodování odesláno. Případní čekající hráči se automaticky připojí po stisknutí tlačítka Nové kolo.</p>
               )}
             </>
           ) : myPlayer?.status === "waiting" ? (
