@@ -7,7 +7,7 @@ import { supabase } from "@/app/lib/supabase";
 type RoomStatus = "lobby" | "drawing" | "playing" | "scoring" | "finished";
 type PlayerStatus = "active" | "waiting";
 type Player = { id: string; name: string; status?: PlayerStatus };
-type MyPlayer = { id: string; name: string };
+type MyPlayer = { id: string; name: string; status?: PlayerStatus };
 type RoundLite = { id: string; round_no: number; letter: string; status: string };
 type AnswerRow = { player_id: string; category: string; value: string };
 type ScoreRow = { player_id: string; round?: number; category: string; points: number };
