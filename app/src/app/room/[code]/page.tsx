@@ -1061,6 +1061,8 @@ export default function RoomPage() {
         ? "✅ vylosováno"
         : msg;
 
+  const visibleStatusMessage = myPlayer ? statusMessage : msg;
+
   return (
     <main style={{ padding: 24, fontFamily: "system-ui" }}>
       <header style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
@@ -1137,7 +1139,7 @@ export default function RoomPage() {
         </section>
       )}
 
-      {statusMessage && <p>{statusMessage}</p>}
+      {visibleStatusMessage && <p>{visibleStatusMessage}</p>}
 
       {roomId && !myPlayer && (
         <section style={{ border: "1px solid #ddd", padding: 12, margin: "16px 0" }}>
@@ -1164,7 +1166,7 @@ export default function RoomPage() {
         </section>
       )}
 
-      {roomStatus === "lobby" && (
+      {roomStatus === "lobby" && myPlayer && (
         <>
           <h2>Lobby</h2>
 
@@ -1355,7 +1357,7 @@ export default function RoomPage() {
         </>
       )}
 
-      {(roomStatus === "drawing" || roomStatus === "playing") && (
+      {(roomStatus === "drawing" || roomStatus === "playing") && myPlayer && (
         <>
           <h2>{roomStatus === "drawing" ? "Losujeme…" : "Hrajeme"}</h2>
 
@@ -1409,7 +1411,7 @@ export default function RoomPage() {
         </>
       )}
 
-      {roomStatus === "scoring" && (
+      {roomStatus === "scoring" && myPlayer && (
         <>
           <h2>Bodování</h2>
 
