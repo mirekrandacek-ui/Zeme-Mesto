@@ -301,6 +301,31 @@ export default function RoomPage() {
     return data.id as string;
   }
 
+  async function refreshRoomState(rid: string) {
+    const { data, error } = await supabase
+      .from("rooms")
+      .select("status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token")
+      .eq("id", rid)
+      .single();
+
+    if (error || !data) return;
+
+    const roomCategories =
+      Array.isArray((data as any).active_categories) && (data as any).active_categories.length > 0
+        ? uniqueNonEmpty((data as any).active_categories as unknown[])
+        : DEFAULT_ACTIVE_CATEGORIES;
+
+    setRoomStatus(data.status as RoomStatus);
+    setLetter((data.letter ?? null) as string | null);
+    setActiveCategories(roomCategories);
+    setMaxPlayers(Number((data as any).max_players ?? 3));
+    setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
+    setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
+
+    setAnswers((current) => alignStringRecord(current, roomCategories));
+    setScores((current) => alignScoreRecord(current, roomCategories));
+  }
+
   async function loadPlayers(rid: string) {
     const { data, error } = await supabase
       .from("players")
@@ -784,6 +809,10 @@ export default function RoomPage() {
   }
 
   async function startGame() {
+    if (roomId) {
+      await refreshRoomState(roomId);
+    }
+
     if (!roomId || !myPlayer) {
       setMsg("❗ nejdřív se připoj jménem");
       return;
