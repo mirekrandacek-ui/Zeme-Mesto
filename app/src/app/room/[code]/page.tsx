@@ -5,7 +5,8 @@ import { useParams } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 
 type RoomStatus = "lobby" | "drawing" | "playing" | "scoring" | "finished";
-type Player = { id: string; name: string };
+type PlayerStatus = "active" | "waiting";
+type Player = { id: string; name: string; status?: PlayerStatus };
 type MyPlayer = { id: string; name: string };
 type RoundLite = { id: string; round_no: number; letter: string; status: string };
 type AnswerRow = { player_id: string; category: string; value: string };
@@ -96,6 +97,7 @@ export default function RoomPage() {
   const [roomCreatorToken, setRoomCreatorToken] = useState<string | null>(null);
 
   const [players, setPlayers] = useState<Player[]>([]);
+  const [waitingPlayers, setWaitingPlayers] = useState<Player[]>([]);
   const [nameInput, setNameInput] = useState("");
   const [myPlayer, setMyPlayer] = useState<MyPlayer | null>(null);
   const [msg, setMsg] = useState("");
@@ -302,16 +304,30 @@ export default function RoomPage() {
   async function loadPlayers(rid: string) {
     const { data, error } = await supabase
       .from("players")
-      .select("id,name")
+      .select("id,name,status")
       .eq("room_id", rid)
-      .order("created_at");
+      .order("created_at", { ascending: true });
 
     if (error) {
       setMsg(`❌ hráči: ${error.message}`);
       return;
     }
 
-    setPlayers((data ?? []) as Player[]);
+    const normalizedPlayers: Player[] = (data ?? []).map((player: any) => ({
+      id: player.id,
+      name: player.name,
+      status: player.status === "waiting" ? "waiting" : "active",
+    }));
+
+    setPlayers(normalizedPlayers.filter((player) => player.status !== "waiting"));
+    setWaitingPlayers(normalizedPlayers.filter((player) => player.status === "waiting"));
+
+    if (myPlayer) {
+      const freshPlayer = normalizedPlayers.find((player) => player.id === myPlayer.id);
+      if (freshPlayer) {
+        saveMyPlayer(rid, freshPlayer);
+      }
+    }
   }
 
   async function loadCurrentRound(rid: string) {
@@ -539,10 +555,12 @@ export default function RoomPage() {
       return;
     }
 
+    const playerStatus: PlayerStatus = roomStatus === "lobby" ? "active" : "waiting";
+
     const { data, error } = await supabase
       .from("players")
-      .insert({ room_id: roomId, name: trimmed })
-      .select("id,name")
+      .insert({ room_id: roomId, name: trimmed, status: playerStatus })
+      .select("id,name,status")
       .single();
 
     if (error || !data) {
@@ -554,19 +572,26 @@ export default function RoomPage() {
       if (isDuplicateName) {
         const existing = await supabase
           .from("players")
-          .select("id,name")
+          .select("id,name,status")
           .eq("room_id", roomId)
           .eq("name", trimmed)
           .maybeSingle();
 
         if (existing.data) {
-          saveMyPlayer(roomId, {
+          const existingPlayer: Player = {
             id: existing.data.id,
             name: existing.data.name,
-          });
+            status: existing.data.status === "waiting" ? "waiting" : "active",
+          };
+
+          saveMyPlayer(roomId, existingPlayer);
 
           setNameInput("");
-          setMsg(`✅ ${trimmed} znovu připojen`);
+          setMsg(
+            existingPlayer.status === "waiting"
+              ? `⏳ ${trimmed} čeká na připojení po aktuálním kole`
+              : `✅ ${trimmed} znovu připojen`
+          );
           await loadPlayers(roomId);
           return;
         }
@@ -579,9 +604,19 @@ export default function RoomPage() {
       return;
     }
 
-    saveMyPlayer(roomId, { id: data.id, name: data.name });
+    const newPlayer: Player = {
+      id: data.id,
+      name: data.name,
+      status: data.status === "waiting" ? "waiting" : "active",
+    };
+
+    saveMyPlayer(roomId, newPlayer);
     setNameInput("");
-    setMsg(`✅ ${trimmed} připojen`);
+    setMsg(
+      newPlayer.status === "waiting"
+        ? `⏳ ${trimmed} čeká na připojení po aktuálním kole`
+        : `✅ ${trimmed} připojen`
+    );
     await loadPlayers(roomId);
   }
 
@@ -960,6 +995,16 @@ export default function RoomPage() {
       return;
     }
 
+    if (waitingPlayers.length > 0) {
+      await supabase
+        .from("players")
+        .update({ status: "active" })
+        .eq("room_id", roomId)
+        .eq("status", "waiting");
+
+      await loadPlayers(roomId);
+    }
+
     const rid = roomId;
     const currentRoundId = round.id;
 
@@ -1006,7 +1051,8 @@ export default function RoomPage() {
     return allAnswers.find((a) => a.player_id === playerId && a.category === category)?.value ?? "";
   }
 
-  const roomIsFull = !myPlayer && players.length >= maxPlayers;
+  const roomIsFull = !myPlayer && players.length + waitingPlayers.length >= maxPlayers;
+  const activeMyPlayer = Boolean(myPlayer && myPlayer.status !== "waiting");
 
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
@@ -1128,6 +1174,17 @@ export default function RoomPage() {
               <li key={p.id}>{p.name}</li>
             ))}
           </ul>
+
+          {waitingPlayers.length > 0 && (
+            <>
+              <h3>Čekající hráči ({waitingPlayers.length})</h3>
+              <ul>
+                {waitingPlayers.map((p) => (
+                  <li key={p.id}>⏳ {p.name} – připojí se od dalšího kola</li>
+                ))}
+              </ul>
+            </>
+          )}
 
           {(roomTier === "premium" || roomTier === "super_premium") && myPlayer && (
             <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
@@ -1304,19 +1361,19 @@ export default function RoomPage() {
 
           <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
 
-          {roomStatus === "playing" && letter && myPlayer && (
+          {roomStatus === "playing" && letter && activeMyPlayer && (
             <button onClick={redrawLetter} style={{ marginTop: 12, padding: 12 }}>
               Losovat znovu
             </button>
           )}
 
-          {roomStatus === "playing" && letter && myPlayer && round && (
+          {roomStatus === "playing" && letter && activeMyPlayer && round && (
             <>
               {activeCategories.map((category) => (
                 <input
                   key={category}
                   placeholder={category}
-                  value={answers[category]}
+                  value={answers[category] ?? ""}
                   onChange={(e) => saveAnswer(category, e.target.value)}
                   style={{ display: "block", marginTop: 10, padding: 12, width: "100%" }}
                 />
@@ -1342,6 +1399,10 @@ export default function RoomPage() {
                 <p>Každé pole musí začínat vylosovaným písmenem.</p>
               )}
             </>
+          )}
+
+          {roomStatus === "playing" && letter && myPlayer?.status === "waiting" && (
+            <p>⏳ Čekáš na připojení. Do hry tě pustíme od dalšího kola.</p>
           )}
 
           {roomStatus === "playing" && letter && !myPlayer && <p>Přihlaš se jménem nahoře, abys mohl psát odpovědi.</p>}
@@ -1434,7 +1495,7 @@ export default function RoomPage() {
             )}
           </div>
 
-          {myPlayer ? (
+          {activeMyPlayer ? (
             <>
               <h3>Moje bodování</h3>
 
@@ -1442,7 +1503,7 @@ export default function RoomPage() {
                 <label key={category} style={{ display: "block", marginTop: 12 }}>
                   {category}
                   <select
-                    value={scores[category]}
+                    value={scores[category] ?? 0}
                     disabled={myScoreSubmitted}
                     onChange={(e) =>
                       setScores((prev) => ({
@@ -1469,6 +1530,8 @@ export default function RoomPage() {
                 <p style={{ marginTop: 16 }}>✅ Bodování odesláno. V tuto chvíli se mohou připojit do místnosti další hráči.</p>
               )}
             </>
+          ) : myPlayer?.status === "waiting" ? (
+            <p>⏳ Čekáš na připojení. Do hry tě pustíme od dalšího kola.</p>
           ) : (
             <p>Přihlaš se jménem nahoře, abys mohl odeslat bodování.</p>
           )}
