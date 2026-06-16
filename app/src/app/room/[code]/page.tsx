@@ -645,8 +645,29 @@ export default function RoomPage() {
     await loadPlayers(roomId);
   }
 
-  function switchLocalPlayer() {
-    if (!roomId) return;
+  async function switchLocalPlayer() {
+    if (!roomId || !myPlayer) return;
+
+    const canSwitchPlayer =
+      roomStatus === "lobby" ||
+      roomStatus === "finished" ||
+      myPlayer.status === "waiting" ||
+      (roomStatus === "scoring" && everyoneScored);
+
+    if (!canSwitchPlayer) {
+      setMsg("❗ Hráče můžeš změnit až po dokončení aktuálního kola.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("players")
+      .delete()
+      .eq("id", myPlayer.id);
+
+    if (error) {
+      setMsg(`❌ změna hráče: ${error.message}`);
+      return;
+    }
 
     if (typeof window !== "undefined") {
       localStorage.removeItem(`zm_myPlayer_${roomId}`);
@@ -657,7 +678,8 @@ export default function RoomPage() {
     setAnswers(emptyAnswers(activeCategories));
     setScores(emptyScores(activeCategories));
     setMyScoreSubmitted(false);
-    setMsg("ℹ️ Přihlášení na tomto zařízení bylo vymazáno. Zadej jiné jméno.");
+    setMsg("ℹ️ Původní hráč byl z tohoto zařízení odebrán. Zadej jiné jméno.");
+    await loadPlayers(roomId);
   }
 
   async function signOut() {
@@ -1151,7 +1173,7 @@ export default function RoomPage() {
           <button onClick={shareInviteLink}>Sdílet</button>
           {myPlayer && (
             <button onClick={switchLocalPlayer}>
-              Přihlásit se jako jiný hráč
+              Změnit hráče na tomto zařízení
             </button>
           )}
           {myPlayer && <button onClick={signOut}>Odpojit</button>}
