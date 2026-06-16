@@ -1170,6 +1170,16 @@ export default function RoomPage() {
         <>
           <h2>Lobby</h2>
 
+          {isOrganizer && myPlayer && (
+            <button
+              data-main-start-button
+              onClick={startGame}
+              style={{ marginBottom: 16, padding: 16, fontWeight: 700 }}
+            >
+              Spustit hru
+            </button>
+          )}
+
           <h3>Hráči ({players.length})</h3>
           <ul>
             {players.map((p) => (
@@ -1349,11 +1359,7 @@ export default function RoomPage() {
             </section>
           )}
 
-          {myPlayer ? (
-            <button onClick={startGame}>START</button>
-          ) : (
-            <p></p>
-          )}
+
         </>
       )}
 
