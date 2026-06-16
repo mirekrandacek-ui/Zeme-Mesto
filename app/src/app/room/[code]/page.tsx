@@ -645,6 +645,21 @@ export default function RoomPage() {
     await loadPlayers(roomId);
   }
 
+  function switchLocalPlayer() {
+    if (!roomId) return;
+
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(`zm_myPlayer_${roomId}`);
+    }
+
+    setMyPlayer(null);
+    setNameInput("");
+    setAnswers(emptyAnswers(activeCategories));
+    setScores(emptyScores(activeCategories));
+    setMyScoreSubmitted(false);
+    setMsg("ℹ️ Přihlášení na tomto zařízení bylo vymazáno. Zadej jiné jméno.");
+  }
+
   async function signOut() {
     if (!roomId || !myPlayer) return;
 
@@ -1134,6 +1149,11 @@ export default function RoomPage() {
           <button onClick={() => setShowRules((v) => !v)}>Pravidla</button>
           <button onClick={copyInviteLink}>Kopírovat odkaz</button>
           <button onClick={shareInviteLink}>Sdílet</button>
+          {myPlayer && (
+            <button onClick={switchLocalPlayer}>
+              Přihlásit se jako jiný hráč
+            </button>
+          )}
           {myPlayer && <button onClick={signOut}>Odpojit</button>}
         </div>
       </header>
