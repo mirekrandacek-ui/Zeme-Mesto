@@ -1020,6 +1020,11 @@ export default function RoomPage() {
       <header style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
         <div>
           <h1 style={{ margin: 0 }}>Místnost: {code.toUpperCase()}</h1>
+          {isOrganizer && (roomTier === "premium" || roomTier === "super_premium") && (
+            <p style={{ fontWeight: 700, margin: "4px 0" }}>
+              Ty platíš, ty jsi šéf této místnosti!
+            </p>
+          )}
           <p style={{ marginBottom: 4 }}>
             {myPlayer ? (
               <>
@@ -1032,13 +1037,7 @@ export default function RoomPage() {
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-          {isOrganizer && (
-            <span style={{ fontWeight: 700, alignSelf: "center" }}>
-              Šéf místnosti
-            </span>
-          )}
-
-          {isOrganizer && (
+{isOrganizer && (
             <a
               href="/"
               style={{
@@ -1467,7 +1466,7 @@ export default function RoomPage() {
                   Odeslat bodování
                 </button>
               ) : (
-                <p style={{ marginTop: 16 }}>✅ Bodování odesláno.</p>
+                <p style={{ marginTop: 16 }}>✅ Bodování odesláno. V tuto chvíli se mohou připojit do místnosti další hráči.</p>
               )}
             </>
           ) : (
