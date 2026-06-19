@@ -376,6 +376,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setMaxPlayers(Number((data as any).max_players ?? 3));
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
     setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
+    setRoomLanguage(((data as any).language ?? "cs") as RoomLanguage);
 
     setAnswers((current) => alignStringRecord(current, roomCategories));
     setScores((current) => alignScoreRecord(current, roomCategories));
@@ -710,7 +711,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       (roomStatus === "scoring" && everyoneScored);
 
     if (!canSwitchPlayer) {
-      setMsg("❗ Hráče můžeš změnit až po dokončení aktuálního kola.");
+      const message = "Hráče můžeš změnit až po dokončení aktuálního kola.";
+      setMsg(`❗ ${message}`);
+
+      if (typeof window !== "undefined") {
+        window.alert(message);
+      }
+
       return;
     }
 

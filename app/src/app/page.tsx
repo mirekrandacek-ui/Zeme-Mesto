@@ -107,6 +107,7 @@ export default function Home() {
         status: "lobby",
         letter: null,
         creator_token: creatorToken,
+        language: language,
         ...roomSettings,
       });
 
