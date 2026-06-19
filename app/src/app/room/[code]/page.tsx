@@ -807,6 +807,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function updateRoomCategories(predefinedCategories: string[], customCategories: string[]) {
     if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
 
+    if (roomTier === "premium") {
+      setMsg("Premium má kategorie zatím pevně dané. Rozšířené kategorie půjdou později dokoupit za 25 Kč / ks.");
+      return;
+    }
+
     const cleanedCustomCategories = uniqueNonEmpty(customCategories).slice(0, 5);
     const finalCategories = uniqueNonEmpty([...predefinedCategories, ...cleanedCustomCategories]);
 
@@ -1342,61 +1347,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <p style={{ opacity: 0.75 }}>
                 {isOrganizer
                   ? roomTier === "premium"
-                    ? "Premium: vyber základní kategorie pro tuto místnost. Můžeš přidat 1 vlastní kategorii a upravit pořadí."
-                    : "Vyber kategorie pro tuto místnost. Tyto kategorie uvidí všichni hráči. Pořadí kategorií můžeš upravit níže."
+                    ? "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie půjdou později dokoupit za 25 Kč / ks."
+                    : "Super Premium: vyber základní i rozšířené kategorie. Můžeš měnit pořadí a používat vlastní kategorie."
                   : "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit."}
               </p>
 
               <h4>Základní kategorie</h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {PREMIUM_CATEGORIES.map((category) => (
-                  <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {isOrganizer ? (
-                    <input
-                      type="checkbox"
-                      checked={activeCategories.includes(category)}
-                      style={{
-                        accentColor: "#2563eb",
-                        cursor: "pointer",
-                      }}
-                      onChange={() => toggleRoomCategory(category)}
-                    />
-                  ) : (
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        width: 14,
-                        height: 14,
-                        borderRadius: 3,
-                        border: activeCategories.includes(category)
-                          ? "1px solid #2563eb"
-                          : "1px solid #767676",
-                        background: activeCategories.includes(category) ? "#2563eb" : "#fff",
-                        color: "#fff",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 11,
-                        fontWeight: 700,
-                        lineHeight: 1,
-                        flex: "0 0 14px",
-                        pointerEvents: "none",
-                        userSelect: "none",
-                      }}
-                    >
-                      {activeCategories.includes(category) ? "✓" : ""}
-                    </span>
-                  )}
-                    {category}
-                  </label>
-                ))}
-              </div>
-
-              {roomTier === "super_premium" && (
-                <>
-              <h4 style={{ marginTop: 16 }}>Rozšířené kategorie</h4>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
                     {isOrganizer && roomTier === "super_premium" ? (
                     <input
@@ -1439,9 +1397,58 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 ))}
               </div>
 
+              {(roomTier === "premium" || roomTier === "super_premium") && (
+                <>
+              <h4 style={{ marginTop: 16 }}>Rozšířené kategorie</h4>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
+                  <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    {isOrganizer && roomTier === "super_premium" ? (
+                    <input
+                      type="checkbox"
+                      checked={activeCategories.includes(category)}
+                      style={{
+                        accentColor: "#2563eb",
+                        cursor: "pointer",
+                      }}
+                      onChange={() => toggleRoomCategory(category)}
+                    />
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: 14,
+                        height: 14,
+                        borderRadius: 3,
+                        border: activeCategories.includes(category)
+                          ? "1px solid #2563eb"
+                          : "1px solid #767676",
+                        background: activeCategories.includes(category) ? "#2563eb" : "#fff",
+                        color: "#fff",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        flex: "0 0 14px",
+                        pointerEvents: "none",
+                        userSelect: "none",
+                      }}
+                    >
+                      {activeCategories.includes(category) ? "✓" : ""}
+                    </span>
+                  )}
+                    {roomTier === "premium" ? `🔒 ${category} – 25 Kč` : category}
+                  </label>
+                ))}
+              </div>
+
                 </>
               )}
 
+              {roomTier === "super_premium" && (
+                <>
               <h4 style={{ marginTop: 16 }}>Vlastní kategorie</h4>
               {roomCustomCategories.slice(0, roomTier === "premium" ? 1 : 5).map((value, index) => (
                 <input
@@ -1453,6 +1460,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   style={{ display: "block", marginTop: 8, padding: 12, width: "100%" }}
                 />
               ))}
+
+                </>
+              )}
 
               <h4 style={{ marginTop: 16 }}>Pořadí kategorií</h4>
 
@@ -1472,7 +1482,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       {index + 1}. {category}
                     </span>
 
-                    {isOrganizer && (
+                    {isOrganizer && roomTier === "super_premium" && (
                       <span style={{ display: "flex", gap: 6 }}>
                         <button
                           type="button"
