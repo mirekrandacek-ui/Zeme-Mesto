@@ -1450,7 +1450,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               {roomTier === "super_premium" && (
                 <>
               <h4 style={{ marginTop: 16 }}>Vlastní kategorie</h4>
-              {roomCustomCategories.slice(0, roomTier === "premium" ? 1 : 5).map((value, index) => (
+              {roomCustomCategories.slice(0, 5).map((value, index) => (
                 <input
                   key={index}
                   placeholder={`Vlastní kategorie ${index + 1}`}
