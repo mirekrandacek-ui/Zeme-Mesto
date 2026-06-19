@@ -66,7 +66,7 @@ function uniqueNonEmpty(values: unknown[]) {
 export default function Home() {
   const router = useRouter();
 
-  const [status, setStatus] = useState("připraveno");
+  const [status, setStatus] = useState("");
   const [roomCodeInput, setRoomCodeInput] = useState("");
   const [creating, setCreating] = useState(false);
 
@@ -161,11 +161,22 @@ export default function Home() {
 
   return (
     <main style={{ padding: 24, fontFamily: "system-ui", maxWidth: 520, margin: "0 auto" }}>
-      <h1>Země • Město</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+        <h1 style={{ marginBottom: 8 }}>Země • Město</h1>
 
-      <p>
-        Vytvoř místnost, pošli odkaz ostatním hráčům a hrajte společně na mobilech.
-      </p>
+        <label aria-label="Jazyk hry">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as RoomLanguage)}
+            style={{ padding: 10, borderRadius: 8 }}
+          >
+            <option value="en">🇬🇧 English</option>
+            <option value="cs">🇨🇿 Čeština</option>
+          </select>
+        </label>
+      </div>
+
+      <p>Vytvoř místnost, pošli odkaz ostatním hráčům a hrajte společně.</p>
 
       <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
         <h2 style={{ marginTop: 0 }}>Testovací verze místnosti</h2>
@@ -180,18 +191,6 @@ export default function Home() {
             <option value="free">Free</option>
             <option value="premium">Premium</option>
             <option value="super_premium">Super Premium</option>
-          </select>
-        </label>
-
-        <label style={{ display: "block", marginTop: 12 }}>
-          Jazyk hry
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as RoomLanguage)}
-            style={{ display: "block", marginTop: 6, padding: 12, width: "100%" }}
-          >
-            <option value="cs">Čeština</option>
-            <option value="en">English</option>
           </select>
         </label>
 
@@ -223,11 +222,7 @@ export default function Home() {
             </p>
           </div>
         )}
-
-        <p style={{ opacity: 0.75, marginBottom: 0 }}>
-          Vybráno: <b>{tierLabel(tier)}</b>
-        </p>
-      </section>
+</section>
 
       <button
         onClick={createRoom}
