@@ -162,6 +162,10 @@ export default function RoomPage() {
       .toUpperCase();
   }
 
+function normalizeForCompare(value: string) {
+  return value.trim().toLocaleUpperCase("cs-CZ");
+}
+
 function answerStartsWithLetter(answer: string | undefined, selectedLetter: string | null) {
   if (!selectedLetter) return false;
 
