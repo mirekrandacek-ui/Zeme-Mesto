@@ -839,6 +839,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     }
   }
 
+  function showPremiumLockedCategoryOffer(category: string) {
+    const message =
+      `${category}: tato rozšířená kategorie bude dostupná jako dokoupení za 25 Kč. ` +
+      "Po dokoupení alespoň jedné rozšířené kategorie se v Premium odemkne možnost volby počtu kategorií a jejich pořadí.";
+
+    setMsg(`🔒 ${message}`);
+
+    if (typeof window !== "undefined") {
+      window.alert(message);
+    }
+  }
+
   function toggleRoomCategory(category: string) {
     const selectedPredefined = activeCategories.filter((item) =>
       ALL_PREDEFINED_CATEGORIES.includes(item)
@@ -1347,7 +1359,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <p style={{ opacity: 0.75 }}>
                 {isOrganizer
                   ? roomTier === "premium"
-                    ? "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie půjdou později dokoupit za 25 Kč / ks."
+                    ? "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie jsou zamčené. Po dokoupení alespoň jedné rozšířené kategorie se odemkne volba počtu kategorií a jejich pořadí."
                     : "Super Premium: vyber základní i rozšířené kategorie. Můžeš měnit pořadí a používat vlastní kategorie."
                   : "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit."}
               </p>
@@ -1439,7 +1451,27 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       {activeCategories.includes(category) ? "✓" : ""}
                     </span>
                   )}
-                    {roomTier === "premium" ? `🔒 ${category} – 25 Kč` : category}
+
+                    {roomTier === "premium" ? (
+                      <button
+                        type="button"
+                        onClick={() => showPremiumLockedCategoryOffer(category)}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          padding: 0,
+                          textAlign: "left",
+                          color: "#111827",
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                          font: "inherit",
+                        }}
+                      >
+                        🔒 {category} – 25 Kč
+                      </button>
+                    ) : (
+                      category
+                    )}
                   </label>
                 ))}
               </div>

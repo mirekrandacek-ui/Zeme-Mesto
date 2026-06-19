@@ -195,52 +195,34 @@ export default function Home() {
           </select>
         </label>
 
-        <section
-          style={{
-            marginTop: 14,
-            padding: 12,
-            border: "1px solid #e5e7eb",
-            borderRadius: 8,
-            background: "#fafafa",
-            fontSize: 14,
-            lineHeight: 1.45,
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>Porovnání verzí</h3>
-
-          <p>
-            <b>Free:</b> zdarma, s reklamami, max. 3 hráči v místnosti.
-            Kategorie jsou pevně dané: {FREE_CATEGORIES.join(", ")}.
+        {tier === "free" && (
+          <p style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
+            Free: reklamy, až 3 hráči, pevné kategorie Země / Město / Jméno.
           </p>
+        )}
 
-          <p>
-            <b>Premium – 69 Kč:</b> bez reklam, max. 5 hráčů.
-            Bez dokoupené rozšířené kategorie jsou kategorie pevně dané:{" "}
-            {PREMIUM_CATEGORIES.join(", ")}. Premium nově neobsahuje vlastní kategorii.
+        {tier === "premium" && (
+          <p style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
+            Premium – 69 Kč: bez reklam, max. 5 hráčů. Pevně dané základní kategorie:
+            Země, Město, Jméno, Zvíře, Věc, Rostlina.
           </p>
+        )}
 
-          <p>
-            <b>Premium rozšíření:</b> rozšířené kategorie bude možné dokoupit jednotlivě za{" "}
-            {EXTENDED_CATEGORY_PRICE_CZK} Kč / ks. Po dokoupení alespoň jedné rozšířené
-            kategorie se v Premium odemkne volba, které a kolik kategorií se bude hrát.
-          </p>
+        {tier === "super_premium" && (
+          <div style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
+            <p>
+              Super Premium – 129 Kč: bez reklam, neomezený počet hráčů, všechny základní
+              i rozšířené kategorie v ceně, volba typu kategorií a jejich pořadí,
+              možnost vytvořit si až 5 vlastních kategorií.
+            </p>
 
-          <p>
-            <b>Rozšířené kategorie k dokoupení v Premium:</b>{" "}
-            {EXTENDED_CATEGORIES.join(", ")}.
-          </p>
-
-          <p>
-            <b>Super Premium – 129 Kč:</b> bez reklam, neomezený počet hráčů,
-            všechny základní i rozšířené kategorie v ceně, volba kategorií,
-            volba pořadí a vlastní kategorie.
-          </p>
-
-          <p style={{ marginBottom: 0 }}>
-            <b>Kategorie v Super Premium:</b>{" "}
-            {[...PREMIUM_CATEGORIES, ...EXTENDED_CATEGORIES].join(", ")}.
-          </p>
-        </section>
+            <p style={{ marginBottom: 0 }}>
+              Kategorie v Super Premium: Země, Město, Jméno, Zvíře, Věc, Rostlina,
+              Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport,
+              Značka, Auto / Moto, Řeka / Hora, Povolání, Barva.
+            </p>
+          </div>
+        )}
 
         <p style={{ opacity: 0.75, marginBottom: 0 }}>
           Vybráno: <b>{tierLabel(tier)}</b>
