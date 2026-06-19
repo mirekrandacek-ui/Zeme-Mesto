@@ -12,7 +12,43 @@ type RoundLite = { id: string; round_no: number; letter: string; status: string 
 type AnswerRow = { player_id: string; category: string; value: string };
 type ScoreRow = { player_id: string; round?: number; category: string; points: number };
 
-const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const CZECH_LETTERS = [
+  "A",
+  "B",
+  "C",
+  "Č",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "CH",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "R",
+  "Ř",
+  "S",
+  "Š",
+  "T",
+  "U",
+  "V",
+  "Z",
+  "Ž",
+];
+
+const ENGLISH_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+type RoomLanguage = "cs" | "en";
+
+function getLettersForLanguage(language: RoomLanguage) {
+  return language === "cs" ? CZECH_LETTERS : ENGLISH_LETTERS;
+}
 const ROLL_MS = 5000;
 const TICK_MS = 35;
 
@@ -92,6 +128,7 @@ export default function RoomPage() {
   const [activeCategories, setActiveCategories] = useState<string[]>(DEFAULT_ACTIVE_CATEGORIES);
   const [maxPlayers, setMaxPlayers] = useState(3);
   const [roomTier, setRoomTier] = useState<RoomTier>("free");
+  const [roomLanguage, setRoomLanguage] = useState<RoomLanguage>("cs");
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
   const [localCreatorToken, setLocalCreatorToken] = useState<string | null>(null);
   const [roomCreatorToken, setRoomCreatorToken] = useState<string | null>(null);
@@ -125,13 +162,23 @@ export default function RoomPage() {
       .toUpperCase();
   }
 
+function answerStartsWithLetter(answer: string | undefined, selectedLetter: string | null) {
+  if (!selectedLetter) return false;
+
+  const normalizedAnswer = normalizeForCompare(answer ?? "");
+  const normalizedLetter = normalizeForCompare(selectedLetter);
+
+  return normalizedAnswer.startsWith(normalizedLetter);
+}
+
+
   const allAnswersFilled = activeCategories.every((c) => (answers[c] ?? "").trim().length > 0);
 
   const allAnswersAtLeastTwoChars = activeCategories.every((c) => (answers[c] ?? "").trim().length >= 2);
 
   const allAnswersStartWithLetter =
     Boolean(letter) &&
-    activeCategories.every((c) => normalizeAnswerStart(answers[c]) === letter);
+    activeCategories.every((c) => answerStartsWithLetter(answers[c], letter));
 
   const canStop = allAnswersFilled && allAnswersAtLeastTwoChars && allAnswersStartWithLetter;
 
@@ -140,6 +187,7 @@ export default function RoomPage() {
   }
 
   async function pickLetter(rid: string) {
+    const letters = getLettersForLanguage(roomLanguage);
     const { data } = await supabase
       .from("rounds")
       .select("letter")
@@ -151,19 +199,19 @@ export default function RoomPage() {
     for (const row of data ?? []) {
       const usedLetter = String((row as { letter: string }).letter ?? "").toUpperCase();
 
-      if (usedInCurrentCycle.size >= LETTERS.length) {
+      if (usedInCurrentCycle.size >= letters.length) {
         usedInCurrentCycle = new Set<string>();
       }
 
-      if (LETTERS.includes(usedLetter)) {
+      if (letters.includes(usedLetter)) {
         usedInCurrentCycle.add(usedLetter);
       }
     }
 
     const availableLetters =
-      usedInCurrentCycle.size >= LETTERS.length
-        ? LETTERS
-        : LETTERS.filter((ltr) => !usedInCurrentCycle.has(ltr));
+      usedInCurrentCycle.size >= letters.length
+        ? letters
+        : letters.filter((ltr) => !usedInCurrentCycle.has(ltr));
 
     return availableLetters[Math.floor(Math.random() * availableLetters.length)];
   }
@@ -245,8 +293,9 @@ export default function RoomPage() {
     let idx = 0;
     setRollingLetter("A");
     rollIntervalRef.current = window.setInterval(() => {
-      idx = (idx + 1) % LETTERS.length;
-      setRollingLetter(LETTERS[idx]);
+      const letters = getLettersForLanguage(roomLanguage);
+      idx = (idx + 1) % letters.length;
+      setRollingLetter(letters[idx]);
     }, TICK_MS);
   }
 
@@ -264,7 +313,7 @@ export default function RoomPage() {
   async function loadRoomByCode() {
     const { data, error } = await supabase
       .from("rooms")
-      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token")
+      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language")
       .eq("code", code)
       .single();
 
@@ -290,6 +339,8 @@ export default function RoomPage() {
     setMaxPlayers(Number((data as any).max_players ?? 3));
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
     setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
+    setRoomLanguage(((data as any).language ?? "cs") as RoomLanguage);
+    setRoomLanguage(((data as any).language ?? "cs") as RoomLanguage);
     setRoomCustomCategories([
       ...customCategories,
       ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
@@ -304,7 +355,7 @@ export default function RoomPage() {
   async function refreshRoomState(rid: string) {
     const { data, error } = await supabase
       .from("rooms")
-      .select("status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token")
+      .select("status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language")
       .eq("id", rid)
       .single();
 
@@ -498,7 +549,7 @@ export default function RoomPage() {
     if (roomStatus === "playing" && letter) {
       setMsg("✅ vylosováno");
     }
-  }, [roomStatus, letter, round?.id]);
+  }, [roomStatus, letter, round?.id, roomLanguage]);
 
   // Při losování sjednoť hlášku všem hráčům podle typu akce
   useEffect(() => {
@@ -1250,6 +1301,10 @@ export default function RoomPage() {
               Spustit hru
             </button>
           )}
+
+          <p style={{ opacity: 0.75 }}>
+            Výběr písmen: {getLettersForLanguage(roomLanguage).join(", ")}
+          </p>
 
           <h3>Hráči ({players.length})</h3>
           <ul>

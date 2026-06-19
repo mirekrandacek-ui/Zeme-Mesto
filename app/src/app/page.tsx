@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 
 type Tier = "free" | "premium" | "super_premium";
+type RoomLanguage = "cs" | "en";
 
 const FREE_CATEGORIES = ["Země", "Město", "Jméno"];
 
@@ -57,6 +58,7 @@ export default function Home() {
 
   // Dočasný testovací přepínač, než napojíme skutečné platby.
   const [tier, setTier] = useState<Tier>("free");
+  const [language, setLanguage] = useState<RoomLanguage>("cs");
 
   function getRoomSettings() {
     if (tier === "premium") {
@@ -163,6 +165,18 @@ export default function Home() {
             <option value="free">Free</option>
             <option value="premium">Premium</option>
             <option value="super_premium">Super Premium</option>
+          </select>
+        </label>
+
+        <label style={{ display: "block", marginTop: 12 }}>
+          Jazyk hry
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as RoomLanguage)}
+            style={{ display: "block", marginTop: 6, padding: 12, width: "100%" }}
+          >
+            <option value="cs">Čeština</option>
+            <option value="en">English</option>
           </select>
         </label>
 
