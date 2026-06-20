@@ -128,6 +128,7 @@ export default function RoomPage() {
   const [activeCategories, setActiveCategories] = useState<string[]>(DEFAULT_ACTIVE_CATEGORIES);
   const [maxPlayers, setMaxPlayers] = useState(3);
   const [roomTier, setRoomTier] = useState<RoomTier>("free");
+  const [premiumCategoryUnlockTest, setPremiumCategoryUnlockTest] = useState(false);
   const [roomLanguage, setRoomLanguage] = useState<RoomLanguage>("cs");
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
   const [localCreatorToken, setLocalCreatorToken] = useState<string | null>(null);
@@ -804,11 +805,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     myPlayer && localCreatorToken && roomCreatorToken && localCreatorToken === roomCreatorToken
   );
 
+  const premiumCategoriesUnlockedForTest =
+    roomTier === "premium" && premiumCategoryUnlockTest;
+
+  const canEditRoomCategories =
+    isOrganizer && (roomTier === "super_premium" || premiumCategoriesUnlockedForTest);
+
   async function updateRoomCategories(predefinedCategories: string[], customCategories: string[]) {
     if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
 
-    if (roomTier === "premium") {
-      setMsg("Premium má kategorie zatím pevně dané. Rozšířené kategorie půjdou později dokoupit za 25 Kč / ks.");
+    if (roomTier === "premium" && !premiumCategoriesUnlockedForTest) {
+      setMsg("Premium má kategorie pevně dané. Po dokoupení alespoň jedné rozšířené kategorie se odemkne volba počtu kategorií a jejich pořadí.");
       return;
     }
 
@@ -1365,11 +1372,32 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   : "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit."}
               </p>
 
+              {isOrganizer && roomTier === "premium" && (
+                <div style={{ marginTop: 10, marginBottom: 12 }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPremiumCategoryUnlockTest(true);
+                      setMsg("🧪 TEST: Premium se chová, jako by byla koupena 1 rozšířená kategorie. Volba kategorií a pořadí je odemčená.");
+                    }}
+                    style={{ padding: 10, width: "100%" }}
+                  >
+                    🧪 TEST: simulovat nákup 1 rozšířené kategorie
+                  </button>
+
+                  {premiumCategoriesUnlockedForTest && (
+                    <p style={{ opacity: 0.75, marginBottom: 0 }}>
+                      TEST aktivní: můžeš měnit počet kategorií a jejich pořadí.
+                    </p>
+                  )}
+                </div>
+              )}
+
               <h4>Základní kategorie</h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {PREMIUM_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {isOrganizer && roomTier === "super_premium" ? (
+                    {canEditRoomCategories ? (
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
@@ -1416,7 +1444,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {isOrganizer && roomTier === "super_premium" ? (
+                    {canEditRoomCategories ? (
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
@@ -1515,7 +1543,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       {index + 1}. {category}
                     </span>
 
-                    {isOrganizer && roomTier === "super_premium" && (
+                    {canEditRoomCategories && (
                       <span style={{ display: "flex", gap: 6 }}>
                         <button
                           type="button"
