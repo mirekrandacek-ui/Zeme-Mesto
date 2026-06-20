@@ -245,7 +245,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     try {
       if (navigator.share) {
         await navigator.share({
-          title: "Země • Město",
+          title: "Země Město",
           text: `Připoj se do místnosti ${code.toUpperCase()}`,
           url,
         });
@@ -841,8 +841,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   function showPremiumLockedCategoryOffer(category: string) {
     const message =
-      "Tato rozšířená kategorie bude dostupná jako dokoupení za 25 Kč. " +
-      "Po dokoupení alespoň jedné rozšířené kategorie se v Premium odemkne možnost volby počtu kategorií a jejich pořadí. " +
+      "Tuto kategorii si můžeš koupit za 25 Kč. " +
+      "Jakmile si ji koupíš, odemkne se možnost volby počtu kategorií a jejich pořadí. " +
       "Nebo si kup Super Premium a máš vyřešeno 😉";
 
     setMsg(`🔒 ${message}`);

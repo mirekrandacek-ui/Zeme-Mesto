@@ -164,7 +164,7 @@ export default function Home() {
   return (
     <main style={{ padding: 24, fontFamily: "system-ui", maxWidth: 520, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-        <h1 style={{ marginBottom: 8 }}>{en ? "Country • City" : "Země • Město"}</h1>
+        <h1 style={{ marginBottom: 8 }}>{en ? "Country • City" : "Země Město"}</h1>
 
         <label aria-label="Jazyk hry">
           <select
