@@ -841,8 +841,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   function showPremiumLockedCategoryOffer(category: string) {
     const message =
-      `${category}: tato rozšířená kategorie bude dostupná jako dokoupení za 25 Kč. ` +
-      "Po dokoupení alespoň jedné rozšířené kategorie se v Premium odemkne možnost volby počtu kategorií a jejich pořadí.";
+      "Tato rozšířená kategorie bude dostupná jako dokoupení za 25 Kč. " +
+      "Po dokoupení alespoň jedné rozšířené kategorie se v Premium odemkne možnost volby počtu kategorií a jejich pořadí. " +
+      "Nebo si kup Super Premium a máš vyřešeno 😉";
 
     setMsg(`🔒 ${message}`);
 
