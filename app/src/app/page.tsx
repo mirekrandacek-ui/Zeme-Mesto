@@ -74,6 +74,8 @@ export default function Home() {
   const [tier, setTier] = useState<Tier>("free");
   const [language, setLanguage] = useState<RoomLanguage>("cs");
 
+  const en = language === "en";
+
   function getRoomSettings() {
     if (tier === "premium") {
       return {
@@ -108,7 +110,7 @@ export default function Home() {
     if (creating) return;
 
     setCreating(true);
-    setStatus("vytvářím místnost…");
+    setStatus(en ? "creating room…" : "vytvářím místnost…");
 
     const roomSettings = getRoomSettings();
 
@@ -141,7 +143,7 @@ export default function Home() {
       }
     }
 
-    setStatus("❌ Nepodařilo se vytvořit unikátní kód místnosti. Zkus to znovu.");
+    setStatus(en ? "❌ Could not create a unique room code. Try again." : "❌ Nepodařilo se vytvořit unikátní kód místnosti. Zkus to znovu.");
     setCreating(false);
   }
 
@@ -152,7 +154,7 @@ export default function Home() {
       .toUpperCase();
 
     if (!cleaned) {
-      setStatus("❗ zadej kód místnosti");
+      setStatus(en ? "❗ enter a room code" : "❗ zadej kód místnosti");
       return;
     }
 
@@ -162,7 +164,7 @@ export default function Home() {
   return (
     <main style={{ padding: 24, fontFamily: "system-ui", maxWidth: 520, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-        <h1 style={{ marginBottom: 8 }}>Země • Město</h1>
+        <h1 style={{ marginBottom: 8 }}>{en ? "Country • City" : "Země • Město"}</h1>
 
         <label aria-label="Jazyk hry">
           <select
@@ -176,13 +178,13 @@ export default function Home() {
         </label>
       </div>
 
-      <p>Vytvoř místnost, pošli odkaz ostatním hráčům a hrajte společně.</p>
+      <p>{en ? "Create a room, share the link with other players and play together." : "Vytvoř místnost, pošli odkaz ostatním hráčům a hrajte společně."}</p>
 
       <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
-        <h2 style={{ marginTop: 0 }}>Testovací verze místnosti</h2>
+        <h2 style={{ marginTop: 0 }}>{en ? "Test room version" : "Testovací verze místnosti"}</h2>
 
         <label style={{ display: "block", marginTop: 10 }}>
-          Verze
+          {en ? "Version" : "Verze"}
           <select
             value={tier}
             onChange={(e) => setTier(e.target.value as Tier)}
@@ -196,29 +198,32 @@ export default function Home() {
 
         {tier === "free" && (
           <p style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
-            Free: reklamy, až 3 hráči, pevné kategorie Země / Město / Jméno.
+            {en
+              ? "Free: ads, up to 3 players, fixed categories Country / City / Name."
+              : "Free: reklamy, až 3 hráči, pevné kategorie Země / Město / Jméno."}
           </p>
         )}
 
         {tier === "premium" && (
           <p style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
-            Premium – 69 Kč: bez reklam, max. 5 hráčů. Pevně dané základní kategorie:
-            Země, Město, Jméno, Zvíře, Věc, Rostlina.
+            {en
+              ? "Premium – CZK 69: no ads, max. 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant."
+              : "Premium – 69 Kč: bez reklam, max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina."}
           </p>
         )}
 
         {tier === "super_premium" && (
           <div style={{ opacity: 0.75, fontSize: 14, marginTop: 10 }}>
             <p>
-              Super Premium – 129 Kč: bez reklam, neomezený počet hráčů, všechny základní
-              i rozšířené kategorie v ceně, volba typu kategorií a jejich pořadí,
-              možnost vytvořit si až 5 vlastních kategorií.
+              {en
+                ? "Super Premium – CZK 129: no ads, unlimited players, all basic and extended categories included, category type and order selection, up to 5 custom categories."
+                : "Super Premium – 129 Kč: bez reklam, neomezený počet hráčů, všechny základní i rozšířené kategorie v ceně, volba typu kategorií a jejich pořadí, možnost vytvořit si až 5 vlastních kategorií."}
             </p>
 
             <p style={{ marginBottom: 0 }}>
-              Kategorie v Super Premium: Země, Město, Jméno, Zvíře, Věc, Rostlina,
-              Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport,
-              Značka, Auto / Moto, Řeka / Hora, Povolání, Barva.
+              {en
+                ? "Categories in Super Premium: Country, City, Name, Animal, Thing, Plant, Film / Series, Actor / Actress, Singer / Band, Sport, Brand, Car / Motorbike, River / Mountain, Job, Colour."
+                : "Kategorie v Super Premium: Země, Město, Jméno, Zvíře, Věc, Rostlina, Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport, Značka, Auto / Moto, Řeka / Hora, Povolání, Barva."}
             </p>
           </div>
         )}
@@ -229,14 +234,14 @@ export default function Home() {
         disabled={creating}
         style={{ padding: 14, marginTop: 16, width: "100%" }}
       >
-        {creating ? "Vytvářím…" : "Vytvořit hru"}
+        {creating ? (en ? "Creating…" : "Vytvářím…") : en ? "Create game" : "Vytvořit hru"}
       </button>
 
       <div style={{ marginTop: 28, borderTop: "1px solid #ddd", paddingTop: 20 }}>
-        <h2>Připojit se k místnosti</h2>
+        <h2>{en ? "Join a room" : "Připojit se k místnosti"}</h2>
 
         <input
-          placeholder="Kód místnosti"
+          placeholder={en ? "Room code" : "Kód místnosti"}
           value={roomCodeInput}
           onChange={(e) => setRoomCodeInput(e.target.value)}
           onKeyDown={(e) => {
@@ -246,11 +251,11 @@ export default function Home() {
         />
 
         <button onClick={joinRoomByCode} style={{ padding: 14, marginTop: 12, width: "100%" }}>
-          Připojit se
+          {en ? "Join" : "Připojit se"}
         </button>
       </div>
 
-      <p style={{ marginTop: 16 }}>{status}</p>
+      {status && <p style={{ marginTop: 16 }}>{status}</p>}
     </main>
   );
 }
