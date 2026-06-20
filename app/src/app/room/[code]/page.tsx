@@ -131,6 +131,7 @@ export default function RoomPage() {
   const [premiumCategoryUnlockTest, setPremiumCategoryUnlockTest] = useState(false);
   const [roomLanguage, setRoomLanguage] = useState<RoomLanguage>("cs");
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
+  const [customCategorySlotCount, setCustomCategorySlotCount] = useState(0);
   const [localCreatorToken, setLocalCreatorToken] = useState<string | null>(null);
   const [roomCreatorToken, setRoomCreatorToken] = useState<string | null>(null);
 
@@ -871,6 +872,31 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     void updateRoomCategories(nextPredefined, roomCustomCategories);
   }
 
+  function addRoomCustomCategory() {
+    setCustomCategorySlotCount((current) =>
+      Math.min(5, Math.max(current, filledCustomCategoryCount) + 1)
+    );
+  }
+
+  function removeRoomCustomCategory(index: number) {
+    const next = [...roomCustomCategories];
+    next[index] = "";
+
+    const compacted = [
+      ...next.filter((value) => value.trim().length > 0),
+      ...Array(5).fill(""),
+    ].slice(0, 5);
+
+    setRoomCustomCategories(compacted);
+    setCustomCategorySlotCount(compacted.filter((value) => value.trim().length > 0).length);
+
+    const selectedPredefined = activeCategories.filter((item) =>
+      ALL_PREDEFINED_CATEGORIES.includes(item)
+    );
+
+    void updateRoomCategories(selectedPredefined, compacted);
+  }
+
   function updateRoomCustomCategory(index: number, value: string) {
     const next = [...roomCustomCategories];
     next[index] = value;
@@ -1207,6 +1233,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const roomIsFull = !myPlayer && players.length + waitingPlayers.length >= maxPlayers;
   const activeMyPlayer = Boolean(myPlayer && myPlayer.status !== "waiting");
 
+  const filledCustomCategoryCount = roomCustomCategories.filter((value) => value.trim().length > 0).length;
+  const visibleCustomCategoryCount = Math.min(
+    5,
+    Math.max(customCategorySlotCount, filledCustomCategoryCount)
+  );
+
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
       ? `✅ STOP stiskl ${stoppedByName}`
@@ -1511,16 +1543,45 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               {roomTier === "super_premium" && (
                 <>
               <h4 style={{ marginTop: 16 }}>Vlastní kategorie</h4>
-              {roomCustomCategories.slice(0, 5).map((value, index) => (
-                <input
-                  key={index}
-                  placeholder={`Vlastní kategorie ${index + 1}`}
-                  value={value}
-                  disabled={!isOrganizer}
-                  onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
-                  style={{ display: "block", marginTop: 8, padding: 12, width: "100%" }}
-                />
+
+              {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
+                <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  <input
+                    placeholder={`Vlastní kategorie ${index + 1}`}
+                    value={value}
+                    disabled={!isOrganizer}
+                    onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
+                    style={{ padding: 12, width: "100%" }}
+                  />
+
+                  {isOrganizer && (
+                    <button
+                      type="button"
+                      onClick={() => removeRoomCustomCategory(index)}
+                      aria-label="Odebrat vlastní kategorii"
+                      style={{ padding: "0 12px" }}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               ))}
+
+              {isOrganizer && visibleCustomCategoryCount < 5 && (
+                <button
+                  type="button"
+                  onClick={addRoomCustomCategory}
+                  style={{ marginTop: 8, padding: 10, width: "100%" }}
+                >
+                  + Přidat vlastní kategorii
+                </button>
+              )}
+
+              {isOrganizer && visibleCustomCategoryCount >= 5 && (
+                <p style={{ opacity: 0.75, marginBottom: 0 }}>
+                  Maximum je 5 vlastních kategorií.
+                </p>
+              )}
 
                 </>
               )}
