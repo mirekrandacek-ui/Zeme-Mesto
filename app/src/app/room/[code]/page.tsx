@@ -1648,6 +1648,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {roomStatus === "playing" && letter && activeMyPlayer && round && (
             <>
+              <h3 style={{ marginTop: 16 }}>Kategorie</h3>
+
               {activeCategories.map((category) => (
                 <input
                   key={category}
