@@ -879,22 +879,24 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }
 
   function removeRoomCustomCategory(index: number) {
-    const next = [...roomCustomCategories];
-    next[index] = "";
+    const visibleValues = roomCustomCategories.slice(0, visibleCustomCategoryCount);
+    visibleValues.splice(index, 1);
 
-    const compacted = [
-      ...next.filter((value) => value.trim().length > 0),
+    const next = [
+      ...visibleValues,
       ...Array(5).fill(""),
     ].slice(0, 5);
 
-    setRoomCustomCategories(compacted);
-    setCustomCategorySlotCount(compacted.filter((value) => value.trim().length > 0).length);
+    const nextVisibleCount = Math.max(0, visibleCustomCategoryCount - 1);
+
+    setRoomCustomCategories(next);
+    setCustomCategorySlotCount(nextVisibleCount);
 
     const selectedPredefined = activeCategories.filter((item) =>
       ALL_PREDEFINED_CATEGORIES.includes(item)
     );
 
-    void updateRoomCategories(selectedPredefined, compacted);
+    void updateRoomCategories(selectedPredefined, next);
   }
 
   function updateRoomCustomCategory(index: number, value: string) {
