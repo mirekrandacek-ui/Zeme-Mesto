@@ -671,7 +671,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           setMsg(
             existingPlayer.status === "waiting"
               ? `⏳ ${trimmed} čeká na připojení po aktuálním kole`
-              : `✅ ${trimmed} znovu připojen`
+              : ""
           );
           await loadPlayers(roomId);
           return;
@@ -696,7 +696,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setMsg(
       newPlayer.status === "waiting"
         ? `⏳ ${trimmed} čeká na připojení po aktuálním kole`
-        : `✅ ${trimmed} připojen`
+        : ""
     );
     await loadPlayers(roomId);
   }
