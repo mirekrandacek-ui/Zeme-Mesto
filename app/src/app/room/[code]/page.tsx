@@ -1775,6 +1775,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               paddingTop: 4,
               paddingBottom: 8,
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.12)",
+              pointerEvents: "none",
             }}
           >
             <h3 style={{ marginTop: 0, marginBottom: 8 }}>Odpovědi hráčů</h3>
@@ -1784,6 +1785,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 overflowY: "auto",
                 maxHeight: "42dvh",
                 overscrollBehavior: "contain",
+                pointerEvents: "auto",
+                touchAction: "pan-x pan-y",
               }}
             >
             <table style={{ borderCollapse: "collapse", minWidth: 700 }}>
