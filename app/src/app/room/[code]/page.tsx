@@ -1777,8 +1777,21 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           </div>
 
           {activeMyPlayer ? (
-            <>
-              <h3>Moje bodování</h3>
+            <section
+              style={{
+                position: "sticky",
+                top: 8,
+                zIndex: 10,
+                maxHeight: "calc(100vh - 16px)",
+                overflowY: "auto",
+                marginTop: 16,
+                padding: 12,
+                border: "1px solid #ccc",
+                borderRadius: 8,
+                background: "#fff",
+              }}
+            >
+              <h3 style={{ marginTop: 0 }}>Moje bodování</h3>
 
               {activeCategories.map((category) => (
                 <label key={category} style={{ display: "block", marginTop: 12 }}>
@@ -1804,13 +1817,23 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               ))}
 
               {!myScoreSubmitted ? (
-                <button onClick={submitScores} style={{ marginTop: 16, padding: 16 }}>
+                <button
+                  onClick={submitScores}
+                  style={{
+                    position: "sticky",
+                    bottom: 0,
+                    marginTop: 16,
+                    padding: 16,
+                    width: "100%",
+                    background: "#fff",
+                  }}
+                >
                   Odeslat bodování
                 </button>
               ) : (
                 <p style={{ marginTop: 16 }}>✅ Bodování odesláno. Případní čekající hráči se automaticky připojí po stisknutí tlačítka Nové kolo.</p>
               )}
-            </>
+            </section>
           ) : myPlayer?.status === "waiting" ? (
             <p>⏳ Čekáš na připojení. Do hry tě pustíme od dalšího kola.</p>
           ) : (
