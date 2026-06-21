@@ -1780,6 +1780,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           >
             <h3 style={{ marginTop: 0, marginBottom: 8 }}>Odpovědi hráčů</h3>
             <div
+              id="scoring-table-scroll"
               style={{
                 overflowX: "auto",
                 overflowY: "auto",
@@ -1800,6 +1801,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <thead>
                 <tr>
                   <th
+                    data-sticky-player="true"
                     style={{
                       position: "sticky",
                       top: 0,
@@ -1825,6 +1827,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         zIndex: 3,
                         border: "1px solid #ccc",
                         padding: 8,
+                        whiteSpace: "nowrap",
                         background: selectedScoringCategory === c ? "#fff3bf" : "#fff",
                         transition: "background 0.25s ease",
                         scrollMarginLeft: "104px",
@@ -1862,6 +1865,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         style={{
                           border: "1px solid #ccc",
                           padding: 8,
+                          whiteSpace: "nowrap",
                           background: selectedScoringCategory === c ? "#fff3bf" : "#fff",
                           transition: "background 0.25s ease",
                         }}
@@ -1955,14 +1959,28 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     disabled={myScoreSubmitted}
                     onFocus={() => {
                       setSelectedScoringCategory(category);
+
                       requestAnimationFrame(() => {
-                        document
-                          .getElementById(`score-column-${index}`)
-                          ?.scrollIntoView({
-                            behavior: "smooth",
-                            block: "nearest",
-                            inline: "center",
-                          });
+                        const scrollBox = document.getElementById("scoring-table-scroll");
+                        const column = document.getElementById(`score-column-${index}`);
+                        const stickyPlayerColumn =
+                          scrollBox?.querySelector('[data-sticky-player="true"]') as
+                            | HTMLElement
+                            | null;
+
+                        if (!scrollBox || !column) return;
+
+                        const stickyWidth = stickyPlayerColumn?.offsetWidth ?? 0;
+                        const visibleWidth = scrollBox.clientWidth - stickyWidth;
+                        const centredPosition =
+                          column.offsetLeft -
+                          stickyWidth -
+                          Math.max(0, (visibleWidth - column.offsetWidth) / 2);
+
+                        scrollBox.scrollTo({
+                          left: Math.max(0, centredPosition),
+                          behavior: "smooth",
+                        });
                       });
                     }}
                     onChange={(e) =>
