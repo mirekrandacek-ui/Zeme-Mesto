@@ -1950,7 +1950,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               style={{
                 maxHeight: "46dvh",
                 overflowY: "auto",
-                overscrollBehavior: "contain",
+                overscrollBehavior: "auto",
+                WebkitOverflowScrolling: "touch",
                 marginTop: 16,
                 padding: 12,
                 border: "1px solid #ccc",
