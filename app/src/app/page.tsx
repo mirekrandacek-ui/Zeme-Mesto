@@ -163,19 +163,56 @@ export default function Home() {
 
   return (
     <main style={{ padding: 24, fontFamily: "system-ui", maxWidth: 520, margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          gap: 12,
+        }}
+      >
         <h1 style={{ marginBottom: 8 }}>{en ? "Country • City" : "Země Město"}</h1>
 
-        <label aria-label="Jazyk hry">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as RoomLanguage)}
-            style={{ padding: 10, borderRadius: 8 }}
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            flexWrap: "wrap",
+            justifyContent: "flex-end",
+          }}
+        >
+          <button
+            type="button"
+            onClick={() =>
+              window.alert(
+                en
+                  ? "Rating will be available after the app is released on Google Play."
+                  : "Hodnocení bude dostupné po vydání aplikace na Google Play."
+              )
+            }
+            style={{
+              padding: "9px 12px",
+              border: "1px solid #b38b00",
+              borderRadius: 8,
+              background: "#fff5bf",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
           >
-            <option value="en">🇬🇧 English</option>
-            <option value="cs">🇨🇿 Čeština</option>
-          </select>
-        </label>
+            {en ? "Do you like the app?" : "Líbí se vám aplikace?"}
+          </button>
+
+          <label aria-label="Jazyk hry">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as RoomLanguage)}
+              style={{ padding: 10, borderRadius: 8 }}
+            >
+              <option value="en">🇬🇧 English</option>
+              <option value="cs">🇨🇿 Čeština</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       <p>{en ? "Create a room, share the link with other players and play together." : "Vytvoř místnost, pošli odkaz ostatním hráčům a hrajte společně."}</p>

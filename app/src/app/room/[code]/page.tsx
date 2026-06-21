@@ -1274,6 +1274,27 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <button
+            type="button"
+            onClick={() =>
+              window.alert(
+                roomLanguage === "en"
+                  ? "Rating will be available after the app is released on Google Play."
+                  : "Hodnocení bude dostupné po vydání aplikace na Google Play."
+              )
+            }
+            style={{
+              padding: "2px 8px",
+              border: "1px solid #b38b00",
+              borderRadius: 3,
+              background: "#fff5bf",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            {roomLanguage === "en" ? "Do you like the app?" : "Líbí se vám aplikace?"}
+          </button>
+
 {isOrganizer && (
             <a
               href="/"
