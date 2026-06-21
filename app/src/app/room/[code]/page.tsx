@@ -1342,31 +1342,73 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {showRules && (
         <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
-          <h2 style={{ marginTop: 0 }}>Pravidla</h2>
-          <p>
-            Ten, kdo místnost vytvoří, pošle ostatním hráčům odkaz pomocí tlačítka Kopírovat odkaz
-            nebo Sdílet. Ostatní hráči odkaz otevřou, zadají své jméno a připojí se do stejné místnosti.
-          </p>
+          <h2 style={{ marginTop: 0 }}>
+            {roomLanguage === "en" ? "Rules" : "Pravidla"}
+          </h2>
 
-          <p>
-            Hráči společně hrají na vylosované písmeno. Každý vyplní odpovědi do kategorií.
-            Kdo má všechna pole vyplněná, stiskne STOP. Odpovědi musí začínat vylosovaným písmenem
-            a pole musí obsahovat minimálně dvě písmena pro odeslání odpovědí.
-          </p>
+          {roomLanguage === "en" ? (
+            <>
+              <p>
+                The organiser shares the room link using the Copy link or Share button.
+                Other players open the link, enter their name and join the same room.
+              </p>
 
-          <p>
-            Losování písmen probíhá tak, že jakmile se každé písmeno z abecedy vylosuje alespoň jednou,
-            losuje se znovu celá abeceda. Pokud vám písmeno nevyhovuje, lze losování opakovat
-            a vyřazené písmeno bude pro toto kolo abecedy automaticky vyřazeno. Bude opět dostupné, jakmile se vyčerpá celá abeceda.
-          </p>
+              <p>
+                Everyone plays using the drawn letter and enters one answer for each category.
+                Once all fields are completed, a player can press STOP. Every answer must begin
+                with the drawn letter and contain at least two characters.
+              </p>
 
-          <h3>Bodování</h3>
-          <ul>
-            <li><b>10 bodů</b> – unikátní odpověď, kterou nikdo jiný nemá.</li>
-            <li><b>5 bodů</b> – odpověď, kterou má i někdo jiný.</li>
-            <li><b>0 bodů</b> – žádná odpověď.</li>
-            <li><b>-5 bodů</b> a <b>-10 bodů</b> – penalizace za neúplnou, chybnou nebo ostatními hráči neuznanou odpověď.</li>
-          </ul>
+              <p>
+                Letters are drawn without repetition until the whole alphabet has been used.
+                If a letter is unsuitable, it can be drawn again. The discarded letter will
+                become available again after the current alphabet cycle is completed.
+              </p>
+
+              <h3>Scoring</h3>
+              <ul>
+                <li><b>10 points</b> – a unique answer that no other player has.</li>
+                <li><b>5 points</b> – an answer also entered by another player.</li>
+                <li><b>0 points</b> – no answer.</li>
+                <li>
+                  <b>-5 points</b> and <b>-10 points</b> – penalties for an incomplete,
+                  incorrect or rejected answer.
+                </li>
+              </ul>
+            </>
+          ) : (
+            <>
+              <p>
+                Ten, kdo místnost vytvoří, pošle ostatním hráčům odkaz pomocí tlačítka
+                Kopírovat odkaz nebo Sdílet. Ostatní hráči odkaz otevřou, zadají své jméno
+                a připojí se do stejné místnosti.
+              </p>
+
+              <p>
+                Hráči společně hrají na vylosované písmeno. Každý vyplní odpovědi do kategorií.
+                Kdo má všechna pole vyplněná, stiskne STOP. Odpovědi musí začínat vylosovaným
+                písmenem a pole musí obsahovat minimálně dvě písmena pro odeslání odpovědí.
+              </p>
+
+              <p>
+                Losování písmen probíhá tak, že jakmile se každé písmeno z abecedy vylosuje
+                alespoň jednou, losuje se znovu celá abeceda. Pokud vám písmeno nevyhovuje,
+                lze losování opakovat a vyřazené písmeno bude pro toto kolo abecedy automaticky
+                vyřazeno. Bude opět dostupné, jakmile se vyčerpá celá abeceda.
+              </p>
+
+              <h3>Bodování</h3>
+              <ul>
+                <li><b>10 bodů</b> – unikátní odpověď, kterou nikdo jiný nemá.</li>
+                <li><b>5 bodů</b> – odpověď, kterou má i někdo jiný.</li>
+                <li><b>0 bodů</b> – žádná odpověď.</li>
+                <li>
+                  <b>-5 bodů</b> a <b>-10 bodů</b> – penalizace za neúplnou, chybnou
+                  nebo ostatními hráči neuznanou odpověď.
+                </li>
+              </ul>
+            </>
+          )}
         </section>
       )}
 
