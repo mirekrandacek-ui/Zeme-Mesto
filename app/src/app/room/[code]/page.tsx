@@ -1693,6 +1693,15 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         }
                       } else {
                         e.currentTarget.blur();
+
+                        window.setTimeout(() => {
+                          document
+                            .getElementById("stop-round-button")
+                            ?.scrollIntoView({
+                              behavior: "smooth",
+                              block: "center",
+                            });
+                        }, 300);
                       }
                     }}
                     style={{
@@ -1706,9 +1715,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               ))}
 
               <button
+                id="stop-round-button"
                 onClick={stopRound}
                 disabled={!canStop}
-                style={{ marginTop: 16, padding: 16 }}
+                style={{
+                  marginTop: 16,
+                  marginBottom: "calc(24px + env(safe-area-inset-bottom))",
+                  padding: 16,
+                  width: "100%",
+                  scrollMarginBottom: "calc(96px + env(safe-area-inset-bottom))",
+                }}
               >
                 STOP
               </button>
