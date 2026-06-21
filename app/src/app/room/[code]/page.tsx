@@ -1256,19 +1256,23 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     <main style={{ padding: 24, fontFamily: "system-ui" }}>
       <header style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
         <div>
-          <h1 style={{ margin: 0 }}>Místnost: {code.toUpperCase()}</h1>
+          <h1 style={{ margin: 0 }}>
+            {roomLanguage === "en" ? "Room" : "Místnost"}: {code.toUpperCase()}
+          </h1>
           {isOrganizer && (roomTier === "premium" || roomTier === "super_premium") && (
             <p style={{ fontWeight: 700, margin: "4px 0" }}>
-              Ty platíš, ty jsi šéf této místnosti!
+              {roomLanguage === "en"
+                ? "You paid, so you are the boss of this room!"
+                : "Ty platíš, ty jsi šéf této místnosti!"}
             </p>
           )}
           <p style={{ marginBottom: 4 }}>
             {myPlayer ? (
               <>
-                Přihlášen: <b>{myPlayer.name}</b>
+                {roomLanguage === "en" ? "Signed in" : "Přihlášen"}: <b>{myPlayer.name}</b>
               </>
             ) : (
-              <>Nepřihlášen</>
+              <>{roomLanguage === "en" ? "Not signed in" : "Nepřihlášen"}</>
             )}
           </p>
         </div>
@@ -1309,18 +1313,30 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 marginRight: 4,
               }}
             >
-              Nová hra
+              {roomLanguage === "en" ? "New game" : "Nová hra"}
             </a>
           )}
-          <button onClick={() => setShowRules((v) => !v)}>Pravidla</button>
-          <button onClick={copyInviteLink}>Kopírovat odkaz</button>
-          <button onClick={shareInviteLink}>Sdílet</button>
+          <button onClick={() => setShowRules((v) => !v)}>
+            {roomLanguage === "en" ? "Rules" : "Pravidla"}
+          </button>
+          <button onClick={copyInviteLink}>
+            {roomLanguage === "en" ? "Copy link" : "Kopírovat odkaz"}
+          </button>
+          <button onClick={shareInviteLink}>
+            {roomLanguage === "en" ? "Share" : "Sdílet"}
+          </button>
           {myPlayer && (
             <button onClick={switchLocalPlayer}>
-              Změnit hráče na tomto zařízení
+              {roomLanguage === "en"
+                ? "Change player on this device"
+                : "Změnit hráče na tomto zařízení"}
             </button>
           )}
-          {myPlayer && <button onClick={signOut}>Odpojit</button>}
+          {myPlayer && (
+            <button onClick={signOut}>
+              {roomLanguage === "en" ? "Disconnect" : "Odpojit"}
+            </button>
+          )}
         </div>
       </header>
 
@@ -1358,23 +1374,34 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {roomId && !myPlayer && (
         <section style={{ border: "1px solid #ddd", padding: 12, margin: "16px 0" }}>
-          <h2 style={{ marginTop: 0 }}>Připojit se do hry</h2>
+          <h2 style={{ marginTop: 0 }}>
+            {roomLanguage === "en" ? "Join the game" : "Připojit se do hry"}
+          </h2>
 
           {roomIsFull ? (
             <p>
-              ❌ Místnost je plná. Free verze umožňuje max. {maxPlayers} hráče.
-              Pro více hráčů si kup Premium. Víc hráčů, větší zábava! :-)
+              {roomLanguage === "en" ? (
+                <>
+                  ❌ This room is full. The Free version allows up to {maxPlayers} players.
+                  Upgrade to Premium for more players. More players, more fun! :-)
+                </>
+              ) : (
+                <>
+                  ❌ Místnost je plná. Free verze umožňuje max. {maxPlayers} hráče.
+                  Pro více hráčů si kup Premium. Víc hráčů, větší zábava! :-)
+                </>
+              )}
             </p>
           ) : (
             <>
               <input
-                placeholder="Tvoje jméno"
+                placeholder={roomLanguage === "en" ? "Your name" : "Tvoje jméno"}
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
                 style={{ padding: 12, width: "100%", maxWidth: 320 }}
               />
               <button onClick={joinRoom} style={{ display: "block", marginTop: 10, padding: 12 }}>
-                Připojit se
+                {roomLanguage === "en" ? "Join" : "Připojit se"}
               </button>
             </>
           )}
@@ -1391,15 +1418,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               onClick={startGame}
               style={{ marginBottom: 16, padding: 16, fontWeight: 700 }}
             >
-              Spustit hru
+              {roomLanguage === "en" ? "Start game" : "Spustit hru"}
             </button>
           )}
 
           <p style={{ opacity: 0.75 }}>
-            Výběr písmen: {getLettersForLanguage(roomLanguage).join(", ")}
+            {roomLanguage === "en" ? "Available letters" : "Výběr písmen"}:{" "}
+            {getLettersForLanguage(roomLanguage).join(", ")}
           </p>
 
-          <h3>Hráči ({players.length})</h3>
+          <h3>
+            {roomLanguage === "en" ? "Players" : "Hráči"} ({players.length})
+          </h3>
           <ul>
             {players.map((p) => (
               <li key={p.id}>{p.name}</li>
@@ -1408,10 +1438,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {waitingPlayers.length > 0 && (
             <>
-              <h3>Čekající hráči ({waitingPlayers.length})</h3>
+              <h3>
+                {roomLanguage === "en" ? "Waiting players" : "Čekající hráči"}{" "}
+                ({waitingPlayers.length})
+              </h3>
               <ul>
                 {waitingPlayers.map((p) => (
-                  <li key={p.id}>⏳ {p.name} – připojí se od dalšího kola</li>
+                  <li key={p.id}>
+                    ⏳ {p.name} –{" "}
+                    {roomLanguage === "en"
+                      ? "will join from the next round"
+                      : "připojí se od dalšího kola"}
+                  </li>
                 ))}
               </ul>
             </>
