@@ -155,6 +155,7 @@ export default function RoomPage() {
 
   const [rollingLetter, setRollingLetter] = useState("A");
   const rollIntervalRef = useRef<number | null>(null);
+  const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   function normalizeAnswerStart(value: string) {
     return value
@@ -1649,15 +1650,58 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {roomStatus === "playing" && letter && activeMyPlayer && round && (
             <>
-              {activeCategories.map((category) => (
+              {activeCategories.map((category, index) => (
                 <label key={category} style={{ display: "block", marginTop: 10 }}>
                   <div style={{ fontWeight: 700, marginBottom: 4 }}>{category}</div>
                   <input
-                  placeholder={category}
-                  value={answers[category] ?? ""}
-                  onChange={(e) => saveAnswer(category, e.target.value)}
-                  style={{ display: "block", marginTop: 10, padding: 12, width: "100%" }}
-                />
+                    ref={(element) => {
+                      answerInputRefs.current[category] = element;
+                    }}
+                    enterKeyHint={
+                      index === activeCategories.length - 1 ? "done" : "next"
+                    }
+                    value={answers[category] ?? ""}
+                    onChange={(e) => saveAnswer(category, e.target.value)}
+                    onFocus={(e) => {
+                      const input = e.currentTarget;
+                      requestAnimationFrame(() => {
+                        input.scrollIntoView({
+                          behavior: "smooth",
+                          block: "nearest",
+                        });
+                      });
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter") return;
+
+                      e.preventDefault();
+
+                      const nextCategory = activeCategories[index + 1];
+
+                      if (nextCategory) {
+                        const nextInput = answerInputRefs.current[nextCategory];
+
+                        if (nextInput) {
+                          nextInput.focus({ preventScroll: true });
+
+                          window.setTimeout(() => {
+                            nextInput.scrollIntoView({
+                              behavior: "smooth",
+                              block: "center",
+                            });
+                          }, 80);
+                        }
+                      } else {
+                        e.currentTarget.blur();
+                      }
+                    }}
+                    style={{
+                      display: "block",
+                      marginTop: 10,
+                      padding: 12,
+                      width: "100%",
+                    }}
+                  />
                 </label>
               ))}
 
