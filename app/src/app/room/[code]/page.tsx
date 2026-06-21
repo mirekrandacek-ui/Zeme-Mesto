@@ -1787,9 +1787,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 overscrollBehavior: "contain",
                 pointerEvents: "auto",
                 touchAction: "pan-x pan-y",
+                scrollPaddingLeft: "104px",
               }}
             >
-            <table style={{ borderCollapse: "collapse", minWidth: 700 }}>
+            <table
+              style={{
+                borderCollapse: "separate",
+                borderSpacing: 0,
+                minWidth: 700,
+              }}
+            >
               <thead>
                 <tr>
                   <th
@@ -1800,7 +1807,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       zIndex: 5,
                       border: "1px solid #ccc",
                       padding: 8,
+                      minWidth: 96,
+                      width: 96,
                       background: "#fff",
+                      boxShadow: "3px 0 5px rgba(0, 0, 0, 0.12)",
                     }}
                   >
                     Hráč
@@ -1817,7 +1827,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         padding: 8,
                         background: selectedScoringCategory === c ? "#fff3bf" : "#fff",
                         transition: "background 0.25s ease",
-                        scrollMarginInline: "40vw",
+                        scrollMarginLeft: "104px",
+                        scrollMarginRight: "40vw",
                       }}
                     >
                       {c}
@@ -1836,8 +1847,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         zIndex: 2,
                         border: "1px solid #ccc",
                         padding: 8,
+                        minWidth: 96,
+                        width: 96,
                         background: "#fff",
                         whiteSpace: "nowrap",
+                        boxShadow: "3px 0 5px rgba(0, 0, 0, 0.12)",
                       }}
                     >
                       {p.name}
@@ -1923,7 +1937,19 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
               {activeCategories.map((category, index) => (
                 <label key={category} style={{ display: "block", marginTop: 12 }}>
-                  {category}
+                  <span
+                    style={{
+                      display: "inline-block",
+                      color: "#0969da",
+                      fontWeight: 700,
+                      textDecoration: "underline",
+                      textUnderlineOffset: 3,
+                      cursor: "pointer",
+                      marginBottom: 4,
+                    }}
+                  >
+                    {category}
+                  </span>
                   <select
                     value={scores[category] ?? 0}
                     disabled={myScoreSubmitted}
