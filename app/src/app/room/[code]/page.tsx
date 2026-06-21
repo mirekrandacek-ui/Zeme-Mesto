@@ -151,6 +151,7 @@ export default function RoomPage() {
   const [allScores, setAllScores] = useState<ScoreRow[]>([]);
   const [allRoomScores, setAllRoomScores] = useState<ScoreRow[]>([]);
   const [myScoreSubmitted, setMyScoreSubmitted] = useState(false);
+  const [selectedScoringCategory, setSelectedScoringCategory] = useState<string | null>(null);
 
   const [rollingLetter, setRollingLetter] = useState("A");
   const rollIntervalRef = useRef<number | null>(null);
@@ -1705,14 +1706,59 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             ))}
           </ul>
 
-          <h3>Odpovědi hráčů</h3>
-          <div style={{ overflowX: "auto" }}>
+          <section
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 20,
+              background: "#fff",
+              paddingTop: 4,
+              paddingBottom: 8,
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.12)",
+            }}
+          >
+            <h3 style={{ marginTop: 0, marginBottom: 8 }}>Odpovědi hráčů</h3>
+            <div
+              style={{
+                overflowX: "auto",
+                overflowY: "auto",
+                maxHeight: "42dvh",
+                overscrollBehavior: "contain",
+              }}
+            >
             <table style={{ borderCollapse: "collapse", minWidth: 700 }}>
               <thead>
                 <tr>
-                  <th style={{ border: "1px solid #ccc", padding: 8 }}>Hráč</th>
-                  {activeCategories.map((c) => (
-                    <th key={c} style={{ border: "1px solid #ccc", padding: 8 }}>{c}</th>
+                  <th
+                    style={{
+                      position: "sticky",
+                      top: 0,
+                      left: 0,
+                      zIndex: 5,
+                      border: "1px solid #ccc",
+                      padding: 8,
+                      background: "#fff",
+                    }}
+                  >
+                    Hráč
+                  </th>
+                  {activeCategories.map((c, index) => (
+                    <th
+                      id={`score-column-${index}`}
+                      key={c}
+                      style={{
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 3,
+                        border: "1px solid #ccc",
+                        padding: 8,
+                        background: selectedScoringCategory === c ? "#fff3bf" : "#fff",
+                        transition: "background 0.25s ease",
+                        scrollMarginInline: "40vw",
+                      }}
+                    >
+                      {c}
+                    </th>
                   ))}
                   <th style={{ border: "1px solid #ccc", padding: 8 }}>Body celkem</th>
                 </tr>
@@ -1720,9 +1766,29 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <tbody>
                 {players.map((p) => (
                   <tr key={p.id}>
-                    <td style={{ border: "1px solid #ccc", padding: 8 }}>{p.name}</td>
+                    <td
+                      style={{
+                        position: "sticky",
+                        left: 0,
+                        zIndex: 2,
+                        border: "1px solid #ccc",
+                        padding: 8,
+                        background: "#fff",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {p.name}
+                    </td>
                     {activeCategories.map((c) => (
-                      <td key={c} style={{ border: "1px solid #ccc", padding: 8 }}>
+                      <td
+                        key={c}
+                        style={{
+                          border: "1px solid #ccc",
+                          padding: 8,
+                          background: selectedScoringCategory === c ? "#fff3bf" : "#fff",
+                          transition: "background 0.25s ease",
+                        }}
+                      >
                         {answerFor(p.id, c)}
                       </td>
                     ))}
@@ -1733,7 +1799,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          </section>
 
           <div style={{ marginTop: 16 }}>
             <button onClick={() => setShowRoundHistory((v) => !v)} style={{ padding: 12 }}>
@@ -1779,11 +1846,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           {activeMyPlayer ? (
             <section
               style={{
-                position: "sticky",
-                top: 8,
-                zIndex: 10,
-                maxHeight: "calc(100vh - 16px)",
+                maxHeight: "46dvh",
                 overflowY: "auto",
+                overscrollBehavior: "contain",
                 marginTop: 16,
                 padding: 12,
                 border: "1px solid #ccc",
@@ -1793,12 +1858,24 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             >
               <h3 style={{ marginTop: 0 }}>Moje bodování</h3>
 
-              {activeCategories.map((category) => (
+              {activeCategories.map((category, index) => (
                 <label key={category} style={{ display: "block", marginTop: 12 }}>
                   {category}
                   <select
                     value={scores[category] ?? 0}
                     disabled={myScoreSubmitted}
+                    onFocus={() => {
+                      setSelectedScoringCategory(category);
+                      requestAnimationFrame(() => {
+                        document
+                          .getElementById(`score-column-${index}`)
+                          ?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "nearest",
+                            inline: "center",
+                          });
+                      });
+                    }}
                     onChange={(e) =>
                       setScores((prev) => ({
                         ...prev,
