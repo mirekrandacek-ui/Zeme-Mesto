@@ -579,7 +579,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   // Jakmile je v novém kole vylosované finální písmeno, sjednoť hlášku všem hráčům
   useEffect(() => {
     if (roomStatus === "playing" && letter) {
-      setMsg("✅ vylosováno");
+      setMsg(roomLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
     }
   }, [roomStatus, letter, round?.id, roomLanguage]);
 
@@ -793,12 +793,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if ((remainingPlayersCount ?? 0) === 0) {
       await resetRoomData(rid);
       setPlayers([]);
-      setMsg("✅ odpojeno, místnost vyčištěna");
+      setMsg(roomLanguage === "en" ? "✅ disconnected, room cleared" : "✅ odpojeno, místnost vyčištěna");
       return;
     }
 
     await loadPlayers(rid);
-    setMsg("✅ odpojeno");
+    setMsg(roomLanguage === "en" ? "✅ disconnected" : "✅ odpojeno");
   }
 
   async function createRound(rid: string, ltr: string) {
@@ -1030,7 +1030,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       setAllAnswers([]);
       setAllScores([]);
       setMyScoreSubmitted(false);
-      setMsg("✅ vylosováno");
+      setMsg(roomLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
     }, ROLL_MS);
   }
 
@@ -1078,7 +1078,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         .eq("id", rid)
         .eq("status", "drawing");
 
-      setMsg("✅ vylosováno");
+      setMsg(roomLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
     }, ROLL_MS);
   }
 
@@ -1134,7 +1134,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setScores(emptyScores(activeCategories));
     setMyScoreSubmitted(false);
 
-    setMsg(`✅ STOP stiskl ${myPlayer.name}`);
+    setMsg(
+      roomLanguage === "en"
+        ? `✅ STOP pressed by ${myPlayer.name}`
+        : `✅ STOP stiskl ${myPlayer.name}`
+    );
   }
 
   async function submitScores() {
@@ -1253,7 +1257,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         .eq("id", rid)
         .eq("status", "drawing");
 
-      setMsg("✅ vylosováno");
+      setMsg(roomLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
     }, ROLL_MS);
   }
 
@@ -1272,9 +1276,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
-      ? `✅ STOP stiskl ${stoppedByName}`
+      ? roomLanguage === "en"
+        ? `✅ STOP pressed by ${stoppedByName}`
+        : `✅ STOP stiskl ${stoppedByName}`
       : roomStatus === "playing" && letter
-        ? "✅ vylosováno"
+        ? roomLanguage === "en"
+          ? "✅ letter drawn"
+          : "✅ vylosováno"
         : msg;
 
   const visibleStatusMessage = myPlayer ? statusMessage : msg;
