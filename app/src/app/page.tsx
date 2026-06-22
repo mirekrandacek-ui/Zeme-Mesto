@@ -73,25 +73,33 @@ export default function Home() {
   // Dočasný testovací přepínač, než napojíme skutečné platby.
   const [tier, setTier] = useState<Tier>("free");
   const [language, setLanguage] = useState<RoomLanguage>("cs");
+  const [gameLanguage, setGameLanguage] = useState<RoomLanguage>("cs");
   const [showOtherModes, setShowOtherModes] = useState(false);
 
   const en = language === "en";
 
   useEffect(() => {
-    const savedLanguage = window.localStorage.getItem("zm_uiLanguage");
-
-    if (savedLanguage === "cs" || savedLanguage === "en") {
-      setLanguage(savedLanguage);
-      return;
-    }
-
+    const savedUiLanguage = window.localStorage.getItem("zm_uiLanguage");
+    const savedGameLanguage = window.localStorage.getItem("zm_gameLanguage");
     const deviceLanguage = window.navigator.language.toLowerCase();
 
-    setLanguage(
+    const detectedLanguage: RoomLanguage =
       deviceLanguage.startsWith("cs") || deviceLanguage.startsWith("sk")
         ? "cs"
-        : "en"
-    );
+        : "en";
+
+    const initialUiLanguage: RoomLanguage =
+      savedUiLanguage === "cs" || savedUiLanguage === "en"
+        ? savedUiLanguage
+        : detectedLanguage;
+
+    const initialGameLanguage: RoomLanguage =
+      savedGameLanguage === "cs" || savedGameLanguage === "en"
+        ? savedGameLanguage
+        : initialUiLanguage;
+
+    setLanguage(initialUiLanguage);
+    setGameLanguage(initialGameLanguage);
   }, []);
 
   function getRoomSettings() {
@@ -141,7 +149,7 @@ export default function Home() {
         status: "lobby",
         letter: null,
         creator_token: creatorToken,
-        language: language,
+        language: gameLanguage,
         ...roomSettings,
       });
 
@@ -235,7 +243,7 @@ export default function Home() {
             {en ? "Do you like the app?" : "Líbí se vám aplikace?"}
           </button>
 
-          <label aria-label="Jazyk hry">
+          <label aria-label={en ? "Application language" : "Jazyk aplikace"}>
             <select
               value={language}
               onChange={(e) => {
@@ -320,6 +328,45 @@ export default function Home() {
             </p>
           </div>
         )}
+
+        <label style={{ display: "block", marginTop: 16 }}>
+          <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
+            {en ? "Game language" : "Jazyk hry"}
+          </span>
+
+          <select
+            value={gameLanguage}
+            onChange={(e) => {
+              const selectedGameLanguage = e.target.value as RoomLanguage;
+              setGameLanguage(selectedGameLanguage);
+              window.localStorage.setItem(
+                "zm_gameLanguage",
+                selectedGameLanguage
+              );
+            }}
+            style={{
+              width: "100%",
+              padding: 12,
+              borderRadius: 8,
+            }}
+          >
+            <option value="en">🇬🇧 English</option>
+            <option value="cs">🇨🇿 Čeština</option>
+          </select>
+
+          <span
+            style={{
+              display: "block",
+              marginTop: 6,
+              fontSize: 13,
+              opacity: 0.75,
+            }}
+          >
+            {en
+              ? "This controls the room categories, alphabet and answer validation."
+              : "Určuje kategorie místnosti, abecedu a kontrolu odpovědí."}
+          </span>
+        </label>
 
         <button
           onClick={createRoom}
