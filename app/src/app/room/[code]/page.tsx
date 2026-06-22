@@ -371,7 +371,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
     setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
     setRoomLanguage(((data as any).language ?? "cs") as RoomLanguage);
-    setRoomLanguage(((data as any).language ?? "cs") as RoomLanguage);
     setRoomCustomCategories([
       ...customCategories,
       ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
@@ -738,7 +737,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       (roomStatus === "scoring" && everyoneScored);
 
     if (!canSwitchPlayer) {
-      const message = "Hráče můžeš změnit až po dokončení aktuálního kola.";
+      const message =
+        roomLanguage === "en"
+          ? "You can change the player only after scoring has finished."
+          : "Hráče můžeš změnit až po ukončení bodování.";
+
       setMsg(`❗ ${message}`);
 
       if (typeof window !== "undefined") {
@@ -754,7 +757,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .eq("id", myPlayer.id);
 
     if (error) {
-      setMsg(`❌ změna hráče: ${error.message}`);
+      setMsg(
+        roomLanguage === "en"
+          ? `❌ changing player: ${error.message}`
+          : `❌ změna hráče: ${error.message}`
+      );
       return;
     }
 
@@ -767,7 +774,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setAnswers(emptyAnswers(activeCategories));
     setScores(emptyScores(activeCategories));
     setMyScoreSubmitted(false);
-    setMsg("ℹ️ Původní hráč byl z tohoto zařízení odebrán. Zadej jiné jméno.");
+    setMsg(
+      roomLanguage === "en"
+        ? "ℹ️ The previous player was removed from this device. Enter a different name."
+        : "ℹ️ Původní hráč byl z tohoto zařízení odebrán. Zadej jiné jméno."
+    );
     await loadPlayers(roomId);
   }
 
