@@ -1154,7 +1154,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .upsert(rows, { onConflict: "room_id,player_id,round,category" });
 
     if (error) {
-      setMsg(`❌ uložení bodů: ${error.message}`);
+      setMsg(
+        roomLanguage === "en"
+          ? `❌ saving scores: ${error.message}`
+          : `❌ uložení bodů: ${error.message}`
+      );
       return;
     }
 
@@ -1946,15 +1950,24 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {roomStatus === "scoring" && myPlayer && (
         <>
-          <h2>Bodování</h2>
+          <h2>{roomLanguage === "en" ? "Scoring" : "Bodování"}</h2>
 
-          <p>Odesláno: {scoredPlayerIds.size}/{players.length}</p>
+          <p>
+            {roomLanguage === "en" ? "Submitted" : "Odesláno"}:{" "}
+            {scoredPlayerIds.size}/{players.length}
+          </p>
 
           <ul style={{ paddingLeft: 20 }}>
             {players.map((p) => (
               <li key={p.id}>
                 {scoredPlayerIds.has(p.id) ? "✅" : "⏳"} {p.name}
-                {scoredPlayerIds.has(p.id) ? " – odeslal" : " – čekáme"}
+                {scoredPlayerIds.has(p.id)
+                  ? roomLanguage === "en"
+                    ? " – submitted"
+                    : " – odeslal"
+                  : roomLanguage === "en"
+                    ? " – waiting"
+                    : " – čekáme"}
               </li>
             ))}
           </ul>
@@ -1971,7 +1984,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               pointerEvents: "none",
             }}
           >
-            <h3 style={{ marginTop: 0, marginBottom: 8 }}>Odpovědi hráčů</h3>
+            <h3 style={{ marginTop: 0, marginBottom: 8 }}>
+              {roomLanguage === "en" ? "Players’ answers" : "Odpovědi hráčů"}
+            </h3>
             <div
               id="scoring-table-scroll"
               style={{
@@ -2008,7 +2023,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       boxShadow: "3px 0 5px rgba(0, 0, 0, 0.12)",
                     }}
                   >
-                    Hráč
+                    {roomLanguage === "en" ? "Player" : "Hráč"}
                   </th>
                   {activeCategories.map((c, index) => (
                     <th
@@ -2027,10 +2042,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         scrollMarginRight: "40vw",
                       }}
                     >
-                      {c}
+                      {categoryLabel(c)}
                     </th>
                   ))}
-                  <th style={{ border: "1px solid #ccc", padding: 8 }}>Body celkem</th>
+                  <th style={{ border: "1px solid #ccc", padding: 8 }}>
+                    {roomLanguage === "en" ? "Total points" : "Body celkem"}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -2078,18 +2095,30 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           <div style={{ marginTop: 16 }}>
             <button onClick={() => setShowRoundHistory((v) => !v)} style={{ padding: 12 }}>
-              {showRoundHistory ? "Skrýt historii kol" : "Zobrazit historii kol"}
+              {showRoundHistory
+                ? roomLanguage === "en"
+                  ? "Hide round history"
+                  : "Skrýt historii kol"
+                : roomLanguage === "en"
+                  ? "Show round history"
+                  : "Zobrazit historii kol"}
             </button>
 
             {showRoundHistory && (
               <div style={{ overflowX: "auto", marginTop: 12 }}>
                 {scoredRoundNumbers.length === 0 ? (
-                  <p>Zatím nejsou uložené body za žádné kolo.</p>
+                  <p>
+                    {roomLanguage === "en"
+                      ? "No round scores have been saved yet."
+                      : "Zatím nejsou uložené body za žádné kolo."}
+                  </p>
                 ) : (
                   <table style={{ borderCollapse: "collapse", minWidth: 500 }}>
                     <thead>
                       <tr>
-                        <th style={{ border: "1px solid #ccc", padding: 8 }}>Kolo</th>
+                        <th style={{ border: "1px solid #ccc", padding: 8 }}>
+                          {roomLanguage === "en" ? "Round" : "Kolo"}
+                        </th>
                         {players.map((p) => (
                           <th key={p.id} style={{ border: "1px solid #ccc", padding: 8 }}>
                             {p.name}
@@ -2131,7 +2160,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 background: "#fff",
               }}
             >
-              <h3 style={{ marginTop: 0 }}>Moje bodování</h3>
+              <h3 style={{ marginTop: 0 }}>
+                {roomLanguage === "en" ? "My scoring" : "Moje bodování"}
+              </h3>
 
               {activeCategories.map((category, index) => (
                 <label key={category} style={{ display: "block", marginTop: 12 }}>
@@ -2146,7 +2177,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       marginBottom: 4,
                     }}
                   >
-                    {category}
+                    {categoryLabel(category)}
                   </span>
                   <select
                     value={scores[category] ?? 0}
@@ -2185,11 +2216,21 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     }
                     style={{ display: "block", padding: 10, marginTop: 4, width: "100%" }}
                   >
-                    <option value={0}>0 bodů</option>
-                    <option value={5}>5 bodů</option>
-                    <option value={10}>10 bodů</option>
-                    <option value={-5}>-5 bodů</option>
-                    <option value={-10}>-10 bodů</option>
+                    <option value={0}>
+                      {roomLanguage === "en" ? "0 points" : "0 bodů"}
+                    </option>
+                    <option value={5}>
+                      {roomLanguage === "en" ? "5 points" : "5 bodů"}
+                    </option>
+                    <option value={10}>
+                      {roomLanguage === "en" ? "10 points" : "10 bodů"}
+                    </option>
+                    <option value={-5}>
+                      {roomLanguage === "en" ? "-5 points" : "-5 bodů"}
+                    </option>
+                    <option value={-10}>
+                      {roomLanguage === "en" ? "-10 points" : "-10 bodů"}
+                    </option>
                   </select>
                 </label>
               ))}
@@ -2206,23 +2247,41 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     background: "#fff",
                   }}
                 >
-                  Odeslat bodování
+                  {roomLanguage === "en" ? "Submit scoring" : "Odeslat bodování"}
                 </button>
               ) : (
-                <p style={{ marginTop: 16 }}>✅ Bodování odesláno. Případní čekající hráči se automaticky připojí po stisknutí tlačítka Nové kolo.</p>
+                <p style={{ marginTop: 16 }}>
+                  {roomLanguage === "en"
+                    ? "✅ Scoring submitted. Waiting players will automatically join after pressing New round."
+                    : "✅ Bodování odesláno. Případní čekající hráči se automaticky připojí po stisknutí tlačítka Nové kolo."}
+                </p>
               )}
             </section>
           ) : myPlayer?.status === "waiting" ? (
-            <p>⏳ Čekáš na připojení. Do hry tě pustíme od dalšího kola.</p>
+            <p>
+              {roomLanguage === "en"
+                ? "⏳ You are waiting to join. You will enter the game from the next round."
+                : "⏳ Čekáš na připojení. Do hry tě pustíme od dalšího kola."}
+            </p>
           ) : (
-            <p>Přihlaš se jménem nahoře, abys mohl odeslat bodování.</p>
+            <p>
+              {roomLanguage === "en"
+                ? "Enter your name above to submit scoring."
+                : "Přihlaš se jménem nahoře, abys mohl odeslat bodování."}
+            </p>
           )}
 
-          {!everyoneScored && <p>Čekáme na všechny hráče…</p>}
+          {!everyoneScored && (
+            <p>
+              {roomLanguage === "en"
+                ? "Waiting for all players…"
+                : "Čekáme na všechny hráče…"}
+            </p>
+          )}
 
           {everyoneScored && (
             <button onClick={nextRound} style={{ marginTop: 16, padding: 16 }}>
-              Nové kolo
+              {roomLanguage === "en" ? "New round" : "Nové kolo"}
             </button>
           )}
         </>
