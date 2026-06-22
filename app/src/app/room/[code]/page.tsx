@@ -1834,15 +1834,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {(roomStatus === "drawing" || roomStatus === "playing") && myPlayer && (
         <>
-          <h2>
-            {roomLanguage === "en"
-              ? roomStatus === "drawing"
-                ? "Drawing a letter…"
-                : "Playing"
-              : roomStatus === "drawing"
-                ? "Losujeme…"
-                : "Hrajeme"}
-          </h2>
+          {roomStatus === "playing" && (
+            <h2>{roomLanguage === "en" ? "Playing" : "Hrajeme"}</h2>
+          )}
 
           <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
 
