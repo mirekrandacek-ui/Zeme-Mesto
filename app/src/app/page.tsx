@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 
@@ -76,6 +76,23 @@ export default function Home() {
   const [showOtherModes, setShowOtherModes] = useState(false);
 
   const en = language === "en";
+
+  useEffect(() => {
+    const savedLanguage = window.localStorage.getItem("zm_uiLanguage");
+
+    if (savedLanguage === "cs" || savedLanguage === "en") {
+      setLanguage(savedLanguage);
+      return;
+    }
+
+    const deviceLanguage = window.navigator.language.toLowerCase();
+
+    setLanguage(
+      deviceLanguage.startsWith("cs") || deviceLanguage.startsWith("sk")
+        ? "cs"
+        : "en"
+    );
+  }, []);
 
   function getRoomSettings() {
     if (tier === "premium") {
@@ -221,7 +238,11 @@ export default function Home() {
           <label aria-label="Jazyk hry">
             <select
               value={language}
-              onChange={(e) => setLanguage(e.target.value as RoomLanguage)}
+              onChange={(e) => {
+                const selectedLanguage = e.target.value as RoomLanguage;
+                setLanguage(selectedLanguage);
+                window.localStorage.setItem("zm_uiLanguage", selectedLanguage);
+              }}
               style={{ padding: 10, borderRadius: 8 }}
             >
               <option value="en">🇬🇧 English</option>
