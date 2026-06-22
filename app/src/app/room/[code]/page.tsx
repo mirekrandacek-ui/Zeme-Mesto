@@ -70,6 +70,24 @@ const SUPER_PREMIUM_EXTRA_CATEGORIES = [
 
 const ALL_PREDEFINED_CATEGORIES = [...PREMIUM_CATEGORIES, ...SUPER_PREMIUM_EXTRA_CATEGORIES];
 
+const CATEGORY_LABELS_EN: Record<string, string> = {
+  Země: "Country",
+  Město: "City",
+  Jméno: "Name",
+  Zvíře: "Animal",
+  Věc: "Thing",
+  Rostlina: "Plant",
+  "Film / Seriál": "Film / Series",
+  "Herec / Herečka": "Actor / Actress",
+  "Zpěvák / Zpěvačka / Kapela": "Singer / Band",
+  Sport: "Sport",
+  Značka: "Brand",
+  "Auto / Moto": "Car / Motorbike",
+  "Řeka / Hora": "River / Mountain",
+  Povolání: "Job",
+  Barva: "Colour",
+};
+
 type RoomTier = "free" | "premium" | "super_premium";
 type Category = string;
 
@@ -156,6 +174,11 @@ export default function RoomPage() {
   const [rollingLetter, setRollingLetter] = useState("A");
   const rollIntervalRef = useRef<number | null>(null);
   const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  function categoryLabel(category: string) {
+    if (roomLanguage !== "en") return category;
+    return CATEGORY_LABELS_EN[category] ?? category;
+  }
 
   function normalizeAnswerStart(value: string) {
     return value
@@ -1499,14 +1522,22 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {(roomTier === "premium" || roomTier === "super_premium") && myPlayer && (
             <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
-              <h3 style={{ marginTop: 0 }}>Kategorie místnosti</h3>
+              <h3 style={{ marginTop: 0 }}>
+                {roomLanguage === "en" ? "Room categories" : "Kategorie místnosti"}
+              </h3>
 
               <p style={{ opacity: 0.75 }}>
-                {isOrganizer
-                  ? roomTier === "premium"
-                    ? "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie jsou zamčené. Po dokoupení alespoň jedné rozšířené kategorie se odemkne volba počtu kategorií a jejich pořadí."
-                    : "Super Premium: vyber základní i rozšířené kategorie. Můžeš měnit pořadí a používat vlastní kategorie."
-                  : "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit."}
+                {roomLanguage === "en"
+                  ? isOrganizer
+                    ? roomTier === "premium"
+                      ? "Premium: the basic categories are fixed. Extended categories are locked. Buying at least one extended category unlocks category selection and ordering."
+                      : "Super Premium: choose basic and extended categories, change their order and add custom categories."
+                    : "The organiser chooses the room categories. You can see the current selection and suggest changes."
+                  : isOrganizer
+                    ? roomTier === "premium"
+                      ? "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie jsou zamčené. Po dokoupení alespoň jedné rozšířené kategorie se odemkne volba počtu kategorií a jejich pořadí."
+                      : "Super Premium: vyber základní i rozšířené kategorie. Můžeš měnit pořadí a používat vlastní kategorie."
+                    : "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit."}
               </p>
 
               {isOrganizer && roomTier === "premium" && (
@@ -1515,22 +1546,32 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     type="button"
                     onClick={() => {
                       setPremiumCategoryUnlockTest(true);
-                      setMsg("🧪 TEST: Premium se chová, jako by byla koupena 1 rozšířená kategorie. Volba kategorií a pořadí je odemčená.");
+                      setMsg(
+                        roomLanguage === "en"
+                          ? "🧪 TEST: Premium now behaves as if one extended category had been purchased. Category selection and ordering are unlocked."
+                          : "🧪 TEST: Premium se chová, jako by byla koupena 1 rozšířená kategorie. Volba kategorií a pořadí je odemčená."
+                      );
                     }}
                     style={{ padding: 10, width: "100%" }}
                   >
-                    🧪 TEST: simulovat nákup 1 rozšířené kategorie
+                    {roomLanguage === "en"
+                      ? "🧪 TEST: simulate purchasing one extended category"
+                      : "🧪 TEST: simulovat nákup 1 rozšířené kategorie"}
                   </button>
 
                   {premiumCategoriesUnlockedForTest && (
                     <p style={{ opacity: 0.75, marginBottom: 0 }}>
-                      TEST aktivní: můžeš měnit počet kategorií a jejich pořadí.
+                      {roomLanguage === "en"
+                        ? "TEST active: you can change the number and order of categories."
+                        : "TEST aktivní: můžeš měnit počet kategorií a jejich pořadí."}
                     </p>
                   )}
                 </div>
               )}
 
-              <h4>Základní kategorie</h4>
+              <h4>
+                {roomLanguage === "en" ? "Basic categories" : "Základní kategorie"}
+              </h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {PREMIUM_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -1570,14 +1611,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       {activeCategories.includes(category) ? "✓" : ""}
                     </span>
                   )}
-                    {category}
+                    {categoryLabel(category)}
                   </label>
                 ))}
               </div>
 
               {(roomTier === "premium" || roomTier === "super_premium") && (
                 <>
-              <h4 style={{ marginTop: 16 }}>Rozšířené kategorie</h4>
+              <h4 style={{ marginTop: 16 }}>
+                {roomLanguage === "en" ? "Extended categories" : "Rozšířené kategorie"}
+              </h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -1633,10 +1676,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                           font: "inherit",
                         }}
                       >
-                        🔒 {category} – 25 Kč
+                        🔒 {categoryLabel(category)} –{" "}
+                        {roomLanguage === "en" ? "US$0.99" : "25 Kč"}
                       </button>
                     ) : (
-                      category
+                      categoryLabel(category)
                     )}
                   </label>
                 ))}
@@ -1647,12 +1691,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
               {roomTier === "super_premium" && (
                 <>
-              <h4 style={{ marginTop: 16 }}>Vlastní kategorie</h4>
+              <h4 style={{ marginTop: 16 }}>
+                {roomLanguage === "en" ? "Custom categories" : "Vlastní kategorie"}
+              </h4>
 
               {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
                 <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
                   <input
-                    placeholder={`Vlastní kategorie ${index + 1}`}
+                    placeholder={
+                      roomLanguage === "en"
+                        ? `Custom category ${index + 1}`
+                        : `Vlastní kategorie ${index + 1}`
+                    }
                     value={value}
                     disabled={!isOrganizer}
                     onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
@@ -1663,7 +1713,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     <button
                       type="button"
                       onClick={() => removeRoomCustomCategory(index)}
-                      aria-label="Odebrat vlastní kategorii"
+                      aria-label={
+                        roomLanguage === "en"
+                          ? "Remove custom category"
+                          : "Odebrat vlastní kategorii"
+                      }
                       style={{ padding: "0 12px" }}
                     >
                       ×
@@ -1678,20 +1732,26 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   onClick={addRoomCustomCategory}
                   style={{ marginTop: 8, padding: 10, width: "100%" }}
                 >
-                  + Přidat vlastní kategorii
+                  {roomLanguage === "en"
+                    ? "+ Add custom category"
+                    : "+ Přidat vlastní kategorii"}
                 </button>
               )}
 
               {isOrganizer && visibleCustomCategoryCount >= 5 && (
                 <p style={{ opacity: 0.75, marginBottom: 0 }}>
-                  Maximum je 5 vlastních kategorií.
+                  {roomLanguage === "en"
+                    ? "The maximum is 5 custom categories."
+                    : "Maximum je 5 vlastních kategorií."}
                 </p>
               )}
 
                 </>
               )}
 
-              <h4 style={{ marginTop: 16 }}>Pořadí kategorií</h4>
+              <h4 style={{ marginTop: 16 }}>
+                {roomLanguage === "en" ? "Category order" : "Pořadí kategorií"}
+              </h4>
 
               <ol style={{ paddingLeft: 20 }}>
                 {activeCategories.map((category, index) => (
@@ -1706,7 +1766,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     }}
                   >
                     <span>
-                      {index + 1}. {category}
+                      {index + 1}. {categoryLabel(category)}
                     </span>
 
                     {canEditRoomCategories && (
