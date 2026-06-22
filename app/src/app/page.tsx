@@ -175,11 +175,18 @@ export default function Home() {
         <h1
           style={{
             marginBottom: 8,
-            whiteSpace: en ? "normal" : "nowrap",
-            flexShrink: 0,
+            lineHeight: 1.05,
           }}
         >
-          {en ? "Stop: Categories Word Game" : "Země Město"}
+          {en ? (
+            <>
+              Stop:
+              <br />
+              Categories Word Game
+            </>
+          ) : (
+            <span style={{ whiteSpace: "nowrap" }}>Země Město</span>
+          )}
         </h1>
 
         <div
