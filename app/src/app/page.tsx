@@ -172,7 +172,15 @@ export default function Home() {
           gap: 12,
         }}
       >
-        <h1 style={{ marginBottom: 8 }}>{en ? "Stop: Categories Word Game" : "Země Město"}</h1>
+        <h1
+          style={{
+            marginBottom: 8,
+            whiteSpace: en ? "normal" : "nowrap",
+            flexShrink: 0,
+          }}
+        >
+          {en ? "Stop: Categories Word Game" : "Země Město"}
+        </h1>
 
         <div
           style={{
