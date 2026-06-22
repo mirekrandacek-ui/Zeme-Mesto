@@ -148,6 +148,7 @@ export default function RoomPage() {
   const [roomTier, setRoomTier] = useState<RoomTier>("free");
   const [premiumCategoryUnlockTest, setPremiumCategoryUnlockTest] = useState(false);
   const [roomLanguage, setRoomLanguage] = useState<RoomLanguage>("cs");
+  const [uiLanguage, setUiLanguage] = useState<RoomLanguage>("cs");
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
   const [customCategorySlotCount, setCustomCategorySlotCount] = useState(0);
   const [localCreatorToken, setLocalCreatorToken] = useState<string | null>(null);
@@ -174,6 +175,23 @@ export default function RoomPage() {
   const [rollingLetter, setRollingLetter] = useState("A");
   const rollIntervalRef = useRef<number | null>(null);
   const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  useEffect(() => {
+    const savedUiLanguage = window.localStorage.getItem("zm_uiLanguage");
+
+    if (savedUiLanguage === "cs" || savedUiLanguage === "en") {
+      setUiLanguage(savedUiLanguage);
+      return;
+    }
+
+    const deviceLanguage = window.navigator.language.toLowerCase();
+
+    setUiLanguage(
+      deviceLanguage.startsWith("cs") || deviceLanguage.startsWith("sk")
+        ? "cs"
+        : "en"
+    );
+  }, []);
 
   function categoryLabel(category: string) {
     if (roomLanguage !== "en") return category;
@@ -578,9 +596,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   // Jakmile je v novém kole vylosované finální písmeno, sjednoť hlášku všem hráčům
   useEffect(() => {
     if (roomStatus === "playing" && letter) {
-      setMsg(roomLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
+      setMsg(uiLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
     }
-  }, [roomStatus, letter, round?.id, roomLanguage]);
+  }, [roomStatus, letter, round?.id, uiLanguage]);
 
   // Při losování sjednoť hlášku všem hráčům podle typu akce
   useEffect(() => {
@@ -588,7 +606,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (round?.status === "skipped") {
       setMsg(
-        roomLanguage === "en"
+        uiLanguage === "en"
           ? "… drawing again"
           : "… losujeme znovu"
       );
@@ -597,7 +615,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (round?.status === "done") {
       setMsg(
-        roomLanguage === "en"
+        uiLanguage === "en"
           ? "… drawing a letter for the next round"
           : "… losujeme další kolo"
       );
@@ -605,11 +623,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     }
 
     setMsg(
-      roomLanguage === "en"
+      uiLanguage === "en"
         ? "… drawing a letter"
         : "… losujeme"
     );
-  }, [roomStatus, round?.status, round?.id, roomLanguage]);
+  }, [roomStatus, round?.status, round?.id, uiLanguage]);
 
   // Při novém kole vyčisti lokální odpovědi a bodování u všech hráčů
   useEffect(() => {
@@ -750,7 +768,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (!canSwitchPlayer) {
       const message =
-        roomLanguage === "en"
+        uiLanguage === "en"
           ? "You can change the player only after scoring has finished."
           : "Hráče můžeš změnit až po ukončení bodování.";
 
@@ -770,7 +788,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (error) {
       setMsg(
-        roomLanguage === "en"
+        uiLanguage === "en"
           ? `❌ changing player: ${error.message}`
           : `❌ změna hráče: ${error.message}`
       );
@@ -787,7 +805,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setScores(emptyScores(activeCategories));
     setMyScoreSubmitted(false);
     setMsg(
-      roomLanguage === "en"
+      uiLanguage === "en"
         ? "ℹ️ The previous player was removed from this device. Enter a different name."
         : "ℹ️ Původní hráč byl z tohoto zařízení odebrán. Zadej jiné jméno."
     );
@@ -816,12 +834,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if ((remainingPlayersCount ?? 0) === 0) {
       await resetRoomData(rid);
       setPlayers([]);
-      setMsg(roomLanguage === "en" ? "✅ disconnected, room cleared" : "✅ odpojeno, místnost vyčištěna");
+      setMsg(uiLanguage === "en" ? "✅ disconnected, room cleared" : "✅ odpojeno, místnost vyčištěna");
       return;
     }
 
     await loadPlayers(rid);
-    setMsg(roomLanguage === "en" ? "✅ disconnected" : "✅ odpojeno");
+    setMsg(uiLanguage === "en" ? "✅ disconnected" : "✅ odpojeno");
   }
 
   async function createRound(rid: string, ltr: string) {
@@ -1053,7 +1071,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       setAllAnswers([]);
       setAllScores([]);
       setMyScoreSubmitted(false);
-      setMsg(roomLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
+      setMsg(uiLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
     }, ROLL_MS);
   }
 
@@ -1101,7 +1119,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         .eq("id", rid)
         .eq("status", "drawing");
 
-      setMsg(roomLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
+      setMsg(uiLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
     }, ROLL_MS);
   }
 
@@ -1158,7 +1176,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setMyScoreSubmitted(false);
 
     setMsg(
-      roomLanguage === "en"
+      uiLanguage === "en"
         ? `✅ STOP pressed by ${myPlayer.name}`
         : `✅ STOP stiskl ${myPlayer.name}`
     );
@@ -1182,7 +1200,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (error) {
       setMsg(
-        roomLanguage === "en"
+        uiLanguage === "en"
           ? `❌ saving scores: ${error.message}`
           : `❌ uložení bodů: ${error.message}`
       );
@@ -1280,13 +1298,33 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         .eq("id", rid)
         .eq("status", "drawing");
 
-      setMsg(roomLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
+      setMsg(uiLanguage === "en" ? "✅ letter drawn" : "✅ vylosováno");
     }, ROLL_MS);
   }
 
   function answerFor(playerId: string, category: Category) {
     return allAnswers.find((a) => a.player_id === playerId && a.category === category)?.value ?? "";
   }
+
+  const gameLanguageName =
+    roomLanguage === "en"
+      ? uiLanguage === "en"
+        ? "English"
+        : "Angličtina"
+      : uiLanguage === "en"
+        ? "Czech"
+        : "Čeština";
+
+  const gameLanguageInstruction =
+    roomLanguage === "en"
+      ? uiLanguage === "en"
+        ? "Write all answers in English."
+        : "Všechny odpovědi piš anglicky."
+      : uiLanguage === "en"
+        ? "Write all answers in Czech."
+        : "Všechny odpovědi piš česky.";
+
+  const gameLanguageFlag = roomLanguage === "en" ? "🇬🇧" : "🇨🇿";
 
   const roomIsFull = !myPlayer && players.length + waitingPlayers.length >= maxPlayers;
   const activeMyPlayer = Boolean(myPlayer && myPlayer.status !== "waiting");
@@ -1299,11 +1337,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
-      ? roomLanguage === "en"
+      ? uiLanguage === "en"
         ? `✅ STOP pressed by ${stoppedByName}`
         : `✅ STOP stiskl ${stoppedByName}`
       : roomStatus === "playing" && letter
-        ? roomLanguage === "en"
+        ? uiLanguage === "en"
           ? "✅ letter drawn"
           : "✅ vylosováno"
         : msg;
@@ -1315,11 +1353,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       <header style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
         <div>
           <h1 style={{ margin: 0 }}>
-            {roomLanguage === "en" ? "Room" : "Místnost"}: {code.toUpperCase()}
+            {uiLanguage === "en" ? "Room" : "Místnost"}: {code.toUpperCase()}
           </h1>
           {isOrganizer && (roomTier === "premium" || roomTier === "super_premium") && (
             <p style={{ fontWeight: 700, margin: "4px 0" }}>
-              {roomLanguage === "en"
+              {uiLanguage === "en"
                 ? "You paid, so you are the boss of this room!"
                 : "Ty platíš, ty jsi šéf této místnosti!"}
             </p>
@@ -1327,10 +1365,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           <p style={{ marginBottom: 4 }}>
             {myPlayer ? (
               <>
-                {roomLanguage === "en" ? "Signed in" : "Přihlášen"}: <b>{myPlayer.name}</b>
+                {uiLanguage === "en" ? "Signed in" : "Přihlášen"}: <b>{myPlayer.name}</b>
               </>
             ) : (
-              <>{roomLanguage === "en" ? "Not signed in" : "Nepřihlášen"}</>
+              <>{uiLanguage === "en" ? "Not signed in" : "Nepřihlášen"}</>
             )}
           </p>
         </div>
@@ -1340,7 +1378,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             type="button"
             onClick={() =>
               window.alert(
-                roomLanguage === "en"
+                uiLanguage === "en"
                   ? "Rating will be available after the app is released on Google Play."
                   : "Hodnocení bude dostupné po vydání aplikace na Google Play."
               )
@@ -1354,7 +1392,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               cursor: "pointer",
             }}
           >
-            {roomLanguage === "en" ? "Do you like the app?" : "Líbí se vám aplikace?"}
+            {uiLanguage === "en" ? "Do you like the app?" : "Líbí se vám aplikace?"}
           </button>
 
 {isOrganizer && (
@@ -1371,40 +1409,61 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 marginRight: 4,
               }}
             >
-              {roomLanguage === "en" ? "New game" : "Nová hra"}
+              {uiLanguage === "en" ? "New game" : "Nová hra"}
             </a>
           )}
           <button onClick={() => setShowRules((v) => !v)}>
-            {roomLanguage === "en" ? "Rules" : "Pravidla"}
+            {uiLanguage === "en" ? "Rules" : "Pravidla"}
           </button>
           <button onClick={copyInviteLink}>
-            {roomLanguage === "en" ? "Copy link" : "Kopírovat odkaz"}
+            {uiLanguage === "en" ? "Copy link" : "Kopírovat odkaz"}
           </button>
           <button onClick={shareInviteLink}>
-            {roomLanguage === "en" ? "Share" : "Sdílet"}
+            {uiLanguage === "en" ? "Share" : "Sdílet"}
           </button>
           {myPlayer && (
             <button onClick={switchLocalPlayer}>
-              {roomLanguage === "en"
+              {uiLanguage === "en"
                 ? "Change player on this device"
                 : "Změnit hráče na tomto zařízení"}
             </button>
           )}
           {myPlayer && (
             <button onClick={signOut}>
-              {roomLanguage === "en" ? "Disconnect" : "Odpojit"}
+              {uiLanguage === "en" ? "Disconnect" : "Odpojit"}
             </button>
           )}
         </div>
       </header>
 
+      <section
+        data-game-language-banner
+        style={{
+          marginTop: 12,
+          marginBottom: 16,
+          padding: "10px 12px",
+          border: "2px solid #2563eb",
+          borderRadius: 8,
+          background: "#eff6ff",
+        }}
+      >
+        <div style={{ fontWeight: 800 }}>
+          {uiLanguage === "en" ? "Game language" : "Jazyk hry"}:{" "}
+          {gameLanguageName} {gameLanguageFlag}
+        </div>
+
+        <div style={{ marginTop: 3 }}>
+          {gameLanguageInstruction}
+        </div>
+      </section>
+
       {showRules && (
         <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
           <h2 style={{ marginTop: 0 }}>
-            {roomLanguage === "en" ? "Rules" : "Pravidla"}
+            {uiLanguage === "en" ? "Rules" : "Pravidla"}
           </h2>
 
-          {roomLanguage === "en" ? (
+          {uiLanguage === "en" ? (
             <>
               <p>
                 The organiser shares the room link using the Copy link or Share button.
@@ -1475,12 +1534,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       {roomId && !myPlayer && (
         <section style={{ border: "1px solid #ddd", padding: 12, margin: "16px 0" }}>
           <h2 style={{ marginTop: 0 }}>
-            {roomLanguage === "en" ? "Join the game" : "Připojit se do hry"}
+            {uiLanguage === "en" ? "Join the game" : "Připojit se do hry"}
           </h2>
 
           {roomIsFull ? (
             <p>
-              {roomLanguage === "en" ? (
+              {uiLanguage === "en" ? (
                 <>
                   ❌ This room is full. The Free version allows up to {maxPlayers} players.
                   Upgrade to Premium for more players. More players, more fun! :-)
@@ -1495,13 +1554,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           ) : (
             <>
               <input
-                placeholder={roomLanguage === "en" ? "Your name" : "Tvoje jméno"}
+                placeholder={uiLanguage === "en" ? "Your name" : "Tvoje jméno"}
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
                 style={{ padding: 12, width: "100%", maxWidth: 320 }}
               />
               <button onClick={joinRoom} style={{ display: "block", marginTop: 10, padding: 12 }}>
-                {roomLanguage === "en" ? "Join" : "Připojit se"}
+                {uiLanguage === "en" ? "Join" : "Připojit se"}
               </button>
             </>
           )}
@@ -1518,17 +1577,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               onClick={startGame}
               style={{ marginBottom: 16, padding: 16, fontWeight: 700 }}
             >
-              {roomLanguage === "en" ? "Start game" : "Spustit hru"}
+              {uiLanguage === "en" ? "Start game" : "Spustit hru"}
             </button>
           )}
 
           <p style={{ opacity: 0.75 }}>
-            {roomLanguage === "en" ? "Available letters" : "Výběr písmen"}:{" "}
+            {uiLanguage === "en" ? "Available letters" : "Výběr písmen"}:{" "}
             {getLettersForLanguage(roomLanguage).join(", ")}
           </p>
 
           <h3>
-            {roomLanguage === "en" ? "Players" : "Hráči"} ({players.length})
+            {uiLanguage === "en" ? "Players" : "Hráči"} ({players.length})
           </h3>
           <ul>
             {players.map((p) => (
@@ -1539,14 +1598,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           {waitingPlayers.length > 0 && (
             <>
               <h3>
-                {roomLanguage === "en" ? "Waiting players" : "Čekající hráči"}{" "}
+                {uiLanguage === "en" ? "Waiting players" : "Čekající hráči"}{" "}
                 ({waitingPlayers.length})
               </h3>
               <ul>
                 {waitingPlayers.map((p) => (
                   <li key={p.id}>
                     ⏳ {p.name} –{" "}
-                    {roomLanguage === "en"
+                    {uiLanguage === "en"
                       ? "will join from the next round"
                       : "připojí se od dalšího kola"}
                   </li>
@@ -1558,11 +1617,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           {(roomTier === "premium" || roomTier === "super_premium") && myPlayer && (
             <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
               <h3 style={{ marginTop: 0 }}>
-                {roomLanguage === "en" ? "Room categories" : "Kategorie místnosti"}
+                {uiLanguage === "en" ? "Room categories" : "Kategorie místnosti"}
               </h3>
 
               <p style={{ opacity: 0.75 }}>
-                {roomLanguage === "en"
+                {uiLanguage === "en"
                   ? isOrganizer
                     ? roomTier === "premium"
                       ? "Premium: the basic categories are fixed. Extended categories are locked. Buying at least one extended category unlocks category selection and ordering."
@@ -1582,21 +1641,21 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     onClick={() => {
                       setPremiumCategoryUnlockTest(true);
                       setMsg(
-                        roomLanguage === "en"
+                        uiLanguage === "en"
                           ? "🧪 TEST: Premium now behaves as if one extended category had been purchased. Category selection and ordering are unlocked."
                           : "🧪 TEST: Premium se chová, jako by byla koupena 1 rozšířená kategorie. Volba kategorií a pořadí je odemčená."
                       );
                     }}
                     style={{ padding: 10, width: "100%" }}
                   >
-                    {roomLanguage === "en"
+                    {uiLanguage === "en"
                       ? "🧪 TEST: simulate purchasing one extended category"
                       : "🧪 TEST: simulovat nákup 1 rozšířené kategorie"}
                   </button>
 
                   {premiumCategoriesUnlockedForTest && (
                     <p style={{ opacity: 0.75, marginBottom: 0 }}>
-                      {roomLanguage === "en"
+                      {uiLanguage === "en"
                         ? "TEST active: you can change the number and order of categories."
                         : "TEST aktivní: můžeš měnit počet kategorií a jejich pořadí."}
                     </p>
@@ -1605,7 +1664,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               )}
 
               <h4>
-                {roomLanguage === "en" ? "Basic categories" : "Základní kategorie"}
+                {uiLanguage === "en" ? "Basic categories" : "Základní kategorie"}
               </h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {PREMIUM_CATEGORIES.map((category) => (
@@ -1654,7 +1713,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               {(roomTier === "premium" || roomTier === "super_premium") && (
                 <>
               <h4 style={{ marginTop: 16 }}>
-                {roomLanguage === "en" ? "Extended categories" : "Rozšířené kategorie"}
+                {uiLanguage === "en" ? "Extended categories" : "Rozšířené kategorie"}
               </h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
@@ -1712,7 +1771,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         }}
                       >
                         🔒 {categoryLabel(category)} –{" "}
-                        {roomLanguage === "en" ? "US$0.99" : "25 Kč"}
+                        {uiLanguage === "en" ? "US$0.99" : "25 Kč"}
                       </button>
                     ) : (
                       categoryLabel(category)
@@ -1727,14 +1786,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               {roomTier === "super_premium" && (
                 <>
               <h4 style={{ marginTop: 16 }}>
-                {roomLanguage === "en" ? "Custom categories" : "Vlastní kategorie"}
+                {uiLanguage === "en" ? "Custom categories" : "Vlastní kategorie"}
               </h4>
 
               {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
                 <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
                   <input
                     placeholder={
-                      roomLanguage === "en"
+                      uiLanguage === "en"
                         ? `Custom category ${index + 1}`
                         : `Vlastní kategorie ${index + 1}`
                     }
@@ -1749,7 +1808,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       type="button"
                       onClick={() => removeRoomCustomCategory(index)}
                       aria-label={
-                        roomLanguage === "en"
+                        uiLanguage === "en"
                           ? "Remove custom category"
                           : "Odebrat vlastní kategorii"
                       }
@@ -1767,7 +1826,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   onClick={addRoomCustomCategory}
                   style={{ marginTop: 8, padding: 10, width: "100%" }}
                 >
-                  {roomLanguage === "en"
+                  {uiLanguage === "en"
                     ? "+ Add custom category"
                     : "+ Přidat vlastní kategorii"}
                 </button>
@@ -1775,7 +1834,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
               {isOrganizer && visibleCustomCategoryCount >= 5 && (
                 <p style={{ opacity: 0.75, marginBottom: 0 }}>
-                  {roomLanguage === "en"
+                  {uiLanguage === "en"
                     ? "The maximum is 5 custom categories."
                     : "Maximum je 5 vlastních kategorií."}
                 </p>
@@ -1785,7 +1844,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               )}
 
               <h4 style={{ marginTop: 16 }}>
-                {roomLanguage === "en" ? "Category order" : "Pořadí kategorií"}
+                {uiLanguage === "en" ? "Category order" : "Pořadí kategorií"}
               </h4>
 
               <ol style={{ paddingLeft: 20 }}>
@@ -1835,14 +1894,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       {(roomStatus === "drawing" || roomStatus === "playing") && myPlayer && (
         <>
           {roomStatus === "playing" && (
-            <h2>{roomLanguage === "en" ? "Playing" : "Hrajeme"}</h2>
+            <h2>{uiLanguage === "en" ? "Playing" : "Hrajeme"}</h2>
           )}
 
           <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
 
           {roomStatus === "playing" && letter && activeMyPlayer && (
             <button onClick={redrawLetter} style={{ marginTop: 12, padding: 12 }}>
-              {roomLanguage === "en" ? "Draw again" : "Losovat znovu"}
+              {uiLanguage === "en" ? "Draw again" : "Losovat znovu"}
             </button>
           )}
 
@@ -1931,7 +1990,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
               {!allAnswersFilled && (
                 <p>
-                  {roomLanguage === "en"
+                  {uiLanguage === "en"
                     ? "You can press STOP after completing every field."
                     : "STOP půjde zmáčknout až po vyplnění všech polí."}
                 </p>
@@ -1939,7 +1998,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
               {allAnswersFilled && !allAnswersAtLeastTwoChars && (
                 <p>
-                  {roomLanguage === "en"
+                  {uiLanguage === "en"
                     ? "Every field must contain at least two characters."
                     : "Každé pole musí mít alespoň dvě písmena."}
                 </p>
@@ -1947,7 +2006,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
               {allAnswersFilled && allAnswersAtLeastTwoChars && !allAnswersStartWithLetter && (
                 <p>
-                  {roomLanguage === "en"
+                  {uiLanguage === "en"
                     ? "Every answer must begin with the drawn letter."
                     : "Každé pole musí začínat vylosovaným písmenem."}
                 </p>
@@ -1957,7 +2016,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {roomStatus === "playing" && letter && myPlayer?.status === "waiting" && (
             <p>
-              {roomLanguage === "en"
+              {uiLanguage === "en"
                 ? "⏳ You are waiting to join. You will enter the game from the next round."
                 : "⏳ Čekáš na připojení. Do hry tě pustíme od dalšího kola."}
             </p>
@@ -1965,7 +2024,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {roomStatus === "playing" && letter && !myPlayer && (
             <p>
-              {roomLanguage === "en"
+              {uiLanguage === "en"
                 ? "Enter your name above to submit answers."
                 : "Přihlaš se jménem nahoře, abys mohl psát odpovědi."}
             </p>
@@ -1975,10 +2034,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {roomStatus === "scoring" && myPlayer && (
         <>
-          <h2>{roomLanguage === "en" ? "Scoring" : "Bodování"}</h2>
+          <h2>{uiLanguage === "en" ? "Scoring" : "Bodování"}</h2>
 
           <p>
-            {roomLanguage === "en" ? "Submitted" : "Odesláno"}:{" "}
+            {uiLanguage === "en" ? "Submitted" : "Odesláno"}:{" "}
             {scoredPlayerIds.size}/{players.length}
           </p>
 
@@ -1987,10 +2046,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <li key={p.id}>
                 {scoredPlayerIds.has(p.id) ? "✅" : "⏳"} {p.name}
                 {scoredPlayerIds.has(p.id)
-                  ? roomLanguage === "en"
+                  ? uiLanguage === "en"
                     ? " – submitted"
                     : " – odeslal"
-                  : roomLanguage === "en"
+                  : uiLanguage === "en"
                     ? " – waiting"
                     : " – čekáme"}
               </li>
@@ -2010,7 +2069,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             }}
           >
             <h3 style={{ marginTop: 0, marginBottom: 8 }}>
-              {roomLanguage === "en" ? "Players’ answers" : "Odpovědi hráčů"}
+              {uiLanguage === "en" ? "Players’ answers" : "Odpovědi hráčů"}
             </h3>
             <div
               id="scoring-table-scroll"
@@ -2048,7 +2107,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       boxShadow: "3px 0 5px rgba(0, 0, 0, 0.12)",
                     }}
                   >
-                    {roomLanguage === "en" ? "Player" : "Hráč"}
+                    {uiLanguage === "en" ? "Player" : "Hráč"}
                   </th>
                   {activeCategories.map((c, index) => (
                     <th
@@ -2071,7 +2130,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     </th>
                   ))}
                   <th style={{ border: "1px solid #ccc", padding: 8 }}>
-                    {roomLanguage === "en" ? "Total points" : "Body celkem"}
+                    {uiLanguage === "en" ? "Total points" : "Body celkem"}
                   </th>
                 </tr>
               </thead>
@@ -2121,10 +2180,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           <div style={{ marginTop: 16 }}>
             <button onClick={() => setShowRoundHistory((v) => !v)} style={{ padding: 12 }}>
               {showRoundHistory
-                ? roomLanguage === "en"
+                ? uiLanguage === "en"
                   ? "Hide round history"
                   : "Skrýt historii kol"
-                : roomLanguage === "en"
+                : uiLanguage === "en"
                   ? "Show round history"
                   : "Zobrazit historii kol"}
             </button>
@@ -2133,7 +2192,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <div style={{ overflowX: "auto", marginTop: 12 }}>
                 {scoredRoundNumbers.length === 0 ? (
                   <p>
-                    {roomLanguage === "en"
+                    {uiLanguage === "en"
                       ? "No round scores have been saved yet."
                       : "Zatím nejsou uložené body za žádné kolo."}
                   </p>
@@ -2142,7 +2201,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     <thead>
                       <tr>
                         <th style={{ border: "1px solid #ccc", padding: 8 }}>
-                          {roomLanguage === "en" ? "Round" : "Kolo"}
+                          {uiLanguage === "en" ? "Round" : "Kolo"}
                         </th>
                         {players.map((p) => (
                           <th key={p.id} style={{ border: "1px solid #ccc", padding: 8 }}>
@@ -2186,7 +2245,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               }}
             >
               <h3 style={{ marginTop: 0 }}>
-                {roomLanguage === "en" ? "My scoring" : "Moje bodování"}
+                {uiLanguage === "en" ? "My scoring" : "Moje bodování"}
               </h3>
 
               {activeCategories.map((category, index) => (
@@ -2242,19 +2301,19 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     style={{ display: "block", padding: 10, marginTop: 4, width: "100%" }}
                   >
                     <option value={0}>
-                      {roomLanguage === "en" ? "0 points" : "0 bodů"}
+                      {uiLanguage === "en" ? "0 points" : "0 bodů"}
                     </option>
                     <option value={5}>
-                      {roomLanguage === "en" ? "5 points" : "5 bodů"}
+                      {uiLanguage === "en" ? "5 points" : "5 bodů"}
                     </option>
                     <option value={10}>
-                      {roomLanguage === "en" ? "10 points" : "10 bodů"}
+                      {uiLanguage === "en" ? "10 points" : "10 bodů"}
                     </option>
                     <option value={-5}>
-                      {roomLanguage === "en" ? "-5 points" : "-5 bodů"}
+                      {uiLanguage === "en" ? "-5 points" : "-5 bodů"}
                     </option>
                     <option value={-10}>
-                      {roomLanguage === "en" ? "-10 points" : "-10 bodů"}
+                      {uiLanguage === "en" ? "-10 points" : "-10 bodů"}
                     </option>
                   </select>
                 </label>
@@ -2272,11 +2331,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     background: "#fff",
                   }}
                 >
-                  {roomLanguage === "en" ? "Submit scoring" : "Odeslat bodování"}
+                  {uiLanguage === "en" ? "Submit scoring" : "Odeslat bodování"}
                 </button>
               ) : (
                 <p style={{ marginTop: 16 }}>
-                  {roomLanguage === "en"
+                  {uiLanguage === "en"
                     ? "✅ Scoring submitted. Waiting players will automatically join after pressing New round."
                     : "✅ Bodování odesláno. Případní čekající hráči se automaticky připojí po stisknutí tlačítka Nové kolo."}
                 </p>
@@ -2284,13 +2343,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             </section>
           ) : myPlayer?.status === "waiting" ? (
             <p>
-              {roomLanguage === "en"
+              {uiLanguage === "en"
                 ? "⏳ You are waiting to join. You will enter the game from the next round."
                 : "⏳ Čekáš na připojení. Do hry tě pustíme od dalšího kola."}
             </p>
           ) : (
             <p>
-              {roomLanguage === "en"
+              {uiLanguage === "en"
                 ? "Enter your name above to submit scoring."
                 : "Přihlaš se jménem nahoře, abys mohl odeslat bodování."}
             </p>
@@ -2298,7 +2357,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {!everyoneScored && (
             <p>
-              {roomLanguage === "en"
+              {uiLanguage === "en"
                 ? "Waiting for all players…"
                 : "Čekáme na všechny hráče…"}
             </p>
@@ -2306,7 +2365,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {everyoneScored && (
             <button onClick={nextRound} style={{ marginTop: 16, padding: 16 }}>
-              {roomLanguage === "en" ? "New round" : "Nové kolo"}
+              {uiLanguage === "en" ? "New round" : "Nové kolo"}
             </button>
           )}
         </>
