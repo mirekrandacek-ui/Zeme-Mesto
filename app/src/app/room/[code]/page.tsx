@@ -587,17 +587,29 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (roomStatus !== "drawing") return;
 
     if (round?.status === "skipped") {
-      setMsg("… losujeme znovu");
+      setMsg(
+        roomLanguage === "en"
+          ? "… drawing again"
+          : "… losujeme znovu"
+      );
       return;
     }
 
     if (round?.status === "done") {
-      setMsg("… losujeme další kolo");
+      setMsg(
+        roomLanguage === "en"
+          ? "… drawing a letter for the next round"
+          : "… losujeme další kolo"
+      );
       return;
     }
 
-    setMsg("… losujeme");
-  }, [roomStatus, round?.status, round?.id]);
+    setMsg(
+      roomLanguage === "en"
+        ? "… drawing a letter"
+        : "… losujeme"
+    );
+  }, [roomStatus, round?.status, round?.id, roomLanguage]);
 
   // Při novém kole vyčisti lokální odpovědi a bodování u všech hráčů
   useEffect(() => {
