@@ -1799,13 +1799,21 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {(roomStatus === "drawing" || roomStatus === "playing") && myPlayer && (
         <>
-          <h2>{roomStatus === "drawing" ? "Losujeme…" : "Hrajeme"}</h2>
+          <h2>
+            {roomLanguage === "en"
+              ? roomStatus === "drawing"
+                ? "Drawing a letter…"
+                : "Playing"
+              : roomStatus === "drawing"
+                ? "Losujeme…"
+                : "Hrajeme"}
+          </h2>
 
           <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
 
           {roomStatus === "playing" && letter && activeMyPlayer && (
             <button onClick={redrawLetter} style={{ marginTop: 12, padding: 12 }}>
-              Losovat znovu
+              {roomLanguage === "en" ? "Draw again" : "Losovat znovu"}
             </button>
           )}
 
@@ -1813,7 +1821,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             <>
               {activeCategories.map((category, index) => (
                 <label key={category} style={{ display: "block", marginTop: 10 }}>
-                  <div style={{ fontWeight: 700, marginBottom: 4 }}>{category}</div>
+                  <div style={{ fontWeight: 700, marginBottom: 4 }}>
+                    {categoryLabel(category)}
+                  </div>
                   <input
                     ref={(element) => {
                       answerInputRefs.current[category] = element;
@@ -1891,24 +1901,46 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               </button>
 
               {!allAnswersFilled && (
-                <p>STOP půjde zmáčknout až po vyplnění všech polí.</p>
+                <p>
+                  {roomLanguage === "en"
+                    ? "You can press STOP after completing every field."
+                    : "STOP půjde zmáčknout až po vyplnění všech polí."}
+                </p>
               )}
 
               {allAnswersFilled && !allAnswersAtLeastTwoChars && (
-                <p>Každé pole musí mít alespoň dvě písmena.</p>
+                <p>
+                  {roomLanguage === "en"
+                    ? "Every field must contain at least two characters."
+                    : "Každé pole musí mít alespoň dvě písmena."}
+                </p>
               )}
 
               {allAnswersFilled && allAnswersAtLeastTwoChars && !allAnswersStartWithLetter && (
-                <p>Každé pole musí začínat vylosovaným písmenem.</p>
+                <p>
+                  {roomLanguage === "en"
+                    ? "Every answer must begin with the drawn letter."
+                    : "Každé pole musí začínat vylosovaným písmenem."}
+                </p>
               )}
             </>
           )}
 
           {roomStatus === "playing" && letter && myPlayer?.status === "waiting" && (
-            <p>⏳ Čekáš na připojení. Do hry tě pustíme od dalšího kola.</p>
+            <p>
+              {roomLanguage === "en"
+                ? "⏳ You are waiting to join. You will enter the game from the next round."
+                : "⏳ Čekáš na připojení. Do hry tě pustíme od dalšího kola."}
+            </p>
           )}
 
-          {roomStatus === "playing" && letter && !myPlayer && <p>Přihlaš se jménem nahoře, abys mohl psát odpovědi.</p>}
+          {roomStatus === "playing" && letter && !myPlayer && (
+            <p>
+              {roomLanguage === "en"
+                ? "Enter your name above to submit answers."
+                : "Přihlaš se jménem nahoře, abys mohl psát odpovědi."}
+            </p>
+          )}
         </>
       )}
 
