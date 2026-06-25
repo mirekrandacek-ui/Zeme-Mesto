@@ -1314,20 +1314,29 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       ? uiLanguage === "en"
         ? "English"
         : "Angličtina"
-      : uiLanguage === "en"
-        ? "Czech"
-        : "Čeština";
+      : roomLanguage === "es"
+        ? uiLanguage === "en"
+          ? "Spanish"
+          : "Španělština"
+        : uiLanguage === "en"
+          ? "Czech"
+          : "Čeština";
 
   const gameLanguageInstruction =
     roomLanguage === "en"
       ? uiLanguage === "en"
         ? "Write all answers in English."
         : "Všechny odpovědi piš anglicky."
-      : uiLanguage === "en"
-        ? "Write all answers in Czech."
-        : "Všechny odpovědi piš česky.";
+      : roomLanguage === "es"
+        ? uiLanguage === "en"
+          ? "Write all answers in Spanish."
+          : "Všechny odpovědi piš španělsky."
+        : uiLanguage === "en"
+          ? "Write all answers in Czech."
+          : "Všechny odpovědi piš česky.";
 
-  const gameLanguageFlag = roomLanguage === "en" ? "🇬🇧" : "🇨🇿";
+  const gameLanguageFlag =
+    roomLanguage === "en" ? "🇬🇧" : roomLanguage === "es" ? "🇪🇸" : "🇨🇿";
 
   const roomIsFull = !myPlayer && players.length + waitingPlayers.length >= maxPlayers;
   const activeMyPlayer = Boolean(myPlayer && myPlayer.status !== "waiting");
