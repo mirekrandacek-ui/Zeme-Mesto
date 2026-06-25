@@ -43,11 +43,14 @@ const CZECH_LETTERS = [
 ];
 
 const ENGLISH_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const SPANISH_LETTERS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
 
-type RoomLanguage = "cs" | "en";
+type RoomLanguage = "cs" | "en" | "es";
 
 function getLettersForLanguage(language: RoomLanguage) {
-  return language === "cs" ? CZECH_LETTERS : ENGLISH_LETTERS;
+  if (language === "cs") return CZECH_LETTERS;
+  if (language === "es") return SPANISH_LETTERS;
+  return ENGLISH_LETTERS;
 }
 const ROLL_MS = 5000;
 const TICK_MS = 35;
