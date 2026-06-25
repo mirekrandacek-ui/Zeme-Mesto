@@ -77,6 +77,7 @@ export default function Home() {
   const [showOtherModes, setShowOtherModes] = useState(false);
 
   const en = language === "en";
+  const es = language === "es";
 
   useEffect(() => {
     const savedUiLanguage = window.localStorage.getItem("zm_uiLanguage");
@@ -211,6 +212,12 @@ export default function Home() {
               <br />
               Categories Word Game
             </>
+          ) : es ? (
+            <>
+              Basta:
+              <br />
+              Juego de Categorías
+            </>
           ) : (
             <span style={{ whiteSpace: "nowrap" }}>Země Město</span>
           )}
@@ -230,7 +237,9 @@ export default function Home() {
               window.alert(
                 en
                   ? "Rating will be available after the app is released on Google Play."
-                  : "Hodnocení bude dostupné po vydání aplikace na Google Play."
+                  : es
+                    ? "La valoración estará disponible después del lanzamiento en Google Play."
+                    : "Hodnocení bude dostupné po vydání aplikace na Google Play."
               )
             }
             style={{
@@ -242,10 +251,10 @@ export default function Home() {
               cursor: "pointer",
             }}
           >
-            {en ? "Do you like the app?" : "Líbí se vám aplikace?"}
+            {en ? "Do you like the app?" : es ? "¿Te gusta la aplicación?" : "Líbí se vám aplikace?"}
           </button>
 
-          <label aria-label={en ? "Application language" : "Jazyk aplikace"}>
+          <label aria-label={en ? "Application language" : es ? "Idioma de la aplicación" : "Jazyk aplikace"}>
             <select
               value={language}
               onChange={(e) => {
@@ -256,13 +265,20 @@ export default function Home() {
               style={{ padding: 10, borderRadius: 8 }}
             >
               <option value="en">🇬🇧 English</option>
+              <option value="es">🇪🇸 Español</option>
               <option value="cs">🇨🇿 Čeština</option>
             </select>
           </label>
         </div>
       </div>
 
-      <p>{en ? "Create a room, share the link with other players and play together." : "Vytvoř místnost, pošli odkaz ostatním hráčům a hrajte společně."}</p>
+      <p>
+        {en
+          ? "Create a room, share the link with other players and play together."
+          : es
+            ? "Crea una sala, comparte el enlace con los demás jugadores y jugad juntos."
+            : "Vytvoř místnost, pošli odkaz ostatním hráčům a hrajte společně."}
+      </p>
 
       <section
         style={{
