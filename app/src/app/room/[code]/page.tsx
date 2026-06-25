@@ -1556,7 +1556,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <input
                 placeholder={uiLanguage === "en" ? "Your name" : "Tvoje jméno"}
                 value={nameInput}
+                enterKeyHint="go"
                 onChange={(e) => setNameInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
+
+                  e.preventDefault();
+                  void joinRoom();
+                }}
                 style={{ padding: 12, width: "100%", maxWidth: 320 }}
               />
               <button onClick={joinRoom} style={{ display: "block", marginTop: 10, padding: 12 }}>
@@ -1950,6 +1957,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                             });
                           }, 80);
                         }
+                      } else if (canStop) {
+                        e.currentTarget.blur();
+                        void stopRound();
                       } else {
                         e.currentTarget.blur();
 
