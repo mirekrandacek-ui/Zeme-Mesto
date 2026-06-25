@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 
 type Tier = "free" | "premium" | "super_premium";
-type RoomLanguage = "cs" | "en";
+type RoomLanguage = "cs" | "en" | "es";
 
 const FREE_CATEGORIES = ["Země", "Město", "Jméno"];
 
@@ -94,7 +94,9 @@ export default function Home() {
         : detectedLanguage;
 
     const initialGameLanguage: RoomLanguage =
-      savedGameLanguage === "cs" || savedGameLanguage === "en"
+      savedGameLanguage === "cs" ||
+      savedGameLanguage === "en" ||
+      savedGameLanguage === "es"
         ? savedGameLanguage
         : initialUiLanguage;
 
@@ -351,6 +353,7 @@ export default function Home() {
             }}
           >
             <option value="en">🇬🇧 English</option>
+            <option value="es">🇪🇸 Español</option>
             <option value="cs">🇨🇿 Čeština</option>
           </select>
 
