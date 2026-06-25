@@ -236,7 +236,17 @@ export default function RoomPage() {
   }
 
 function normalizeForCompare(value: string) {
-  return value.trim().toLocaleUpperCase("cs-CZ");
+  const upperValue = value.trim().toLocaleUpperCase(
+    roomLanguage === "es" ? "es-ES" : "cs-CZ"
+  );
+
+  if (roomLanguage !== "es") return upperValue;
+
+  return upperValue
+    .replaceAll("Ñ", "__ENYE__")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replaceAll("__ENYE__", "Ñ");
 }
 
 function answerStartsWithLetter(answer: string | undefined, selectedLetter: string | null) {
