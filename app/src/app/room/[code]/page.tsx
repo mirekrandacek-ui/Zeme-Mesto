@@ -91,6 +91,24 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
   Barva: "Colour",
 };
 
+const CATEGORY_LABELS_ES: Record<string, string> = {
+  Země: "País",
+  Město: "Ciudad",
+  Jméno: "Nombre",
+  Zvíře: "Animal",
+  Věc: "Cosa",
+  Rostlina: "Planta",
+  "Film / Seriál": "Película / Serie",
+  "Herec / Herečka": "Actor / Actriz",
+  "Zpěvák / Zpěvačka / Kapela": "Cantante / Grupo",
+  Sport: "Deporte",
+  Značka: "Marca",
+  "Auto / Moto": "Coche / Moto",
+  "Řeka / Hora": "Río / Montaña",
+  Povolání: "Profesión",
+  Barva: "Color",
+};
+
 type RoomTier = "free" | "premium" | "super_premium";
 type Category = string;
 
@@ -197,8 +215,15 @@ export default function RoomPage() {
   }, []);
 
   function categoryLabel(category: string) {
-    if (roomLanguage !== "en") return category;
-    return CATEGORY_LABELS_EN[category] ?? category;
+    if (roomLanguage === "en") {
+      return CATEGORY_LABELS_EN[category] ?? category;
+    }
+
+    if (roomLanguage === "es") {
+      return CATEGORY_LABELS_ES[category] ?? category;
+    }
+
+    return category;
   }
 
   function normalizeAnswerStart(value: string) {
