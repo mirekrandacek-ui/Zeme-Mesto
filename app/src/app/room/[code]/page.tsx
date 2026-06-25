@@ -255,6 +255,26 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const normalizedAnswer = normalizeForCompare(answer ?? "");
   const normalizedLetter = normalizeForCompare(selectedLetter);
 
+  if (roomLanguage === "cs") {
+    if (normalizedLetter === "CH") {
+      return normalizedAnswer.startsWith("CH");
+    }
+
+    const baseLetters: Record<string, string> = {
+      Č: "C",
+      Ř: "R",
+      Š: "S",
+      Ž: "Z",
+    };
+
+    const allowedBaseLetter = baseLetters[normalizedLetter];
+
+    if (allowedBaseLetter) {
+      const firstLetter = normalizedAnswer.charAt(0);
+      return firstLetter === normalizedLetter || firstLetter === allowedBaseLetter;
+    }
+  }
+
   return normalizedAnswer.startsWith(normalizedLetter);
 }
 
