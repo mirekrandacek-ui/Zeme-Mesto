@@ -299,7 +299,7 @@ export default function Home() {
           }}
         >
           <h2 style={{ margin: 0 }}>
-            {en ? "Your mode" : "Tvůj režim"}: {tierLabel(tier)}
+            {en ? "Your mode" : es ? "Tu modo" : "Tvůj režim"}: {tierLabel(tier)}
           </h2>
 
           <span
@@ -311,7 +311,7 @@ export default function Home() {
               fontSize: 13,
             }}
           >
-            {en ? "Active" : "Aktivní"}
+            {en ? "Active" : es ? "Activo" : "Aktivní"}
           </span>
         </div>
 
@@ -319,7 +319,9 @@ export default function Home() {
           <p style={{ marginBottom: 0 }}>
             {en
               ? "Ads, up to 3 players. Fixed categories: Country, City, Name."
-              : "Reklamy, až 3 hráči. Pevné kategorie: Země, Město, Jméno."}
+              : es
+                ? "Con anuncios, hasta 3 jugadores. Categorías fijas: País, Ciudad, Nombre."
+                : "Reklamy, až 3 hráči. Pevné kategorie: Země, Město, Jméno."}
           </p>
         )}
 
@@ -327,7 +329,9 @@ export default function Home() {
           <p style={{ marginBottom: 0 }}>
             {en
               ? "No ads, up to 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant."
-              : "Bez reklam, max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina."}
+              : es
+                ? "Sin anuncios, hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta."
+                : "Bez reklam, max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina."}
           </p>
         )}
 
