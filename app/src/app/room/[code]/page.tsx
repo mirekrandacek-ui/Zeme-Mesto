@@ -2087,7 +2087,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               style={{
                 borderCollapse: "separate",
                 borderSpacing: 0,
-                minWidth: 700,
+                width: "max-content",
+                textAlign: "center",
+                whiteSpace: "nowrap",
               }}
             >
               <thead>
@@ -2144,8 +2146,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         zIndex: 2,
                         border: "1px solid #ccc",
                         padding: 8,
-                        minWidth: 96,
-                        width: 96,
                         background: "#fff",
                         whiteSpace: "nowrap",
                         boxShadow: "3px 0 5px rgba(0, 0, 0, 0.12)",
@@ -2197,7 +2197,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       : "Zatím nejsou uložené body za žádné kolo."}
                   </p>
                 ) : (
-                  <table style={{ borderCollapse: "collapse", minWidth: 500 }}>
+                  <table
+                    style={{
+                      borderCollapse: "collapse",
+                      width: "max-content",
+                      textAlign: "center",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     <thead>
                       <tr>
                         <th style={{ border: "1px solid #ccc", padding: 8 }}>
