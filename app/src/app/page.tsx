@@ -340,20 +340,24 @@ export default function Home() {
             <p>
               {en
                 ? "No ads, unlimited players, category selection and ordering, and up to 5 custom categories."
-                : "Bez reklam, neomezený počet hráčů, volba počtu a pořadí kategorií a možnost vytvořit až 5 vlastních kategorií."}
+                : es
+                  ? "Sin anuncios, jugadores sin límite, selección y orden de categorías, y hasta 5 categorías propias."
+                  : "Bez reklam, neomezený počet hráčů, volba počtu a pořadí kategorií a možnost vytvořit až 5 vlastních kategorií."}
             </p>
 
             <p style={{ marginBottom: 0 }}>
               {en
                 ? "Categories: Country, City, Name, Animal, Thing, Plant, Film / Series, Actor / Actress, Singer / Band, Sport, Brand, Car / Motorbike, River / Mountain, Job, Colour."
-                : "Kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina, Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport, Značka, Auto / Moto, Řeka / Hora, Povolání, Barva."}
+                : es
+                  ? "Categorías: País, Ciudad, Nombre, Animal, Cosa, Planta, Película / Serie, Actor / Actriz, Cantante / Banda, Deporte, Marca, Coche / Moto, Río / Montaña, Profesión, Color."
+                  : "Kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina, Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport, Značka, Auto / Moto, Řeka / Hora, Povolání, Barva."}
             </p>
           </div>
         )}
 
         <label style={{ display: "block", marginTop: 16 }}>
           <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
-            {en ? "Game language" : "Jazyk hry"}
+            {en ? "Game language" : es ? "Idioma del juego" : "Jazyk hry"}
           </span>
 
           <select
@@ -387,7 +391,9 @@ export default function Home() {
           >
             {en
               ? "This controls the room categories, alphabet and answer validation."
-              : "Určuje kategorie místnosti, abecedu a kontrolu odpovědí."}
+              : es
+                ? "Controla las categorías de la sala, el alfabeto y la validación de respuestas."
+                : "Určuje kategorie místnosti, abecedu a kontrolu odpovědí."}
           </span>
         </label>
 
@@ -405,10 +411,14 @@ export default function Home() {
           {creating
             ? en
               ? "Creating…"
-              : "Vytvářím…"
+              : es
+                ? "Creando…"
+                : "Vytvářím…"
             : en
               ? "Create room"
-              : "Vytvořit místnost"}
+              : es
+                ? "Crear sala"
+                : "Vytvořit místnost"}
         </button>
       </section>
 
@@ -428,10 +438,14 @@ export default function Home() {
         {showOtherModes
           ? en
             ? "Hide other modes"
-            : "Skrýt další režimy"
+            : es
+              ? "Ocultar otros modos"
+              : "Skrýt další režimy"
           : en
             ? "Show other modes"
-            : "Zobrazit další režimy"}
+            : es
+              ? "Mostrar otros modos"
+              : "Zobrazit další režimy"}
       </button>
 
       {showOtherModes && (
@@ -449,7 +463,9 @@ export default function Home() {
             <p>
               {en
                 ? "No ads, up to 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant. The local price will be shown during purchase."
-                : "Bez reklam, max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina."}
+                : es
+                  ? "Sin anuncios, hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta. El precio local se mostrará durante la compra."
+                  : "Bez reklam, max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina."}
             </p>
 
             <button
@@ -459,7 +475,9 @@ export default function Home() {
                 window.alert(
                   en
                     ? "Google Play purchases will be connected before release."
-                    : "Nákup přes Google Play zapojíme před vydáním aplikace."
+                    : es
+                      ? "Las compras de Google Play se conectarán antes del lanzamiento."
+                      : "Nákup přes Google Play zapojíme před vydáním aplikace."
                 )
               }
               style={{ padding: 12, width: "100%" }}
@@ -467,14 +485,20 @@ export default function Home() {
               {tier === "premium"
                 ? en
                   ? "Active"
-                  : "Aktivní"
+                  : es
+                    ? "Activo"
+                    : "Aktivní"
                 : tier === "super_premium"
                   ? en
                     ? "Included in Super Premium"
-                    : "Součást Super Premium"
+                    : es
+                      ? "Incluido en Super Premium"
+                      : "Součást Super Premium"
                   : en
                     ? "Buy Premium"
-                    : "Koupit Premium"}
+                    : es
+                      ? "Comprar Premium"
+                      : "Koupit Premium"}
             </button>
           </article>
 
@@ -490,13 +514,17 @@ export default function Home() {
             <p>
               {en
                 ? "No ads, unlimited players, all basic and extended categories included, category selection and ordering, and up to 5 custom categories. The local price will be shown during purchase."
-                : "Bez reklam, neomezený počet hráčů, všechny základní i rozšířené kategorie v ceně, volba počtu a pořadí kategorií a možnost vytvořit až 5 vlastních kategorií."}
+                : es
+                  ? "Sin anuncios, jugadores sin límite, todas las categorías básicas y ampliadas incluidas, selección y orden de categorías, y hasta 5 categorías propias. El precio local se mostrará durante la compra."
+                  : "Bez reklam, neomezený počet hráčů, všechny základní i rozšířené kategorie v ceně, volba počtu a pořadí kategorií a možnost vytvořit až 5 vlastních kategorií."}
             </p>
 
             <p>
               {en
                 ? "Categories: Country, City, Name, Animal, Thing, Plant, Film / Series, Actor / Actress, Singer / Band, Sport, Brand, Car / Motorbike, River / Mountain, Job, Colour."
-                : "Kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina, Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport, Značka, Auto / Moto, Řeka / Hora, Povolání, Barva."}
+                : es
+                  ? "Categorías: País, Ciudad, Nombre, Animal, Cosa, Planta, Película / Serie, Actor / Actriz, Cantante / Banda, Deporte, Marca, Coche / Moto, Río / Montaña, Profesión, Color."
+                  : "Kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina, Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport, Značka, Auto / Moto, Řeka / Hora, Povolání, Barva."}
             </p>
 
             <button
@@ -506,7 +534,9 @@ export default function Home() {
                 window.alert(
                   en
                     ? "Google Play purchases will be connected before release."
-                    : "Nákup přes Google Play zapojíme před vydáním aplikace."
+                    : es
+                      ? "Las compras de Google Play se conectarán antes del lanzamiento."
+                      : "Nákup přes Google Play zapojíme před vydáním aplikace."
                 )
               }
               style={{ padding: 12, width: "100%" }}
@@ -514,14 +544,20 @@ export default function Home() {
               {tier === "super_premium"
                 ? en
                   ? "Active"
-                  : "Aktivní"
+                  : es
+                    ? "Activo"
+                    : "Aktivní"
                 : tier === "premium"
                   ? en
                     ? "Upgrade to Super Premium"
-                    : "Upgradovat na Super Premium za 60 Kč"
+                    : es
+                      ? "Pasar a Super Premium por 60 Kč"
+                      : "Upgradovat na Super Premium za 60 Kč"
                   : en
                     ? "Buy Super Premium"
-                    : "Koupit Super Premium"}
+                    : es
+                      ? "Comprar Super Premium"
+                      : "Koupit Super Premium"}
             </button>
           </article>
         </section>
@@ -529,11 +565,11 @@ export default function Home() {
 
       <details style={{ marginTop: 20, opacity: 0.75 }}>
         <summary style={{ cursor: "pointer" }}>
-          {en ? "Developer mode" : "Vývojářský režim"}
+          {en ? "Developer mode" : es ? "Modo desarrollador" : "Vývojářský režim"}
         </summary>
 
         <label style={{ display: "block", marginTop: 10 }}>
-          {en ? "Test active mode" : "Testovací aktivní režim"}
+          {en ? "Test active mode" : es ? "Modo activo de prueba" : "Testovací aktivní režim"}
           <select
             value={tier}
             onChange={(e) => setTier(e.target.value as Tier)}
@@ -552,10 +588,10 @@ export default function Home() {
       </details>
 
       <div style={{ marginTop: 28, borderTop: "1px solid #ddd", paddingTop: 20 }}>
-        <h2>{en ? "Join a room" : "Připojit se k místnosti"}</h2>
+        <h2>{en ? "Join a room" : es ? "Unirse a una sala" : "Připojit se k místnosti"}</h2>
 
         <input
-          placeholder={en ? "Room code" : "Kód místnosti"}
+          placeholder={en ? "Room code" : es ? "Código de sala" : "Kód místnosti"}
           value={roomCodeInput}
           onChange={(e) => setRoomCodeInput(e.target.value)}
           onKeyDown={(e) => {
@@ -565,7 +601,7 @@ export default function Home() {
         />
 
         <button onClick={joinRoomByCode} style={{ padding: 14, marginTop: 12, width: "100%" }}>
-          {en ? "Join" : "Připojit se"}
+          {en ? "Join" : es ? "Unirse" : "Připojit se"}
         </button>
       </div>
 
