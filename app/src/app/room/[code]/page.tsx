@@ -210,7 +210,14 @@ export default function RoomPage() {
   const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
+    const urlUiLanguage = new URLSearchParams(window.location.search).get("ui");
     const savedUiLanguage = window.localStorage.getItem("zm_uiLanguage");
+
+    if (urlUiLanguage === "cs" || urlUiLanguage === "en" || urlUiLanguage === "es") {
+      setUiLanguage(urlUiLanguage);
+      window.localStorage.setItem("zm_uiLanguage", urlUiLanguage);
+      return;
+    }
 
     if (savedUiLanguage === "cs" || savedUiLanguage === "en" || savedUiLanguage === "es") {
       setUiLanguage(savedUiLanguage);

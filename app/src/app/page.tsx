@@ -87,10 +87,12 @@ export default function Home() {
     const detectedLanguage: RoomLanguage =
       deviceLanguage.startsWith("cs") || deviceLanguage.startsWith("sk")
         ? "cs"
-        : "en";
+        : deviceLanguage.startsWith("es")
+          ? "es"
+          : "en";
 
     const initialUiLanguage: RoomLanguage =
-      savedUiLanguage === "cs" || savedUiLanguage === "en"
+      savedUiLanguage === "cs" || savedUiLanguage === "en" || savedUiLanguage === "es"
         ? savedUiLanguage
         : detectedLanguage;
 
@@ -139,7 +141,7 @@ export default function Home() {
     if (creating) return;
 
     setCreating(true);
-    setStatus(en ? "creating room…" : "vytvářím místnost…");
+    setStatus(en ? "creating room…" : es ? "creando sala…" : "vytvářím místnost…");
 
     const roomSettings = getRoomSettings();
 
@@ -161,7 +163,7 @@ export default function Home() {
           localStorage.setItem(`zm_roomCreatorToken_${roomCode}`, creatorToken);
         }
 
-        router.push(`/room/${roomCode}`);
+        router.push(`/room/${roomCode}?ui=${language}`);
         return;
       }
 
@@ -187,7 +189,7 @@ export default function Home() {
       return;
     }
 
-    router.push(`/room/${cleaned}`);
+    router.push(`/room/${cleaned}?ui=${language}`);
   }
 
   return (
