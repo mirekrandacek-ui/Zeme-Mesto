@@ -212,7 +212,7 @@ export default function RoomPage() {
   useEffect(() => {
     const savedUiLanguage = window.localStorage.getItem("zm_uiLanguage");
 
-    if (savedUiLanguage === "cs" || savedUiLanguage === "en") {
+    if (savedUiLanguage === "cs" || savedUiLanguage === "en" || savedUiLanguage === "es") {
       setUiLanguage(savedUiLanguage);
       return;
     }
@@ -222,7 +222,9 @@ export default function RoomPage() {
     setUiLanguage(
       deviceLanguage.startsWith("cs") || deviceLanguage.startsWith("sk")
         ? "cs"
-        : "en"
+        : deviceLanguage.startsWith("es")
+          ? "es"
+          : "en"
     );
   }, []);
 
