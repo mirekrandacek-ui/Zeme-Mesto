@@ -257,6 +257,10 @@ export default function Home() {
           </button>
 
           <label aria-label={en ? "Application language" : es ? "Idioma de la aplicación" : "Jazyk aplikace"}>
+            <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
+              {en ? "Application language" : es ? "Idioma de la aplicación" : "Jazyk aplikace"}
+            </span>
+
             <select
               value={language}
               onChange={(e) => {
@@ -392,10 +396,10 @@ export default function Home() {
             }}
           >
             {en
-              ? "This controls the room categories, alphabet and answer validation."
+              ? "You will write answers in this language and it will choose the alphabet type."
               : es
-                ? "Controla las categorías de la sala, el alfabeto y la validación de respuestas."
-                : "Určuje kategorie místnosti, abecedu a kontrolu odpovědí."}
+                ? "Escribirás las respuestas en este idioma y se elegirá el tipo de alfabeto según él."
+                : "V tomto jazyce budeš psát odpovědi a zvolí se podle něj typ abecedy."}
           </span>
         </label>
 
