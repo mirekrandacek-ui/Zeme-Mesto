@@ -64,6 +64,8 @@ function getLettersForLanguage(language: RoomLanguage) {
 }
 const ROLL_MS = 5000;
 const TICK_MS = 35;
+const FREE_ROUND_BLOCK_SIZE = 3;
+const FREE_INITIAL_UNLOCKED_ROUNDS = 3;
 
 const DEFAULT_ACTIVE_CATEGORIES = ["Země", "Město", "Jméno"];
 
@@ -194,6 +196,7 @@ export default function RoomPage() {
   const [msg, setMsg] = useState("");
   const [showRules, setShowRules] = useState(false);
   const [showRoundHistory, setShowRoundHistory] = useState(false);
+  const [freeUnlockedRounds, setFreeUnlockedRounds] = useState(FREE_INITIAL_UNLOCKED_ROUNDS);
 
   const [round, setRound] = useState<RoundLite | null>(null);
   const [answers, setAnswers] = useState<Record<Category, string>>(emptyAnswers());
@@ -432,6 +435,19 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     setLocalCreatorToken(localStorage.getItem(`zm_roomCreatorToken_${code}`));
   }, [code]);
+
+  useEffect(() => {
+    if (!roomId || roomTier !== "free") return;
+
+    const saved = window.localStorage.getItem(`zm_freeUnlockedRounds_${roomId}`);
+    const parsed = Number(saved);
+
+    setFreeUnlockedRounds(
+      Number.isFinite(parsed) && parsed >= FREE_INITIAL_UNLOCKED_ROUNDS
+        ? parsed
+        : FREE_INITIAL_UNLOCKED_ROUNDS
+    );
+  }, [roomId, roomTier]);
 
   useEffect(() => {
     setAnswers((current) => alignStringRecord(current, activeCategories));
@@ -1283,6 +1299,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   );
 
   const everyoneScored = players.length > 0 && scoredPlayerIds.size === players.length;
+  const currentRoundNo = round?.round_no ?? 0;
+  const freeLimitReached =
+    roomTier === "free" &&
+    roomStatus === "scoring" &&
+    everyoneScored &&
+    currentRoundNo >= freeUnlockedRounds;
 
   const stoppedByName =
     allAnswers.find((a) => a.category === "__STOP_BY__")?.value ?? "";
@@ -1307,9 +1329,24 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     )
   ).sort((a, b) => a - b);
 
+  function unlockFreeRoundsByRewardedAd() {
+    if (!roomId || !round?.round_no) return;
+
+    const nextLimit = Math.max(freeUnlockedRounds, round.round_no) + FREE_ROUND_BLOCK_SIZE;
+
+    setFreeUnlockedRounds(nextLimit);
+    window.localStorage.setItem(`zm_freeUnlockedRounds_${roomId}`, String(nextLimit));
+    setMsg(t("freeRewardUnlocked"));
+  }
+
   async function nextRound() {
     if (!roomId || !round?.id || !everyoneScored || !myPlayer) {
       setMsg(t("joinNameFirst"));
+      return;
+    }
+
+    if (roomTier === "free" && round.round_no >= freeUnlockedRounds) {
+      setMsg(t("freeLimitReachedMessage"));
       return;
     }
 
