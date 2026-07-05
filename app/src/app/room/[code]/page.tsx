@@ -222,6 +222,8 @@ export default function RoomPage() {
   const [freeUnlockedRounds, setFreeUnlockedRounds] = useState(FREE_INITIAL_UNLOCKED_ROUNDS);
 
   const [round, setRound] = useState<RoundLite | null>(null);
+  const [serverTimeOffsetMs, setServerTimeOffsetMs] = useState(0);
+  const [timerNowMs, setTimerNowMs] = useState(0);
   const [answers, setAnswers] = useState<Record<Category, string>>(emptyAnswers());
   const [allAnswers, setAllAnswers] = useState<AnswerRow[]>([]);
 
@@ -476,6 +478,61 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setAnswers((current) => alignStringRecord(current, activeCategories));
     setScores((current) => alignScoreRecord(current, activeCategories));
   }, [activeCategories]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let cancelled = false;
+
+    async function syncServerTime() {
+      const startedAt = Date.now();
+      const { data, error } = await (supabase as any).rpc("get_server_now");
+      const finishedAt = Date.now();
+
+      if (cancelled || error || !data) return;
+
+      const serverNowMs = new Date(String(data)).getTime();
+      const localMiddleMs = startedAt + (finishedAt - startedAt) / 2;
+
+      if (Number.isFinite(serverNowMs)) {
+        setServerTimeOffsetMs(serverNowMs - localMiddleMs);
+      }
+    }
+
+    void syncServerTime();
+
+    const interval = window.setInterval(() => {
+      void syncServerTime();
+    }, 60000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (roomStatus !== "playing" || !round?.deadline_at) return;
+
+    setTimerNowMs(Date.now());
+
+    const interval = window.setInterval(() => {
+      setTimerNowMs(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [roomStatus, round?.deadline_at]);
+
+  const roundDeadlineMs = round?.deadline_at ? new Date(round.deadline_at).getTime() : null;
+  const roundTimerRemainingSeconds =
+    roundDeadlineMs !== null && timerNowMs > 0
+      ? Math.max(0, Math.ceil((roundDeadlineMs - (timerNowMs + serverTimeOffsetMs)) / 1000))
+      : null;
+  const roundTimerProgressPercent =
+    roundTimeLimitSeconds !== null && roundTimerRemainingSeconds !== null
+      ? Math.max(0, Math.min(100, (roundTimerRemainingSeconds / roundTimeLimitSeconds) * 100))
+      : null;
 
   async function loadRoomByCode() {
     const { data, error } = await supabase
@@ -2119,17 +2176,42 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {(roomStatus === "drawing" || roomStatus === "playing") && myPlayer && (
         <>
-          {roomStatus === "playing" && (
-            <h2>{t("playing")}</h2>
-          )}
-
-          <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
-
-          {roomStatus === "playing" && letter && activeMyPlayer && (
-            <button onClick={redrawLetter} style={{ marginTop: 12, padding: 12 }}>
-              {t("drawAgain")}
-            </button>
-          )}
+            {roomStatus === "playing" && letter ? (
+              <section
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 20,
+                  background: "#fff",
+                  padding: "8px 0 10px",
+                  borderBottom: "1px solid #ddd",
+                }}
+              >
+                <h2 style={{ margin: "0 0 8px" }}>{t("playing")}</h2>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ fontSize: 56, fontWeight: "bold", lineHeight: 1 }}>
+                    {letter}
+                  </div>
+                  {activeMyPlayer && (
+                    <button onClick={redrawLetter} style={{ padding: 12 }}>
+                      {t("drawAgain")}
+                    </button>
+                  )}
+                  {roundTimerRemainingSeconds !== null && (
+                    <div style={{ marginLeft: "auto", fontSize: 24, fontWeight: 800, fontVariantNumeric: "tabular-nums" }}>
+                      {Math.floor(roundTimerRemainingSeconds / 60)}:{String(roundTimerRemainingSeconds % 60).padStart(2, "0")}
+                    </div>
+                  )}
+                </div>
+                {roundTimerProgressPercent !== null && (
+                  <div style={{ height: 6, marginTop: 8, borderRadius: 999, background: "#e5e7eb", overflow: "hidden" }}>
+                    <div style={{ width: `${roundTimerProgressPercent}%`, height: "100%", background: "#16a34a" }} />
+                  </div>
+                )}
+              </section>
+            ) : (
+              <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
+            )}
 
           {roomStatus === "playing" && letter && activeMyPlayer && round && (
             <>
