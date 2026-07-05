@@ -1342,6 +1342,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const everyoneScored = players.length > 0 && scoredPlayerIds.size === players.length;
   const currentRoundNo = round?.round_no ?? 0;
+  const isFinalScoringRound =
+    roomStatus === "scoring" &&
+    everyoneScored &&
+    roundCountLimit !== null &&
+    currentRoundNo >= roundCountLimit;
+
   const freeLimitReached =
     roomTier === "free" &&
     everyoneScored &&
@@ -1364,6 +1370,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .reduce((sum, s) => sum + Number(s.points ?? 0), 0);
   }
 
+  const finalStandings = players
+    .map((player) => ({
+      ...player,
+      totalPoints: playerTotalPoints(player.id),
+    }))
+    .sort((a, b) => b.totalPoints - a.totalPoints || a.name.localeCompare(b.name, "cs-CZ"));
+
   const scoredRoundNumbers = Array.from(
     new Set(
       allRoomScores
@@ -1381,6 +1394,29 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setShowFreeLimitUpsell(false);
     window.localStorage.setItem(`zm_freeUnlockedRounds_${roomId}`, String(nextLimit));
     setMsg(t("freeRewardUnlocked"));
+  }
+
+  async function finishGame() {
+    if (!roomId || !round?.id || !everyoneScored || !myPlayer) {
+      setMsg(t("joinNameFirst"));
+      return;
+    }
+
+    await supabase.from("rounds").update({ status: "done" }).eq("id", round.id);
+
+    const { error } = await supabase
+      .from("rooms")
+      .update({ status: "finished" })
+      .eq("id", roomId);
+
+    if (error) {
+      setMsg(`${t("finishGameErrorPrefix")}: ${error.message}`);
+      return;
+    }
+
+    setRoomStatus("finished");
+    setMsg(t("gameFinishedMessage"));
+    await loadRoomScores(roomId);
   }
 
   async function nextRound() {
@@ -2215,6 +2251,32 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </>
       )}
 
+        {roomStatus === "finished" && myPlayer && (
+          <section style={{ border: "2px solid #16a34a", borderRadius: 8, padding: 12, marginTop: 16, background: "#f0fdf4" }}>
+            <h2 style={{ marginTop: 0 }}>{t("finalResults")}</h2>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 320 }}>
+                <thead>
+                  <tr>
+                    <th style={{ border: "1px solid #ccc", padding: 8, textAlign: "left" }}>{t("position")}</th>
+                    <th style={{ border: "1px solid #ccc", padding: 8, textAlign: "left" }}>{t("player")}</th>
+                    <th style={{ border: "1px solid #ccc", padding: 8, textAlign: "right" }}>{t("totalPoints")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {finalStandings.map((player, index) => (
+                    <tr key={player.id}>
+                      <td style={{ border: "1px solid #ccc", padding: 8 }}>{index + 1}.</td>
+                      <td style={{ border: "1px solid #ccc", padding: 8 }}>{player.name}</td>
+                      <td style={{ border: "1px solid #ccc", padding: 8, textAlign: "right" }}><b>{player.totalPoints}</b></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
       {roomStatus === "scoring" && myPlayer && (
         <>
           <h2>{t("scoring")}</h2>
@@ -2578,6 +2640,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     {t("backHome")}
                   </button>
                 </section>
+              ) : isFinalScoringRound ? (
+                <button onClick={finishGame} style={{ marginTop: 16, padding: 16, fontWeight: 700 }}>
+                  {t("finishGame")}
+                </button>
               ) : (
                 <button onClick={nextRound} style={{ marginTop: 16, padding: 16 }}>
                   {t("newRound")}
