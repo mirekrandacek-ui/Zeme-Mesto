@@ -18,7 +18,7 @@ type RoomStatus = "lobby" | "drawing" | "playing" | "scoring" | "finished";
 type PlayerStatus = "active" | "waiting";
 type Player = { id: string; name: string; status?: PlayerStatus };
 type MyPlayer = { id: string; name: string; status?: PlayerStatus };
-type RoundLite = { id: string; round_no: number; letter: string; status: string };
+type RoundLite = { id: string; round_no: number; letter: string; status: string; deadline_at?: string | null };
 type AnswerRow = { player_id: string; category: string; value: string };
 type ScoreRow = { player_id: string; round?: number; category: string; points: number };
 
@@ -580,7 +580,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function loadCurrentRound(rid: string) {
     const { data, error } = await supabase
       .from("rounds")
-      .select("id,round_no,letter,status")
+      .select("id,round_no,letter,status,deadline_at")
       .eq("room_id", rid)
       .order("round_no", { ascending: false })
       .limit(1);
@@ -965,7 +965,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const { data, error } = await supabase
       .from("rounds")
       .insert({ room_id: rid, round_no: nextNo, letter: ltr, status: "playing" })
-      .select("id,round_no,letter,status")
+      .select("id,round_no,letter,status,deadline_at")
       .single();
 
     if (error || !data) {
