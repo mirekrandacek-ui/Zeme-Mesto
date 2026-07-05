@@ -235,6 +235,7 @@ export default function RoomPage() {
 
   const [rollingLetter, setRollingLetter] = useState("A");
   const rollIntervalRef = useRef<number | null>(null);
+  const autoStopRoundIdRef = useRef<string | null>(null);
   const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
@@ -533,6 +534,23 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     roundTimeLimitSeconds !== null && roundTimerRemainingSeconds !== null
       ? Math.max(0, Math.min(100, (roundTimerRemainingSeconds / roundTimeLimitSeconds) * 100))
       : null;
+
+  useEffect(() => {
+    if (
+      roomStatus !== "playing" ||
+      !round?.id ||
+      !round.deadline_at ||
+      !myPlayer ||
+      myPlayer.status === "waiting" ||
+      roundTimerRemainingSeconds !== 0 ||
+      autoStopRoundIdRef.current === round.id
+    ) {
+      return;
+    }
+
+    autoStopRoundIdRef.current = round.id;
+    void stopRound();
+  }, [roomStatus, round?.id, round?.deadline_at, roundTimerRemainingSeconds, myPlayer?.id, myPlayer?.status]);
 
   async function loadRoomByCode() {
     const { data, error } = await supabase
