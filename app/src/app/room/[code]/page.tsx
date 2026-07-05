@@ -2199,38 +2199,45 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       {(roomStatus === "drawing" || roomStatus === "playing") && myPlayer && (
         <>
             {roomStatus === "playing" && letter ? (
-              <section
-                style={{
-                  position: "sticky",
-                  top: 0,
-                  zIndex: 20,
-                  background: "#fff",
-                  padding: "8px 0 10px",
-                  borderBottom: "1px solid #ddd",
-                }}
-              >
-                <h2 style={{ margin: "0 0 8px" }}>{t("playing")}</h2>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ fontSize: 56, fontWeight: "bold", lineHeight: 1 }}>
-                    {letter}
+              <>
+                <section
+                  style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 50,
+                    background: "#fff",
+                    padding: "calc(8px + env(safe-area-inset-top)) 24px 10px",
+                    boxSizing: "border-box",
+                    borderBottom: "1px solid #ddd",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+                  }}
+                >
+                  <h2 style={{ margin: "0 0 8px" }}>{t("playing")}</h2>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ fontSize: 56, fontWeight: "bold", lineHeight: 1 }}>
+                      {letter}
+                    </div>
+                    {activeMyPlayer && (
+                      <button onClick={redrawLetter} style={{ padding: 12 }}>
+                        {t("drawAgain")}
+                      </button>
+                    )}
+                    {roundTimerRemainingSeconds !== null && (
+                      <div style={{ marginLeft: "auto", fontSize: 24, fontWeight: 800, fontVariantNumeric: "tabular-nums" }}>
+                        {Math.floor(roundTimerRemainingSeconds / 60)}:{String(roundTimerRemainingSeconds % 60).padStart(2, "0")}
+                      </div>
+                    )}
                   </div>
-                  {activeMyPlayer && (
-                    <button onClick={redrawLetter} style={{ padding: 12 }}>
-                      {t("drawAgain")}
-                    </button>
-                  )}
-                  {roundTimerRemainingSeconds !== null && (
-                    <div style={{ marginLeft: "auto", fontSize: 24, fontWeight: 800, fontVariantNumeric: "tabular-nums" }}>
-                      {Math.floor(roundTimerRemainingSeconds / 60)}:{String(roundTimerRemainingSeconds % 60).padStart(2, "0")}
+                  {roundTimerProgressPercent !== null && (
+                    <div style={{ height: 6, marginTop: 8, borderRadius: 999, background: "#e5e7eb", overflow: "hidden" }}>
+                      <div style={{ width: `${roundTimerProgressPercent}%`, height: "100%", background: "#16a34a" }} />
                     </div>
                   )}
-                </div>
-                {roundTimerProgressPercent !== null && (
-                  <div style={{ height: 6, marginTop: 8, borderRadius: 999, background: "#e5e7eb", overflow: "hidden" }}>
-                    <div style={{ width: `${roundTimerProgressPercent}%`, height: "100%", background: "#16a34a" }} />
-                  </div>
-                )}
-              </section>
+                </section>
+                <div style={{ height: 124 }} />
+              </>
             ) : (
               <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
             )}
