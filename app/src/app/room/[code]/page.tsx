@@ -1417,6 +1417,19 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const gameLanguageFlag =
     roomLanguage === "en" ? "🇬🇧" : roomLanguage === "es" ? "🇪🇸" : "🇨🇿";
 
+  const diacriticGameLanguages = new Set<string>([
+    "cs",
+    "es",
+    "de",
+    "fr",
+    "pl",
+    "it",
+    "pt-BR",
+    "nl",
+    "tr",
+  ]);
+  const gameLanguageHasDiacritics = diacriticGameLanguages.has(roomLanguage);
+
   const roomIsFull = !myPlayer && players.length + waitingPlayers.length >= maxPlayers;
   const activeMyPlayer = Boolean(myPlayer && myPlayer.status !== "waiting");
 
@@ -1536,6 +1549,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         <div style={{ marginTop: 3 }}>
           {gameLanguageInstruction}
         </div>
+
+          {roomStatus === "lobby" && gameLanguageHasDiacritics && (
+            <div style={{ marginTop: 6, fontSize: 13, opacity: 0.8 }}>
+              {t("diacriticsOptional")}
+            </div>
+          )}
       </section>
 
       {showRules && (
