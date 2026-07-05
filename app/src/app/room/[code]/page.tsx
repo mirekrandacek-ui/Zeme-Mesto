@@ -196,6 +196,7 @@ export default function RoomPage() {
   const [msg, setMsg] = useState("");
   const [showRules, setShowRules] = useState(false);
   const [showRoundHistory, setShowRoundHistory] = useState(false);
+  const [showFreeLimitUpsell, setShowFreeLimitUpsell] = useState(false);
   const [freeUnlockedRounds, setFreeUnlockedRounds] = useState(FREE_INITIAL_UNLOCKED_ROUNDS);
 
   const [round, setRound] = useState<RoundLite | null>(null);
@@ -1305,6 +1306,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     everyoneScored &&
     currentRoundNo >= freeUnlockedRounds;
 
+  const shouldShowFreeLimitUpsell = freeLimitReached || showFreeLimitUpsell;
+
   const stoppedByName =
     allAnswers.find((a) => a.category === "__STOP_BY__")?.value ?? "";
 
@@ -1334,6 +1337,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const nextLimit = Math.max(freeUnlockedRounds, round.round_no) + FREE_ROUND_BLOCK_SIZE;
 
     setFreeUnlockedRounds(nextLimit);
+    setShowFreeLimitUpsell(false);
     window.localStorage.setItem(`zm_freeUnlockedRounds_${roomId}`, String(nextLimit));
     setMsg(t("freeRewardUnlocked"));
   }
@@ -1345,6 +1349,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     }
 
     if (roomTier === "free" && round.round_no >= freeUnlockedRounds) {
+      setShowFreeLimitUpsell(true);
       setMsg(t("freeLimitReachedMessage"));
       return;
     }
@@ -2333,11 +2338,57 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             </p>
           )}
 
-          {everyoneScored && (
-            <button onClick={nextRound} style={{ marginTop: 16, padding: 16 }}>
-              {t("newRound")}
-            </button>
-          )}
+            {everyoneScored && (
+              shouldShowFreeLimitUpsell ? (
+                <section
+                  style={{
+                    marginTop: 16,
+                    padding: 16,
+                    border: "2px solid #f59e0b",
+                    borderRadius: 12,
+                    background: "#fff7ed",
+                  }}
+                >
+                  <h3 style={{ marginTop: 0 }}>{t("freeLimitTitle")}</h3>
+                  <p>{t("freeLimitText")}</p>
+
+                  <button
+                    type="button"
+                    onClick={() => window.alert(t("premiumComingSoon"))}
+                    style={{ padding: 14, width: "100%", fontWeight: 700 }}
+                  >
+                    {t("freeUpgradeButton")}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={unlockFreeRoundsByRewardedAd}
+                    style={{ marginTop: 10, padding: 14, width: "100%", fontWeight: 700 }}
+                  >
+                    {t("freeRewardButton")}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.href = "/";
+                    }}
+                    style={{
+                      marginTop: 10,
+                      padding: 12,
+                      width: "100%",
+                      background: "transparent",
+                    }}
+                  >
+                    {t("backHome")}
+                  </button>
+                </section>
+              ) : (
+                <button onClick={nextRound} style={{ marginTop: 16, padding: 16 }}>
+                  {t("newRound")}
+                </button>
+              )
+            )}
         </>
       )}
     </main>
