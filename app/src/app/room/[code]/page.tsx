@@ -180,6 +180,7 @@ export default function RoomPage() {
   const [maxPlayers, setMaxPlayers] = useState(3);
   const [roomTier, setRoomTier] = useState<RoomTier>("free");
   const [premiumCategoryUnlockTest, setPremiumCategoryUnlockTest] = useState(false);
+  const [premiumLockedOfferCategory, setPremiumLockedOfferCategory] = useState<string | null>(null);
   const [roomLanguage, setRoomLanguage] = useState<RoomLanguage>("cs");
   const [uiLanguage, setUiLanguage] = useState<RoomLanguage>("cs");
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
@@ -998,14 +999,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }
 
   function showPremiumLockedCategoryOffer(category: string) {
-    const message = `${categoryLabel(category)} – ${t("extendedCategoryPrice")}\n\n${t("premiumLockedCategoryOffer")}`;
-
-    if (typeof window !== "undefined") {
-      window.alert(message);
-      return;
-    }
-
-    setMsg(message);
+    setPremiumLockedOfferCategory(category);
+    setMsg("");
   }
 
   function toggleRoomCategory(category: string) {
@@ -1799,6 +1794,47 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   </label>
                 ))}
               </div>
+
+                {roomTier === "premium" && premiumLockedOfferCategory && (
+                  <section
+                    style={{
+                      marginTop: 10,
+                      padding: 10,
+                      border: "1px solid #f59e0b",
+                      borderRadius: 8,
+                      background: "#fffbeb",
+                    }}
+                  >
+                    <p style={{ marginTop: 0, fontWeight: 700 }}>
+                      {categoryLabel(premiumLockedOfferCategory)}{" "}–{" "}{t("extendedCategoryPrice")}
+                    </p>
+
+                    <p>
+                      {t("premiumLockedCategoryOfferIntro")}
+                    </p>
+
+                    <p style={{ marginBottom: 0 }}>
+                      {t("superPremiumUpsellBefore")}{" "}
+                      <button
+                        type="button"
+                        onClick={() => window.alert(t("premiumComingSoon"))}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          padding: 0,
+                          color: "#2563eb",
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                          font: "inherit",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {t("superPremiumLinkText")}
+                      </button>{" "}
+                      {t("superPremiumUpsellAfter")}
+                    </p>
+                  </section>
+                )}
 
                 </>
               )}
