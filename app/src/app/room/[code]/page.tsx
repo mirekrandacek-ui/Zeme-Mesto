@@ -207,6 +207,7 @@ export default function RoomPage() {
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
   const t = (key: UiTextKey) => getUiText(uiLanguage, key);
   const rulesText = getUiRules(uiLanguage);
+  const premiumGameSettingsEnabled = roomTier === "premium" || roomTier === "super_premium";
   const [customCategorySlotCount, setCustomCategorySlotCount] = useState(0);
   const [localCreatorToken, setLocalCreatorToken] = useState<string | null>(null);
   const [roomCreatorToken, setRoomCreatorToken] = useState<string | null>(null);
@@ -531,7 +532,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       ? Math.max(0, Math.ceil((roundDeadlineMs - (timerNowMs + serverTimeOffsetMs)) / 1000))
       : null;
   const roundTimerProgressPercent =
-    roundTimeLimitSeconds !== null && roundTimerRemainingSeconds !== null
+    premiumGameSettingsEnabled && roundTimeLimitSeconds !== null && roundTimerRemainingSeconds !== null
       ? Math.max(0, Math.min(100, (roundTimerRemainingSeconds / roundTimeLimitSeconds) * 100))
       : null;
 
@@ -1158,7 +1159,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     nextRoundTimeLimitSeconds: RoundTimeLimitSeconds,
     nextRoundCountLimit: RoundCountLimit
   ) {
-    if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
+    if (!isOrganizer || !roomId || roomStatus !== "lobby" || !premiumGameSettingsEnabled) return;
 
     setRoundTimeLimitSeconds(nextRoundTimeLimitSeconds);
     setRoundCountLimit(nextRoundCountLimit);
@@ -1418,6 +1419,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const everyoneScored = players.length > 0 && scoredPlayerIds.size === players.length;
   const currentRoundNo = round?.round_no ?? 0;
   const isFinalScoringRound =
+    premiumGameSettingsEnabled &&
     roomStatus === "scoring" &&
     everyoneScored &&
     roundCountLimit !== null &&
@@ -1763,6 +1765,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         <>
           <h2>Lobby</h2>
 
+            {premiumGameSettingsEnabled && (
             <section
               style={{
                 border: "1px solid #ddd",
@@ -1841,6 +1844,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 </label>
               </div>
             </section>
+            )}
 
           {isOrganizer && myPlayer && (
             <button
