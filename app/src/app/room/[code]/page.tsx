@@ -66,6 +66,25 @@ const ROLL_MS = 5000;
 const TICK_MS = 35;
 const FREE_ROUND_BLOCK_SIZE = 3;
 const FREE_INITIAL_UNLOCKED_ROUNDS = 3;
+const ROUND_TIME_LIMIT_OPTIONS = [30, 60, 90, 120, 180] as const;
+const ROUND_COUNT_LIMIT_OPTIONS = [5, 10, 15, 20] as const;
+
+type RoundTimeLimitSeconds = (typeof ROUND_TIME_LIMIT_OPTIONS)[number] | null;
+type RoundCountLimit = (typeof ROUND_COUNT_LIMIT_OPTIONS)[number] | null;
+
+function parseRoundTimeLimit(value: unknown): RoundTimeLimitSeconds {
+  const parsed = Number(value);
+  return (ROUND_TIME_LIMIT_OPTIONS as readonly number[]).includes(parsed)
+    ? (parsed as RoundTimeLimitSeconds)
+    : null;
+}
+
+function parseRoundCountLimit(value: unknown): RoundCountLimit {
+  const parsed = Number(value);
+  return (ROUND_COUNT_LIMIT_OPTIONS as readonly number[]).includes(parsed)
+    ? (parsed as RoundCountLimit)
+    : null;
+}
 
 const DEFAULT_ACTIVE_CATEGORIES = ["Země", "Město", "Jméno"];
 
@@ -182,6 +201,8 @@ export default function RoomPage() {
   const [premiumCategoryUnlockTest, setPremiumCategoryUnlockTest] = useState(false);
   const [premiumLockedOfferCategory, setPremiumLockedOfferCategory] = useState<string | null>(null);
   const [roomLanguage, setRoomLanguage] = useState<RoomLanguage>("cs");
+  const [roundTimeLimitSeconds, setRoundTimeLimitSeconds] = useState<RoundTimeLimitSeconds>(null);
+  const [roundCountLimit, setRoundCountLimit] = useState<RoundCountLimit>(null);
   const [uiLanguage, setUiLanguage] = useState<RoomLanguage>("cs");
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
   const t = (key: UiTextKey) => getUiText(uiLanguage, key);
@@ -459,7 +480,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function loadRoomByCode() {
     const { data, error } = await supabase
       .from("rooms")
-      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language")
+      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language,round_time_limit_seconds,round_count_limit")
       .eq("code", code)
       .single();
 
@@ -486,6 +507,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
     setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
     setRoomLanguage(((data as any).language ?? "cs") as RoomLanguage);
+    setRoundTimeLimitSeconds(parseRoundTimeLimit((data as any).round_time_limit_seconds));
+    setRoundCountLimit(parseRoundCountLimit((data as any).round_count_limit));
     setRoomCustomCategories([
       ...customCategories,
       ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
@@ -500,7 +523,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function refreshRoomState(rid: string) {
     const { data, error } = await supabase
       .from("rooms")
-      .select("status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language")
+      .select("status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language,round_time_limit_seconds,round_count_limit")
       .eq("id", rid)
       .single();
 
@@ -518,6 +541,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
     setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
     setRoomLanguage(((data as any).language ?? "cs") as RoomLanguage);
+    setRoundTimeLimitSeconds(parseRoundTimeLimit((data as any).round_time_limit_seconds));
+    setRoundCountLimit(parseRoundCountLimit((data as any).round_count_limit));
 
     setAnswers((current) => alignStringRecord(current, roomCategories));
     setScores((current) => alignScoreRecord(current, roomCategories));
@@ -1052,6 +1077,29 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     );
 
     void updateRoomCategories(selectedPredefined, next);
+  }
+
+  async function updateRoomGameSettings(
+    nextRoundTimeLimitSeconds: RoundTimeLimitSeconds,
+    nextRoundCountLimit: RoundCountLimit
+  ) {
+    if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
+
+    setRoundTimeLimitSeconds(nextRoundTimeLimitSeconds);
+    setRoundCountLimit(nextRoundCountLimit);
+
+    const { error } = await supabase
+      .from("rooms")
+      .update({
+        round_time_limit_seconds: nextRoundTimeLimitSeconds,
+        round_count_limit: nextRoundCountLimit,
+      })
+      .eq("id", roomId)
+      .eq("status", "lobby");
+
+    if (error) {
+      setMsg(`${t("gameSettingsSaveErrorPrefix")}: ${error.message}`);
+    }
   }
 
   async function saveRoomCategoryOrder(nextCategories: string[]) {
@@ -1603,6 +1651,85 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       {roomStatus === "lobby" && myPlayer && (
         <>
           <h2>Lobby</h2>
+
+            <section
+              style={{
+                border: "1px solid #ddd",
+                borderRadius: 8,
+                padding: 12,
+                marginBottom: 16,
+              }}
+            >
+              <h3 style={{ marginTop: 0 }}>{t("gameSettings")}</h3>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                  gap: 12,
+                }}
+              >
+                <label>
+                  <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
+                    {t("timeLimit")}
+                  </span>
+
+                  {isOrganizer ? (
+                    <select
+                      value={roundTimeLimitSeconds ?? ""}
+                      onChange={(e) => {
+                        void updateRoomGameSettings(
+                          parseRoundTimeLimit(e.target.value),
+                          roundCountLimit
+                        );
+                      }}
+                      style={{ width: "100%", padding: 10 }}
+                    >
+                      <option value="">{t("noTimeLimit")}</option>
+                      {ROUND_TIME_LIMIT_OPTIONS.map((seconds) => (
+                        <option key={seconds} value={seconds}>
+                          {seconds} s
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div style={{ padding: "10px 0" }}>
+                      {roundTimeLimitSeconds ? `${roundTimeLimitSeconds} s` : t("noTimeLimit")}
+                    </div>
+                  )}
+                </label>
+
+                <label>
+                  <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
+                    {t("roundCount")}
+                  </span>
+
+                  {isOrganizer ? (
+                    <select
+                      value={roundCountLimit ?? ""}
+                      onChange={(e) => {
+                        void updateRoomGameSettings(
+                          roundTimeLimitSeconds,
+                          parseRoundCountLimit(e.target.value)
+                        );
+                      }}
+                      style={{ width: "100%", padding: 10 }}
+                    >
+                      <option value="">{t("unlimitedRounds")}</option>
+                      {ROUND_COUNT_LIMIT_OPTIONS.map((count) => (
+                        <option key={count} value={count}>
+                          {count} {t("roundsCountSuffix")}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div style={{ padding: "10px 0" }}>
+                      {roundCountLimit ? `${roundCountLimit} ${t("roundsCountSuffix")}` : t("unlimitedRounds")}
+                    </div>
+                  )}
+                </label>
+              </div>
+            </section>
 
           {isOrganizer && myPlayer && (
             <button
