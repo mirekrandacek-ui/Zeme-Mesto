@@ -1302,7 +1302,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const currentRoundNo = round?.round_no ?? 0;
   const freeLimitReached =
     roomTier === "free" &&
-    roomStatus === "scoring" &&
     everyoneScored &&
     currentRoundNo >= freeUnlockedRounds;
 
