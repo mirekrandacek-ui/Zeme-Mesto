@@ -1805,9 +1805,24 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       background: "#fffbeb",
                     }}
                   >
-                    <p style={{ marginTop: 0, fontWeight: 700 }}>
+                    <button
+                      type="button"
+                      onClick={() => window.alert(t("premiumComingSoon"))}
+                      style={{
+                        border: "none",
+                        background: "transparent",
+                        padding: 0,
+                        marginTop: 0,
+                        color: "#2563eb",
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                        font: "inherit",
+                        fontWeight: 700,
+                        textAlign: "left",
+                      }}
+                    >
                       {categoryLabel(premiumLockedOfferCategory)}{" "}–{" "}{t("extendedCategoryPrice")}
-                    </p>
+                    </button>
 
                     <p>
                       {t("premiumLockedCategoryOfferIntro")}
