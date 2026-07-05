@@ -998,16 +998,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }
 
   function showPremiumLockedCategoryOffer(category: string) {
-    const message =
-      "Tuto kategorii si můžeš koupit za 25 Kč. " +
-      "Jakmile si ji koupíš, odemkne se možnost volby počtu kategorií a jejich pořadí. " +
-      "Nebo si kup Super Premium a máš vyřešeno 😉";
-
-    setMsg(`🔒 ${message}`);
+    const message = `${categoryLabel(category)} – ${t("extendedCategoryPrice")}\n\n${t("premiumLockedCategoryOffer")}`;
 
     if (typeof window !== "undefined") {
       window.alert(message);
+      return;
     }
+
+    setMsg(message);
   }
 
   function toggleRoomCategory(category: string) {
