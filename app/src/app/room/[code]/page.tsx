@@ -1667,6 +1667,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     Math.max(customCategorySlotCount, filledCustomCategoryCount)
   );
 
+  const isAnswering = roomStatus === "playing" && Boolean(letter);
+
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
       ? stopPressedMessage(uiLanguage, stoppedByName)
@@ -1674,10 +1676,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         ? t("letterDrawn")
         : msg;
 
-  const visibleStatusMessage = myPlayer ? statusMessage : msg;
+  const visibleStatusMessage =
+    isAnswering ? "" : myPlayer ? statusMessage : msg;
 
   return (
     <main style={{ padding: 24, fontFamily: "system-ui" }}>
+      {!isAnswering && (
       <header style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
         <div>
           <h1 style={{ margin: 0 }}>
@@ -1757,7 +1761,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           )}
         </div>
       </header>
+      )}
 
+      {!isAnswering && (
       <section
         data-game-language-banner
         style={{
@@ -1784,6 +1790,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             </div>
           )}
       </section>
+      )}
 
       {showRules && (
         <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
