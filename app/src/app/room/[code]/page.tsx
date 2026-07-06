@@ -238,6 +238,53 @@ export default function RoomPage() {
   const rollIntervalRef = useRef<number | null>(null);
   const autoStopRoundIdRef = useRef<string | null>(null);
   const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const answerScrollBoxRef = useRef<HTMLDivElement | null>(null);
+
+  function scrollAnswerIntoView(element: HTMLElement | null, block: "nearest" | "center" = "nearest") {
+    const container = answerScrollBoxRef.current;
+    if (!element || !container) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    const currentTop = container.scrollTop;
+    const elementTop = elementRect.top - containerRect.top + currentTop;
+    const elementBottom = elementTop + elementRect.height;
+    const padding = 12;
+
+    if (block === "center") {
+      container.scrollTo({
+        top: Math.max(0, elementTop - container.clientHeight / 2 + elementRect.height / 2),
+        behavior: "smooth",
+      });
+      return;
+    }
+
+    if (elementTop < currentTop) {
+      container.scrollTo({ top: Math.max(0, elementTop - padding), behavior: "smooth" });
+    } else if (elementBottom > currentTop + container.clientHeight) {
+      container.scrollTo({
+        top: elementBottom - container.clientHeight + padding,
+        behavior: "smooth",
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (roomStatus !== "playing") return;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    document.body.dataset.zmScrollLockPlaying = "true";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      delete document.body.dataset.zmScrollLockPlaying;
+    };
+  }, [roomStatus]);
 
   useEffect(() => {
     const urlUiLanguage = new URLSearchParams(window.location.search).get("ui");
@@ -2236,9 +2283,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {roomStatus === "playing" && letter && activeMyPlayer && round && (
               <div
+                ref={answerScrollBoxRef}
                 style={{
                   maxHeight: "calc(100dvh - 230px)",
                   overflowY: "auto",
+                  overscrollBehavior: "contain",
                   paddingBottom: "calc(24px + env(safe-area-inset-bottom))",
                   WebkitOverflowScrolling: "touch",
                 }}
@@ -2259,12 +2308,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     onChange={(e) => saveAnswer(category, e.target.value)}
                     onFocus={(e) => {
                       const input = e.currentTarget;
-                      requestAnimationFrame(() => {
-                        input.scrollIntoView({
-                          behavior: "smooth",
-                          block: "nearest",
+                        requestAnimationFrame(() => {
+                          scrollAnswerIntoView(input, "nearest");
                         });
-                      });
                     }}
                     onKeyDown={(e) => {
                       if (e.key !== "Enter") return;
@@ -2279,12 +2325,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         if (nextInput) {
                           nextInput.focus({ preventScroll: true });
 
-                          window.setTimeout(() => {
-                            nextInput.scrollIntoView({
-                              behavior: "smooth",
-                              block: "center",
-                            });
-                          }, 80);
+                            window.setTimeout(() => {
+                              scrollAnswerIntoView(nextInput, "center");
+                            }, 80);
                         }
                       } else if (canStop) {
                         e.currentTarget.blur();
@@ -2292,14 +2335,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       } else {
                         e.currentTarget.blur();
 
-                        window.setTimeout(() => {
-                          document
-                            .getElementById("stop-round-button")
-                            ?.scrollIntoView({
-                              behavior: "smooth",
-                              block: "center",
-                            });
-                        }, 300);
+                          window.setTimeout(() => {
+                            scrollAnswerIntoView(
+                              document.getElementById("stop-round-button"),
+                              "center"
+                            );
+                          }, 300);
                       }
                     }}
                     style={{
