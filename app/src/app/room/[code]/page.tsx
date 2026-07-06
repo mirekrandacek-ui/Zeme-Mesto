@@ -239,6 +239,8 @@ export default function RoomPage() {
   const autoStopRoundIdRef = useRef<string | null>(null);
   const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const answerScrollBoxRef = useRef<HTMLDivElement | null>(null);
+  const [keyboardInsetPx, setKeyboardInsetPx] = useState(0);
+  const keyboardInsetPxRef = useRef(0);
 
   function scrollAnswerIntoView(element: HTMLElement | null, block: "nearest" | "center" = "nearest") {
     const container = answerScrollBoxRef.current;
@@ -250,10 +252,11 @@ export default function RoomPage() {
     const elementTop = elementRect.top - containerRect.top + currentTop;
     const elementBottom = elementTop + elementRect.height;
     const padding = 12;
+    const visibleHeight = Math.max(160, container.clientHeight - keyboardInsetPxRef.current - 24);
 
     if (block === "center") {
       container.scrollTo({
-        top: Math.max(0, elementTop - container.clientHeight / 2 + elementRect.height / 2),
+        top: Math.max(0, elementTop - visibleHeight / 2 + elementRect.height / 2),
         behavior: "smooth",
       });
       return;
@@ -261,13 +264,37 @@ export default function RoomPage() {
 
     if (elementTop < currentTop) {
       container.scrollTo({ top: Math.max(0, elementTop - padding), behavior: "smooth" });
-    } else if (elementBottom > currentTop + container.clientHeight) {
+    } else if (elementBottom > currentTop + visibleHeight) {
       container.scrollTo({
-        top: elementBottom - container.clientHeight + padding,
+        top: elementBottom - visibleHeight + padding,
         behavior: "smooth",
       });
     }
   }
+
+  useEffect(() => {
+    function updateKeyboardInset() {
+      const visualViewport = window.visualViewport;
+      const nextInset = visualViewport
+        ? Math.max(0, window.innerHeight - visualViewport.height - visualViewport.offsetTop)
+        : 0;
+
+      keyboardInsetPxRef.current = nextInset;
+      setKeyboardInsetPx(Math.round(nextInset));
+    }
+
+    updateKeyboardInset();
+
+    window.visualViewport?.addEventListener("resize", updateKeyboardInset);
+    window.visualViewport?.addEventListener("scroll", updateKeyboardInset);
+    window.addEventListener("resize", updateKeyboardInset);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", updateKeyboardInset);
+      window.visualViewport?.removeEventListener("scroll", updateKeyboardInset);
+      window.removeEventListener("resize", updateKeyboardInset);
+    };
+  }, []);
 
   useEffect(() => {
     if (roomStatus !== "playing") return;
@@ -2288,7 +2315,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   maxHeight: "calc(100dvh - 230px)",
                   overflowY: "auto",
                   overscrollBehavior: "contain",
-                  paddingBottom: "calc(24px + env(safe-area-inset-bottom))",
+                  paddingBottom: `calc(${Math.max(96, keyboardInsetPx + 96)}px + env(safe-area-inset-bottom))`,
                   WebkitOverflowScrolling: "touch",
                 }}
               >
