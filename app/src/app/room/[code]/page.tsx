@@ -2202,16 +2202,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <>
                 <section
                   style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    zIndex: 50,
                     background: "#fff",
-                    padding: "calc(8px + env(safe-area-inset-top)) 24px 10px",
-                    boxSizing: "border-box",
+                    padding: "8px 0 10px",
                     borderBottom: "1px solid #ddd",
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
                   }}
                 >
                   <h2 style={{ margin: "0 0 8px" }}>{t("playing")}</h2>
@@ -2236,14 +2229,20 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     </div>
                   )}
                 </section>
-                <div style={{ height: 124 }} />
               </>
             ) : (
               <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
             )}
 
           {roomStatus === "playing" && letter && activeMyPlayer && round && (
-            <>
+              <div
+                style={{
+                  maxHeight: "calc(100dvh - 230px)",
+                  overflowY: "auto",
+                  paddingBottom: "calc(24px + env(safe-area-inset-bottom))",
+                  WebkitOverflowScrolling: "touch",
+                }}
+              >
               {activeCategories.map((category, index) => (
                 <label key={category} style={{ display: "block", marginTop: 10 }}>
                   <div style={{ fontWeight: 700, marginBottom: 4 }}>
@@ -2345,7 +2344,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   {t("mustStartWithLetter")}
                 </p>
               )}
-            </>
+              </div>
           )}
 
           {roomStatus === "playing" && letter && myPlayer?.status === "waiting" && (
