@@ -473,14 +473,6 @@ export default function Home() {
                   ? "Sin anuncios, hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta. El precio local se mostrará durante la compra."
                   : "Bez reklam, max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina."}
             </p>
-              <p style={{ marginTop: -4, fontWeight: 700 }}>
-                {en
-                  ? "Includes optional round timer and number of rounds."
-                  : es
-                    ? "Incluye límite de tiempo y número de rondas opcionales."
-                    : "Obsahuje volitelný časový limit kola a počet kol."}
-              </p>
-
 
             <button
               type="button"

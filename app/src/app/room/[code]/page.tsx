@@ -207,7 +207,7 @@ export default function RoomPage() {
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
   const t = (key: UiTextKey) => getUiText(uiLanguage, key);
   const rulesText = getUiRules(uiLanguage);
-  const premiumGameSettingsEnabled = roomTier === "premium" || roomTier === "super_premium";
+  const superPremiumGameSettingsEnabled = roomTier === "super_premium";
   const [customCategorySlotCount, setCustomCategorySlotCount] = useState(0);
   const [localCreatorToken, setLocalCreatorToken] = useState<string | null>(null);
   const [roomCreatorToken, setRoomCreatorToken] = useState<string | null>(null);
@@ -590,6 +590,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (roomStatus !== "playing" || !round?.deadline_at) return;
+      !superPremiumGameSettingsEnabled ||
 
     setTimerNowMs(Date.now());
 
@@ -606,7 +607,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       ? Math.max(0, Math.ceil((roundDeadlineMs - (timerNowMs + serverTimeOffsetMs)) / 1000))
       : null;
   const roundTimerProgressPercent =
-    premiumGameSettingsEnabled && roundTimeLimitSeconds !== null && roundTimerRemainingSeconds !== null
+    superPremiumGameSettingsEnabled && roundTimeLimitSeconds !== null && roundTimerRemainingSeconds !== null
       ? Math.max(0, Math.min(100, (roundTimerRemainingSeconds / roundTimeLimitSeconds) * 100))
       : null;
 
@@ -625,7 +626,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     autoStopRoundIdRef.current = round.id;
     void stopRound("__TIMEOUT__");
-  }, [roomStatus, round?.id, round?.deadline_at, roundTimerRemainingSeconds, myPlayer?.id, myPlayer?.status]);
+  }, [roomStatus, superPremiumGameSettingsEnabled, round?.id, round?.deadline_at, roundTimerRemainingSeconds, myPlayer?.id, myPlayer?.status]);
 
   async function loadRoomByCode() {
     const { data, error } = await supabase
@@ -1233,7 +1234,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     nextRoundTimeLimitSeconds: RoundTimeLimitSeconds,
     nextRoundCountLimit: RoundCountLimit
   ) {
-    if (!isOrganizer || !roomId || roomStatus !== "lobby" || !premiumGameSettingsEnabled) return;
+    if (!isOrganizer || !roomId || roomStatus !== "lobby" || !superPremiumGameSettingsEnabled) return;
 
     setRoundTimeLimitSeconds(nextRoundTimeLimitSeconds);
     setRoundCountLimit(nextRoundCountLimit);
@@ -1502,7 +1503,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const everyoneScored = players.length > 0 && scoredPlayerIds.size === players.length;
   const currentRoundNo = round?.round_no ?? 0;
   const isFinalScoringRound =
-    premiumGameSettingsEnabled &&
+    superPremiumGameSettingsEnabled &&
     roomStatus === "scoring" &&
     everyoneScored &&
     roundCountLimit !== null &&
@@ -1862,7 +1863,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         <>
           <h2>Lobby</h2>
 
-            {premiumGameSettingsEnabled && (
+            {superPremiumGameSettingsEnabled && (
             <section
               style={{
                 border: "1px solid #ddd",
