@@ -624,7 +624,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     }
 
     autoStopRoundIdRef.current = round.id;
-    void stopRound();
+    void stopRound("__TIMEOUT__");
   }, [roomStatus, round?.id, round?.deadline_at, roundTimerRemainingSeconds, myPlayer?.id, myPlayer?.status]);
 
   async function loadRoomByCode() {
@@ -1416,8 +1416,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     );
   }
 
-  async function stopRound() {
+  async function stopRound(stopByValue?: string) {
     if (!roomId || !round?.id || !round?.round_no || !myPlayer) return;
+
+    const effectiveStopBy = stopByValue ?? myPlayer.name;
+    const stoppedByTimeout = effectiveStopBy === "__TIMEOUT__";
 
     const { data: locked, error: lockError } = await supabase
       .from("rooms")
@@ -1438,7 +1441,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         player_id: myPlayer.id,
         round: round.round_no,
         category: "__STOP_BY__",
-        value: myPlayer.name,
+        value: effectiveStopBy,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "room_id,player_id,round,category" }
@@ -1451,7 +1454,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setMyScoreSubmitted(false);
 
     setMsg(
-      stopPressedMessage(uiLanguage, myPlayer.name)
+      stoppedByTimeout
+        ? uiLanguage === "en"
+          ? "Time is up."
+          : uiLanguage === "es"
+            ? "Se acabó el tiempo."
+            : "Čas vypršel."
+        : stopPressedMessage(uiLanguage, myPlayer.name)
     );
   }
 
@@ -1508,6 +1517,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const stoppedByName =
     allAnswers.find((a) => a.category === "__STOP_BY__")?.value ?? "";
+  const stoppedByTime = stoppedByName === "__TIMEOUT__";
 
   function playerRoundPoints(playerId: string, roundNo: number) {
     return allRoomScores
@@ -1670,11 +1680,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const isAnswering = roomStatus === "playing" && Boolean(letter);
 
   const statusMessage =
-    (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
-      ? stopPressedMessage(uiLanguage, stoppedByName)
-      : roomStatus === "playing" && letter
-        ? t("letterDrawn")
-        : msg;
+    (roomStatus === "scoring" || roomStatus === "finished") && stoppedByTime
+      ? uiLanguage === "en"
+        ? "Time is up."
+        : uiLanguage === "es"
+          ? "Se acabó el tiempo."
+          : "Čas vypršel."
+      : (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
+        ? stopPressedMessage(uiLanguage, stoppedByName)
+        : roomStatus === "playing" && letter
+          ? t("letterDrawn")
+          : msg;
 
   const visibleStatusMessage =
     isAnswering ? "" : myPlayer ? statusMessage : msg;
@@ -2389,7 +2405,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
               <button
                 id="stop-round-button"
-                onClick={stopRound}
+                onClick={() => void stopRound()}
                 disabled={!canStop}
                 style={{
                   marginTop: 16,
