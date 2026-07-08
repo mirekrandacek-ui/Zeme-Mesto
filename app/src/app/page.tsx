@@ -348,7 +348,7 @@ export default function Home() {
                 ? "No ads, unlimited players, category selection and ordering, and up to 5 custom categories."
                 : es
                   ? "Sin anuncios, jugadores sin límite, selección y orden de categorías, y hasta 5 categorías propias."
-                  : "Bez reklam, neomezený počet hráčů, volba počtu a pořadí kategorií a možnost vytvořit až 5 vlastních kategorií."}
+                  : "Bez reklam, neomezený počet hráčů, volba počtu a pořadí kategorií, časomíra, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií."}
             </p>
 
             <p style={{ marginBottom: 0 }}>
