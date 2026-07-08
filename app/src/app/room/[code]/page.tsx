@@ -1679,6 +1679,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   );
 
   const isAnswering = roomStatus === "playing" && Boolean(letter);
+  const showFreeAdBanner = roomTier === "free";
 
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByTime
@@ -1698,6 +1699,33 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   return (
     <main style={{ padding: 24, fontFamily: "system-ui" }}>
+      {showFreeAdBanner && (
+        <section
+          data-free-ad-banner
+          aria-label="Reklamní banner"
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
+            minHeight: 52,
+            marginBottom: 12,
+            padding: "6px 10px",
+            border: "1px dashed #999",
+            borderRadius: 8,
+            background: "#f8fafc",
+            color: "#555",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            fontSize: 12,
+            fontWeight: 700,
+          }}
+        >
+          Reklamní banner
+        </section>
+      )}
+
       {!isAnswering && (
       <header style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
         <div>
