@@ -220,6 +220,7 @@ export default function RoomPage() {
   const [showRules, setShowRules] = useState(false);
   const [showRoundHistory, setShowRoundHistory] = useState(false);
   const [showFreeLimitUpsell, setShowFreeLimitUpsell] = useState(false);
+  const [showRewardedAdPlaceholder, setShowRewardedAdPlaceholder] = useState(false);
   const [freeUnlockedRounds, setFreeUnlockedRounds] = useState(FREE_INITIAL_UNLOCKED_ROUNDS);
 
   const [round, setRound] = useState<RoundLite | null>(null);
@@ -1547,6 +1548,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     )
   ).sort((a, b) => a - b);
 
+  function startFreeRewardedAdPlaceholder() {
+    if (showRewardedAdPlaceholder) return;
+
+    setShowRewardedAdPlaceholder(true);
+    setMsg("");
+
+    window.setTimeout(() => {
+      unlockFreeRoundsByRewardedAd();
+    }, 3000);
+  }
+
   function unlockFreeRoundsByRewardedAd() {
     if (!roomId || !round?.round_no) return;
 
@@ -1554,6 +1566,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     setFreeUnlockedRounds(nextLimit);
     setShowFreeLimitUpsell(false);
+    setShowRewardedAdPlaceholder(false);
     window.localStorage.setItem(`zm_freeUnlockedRounds_${roomId}`, String(nextLimit));
     setMsg(t("freeRewardUnlocked"));
   }
@@ -2849,11 +2862,39 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
                   <button
                     type="button"
-                    onClick={unlockFreeRoundsByRewardedAd}
+                    onClick={startFreeRewardedAdPlaceholder}
                     style={{ marginTop: 10, padding: 14, width: "100%", fontWeight: 700 }}
                   >
                     {t("freeRewardButton")}
                   </button>
+
+                    {showRewardedAdPlaceholder && (
+                      <section
+                        style={{
+                          marginTop: 10,
+                          padding: 12,
+                          border: "1px dashed #999",
+                          borderRadius: 8,
+                          background: "#fff",
+                        }}
+                      >
+                        <p style={{ marginTop: 0, marginBottom: 6, fontWeight: 700 }}>
+                          {uiLanguage === "en"
+                            ? "Rewarded ad is playing…"
+                            : uiLanguage === "es"
+                              ? "El anuncio recompensado se está reproduciendo…"
+                              : "Rewarded reklama běží…"}
+                        </p>
+                        <p style={{ margin: 0 }}>
+                          {uiLanguage === "en"
+                            ? "After the ad finishes, 3 more rounds will unlock automatically."
+                            : uiLanguage === "es"
+                              ? "Cuando termine el anuncio, se desbloquearán automáticamente 3 rondas más."
+                              : "Po doběhnutí reklamy se automaticky odemknou další 3 kola."}
+                        </p>
+                      </section>
+                    )}
+
 
                   <button
                     type="button"
