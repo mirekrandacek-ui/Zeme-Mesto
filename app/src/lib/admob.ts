@@ -66,3 +66,15 @@ export async function showFreeRewardedAdForNativeApp() {
     return false;
   }
 }
+
+export async function hideFreeBannerAdForNativeApp() {
+  if (!isNativeAdMobAvailable()) return false;
+
+  try {
+    await AdMob.removeBanner();
+    return true;
+  } catch (error) {
+    console.warn("AdMob banner remove failed", error);
+    return false;
+  }
+}

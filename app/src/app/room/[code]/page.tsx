@@ -4,6 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 import {
+  hideFreeBannerAdForNativeApp,
+  isNativeAdMobAvailable,
+  showFreeBannerAdForNativeApp,
+} from "@/lib/admob";
+
+import {
   categoryHelpText,
   gameLanguageInstructionText,
   gameLanguageNameText,
@@ -221,6 +227,7 @@ export default function RoomPage() {
   const [showRoundHistory, setShowRoundHistory] = useState(false);
   const [showFreeLimitUpsell, setShowFreeLimitUpsell] = useState(false);
   const [showRewardedAdPlaceholder, setShowRewardedAdPlaceholder] = useState(false);
+  const [nativeFreeBannerShown, setNativeFreeBannerShown] = useState(false);
   const [freeUnlockedRounds, setFreeUnlockedRounds] = useState(FREE_INITIAL_UNLOCKED_ROUNDS);
 
   const [round, setRound] = useState<RoundLite | null>(null);
@@ -404,7 +411,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   return normalizedAnswer.startsWith(normalizedLetter);
 }
 
-
   const allAnswersFilled = activeCategories.every((c) => (answers[c] ?? "").trim().length > 0);
 
   const allAnswersAtLeastTwoChars = activeCategories.every((c) => (answers[c] ?? "").trim().length >= 2);
@@ -537,6 +543,35 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     setLocalCreatorToken(localStorage.getItem(`zm_roomCreatorToken_${code}`));
   }, [code]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function updateFreeBanner() {
+      if (!isNativeAdMobAvailable()) {
+        setNativeFreeBannerShown(false);
+        return;
+      }
+
+      if (roomTier === "free") {
+        const shown = await showFreeBannerAdForNativeApp();
+        if (!cancelled) setNativeFreeBannerShown(shown);
+        return;
+      }
+
+      await hideFreeBannerAdForNativeApp();
+      if (!cancelled) setNativeFreeBannerShown(false);
+    }
+
+    void updateFreeBanner();
+
+    return () => {
+      cancelled = true;
+      if (isNativeAdMobAvailable()) {
+        void hideFreeBannerAdForNativeApp();
+      }
+    };
+  }, [roomTier]);
 
   useEffect(() => {
     if (!roomId || roomTier !== "free") return;
@@ -1692,7 +1727,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   );
 
   const isAnswering = roomStatus === "playing" && Boolean(letter);
-  const showFreeAdBanner = roomTier === "free";
+  const showFreeAdBanner = roomTier === "free" && !nativeFreeBannerShown;
 
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByTime
@@ -2331,7 +2366,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             </section>
           )}
 
-
         </>
       )}
 
@@ -2894,7 +2928,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         </p>
                       </section>
                     )}
-
 
                   <button
                     type="button"
