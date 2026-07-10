@@ -38,7 +38,7 @@ export async function showFreeBannerAdForNativeApp() {
     await AdMob.showBanner({
       adId: ADMOB_TEST_BANNER_ID,
       adSize: BannerAdSize.ADAPTIVE_BANNER,
-      position: BannerAdPosition.BOTTOM_CENTER,
+      position: BannerAdPosition.TOP_CENTER,
       isTesting: true,
     });
 

@@ -166,9 +166,6 @@ export default function Home() {
 
     return () => {
       cancelled = true;
-      if (isNativeAdMobAvailable()) {
-        void hideFreeBannerAdForNativeApp();
-      }
     };
   }, [tier]);
 
@@ -231,8 +228,8 @@ export default function Home() {
     <main
       style={{
         padding: 24,
-        paddingBottom: nativeFreeBannerShown
-          ? "calc(96px + env(safe-area-inset-bottom))"
+        paddingTop: nativeFreeBannerShown
+          ? "calc(96px + env(safe-area-inset-top))"
           : 24,
         fontFamily: "system-ui",
         maxWidth: 520,

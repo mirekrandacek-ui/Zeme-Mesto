@@ -567,9 +567,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     return () => {
       cancelled = true;
-      if (isNativeAdMobAvailable()) {
-        void hideFreeBannerAdForNativeApp();
-      }
     };
   }, [roomTier]);
 
@@ -1749,9 +1746,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     <main
         style={{
           padding: 24,
-          paddingBottom: nativeFreeBannerShown
-            ? "calc(96px + env(safe-area-inset-bottom))"
-            : 24,
+          paddingTop: nativeFreeBannerShown
+          ? "calc(96px + env(safe-area-inset-top))"
+          : 24,
           fontFamily: "system-ui",
         }}
       >
