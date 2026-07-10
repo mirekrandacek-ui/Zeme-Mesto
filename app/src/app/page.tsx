@@ -153,8 +153,8 @@ export default function Home() {
       }
 
       if (tier === "free") {
-        const shown = await showFreeBannerAdForNativeApp();
-        if (!cancelled) setNativeFreeBannerShown(shown);
+        if (!cancelled) setNativeFreeBannerShown(true);
+        await showFreeBannerAdForNativeApp();
         return;
       }
 

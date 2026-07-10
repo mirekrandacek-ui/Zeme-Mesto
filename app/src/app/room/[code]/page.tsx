@@ -554,8 +554,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       }
 
       if (roomTier === "free") {
-        const shown = await showFreeBannerAdForNativeApp();
-        if (!cancelled) setNativeFreeBannerShown(shown);
+        if (!cancelled) setNativeFreeBannerShown(true);
+        await showFreeBannerAdForNativeApp();
         return;
       }
 
