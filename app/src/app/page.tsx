@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
+import {
+  hideFreeBannerAdForNativeApp,
+  isNativeAdMobAvailable,
+  showFreeBannerAdForNativeApp,
+} from "@/lib/admob";
 
 type Tier = "free" | "premium" | "super_premium";
 type RoomLanguage = "cs" | "en" | "es";
@@ -74,6 +79,7 @@ export default function Home() {
   const [tier, setTier] = useState<Tier>("free");
   const [language, setLanguage] = useState<RoomLanguage>("cs");
   const [gameLanguage, setGameLanguage] = useState<RoomLanguage>("cs");
+  const [nativeFreeBannerShown, setNativeFreeBannerShown] = useState(false);
   const [showOtherModes, setShowOtherModes] = useState(false);
 
   const en = language === "en";
@@ -137,6 +143,35 @@ export default function Home() {
     };
   }
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function updateHomeFreeBanner() {
+      if (!isNativeAdMobAvailable()) {
+        setNativeFreeBannerShown(false);
+        return;
+      }
+
+      if (tier === "free") {
+        const shown = await showFreeBannerAdForNativeApp();
+        if (!cancelled) setNativeFreeBannerShown(shown);
+        return;
+      }
+
+      await hideFreeBannerAdForNativeApp();
+      if (!cancelled) setNativeFreeBannerShown(false);
+    }
+
+    void updateHomeFreeBanner();
+
+    return () => {
+      cancelled = true;
+      if (isNativeAdMobAvailable()) {
+        void hideFreeBannerAdForNativeApp();
+      }
+    };
+  }, [tier]);
+
   async function createRoom() {
     if (creating) return;
 
@@ -193,7 +228,17 @@ export default function Home() {
   }
 
   return (
-    <main style={{ padding: 24, fontFamily: "system-ui", maxWidth: 520, margin: "0 auto" }}>
+    <main
+      style={{
+        padding: 24,
+        paddingBottom: nativeFreeBannerShown
+          ? "calc(96px + env(safe-area-inset-bottom))"
+          : 24,
+        fontFamily: "system-ui",
+        maxWidth: 520,
+        margin: "0 auto",
+      }}
+    >
       <div
         style={{
           display: "flex",

@@ -1746,7 +1746,15 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     isAnswering ? "" : myPlayer ? statusMessage : msg;
 
   return (
-    <main style={{ padding: 24, fontFamily: "system-ui" }}>
+    <main
+        style={{
+          padding: 24,
+          paddingBottom: nativeFreeBannerShown
+            ? "calc(96px + env(safe-area-inset-bottom))"
+            : 24,
+          fontFamily: "system-ui",
+        }}
+      >
       {showFreeAdBanner && (
         <section
           data-free-ad-banner
@@ -1797,6 +1805,22 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <a
+              data-room-home-link
+              href="/"
+              style={{
+                display: "inline-block",
+                padding: "2px 8px",
+                border: "1px solid #888",
+                borderRadius: 3,
+                color: "inherit",
+                textDecoration: "none",
+                background: "#f5f5f5",
+                marginRight: 4,
+              }}
+            >
+              {isOrganizer ? t("newGame") : t("backHome")}
+            </a>
           <button
             type="button"
             onClick={() =>
@@ -1815,24 +1839,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           >
             {t("likeApp")}
           </button>
-
-{isOrganizer && (
-            <a
-              href="/"
-              style={{
-                display: "inline-block",
-                padding: "2px 8px",
-                border: "1px solid #888",
-                borderRadius: 3,
-                color: "inherit",
-                textDecoration: "none",
-                background: "#f5f5f5",
-                marginRight: 4,
-              }}
-            >
-              {t("newGame")}
-            </a>
-          )}
           <button onClick={() => setShowRules((v) => !v)}>
             {t("rules")}
           </button>
