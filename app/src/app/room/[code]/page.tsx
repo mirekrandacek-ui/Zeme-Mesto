@@ -1747,7 +1747,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         style={{
           padding: 24,
           paddingTop: roomTier === "free"
-          ? "calc(112px + env(safe-area-inset-top))"
+          ? "calc(72px + env(safe-area-inset-top))"
           : 24,
           fontFamily: "system-ui",
         }}
