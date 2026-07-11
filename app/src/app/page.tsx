@@ -229,7 +229,7 @@ export default function Home() {
       style={{
         padding: 24,
         paddingTop: tier === "free"
-          ? "calc(112px + env(safe-area-inset-top))"
+          ? "calc(220px + env(safe-area-inset-top))"
           : 24,
         fontFamily: "system-ui",
         maxWidth: 520,
