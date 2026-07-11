@@ -228,8 +228,8 @@ export default function Home() {
     <main
       style={{
         padding: 24,
-        paddingTop: nativeFreeBannerShown
-          ? "calc(clamp(64px, 14vw, 96px) + env(safe-area-inset-top))"
+        paddingTop: tier === "free"
+          ? "calc(112px + env(safe-area-inset-top))"
           : 24,
         fontFamily: "system-ui",
         maxWidth: 520,
