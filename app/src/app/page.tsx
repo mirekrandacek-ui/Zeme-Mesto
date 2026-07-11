@@ -690,6 +690,12 @@ export default function Home() {
         </details>
 
       {status && <p style={{ marginTop: 16 }}>{status}</p>}
+        <p style={{ marginTop: 18, fontSize: 13, textAlign: "center", opacity: 0.75 }}>
+          <a href="/privacy" style={{ color: "inherit" }}>
+            {en ? "Privacy Policy" : es ? "Política de privacidad" : "Zásady ochrany soukromí"}
+          </a>
+        </p>
+
     </main>
   );
 }
