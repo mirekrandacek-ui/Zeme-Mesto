@@ -275,28 +275,6 @@ export default function Home() {
             justifyContent: "flex-end",
           }}
         >
-          <button
-            type="button"
-            onClick={() =>
-              window.alert(
-                en
-                  ? "Rating will be available after the app is released on Google Play."
-                  : es
-                    ? "La valoración estará disponible después del lanzamiento en Google Play."
-                    : "Hodnocení bude dostupné po vydání aplikace na Google Play."
-              )
-            }
-            style={{
-              padding: "9px 12px",
-              border: "1px solid #b38b00",
-              borderRadius: 8,
-              background: "#fff5bf",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            {en ? "Do you like the app?" : es ? "¿Te gusta la aplicación?" : "Líbí se vám aplikace?"}
-          </button>
 
           <label aria-label={en ? "Application language" : es ? "Idioma de la aplicación" : "Jazyk aplikace"}>
             <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
@@ -619,7 +597,32 @@ export default function Home() {
         </section>
       )}
 
-      <details style={{ marginTop: 20, opacity: 0.75 }}>
+              <button
+          type="button"
+          onClick={() =>
+            window.alert(
+              en
+                ? "Rating will be available after the app is released on Google Play."
+                : es
+                  ? "La valoración estará disponible después del lanzamiento en Google Play."
+                  : "Hodnocení bude dostupné po vydání aplikace na Google Play."
+            )
+          }
+          style={{
+            marginTop: 14,
+            padding: "9px 12px",
+            width: "100%",
+            border: "1px solid #b38b00",
+            borderRadius: 8,
+            background: "#fff5bf",
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
+        >
+          {en ? "Do you like the app?" : es ? "¿Te gusta la aplicación?" : "Líbí se vám aplikace?"}
+        </button>
+
+<details style={{ marginTop: 20, opacity: 0.75 }}>
         <summary style={{ cursor: "pointer" }}>
           {en ? "Developer mode" : es ? "Modo desarrollador" : "Vývojářský režim"}
         </summary>
@@ -643,23 +646,48 @@ export default function Home() {
         </label>
       </details>
 
-      <div style={{ marginTop: 28, borderTop: "1px solid #ddd", paddingTop: 20 }}>
-        <h2>{en ? "Join a room" : es ? "Unirse a una sala" : "Připojit se k místnosti"}</h2>
-
-        <input
-          placeholder={en ? "Room code" : es ? "Código de sala" : "Kód místnosti"}
-          value={roomCodeInput}
-          onChange={(e) => setRoomCodeInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") joinRoomByCode();
+        <details
+          style={{
+            marginTop: 16,
+            borderTop: "1px solid #ddd",
+            paddingTop: 14,
           }}
-          style={{ padding: 12, width: "100%", textTransform: "uppercase" }}
-        />
+        >
+          <summary style={{ cursor: "pointer", fontWeight: 700 }}>
+            {en ? "I have a room code" : es ? "Tengo un código de sala" : "Mám kód místnosti"}
+          </summary>
 
-        <button onClick={joinRoomByCode} style={{ padding: 14, marginTop: 12, width: "100%" }}>
-          {en ? "Join" : es ? "Unirse" : "Připojit se"}
-        </button>
-      </div>
+          <div style={{ marginTop: 12 }}>
+            <input
+              placeholder={en ? "Room code" : es ? "Código de sala" : "Kód místnosti"}
+              value={roomCodeInput}
+              onChange={(e) => setRoomCodeInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") joinRoomByCode();
+              }}
+              style={{
+                boxSizing: "border-box",
+                padding: 12,
+                width: "100%",
+                textTransform: "uppercase",
+                borderRadius: 8,
+                border: "1px solid #bbb",
+              }}
+            />
+
+            <button
+              onClick={joinRoomByCode}
+              style={{
+                padding: 14,
+                marginTop: 10,
+                width: "100%",
+                fontWeight: 700,
+              }}
+            >
+              {en ? "Join" : es ? "Unirse" : "Připojit se"}
+            </button>
+          </div>
+        </details>
 
       {status && <p style={{ marginTop: 16 }}>{status}</p>}
     </main>
