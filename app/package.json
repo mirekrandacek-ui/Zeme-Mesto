@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "node scripts/patch-admob-top-banner.cjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.0.0",
