@@ -229,7 +229,7 @@ export default function Home() {
       style={{
         padding: 24,
         paddingTop: nativeFreeBannerShown
-          ? "calc(96px + env(safe-area-inset-top))"
+          ? "calc(clamp(64px, 14vw, 96px) + env(safe-area-inset-top))"
           : 24,
         fontFamily: "system-ui",
         maxWidth: 520,

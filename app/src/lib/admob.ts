@@ -39,6 +39,7 @@ export async function showFreeBannerAdForNativeApp() {
       adId: ADMOB_TEST_BANNER_ID,
       adSize: BannerAdSize.ADAPTIVE_BANNER,
       position: BannerAdPosition.TOP_CENTER,
+      margin: 0,
       isTesting: true,
     });
 
