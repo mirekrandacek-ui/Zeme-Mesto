@@ -41,3 +41,8 @@ yarn-error.log*
 next-env.d.ts
 
 apk-out/
+
+# Android signing / release outputs
+android/keystore.properties
+android/app/zememesto-upload-key.jks
+aab-out/
