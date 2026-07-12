@@ -318,21 +318,21 @@ export function getUiText(language: string, key: UiTextKey) {
 export const UI_RULES = {
   cs: {
     join: "Organizátor sdílí odkaz místnosti pomocí tlačítek Kopírovat odkaz nebo Sdílet. Ostatní hráči odkaz otevřou, zadají své jméno a připojí se do stejné místnosti.",
-    play: "Hráči společně hrají na vylosované písmeno. Každý vyplní odpovědi do kategorií. Po vyplnění všech polí může hráč zmáčknout STOP. Každá odpověď musí začínat vylosovaným písmenem a mít alespoň dvě písmena.",
+    play: "Hráči společně hrají na vylosované písmeno. Každý vyplní odpovědi do kategorií. Po vyplnění všech polí může hráč zmáčknout STOP. Každá odpověď musí začínat vylosovaným písmenem a mít alespoň dvě písmena. Na přeskočení do dalšího pole s odpovědí a finální STOP se dá použít ENTER na klávesnici.",
     scoringTitle: "Bodování",
-    scoring: "Po STOPu všichni vidí odpovědi ostatních a bodují každou odpověď. 10 bodů za unikátní odpověď, 5 bodů za shodnou odpověď, 0 bodů za prázdnou nebo špatnou odpověď. Lze použít i záporné body.",
+    scoring: "Po STOPu všichni vidí odpovědi ostatních a bodují každou odpověď. 10 bodů za unikátní odpověď, 5 bodů za shodnou odpověď, 0 bodů za prázdnou odpověď. Lze použít i záporné body v případě neuznané odpovědi.",
   },
   en: {
     join: "The organiser shares the room link using the Copy link or Share button. Other players open the link, enter their name and join the same room.",
-    play: "Everyone plays using the drawn letter and enters one answer for each category. Once all fields are completed, a player can press STOP. Every answer must begin with the drawn letter and contain at least two characters.",
+    play: "Everyone plays using the drawn letter and enters one answer for each category. Once all fields are completed, a player can press STOP. Every answer must begin with the drawn letter and contain at least two characters. ENTER can be used to move to the next answer field and to press the final STOP.",
     scoringTitle: "Scoring",
-    scoring: "After STOP is pressed, everyone can see the other players’ answers and score each answer. 10 points for a unique answer, 5 points for a repeated answer, 0 points for an empty or invalid answer. Negative points can also be used.",
+    scoring: "After STOP is pressed, everyone can see the other players’ answers and score each answer. 10 points for a unique answer, 5 points for a repeated answer, 0 points for an empty answer. Negative points can also be used for an invalid answer.",
   },
   es: {
     join: "El organizador comparte el enlace de la sala usando Copiar enlace o Compartir. Los demás jugadores abren el enlace, introducen su nombre y se unen a la misma sala.",
-    play: "Todos juegan con la letra sorteada y escriben una respuesta para cada categoría. Cuando todos los campos están completos, un jugador puede pulsar STOP. Cada respuesta debe empezar con la letra sorteada y tener al menos dos caracteres.",
+    play: "Todos juegan con la letra sorteada y escriben una respuesta para cada categoría. Cuando todos los campos están completos, un jugador puede pulsar STOP. Cada respuesta debe empezar con la letra sorteada y tener al menos dos caracteres. ENTER se puede usar para pasar al siguiente campo de respuesta y para pulsar el STOP final.",
     scoringTitle: "Puntuación",
-    scoring: "Después de pulsar STOP, todos ven las respuestas de los demás y puntúan cada respuesta. 10 puntos por una respuesta única, 5 puntos por una respuesta repetida, 0 puntos por una respuesta vacía o incorrecta. También se pueden usar puntos negativos.",
+    scoring: "Después de pulsar STOP, todos ven las respuestas de los demás y puntúan cada respuesta. 10 puntos por una respuesta única, 5 puntos por una respuesta repetida, 0 puntos por una respuesta vacía. También se pueden usar puntos negativos para una respuesta no aceptada.",
   },
 } as const;
 
