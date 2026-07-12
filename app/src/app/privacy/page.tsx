@@ -23,10 +23,10 @@ export default function PrivacyPolicyPage() {
 
       <h2>Provozovatel / App operator</h2>
       <p>
-        Miroslav Randáček
+        RandaCzech
         <br />
         Kontakt / Contact:{" "}
-        <a href="mailto:mirek.randacek@gmail.com">mirek.randacek@gmail.com</a>
+        <a href="mailto:randis@email.cz">randis@email.cz</a>
       </p>
 
       <h2>Jaké údaje aplikace zpracovává / Data processed by the app</h2>
