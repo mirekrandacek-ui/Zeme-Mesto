@@ -365,10 +365,10 @@ export default function Home() {
           <div>
             <p>
               {en
-                ? "No ads, unlimited players, category selection and ordering, and up to 5 custom categories."
+                ? "No ads, unlimited players, category selection and ordering, optional time limit per round, number of rounds, and up to 5 custom categories."
                 : es
-                  ? "Sin anuncios, jugadores sin límite, selección y orden de categorías, y hasta 5 categorías propias."
-                  : "Bez reklam, neomezený počet hráčů, volba počtu a pořadí kategorií, časomíra, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií."}
+                  ? "Sin anuncios, jugadores sin límite, selección y orden de categorías, límite de tiempo por ronda, número de rondas y hasta 5 categorías propias."
+                  : "Bez reklam, neomezený počet hráčů, volba počtu a pořadí kategorií, časový limit na kolo, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií."}
             </p>
 
             <p style={{ marginBottom: 0 }}>
@@ -421,6 +421,21 @@ export default function Home() {
                 ? "Escribirás las respuestas en este idioma y se elegirá el tipo de alfabeto según él."
                 : "V tomto jazyce budeš psát odpovědi a zvolí se podle něj typ abecedy."}
           </span>
+
+            <span
+              style={{
+                display: "block",
+                marginTop: 6,
+                fontSize: 13,
+                opacity: 0.75,
+              }}
+            >
+              {en
+                ? "Accents do not matter – accented and non-accented answers count the same."
+                : es
+                  ? "Los acentos no importan – las respuestas con o sin acento cuentan igual."
+                  : "Diakritika se neřeší – odpovědi s háčky a čárkami i bez nich se berou stejně."}
+            </span>
         </label>
 
         <button
@@ -539,18 +554,11 @@ export default function Home() {
 
             <p>
               {en
-                ? "No ads, unlimited players, all basic and extended categories included, category selection and ordering, and up to 5 custom categories. The local price will be shown during purchase."
+                ? "No ads, unlimited players, all basic and extended categories included, category selection and ordering, optional time limit per round, number of rounds, and up to 5 custom categories. The local price will be shown during purchase."
                 : es
-                  ? "Sin anuncios, jugadores sin límite, todas las categorías básicas y ampliadas incluidas, selección y orden de categorías, y hasta 5 categorías propias. El precio local se mostrará durante la compra."
-                  : "Bez reklam, neomezený počet hráčů, všechny základní i rozšířené kategorie v ceně, volba počtu a pořadí kategorií a možnost vytvořit až 5 vlastních kategorií."}
+                  ? "Sin anuncios, jugadores sin límite, todas las categorías básicas y ampliadas incluidas, selección y orden de categorías, límite de tiempo por ronda, número de rondas y hasta 5 categorías propias. El precio local se mostrará durante la compra."
+                  : "Bez reklam, neomezený počet hráčů, všechny základní i rozšířené kategorie v ceně, volba počtu a pořadí kategorií, časový limit na kolo, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií."}
             </p>
-              <p style={{ marginTop: -4, fontWeight: 700 }}>
-                {en
-                  ? "Includes optional round timer and number of rounds."
-                  : es
-                    ? "Incluye límite de tiempo y número de rondas opcionales."
-                    : "Obsahuje volitelný časový limit kola a počet kol."}
-              </p>
 
 
             <p>
