@@ -7,6 +7,7 @@ import {
   hideFreeBannerAdForNativeApp,
   isNativeAdMobAvailable,
   showFreeBannerAdForNativeApp,
+  showFreeRewardedAdForNativeApp,
 } from "@/lib/admob";
 
 import {
@@ -1580,11 +1581,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     )
   ).sort((a, b) => a - b);
 
-  function startFreeRewardedAdPlaceholder() {
+  async function startFreeRewardedAd() {
     if (showRewardedAdPlaceholder) return;
 
     setShowRewardedAdPlaceholder(true);
     setMsg("");
+
+    const nativeRewardShown = await showFreeRewardedAdForNativeApp();
+
+    if (nativeRewardShown) {
+      unlockFreeRoundsByRewardedAd();
+      return;
+    }
 
     window.setTimeout(() => {
       unlockFreeRoundsByRewardedAd();
@@ -2899,7 +2907,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
                   <button
                     type="button"
-                    onClick={startFreeRewardedAdPlaceholder}
+                    onClick={startFreeRewardedAd}
                     style={{ marginTop: 10, padding: 14, width: "100%", fontWeight: 700 }}
                   >
                     {t("freeRewardButton")}
