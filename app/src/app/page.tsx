@@ -8,6 +8,11 @@ import {
   isNativeAdMobAvailable,
   showFreeBannerAdForNativeApp,
 } from "@/lib/admob";
+import {
+  isPlayBillingAvailable,
+  PlayBilling,
+  type BillingProduct,
+} from "@/lib/playBilling";
 
 type Tier = "free" | "premium" | "super_premium";
 type RoomLanguage = "cs" | "en" | "es";
@@ -81,6 +86,10 @@ export default function Home() {
   const [gameLanguage, setGameLanguage] = useState<RoomLanguage>("cs");
   const [nativeFreeBannerShown, setNativeFreeBannerShown] = useState(false);
   const [showOtherModes, setShowOtherModes] = useState(false);
+  const [billingProducts, setBillingProducts] = useState<BillingProduct[]>([]);
+  const [billingReady, setBillingReady] = useState(false);
+  const [purchaseBusy, setPurchaseBusy] =
+    useState<"premium" | "super_premium" | null>(null);
 
   const en = language === "en";
   const es = language === "es";
@@ -112,6 +121,123 @@ export default function Home() {
     setLanguage(initialUiLanguage);
     setGameLanguage(initialGameLanguage);
   }, []);
+
+  useEffect(() => {
+    if (!isPlayBillingAvailable()) return;
+
+    async function loadPlayBilling() {
+      try {
+        const connection = await PlayBilling.connect();
+        if (!connection.ready) return;
+
+        setBillingReady(true);
+
+        const [productsResult, purchasesResult] = await Promise.all([
+          PlayBilling.getProducts(),
+          PlayBilling.getPurchases(),
+        ]);
+
+        setBillingProducts(productsResult.products ?? []);
+
+        const ownedProducts = new Set(
+          (purchasesResult.purchases ?? [])
+            .filter((purchase) => purchase.purchaseState === 1)
+            .flatMap((purchase) => purchase.productIds)
+        );
+
+        if (ownedProducts.has("super_premium")) {
+          setTier("super_premium");
+        } else if (ownedProducts.has("premium")) {
+          setTier("premium");
+        }
+      } catch (error) {
+        console.error("Google Play Billing init failed:", error);
+      }
+    }
+
+    void loadPlayBilling();
+  }, []);
+
+  useEffect(() => {
+    if (!isPlayBillingAvailable()) return;
+
+    let active = true;
+    let listenerHandle: { remove: () => Promise<void> } | undefined;
+
+    void PlayBilling.addListener("purchaseUpdated", (event) => {
+      if (!active || event.status !== "purchased") return;
+
+      if (event.productIds.includes("super_premium")) {
+        setTier("super_premium");
+      } else if (event.productIds.includes("premium")) {
+        setTier("premium");
+      }
+    }).then((handle) => {
+      if (!active) {
+        void handle.remove();
+        return;
+      }
+
+      listenerHandle = handle;
+    });
+
+    return () => {
+      active = false;
+      if (listenerHandle) void listenerHandle.remove();
+    };
+  }, []);
+
+  async function startPlayPurchase(
+    productId: "premium" | "super_premium"
+  ) {
+    if (!isPlayBillingAvailable() || !billingReady) {
+      window.alert(
+        en
+          ? "Google Play Billing is not ready."
+          : es
+            ? "Google Play Billing no está preparado."
+            : "Google Play Billing zatím není připravený."
+      );
+      return;
+    }
+
+    if (!billingProducts.some((product) => product.productId === productId)) {
+      window.alert(
+        en
+          ? "The product is not available."
+          : es
+            ? "El producto no está disponible."
+            : "Produkt zatím není dostupný."
+      );
+      return;
+    }
+
+    setPurchaseBusy(productId);
+
+    try {
+      const result = await PlayBilling.purchase({
+        productId,
+        ...(productId === "super_premium" && tier === "premium"
+          ? { offerId: "premium-upgrade" }
+          : {}),
+      });
+
+      if (result.responseCode !== 0) {
+        window.alert(result.debugMessage || "Google Play Billing error.");
+      }
+    } catch (error) {
+      console.error("Google Play purchase failed:", error);
+      window.alert(
+        en
+          ? "The purchase could not be started."
+          : es
+            ? "No se pudo iniciar la compra."
+            : "Nákup se nepodařilo spustit."
+      );
+    } finally {
+      setPurchaseBusy(null);
+    }
+  }
 
   function getRoomSettings() {
     if (tier === "premium") {
@@ -511,16 +637,12 @@ export default function Home() {
 
             <button
               type="button"
-              disabled={tier === "premium" || tier === "super_premium"}
-              onClick={() =>
-                window.alert(
-                  en
-                    ? "Google Play purchases will be connected before release."
-                    : es
-                      ? "Las compras de Google Play se conectarán antes del lanzamiento."
-                      : "Nákup přes Google Play zapojíme před vydáním aplikace."
-                )
+              disabled={
+                tier === "premium" ||
+                tier === "super_premium" ||
+                purchaseBusy !== null
               }
+              onClick={() => void startPlayPurchase("premium")}
               style={{ padding: 12, width: "100%" }}
             >
               {tier === "premium"
@@ -571,16 +693,11 @@ export default function Home() {
 
             <button
               type="button"
-              disabled={tier === "super_premium"}
-              onClick={() =>
-                window.alert(
-                  en
-                    ? "Google Play purchases will be connected before release."
-                    : es
-                      ? "Las compras de Google Play se conectarán antes del lanzamiento."
-                      : "Nákup přes Google Play zapojíme před vydáním aplikace."
-                )
+              disabled={
+                tier === "super_premium" ||
+                purchaseBusy !== null
               }
+              onClick={() => void startPlayPurchase("super_premium")}
               style={{ padding: 12, width: "100%" }}
             >
               {tier === "super_premium"
