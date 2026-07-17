@@ -80,7 +80,6 @@ export default function Home() {
   const [roomCodeInput, setRoomCodeInput] = useState("");
   const [creating, setCreating] = useState(false);
 
-  // Dočasný testovací přepínač, než napojíme skutečné platby.
   const [tier, setTier] = useState<Tier>("free");
   const [language, setLanguage] = useState<RoomLanguage>("cs");
   const [gameLanguage, setGameLanguage] = useState<RoomLanguage>("cs");
@@ -746,30 +745,6 @@ export default function Home() {
         >
           {en ? "Do you like the app?" : es ? "¿Te gusta la aplicación?" : "Líbí se vám aplikace?"}
         </button>
-
-<details style={{ marginTop: 20, opacity: 0.75 }}>
-        <summary style={{ cursor: "pointer" }}>
-          {en ? "Developer mode" : es ? "Modo desarrollador" : "Vývojářský režim"}
-        </summary>
-
-        <label style={{ display: "block", marginTop: 10 }}>
-          {en ? "Test active mode" : es ? "Modo activo de prueba" : "Testovací aktivní režim"}
-          <select
-            value={tier}
-            onChange={(e) => setTier(e.target.value as Tier)}
-            style={{
-              display: "block",
-              marginTop: 6,
-              padding: 12,
-              width: "100%",
-            }}
-          >
-            <option value="free">Free</option>
-            <option value="premium">Premium</option>
-            <option value="super_premium">Super Premium</option>
-          </select>
-        </label>
-      </details>
 
         <details
           style={{
