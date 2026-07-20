@@ -33,7 +33,6 @@ const EXTENDED_CATEGORIES = [
   "Barva",
 ];
 
-const EXTENDED_CATEGORY_PRICE_CZK = 25;
 
 function createRoomCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -237,6 +236,21 @@ export default function Home() {
       setPurchaseBusy(null);
     }
   }
+
+  const premiumPrice =
+    billingProducts.find((product) => product.productId === "premium")
+      ?.formattedPrice;
+
+  const superPremiumProduct =
+    billingProducts.find((product) => product.productId === "super_premium");
+
+  const superPremiumPrice =
+    superPremiumProduct?.formattedPrice;
+
+  const superPremiumUpgradePrice =
+    superPremiumProduct?.offers?.find(
+      (offer) => offer.offerId === "premium-upgrade"
+    )?.formattedPrice;
 
   function getRoomSettings() {
     if (tier === "premium") {
@@ -624,7 +638,7 @@ export default function Home() {
               marginBottom: 12,
             }}
           >
-            <h3 style={{ marginTop: 0 }}>Premium – 69 Kč</h3>
+            <h3 style={{ marginTop: 0 }}>Premium{premiumPrice ? ` – ${premiumPrice}` : ""}</h3>
 
             <p>
               {en
@@ -671,7 +685,7 @@ export default function Home() {
               padding: 14,
             }}
           >
-            <h3 style={{ marginTop: 0 }}>Super Premium – 129 Kč</h3>
+            <h3 style={{ marginTop: 0 }}>Super Premium{superPremiumPrice ? ` – ${superPremiumPrice}` : ""}</h3>
 
             <p>
               {en
@@ -707,10 +721,16 @@ export default function Home() {
                     : "Aktivní"
                 : tier === "premium"
                   ? en
-                    ? "Upgrade to Super Premium"
+                    ? superPremiumUpgradePrice
+                      ? `Upgrade to Super Premium for ${superPremiumUpgradePrice}`
+                      : "Upgrade to Super Premium"
                     : es
-                      ? "Pasar a Super Premium por 60 Kč"
-                      : "Upgradovat na Super Premium za 60 Kč"
+                      ? superPremiumUpgradePrice
+                        ? `Pasar a Super Premium por ${superPremiumUpgradePrice}`
+                        : "Pasar a Super Premium"
+                      : superPremiumUpgradePrice
+                        ? `Upgradovat na Super Premium za ${superPremiumUpgradePrice}`
+                        : "Upgradovat na Super Premium"
                   : en
                     ? "Buy Super Premium"
                     : es

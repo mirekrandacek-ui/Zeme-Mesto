@@ -93,6 +93,42 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
             QueryProductDetailsParams.Product.newBuilder()
                 .setProductId("super_premium")
                 .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("category_film_serial")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("category_actor")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("category_music")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("category_sport")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("category_brand")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("category_auto_moto")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("category_river_mountain")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("category_job")
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId("category_color")
+                .setProductType(BillingClient.ProductType.INAPP)
                 .build()
         );
 
@@ -121,20 +157,54 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
                         details.getOneTimePurchaseOfferDetailsList();
 
                     if (offers != null && !offers.isEmpty()) {
-                        ProductDetails.OneTimePurchaseOfferDetails offer =
-                            offers.get(0);
+                        com.getcapacitor.JSArray resultOffers =
+                            new com.getcapacitor.JSArray();
 
+                        ProductDetails.OneTimePurchaseOfferDetails standardOffer = null;
+
+                        for (ProductDetails.OneTimePurchaseOfferDetails offer : offers) {
+                            JSObject resultOffer = new JSObject();
+
+                            if (offer.getOfferId() != null) {
+                                resultOffer.put("offerId", offer.getOfferId());
+                            }
+
+                            resultOffer.put(
+                                "formattedPrice",
+                                offer.getFormattedPrice()
+                            );
+                            resultOffer.put(
+                                "priceCurrencyCode",
+                                offer.getPriceCurrencyCode()
+                            );
+                            resultOffer.put(
+                                "priceAmountMicros",
+                                offer.getPriceAmountMicros()
+                            );
+
+                            resultOffers.put(resultOffer);
+
+                            if (offer.getOfferId() == null && standardOffer == null) {
+                                standardOffer = offer;
+                            }
+                        }
+
+                        if (standardOffer == null) {
+                            standardOffer = offers.get(0);
+                        }
+
+                        product.put("offers", resultOffers);
                         product.put(
                             "formattedPrice",
-                            offer.getFormattedPrice()
+                            standardOffer.getFormattedPrice()
                         );
                         product.put(
                             "priceCurrencyCode",
-                            offer.getPriceCurrencyCode()
+                            standardOffer.getPriceCurrencyCode()
                         );
                         product.put(
                             "priceAmountMicros",
-                            offer.getPriceAmountMicros()
+                            standardOffer.getPriceAmountMicros()
                         );
                     }
 

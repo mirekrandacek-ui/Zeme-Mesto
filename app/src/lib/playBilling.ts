@@ -1,12 +1,20 @@
 import { Capacitor, registerPlugin, type PluginListenerHandle } from "@capacitor/core";
 
+export type BillingOffer = {
+  offerId?: string;
+  formattedPrice: string;
+  priceCurrencyCode: string;
+  priceAmountMicros: number;
+};
+
 export type BillingProduct = {
-  productId: "premium" | "super_premium";
+  productId: string;
   name: string;
   description: string;
   formattedPrice?: string;
   priceCurrencyCode?: string;
   priceAmountMicros?: number;
+  offers?: BillingOffer[];
 };
 
 export type BillingPurchase = {

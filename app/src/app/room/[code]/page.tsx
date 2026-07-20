@@ -9,6 +9,11 @@ import {
   showFreeBannerAdForNativeApp,
   showFreeRewardedAdForNativeApp,
 } from "@/lib/admob";
+import {
+  isPlayBillingAvailable,
+  PlayBilling,
+  type BillingProduct,
+} from "@/lib/playBilling";
 
 import {
   categoryHelpText,
@@ -109,6 +114,20 @@ const SUPER_PREMIUM_EXTRA_CATEGORIES = [
   "Barva",
 ];
 
+const CATEGORY_PRODUCT_ID: Record<string, string> = {
+  "Film / Seriál": "category_film_serial",
+  "Herec / Herečka": "category_actor",
+  "Zpěvák / Zpěvačka / Kapela": "category_music",
+  Sport: "category_sport",
+  Značka: "category_brand",
+  "Auto / Moto": "category_auto_moto",
+  "Řeka / Hora": "category_river_mountain",
+  Povolání: "category_job",
+  Barva: "category_color",
+};
+
+const CATEGORY_PRODUCT_IDS = new Set(Object.values(CATEGORY_PRODUCT_ID));
+
 const ALL_PREDEFINED_CATEGORIES = [...PREMIUM_CATEGORIES, ...SUPER_PREMIUM_EXTRA_CATEGORIES];
 
 const CATEGORY_LABELS_EN: Record<string, string> = {
@@ -200,13 +219,18 @@ export default function RoomPage() {
   const { code } = useParams<{ code: string }>();
 
   const [roomId, setRoomId] = useState<string | null>(null);
+  const roomIdRef = useRef<string | null>(null);
+  const isOrganizerRef = useRef(false);
   const [roomStatus, setRoomStatus] = useState<RoomStatus>("lobby");
   const [letter, setLetter] = useState<string | null>(null);
   const [activeCategories, setActiveCategories] = useState<string[]>(DEFAULT_ACTIVE_CATEGORIES);
   const [maxPlayers, setMaxPlayers] = useState(3);
   const [roomTier, setRoomTier] = useState<RoomTier>("free");
-  const [premiumCategoryUnlockTest, setPremiumCategoryUnlockTest] = useState(false);
   const [premiumLockedOfferCategory, setPremiumLockedOfferCategory] = useState<string | null>(null);
+  const [billingProducts, setBillingProducts] = useState<BillingProduct[]>([]);
+  const [billingReady, setBillingReady] = useState(false);
+  const [ownedCategoryProductIds, setOwnedCategoryProductIds] = useState<string[]>([]);
+  const [categoryPurchaseBusy, setCategoryPurchaseBusy] = useState<string | null>(null);
   const [roomLanguage, setRoomLanguage] = useState<RoomLanguage>("cs");
   const [roundTimeLimitSeconds, setRoundTimeLimitSeconds] = useState<RoundTimeLimitSeconds>(null);
   const [roundCountLimit, setRoundCountLimit] = useState<RoundCountLimit>(null);
@@ -347,6 +371,169 @@ export default function RoomPage() {
           : "en"
     );
   }, []);
+
+  useEffect(() => {
+    if (!isPlayBillingAvailable()) return;
+
+    let active = true;
+    let listenerHandle: { remove: () => Promise<void> } | undefined;
+
+    async function loadRoomBilling() {
+      try {
+        const connection = await PlayBilling.connect();
+        if (!active || !connection.ready) return;
+
+        setBillingReady(true);
+
+        const [productsResult, purchasesResult] = await Promise.all([
+          PlayBilling.getProducts(),
+          PlayBilling.getPurchases(),
+        ]);
+
+        if (!active) return;
+
+        setBillingProducts(productsResult.products ?? []);
+
+        const ownedCategoryIds = (purchasesResult.purchases ?? [])
+          .filter((purchase) => purchase.purchaseState === 1)
+          .flatMap((purchase) => purchase.productIds)
+          .filter((productId) => CATEGORY_PRODUCT_IDS.has(productId));
+
+        setOwnedCategoryProductIds([...new Set(ownedCategoryIds)]);
+      } catch (error) {
+        console.error("Google Play room billing failed:", error);
+      }
+    }
+
+    void loadRoomBilling();
+
+    void PlayBilling.addListener("purchaseUpdated", (event) => {
+      if (!active) return;
+
+      if (event.status !== "purchased") {
+        setCategoryPurchaseBusy(null);
+        return;
+      }
+
+      if (event.productIds.includes("premium")) {
+        void (async () => {
+          const currentRoomId = roomIdRef.current;
+
+          if (!currentRoomId || !isOrganizerRef.current) {
+            setCategoryPurchaseBusy(null);
+            return;
+          }
+
+          const { error } = await supabase
+            .from("rooms")
+            .update({
+              creator_tier: "premium",
+              max_players: 5,
+              active_categories: PREMIUM_CATEGORIES,
+              custom_category: null,
+              ads_enabled: false,
+            })
+            .eq("id", currentRoomId);
+
+          setCategoryPurchaseBusy(null);
+
+          if (error) {
+            setMsg(`❌ Premium: ${error.message}`);
+            return;
+          }
+
+          setRoomTier("premium");
+          setMaxPlayers(5);
+          setActiveCategories(PREMIUM_CATEGORIES);
+          setRoomCustomCategories(["", "", "", "", ""]);
+          setShowFreeLimitUpsell(false);
+          setPremiumLockedOfferCategory(null);
+          setMsg("");
+        })();
+
+        return;
+      }
+
+      if (event.productIds.includes("super_premium")) {
+        void (async () => {
+          const currentRoomId = roomIdRef.current;
+
+          if (!currentRoomId || !isOrganizerRef.current) {
+            setCategoryPurchaseBusy(null);
+            return;
+          }
+
+          const { error } = await supabase
+            .from("rooms")
+            .update({
+              creator_tier: "super_premium",
+              max_players: 999,
+              ads_enabled: false,
+            })
+            .eq("id", currentRoomId);
+
+          setCategoryPurchaseBusy(null);
+
+          if (error) {
+            setMsg(`❌ Super Premium: ${error.message}`);
+            return;
+          }
+
+          setRoomTier("super_premium");
+          setMaxPlayers(999);
+          setPremiumLockedOfferCategory(null);
+          setMsg("");
+        })();
+
+        return;
+      }
+
+      const purchasedCategoryIds = event.productIds.filter(
+        (productId) => CATEGORY_PRODUCT_IDS.has(productId)
+      );
+
+      if (purchasedCategoryIds.length === 0) return;
+
+      setOwnedCategoryProductIds((current) => [
+        ...new Set([...current, ...purchasedCategoryIds]),
+      ]);
+      setCategoryPurchaseBusy(null);
+      setPremiumLockedOfferCategory(null);
+      setMsg(
+        uiLanguage === "en"
+          ? "The category has been unlocked."
+          : uiLanguage === "es"
+            ? "La categoría ha sido desbloqueada."
+            : "Kategorie byla odemčena."
+      );
+    }).then((handle) => {
+      if (!active) {
+        void handle.remove();
+        return;
+      }
+
+      listenerHandle = handle;
+    });
+
+    return () => {
+      active = false;
+      if (listenerHandle) void listenerHandle.remove();
+    };
+  }, []);
+
+  function categoryPlayPrice(category: string) {
+    const productId = CATEGORY_PRODUCT_ID[category];
+
+    return billingProducts.find(
+      (product) => product.productId === productId
+    )?.formattedPrice;
+  }
+
+  const superPremiumUpgradePrice =
+    billingProducts
+      .find((product) => product.productId === "super_premium")
+      ?.offers?.find((offer) => offer.offerId === "premium-upgrade")
+      ?.formattedPrice;
 
   function categoryLabel(category: string) {
     if (roomLanguage === "en") {
@@ -1167,21 +1354,62 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     myPlayer && localCreatorToken && roomCreatorToken && localCreatorToken === roomCreatorToken
   );
 
-  const premiumCategoriesUnlockedForTest =
-    roomTier === "premium" && premiumCategoryUnlockTest;
+  useEffect(() => {
+    roomIdRef.current = roomId;
+    isOrganizerRef.current = isOrganizer;
+  }, [roomId, isOrganizer]);
+
+  const ownedExtendedCategories = SUPER_PREMIUM_EXTRA_CATEGORIES.filter(
+    (category) =>
+      ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category])
+  );
+
+  const premiumCategorySelectionUnlocked =
+    roomTier === "premium" && ownedExtendedCategories.length > 0;
 
   const canEditRoomCategories =
-    isOrganizer && (roomTier === "super_premium" || premiumCategoriesUnlockedForTest);
+    isOrganizer &&
+    (roomTier === "super_premium" || premiumCategorySelectionUnlocked);
+
+  function canToggleRoomCategory(category: string) {
+    if (!canEditRoomCategories) return false;
+    if (roomTier === "super_premium") return true;
+    if (PREMIUM_CATEGORIES.includes(category)) return true;
+
+    return ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
+  }
 
   async function updateRoomCategories(predefinedCategories: string[], customCategories: string[]) {
     if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
 
-    if (roomTier === "premium" && !premiumCategoriesUnlockedForTest) {
-      setMsg("Premium má kategorie pevně dané. Po dokoupení alespoň jedné rozšířené kategorie se odemkne volba počtu kategorií a jejich pořadí.");
+    if (roomTier === "premium" && !premiumCategorySelectionUnlocked) {
+      setMsg("Premium má základní kategorie pevně dané. Výběr se odemkne po koupi alespoň jedné rozšířené kategorie.");
       return;
     }
 
-    const cleanedCustomCategories = uniqueNonEmpty(customCategories).slice(0, 5);
+    if (roomTier === "premium") {
+      const unownedExtendedCategories = predefinedCategories.filter(
+        (category) =>
+          SUPER_PREMIUM_EXTRA_CATEGORIES.includes(category) &&
+          !ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category])
+      );
+
+      if (unownedExtendedCategories.length > 0) {
+        setMsg(
+          uiLanguage === "en"
+            ? "This extended category has not been purchased."
+            : uiLanguage === "es"
+              ? "Esta categoría ampliada no ha sido comprada."
+              : "Tato rozšířená kategorie nebyla zakoupena."
+        );
+        return;
+      }
+    }
+
+    const cleanedCustomCategories =
+      roomTier === "super_premium"
+        ? uniqueNonEmpty(customCategories).slice(0, 5)
+        : [];
     const finalCategories = uniqueNonEmpty([...predefinedCategories, ...cleanedCustomCategories]);
 
     if (finalCategories.length === 0) {
@@ -1211,6 +1439,143 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   function showPremiumLockedCategoryOffer(category: string) {
     setPremiumLockedOfferCategory(category);
     setMsg("");
+  }
+
+  async function startCategoryPurchase(category: string) {
+    const productId = CATEGORY_PRODUCT_ID[category];
+
+    if (
+      !productId ||
+      !isPlayBillingAvailable() ||
+      !billingReady ||
+      !billingProducts.some((product) => product.productId === productId)
+    ) {
+      setMsg(
+        uiLanguage === "en"
+          ? "The category purchase is not available yet."
+          : uiLanguage === "es"
+            ? "La compra de la categoría todavía no está disponible."
+            : "Nákup kategorie zatím není dostupný."
+      );
+      return;
+    }
+
+    setCategoryPurchaseBusy(productId);
+
+    try {
+      const result = await PlayBilling.purchase({ productId });
+
+      if (result.responseCode !== 0) {
+        setCategoryPurchaseBusy(null);
+        setMsg(result.debugMessage || "Google Play Billing error.");
+      }
+    } catch (error) {
+      console.error("Category purchase failed:", error);
+      setCategoryPurchaseBusy(null);
+      setMsg(
+        uiLanguage === "en"
+          ? "The purchase could not be started."
+          : uiLanguage === "es"
+            ? "No se pudo iniciar la compra."
+            : "Nákup se nepodařilo spustit."
+      );
+    }
+  }
+
+  async function startPremiumPurchase() {
+    const premiumProduct = billingProducts.find(
+      (product) => product.productId === "premium"
+    );
+
+    if (
+      !isOrganizer ||
+      !isPlayBillingAvailable() ||
+      !billingReady ||
+      !premiumProduct
+    ) {
+      setMsg(
+        uiLanguage === "en"
+          ? "The Premium purchase is not available yet."
+          : uiLanguage === "es"
+            ? "La compra de Premium todavía no está disponible."
+            : "Nákup Premium zatím není dostupný."
+      );
+      return;
+    }
+
+    setCategoryPurchaseBusy("premium");
+
+    try {
+      const result = await PlayBilling.purchase({
+        productId: "premium",
+      });
+
+      if (result.responseCode !== 0) {
+        setCategoryPurchaseBusy(null);
+        setMsg(result.debugMessage || "Google Play Billing error.");
+      }
+    } catch (error) {
+      console.error("Premium purchase failed:", error);
+      setCategoryPurchaseBusy(null);
+      setMsg(
+        uiLanguage === "en"
+          ? "The purchase could not be started."
+          : uiLanguage === "es"
+            ? "No se pudo iniciar la compra."
+            : "Nákup se nepodařilo spustit."
+      );
+    }
+  }
+
+  async function startSuperPremiumUpgrade() {
+    const superPremiumProduct = billingProducts.find(
+      (product) => product.productId === "super_premium"
+    );
+
+    const upgradeOfferAvailable = superPremiumProduct?.offers?.some(
+      (offer) => offer.offerId === "premium-upgrade"
+    );
+
+    if (
+      !isOrganizer ||
+      !isPlayBillingAvailable() ||
+      !billingReady ||
+      !superPremiumProduct ||
+      !upgradeOfferAvailable
+    ) {
+      setMsg(
+        uiLanguage === "en"
+          ? "The Super Premium upgrade is not available yet."
+          : uiLanguage === "es"
+            ? "La mejora a Super Premium todavía no está disponible."
+            : "Upgrade na Super Premium zatím není dostupný."
+      );
+      return;
+    }
+
+    setCategoryPurchaseBusy("super_premium");
+
+    try {
+      const result = await PlayBilling.purchase({
+        productId: "super_premium",
+        offerId: "premium-upgrade",
+      });
+
+      if (result.responseCode !== 0) {
+        setCategoryPurchaseBusy(null);
+        setMsg(result.debugMessage || "Google Play Billing error.");
+      }
+    } catch (error) {
+      console.error("Super Premium upgrade failed:", error);
+      setCategoryPurchaseBusy(null);
+      setMsg(
+        uiLanguage === "en"
+          ? "The purchase could not be started."
+          : uiLanguage === "es"
+            ? "No se pudo iniciar la compra."
+            : "Nákup se nepodařilo spustit."
+      );
+    }
   }
 
   function toggleRoomCategory(category: string) {
@@ -2082,36 +2447,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 {categoryHelpText(uiLanguage, isOrganizer, roomTier)}
               </p>
 
-              {isOrganizer && roomTier === "premium" && (
-                <div style={{ marginTop: 10, marginBottom: 12 }}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPremiumCategoryUnlockTest(true);
-                      setMsg(
-                        t("testPremiumUnlockedMessage")
-                      );
-                    }}
-                    style={{ padding: 10, width: "100%" }}
-                  >
-                    {t("testPremiumUnlockButton")}
-                  </button>
-
-                  {premiumCategoriesUnlockedForTest && (
-                    <p style={{ opacity: 0.75, marginBottom: 0 }}>
-                      {t("testActiveCategoryOrder")}
-                    </p>
-                  )}
-                </div>
-              )}
-
               <h4>
                 {t("basicCategories")}
               </h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {PREMIUM_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {canEditRoomCategories ? (
+                    {canToggleRoomCategory(category) ? (
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
@@ -2160,7 +2502,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
                   <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {canEditRoomCategories ? (
+                    {canToggleRoomCategory(category) ? (
                     <input
                       type="checkbox"
                       checked={activeCategories.includes(category)}
@@ -2197,7 +2539,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     </span>
                   )}
 
-                    {roomTier === "premium" ? (
+                    {roomTier === "premium" &&
+                    isOrganizer &&
+                    !ownedCategoryProductIds.includes(
+                      CATEGORY_PRODUCT_ID[category]
+                    ) ? (
                       <button
                         type="button"
                         onClick={() => showPremiumLockedCategoryOffer(category)}
@@ -2212,8 +2558,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                           font: "inherit",
                         }}
                       >
-                        🔒 {categoryLabel(category)} –{" "}
-                        {t("extendedCategoryPrice")}
+                        🔒 {categoryLabel(category)}
+                        {categoryPlayPrice(category)
+                          ? ` – ${categoryPlayPrice(category)}`
+                          : ""}
                       </button>
                     ) : (
                       categoryLabel(category)
@@ -2222,7 +2570,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 ))}
               </div>
 
-                {roomTier === "premium" && premiumLockedOfferCategory && (
+                {roomTier === "premium" &&
+                isOrganizer &&
+                premiumLockedOfferCategory && (
                   <section
                     style={{
                       marginTop: 10,
@@ -2234,7 +2584,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   >
                     <button
                       type="button"
-                      onClick={() => window.alert(t("premiumComingSoon"))}
+                      disabled={categoryPurchaseBusy !== null}
+                      onClick={() =>
+                        void startCategoryPurchase(premiumLockedOfferCategory)
+                      }
                       style={{
                         border: "none",
                         background: "transparent",
@@ -2248,7 +2601,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         textAlign: "left",
                       }}
                     >
-                      {categoryLabel(premiumLockedOfferCategory)}{" "}–{" "}{t("extendedCategoryPrice")}
+                      {categoryLabel(premiumLockedOfferCategory)}
+                      {categoryPlayPrice(premiumLockedOfferCategory)
+                        ? ` – ${categoryPlayPrice(premiumLockedOfferCategory)}`
+                        : ""}
                     </button>
 
                     <p>
@@ -2259,7 +2615,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       {t("superPremiumUpsellBefore")}{" "}
                       <button
                         type="button"
-                        onClick={() => window.alert(t("premiumComingSoon"))}
+                        disabled={categoryPurchaseBusy !== null}
+                        onClick={() => void startSuperPremiumUpgrade()}
                         style={{
                           border: "none",
                           background: "transparent",
@@ -2272,7 +2629,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         }}
                       >
                         {t("superPremiumLinkText")}
-                      </button>{" "}
+                      </button>
+                      {superPremiumUpgradePrice
+                        ? uiLanguage === "en"
+                          ? ` for ${superPremiumUpgradePrice}`
+                          : uiLanguage === "es"
+                            ? ` por ${superPremiumUpgradePrice}`
+                            : ` za ${superPremiumUpgradePrice}`
+                        : ""}{" "}
                       {t("superPremiumUpsellAfter")}
                     </p>
                   </section>
@@ -2899,7 +3263,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
                   <button
                     type="button"
-                    onClick={() => window.alert(t("premiumComingSoon"))}
+                    disabled={!isOrganizer || categoryPurchaseBusy !== null}
+                    onClick={() => void startPremiumPurchase()}
                     style={{ padding: 14, width: "100%", fontWeight: 700 }}
                   >
                     {t("freeUpgradeButton")}
