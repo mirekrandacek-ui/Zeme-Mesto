@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+  <title>Země Město – offline</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding:
+        calc(24px + env(safe-area-inset-top))
+        24px
+        calc(24px + env(safe-area-inset-bottom));
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f8fafc;
+      color: #172033;
+    }
+
+    main {
+      width: min(100%, 420px);
+      padding: 28px 22px;
+      border: 1px solid #dbe3ee;
+      border-radius: 18px;
+      background: #ffffff;
+      text-align: center;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+    }
+
+    .icon {
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    h1 {
+      margin: 18px 0 8px;
+      font-size: 24px;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.5;
+      color: #526076;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 12px;
+      background: #2563eb;
+      color: #ffffff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    #status {
+      min-height: 24px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="icon" aria-hidden="true">📡</div>
+    <h1 id="title">Jsi offline</h1>
+    <p id="text">Zkontroluj připojení k internetu a zkus to znovu.</p>
+    <button id="retry" type="button">Zkusit znovu</button>
+    <p id="status" aria-live="polite"></p>
+  </main>
+
+  <script>
+    const APP_URL = "https://zeme-mesto.vercel.app/";
+    const language = navigator.language.toLowerCase();
+
+    const translations = language.startsWith("es")
+      ? {
+          title: "Estás sin conexión",
+          text: "Comprueba tu conexión a Internet e inténtalo de nuevo.",
+          retry: "Intentar de nuevo",
+          waiting: "Todavía no hay conexión."
+        }
+      : language.startsWith("cs") || language.startsWith("sk")
+        ? {
+            title: "Jsi offline",
+            text: "Zkontroluj připojení k internetu a zkus to znovu.",
+            retry: "Zkusit znovu",
+            waiting: "Připojení stále není dostupné."
+          }
+        : {
+            title: "You are offline",
+            text: "Check your internet connection and try again.",
+            retry: "Try again",
+            waiting: "The connection is still unavailable."
+          };
+
+    document.documentElement.lang =
+      language.startsWith("es") ? "es" :
+      language.startsWith("cs") || language.startsWith("sk") ? "cs" : "en";
+
+    document.getElementById("title").textContent = translations.title;
+    document.getElementById("text").textContent = translations.text;
+    document.getElementById("retry").textContent = translations.retry;
+
+    function openApp() {
+      if (navigator.onLine) {
+        window.location.replace(APP_URL);
+        return;
+      }
+
+      document.getElementById("status").textContent = translations.waiting;
+    }
+
+    document.getElementById("retry").addEventListener("click", openApp);
+    window.addEventListener("online", openApp);
+  </script>
+</body>
+</html>

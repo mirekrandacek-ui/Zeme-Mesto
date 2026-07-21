@@ -273,6 +273,9 @@ export default function RoomPage() {
   const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const answerScrollBoxRef = useRef<HTMLDivElement | null>(null);
   const [keyboardInsetPx, setKeyboardInsetPx] = useState(0);
+  const [isOnline, setIsOnline] = useState(true);
+  const [isReconnecting, setIsReconnecting] = useState(false);
+  const wasOfflineRef = useRef(false);
   const keyboardInsetPxRef = useRef(0);
 
   function scrollAnswerIntoView(element: HTMLElement | null, block: "nearest" | "center" = "nearest") {
@@ -326,6 +329,29 @@ export default function RoomPage() {
       window.visualViewport?.removeEventListener("resize", updateKeyboardInset);
       window.visualViewport?.removeEventListener("scroll", updateKeyboardInset);
       window.removeEventListener("resize", updateKeyboardInset);
+    };
+  }, []);
+
+  useEffect(() => {
+    function updateConnectionState() {
+      const online = window.navigator.onLine;
+
+      setIsOnline(online);
+
+      if (!online) {
+        wasOfflineRef.current = true;
+        setIsReconnecting(false);
+      }
+    }
+
+    updateConnectionState();
+
+    window.addEventListener("online", updateConnectionState);
+    window.addEventListener("offline", updateConnectionState);
+
+    return () => {
+      window.removeEventListener("online", updateConnectionState);
+      window.removeEventListener("offline", updateConnectionState);
     };
   }, []);
 
@@ -1035,6 +1061,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     let cancelled = false;
 
     (async () => {
+      if (!window.navigator.onLine) return;
+
       const rid = await loadRoomByCode();
       if (cancelled || !rid) return;
       await loadPlayers(rid);
@@ -1049,7 +1077,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }, [code]);
 
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !isOnline) return;
 
     const poll = window.setInterval(async () => {
       const { data } = await supabase
@@ -1076,7 +1104,51 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     }, 1000);
 
     return () => window.clearInterval(poll);
-  }, [roomId, round?.round_no, myPlayer?.id]);
+  }, [roomId, round?.round_no, myPlayer?.id, isOnline]);
+
+  useEffect(() => {
+    if (!isOnline || !wasOfflineRef.current) return;
+
+    wasOfflineRef.current = false;
+    let cancelled = false;
+
+    setIsReconnecting(true);
+
+    void (async () => {
+      try {
+        let rid = roomId;
+
+        if (!rid) {
+          rid = await loadRoomByCode();
+        }
+
+        if (!rid) return;
+
+        await refreshRoomState(rid);
+
+        await Promise.all([
+          loadPlayers(rid),
+          loadCurrentRound(rid),
+          loadRoomScores(rid),
+        ]);
+
+        if (round?.round_no) {
+          await Promise.all([
+            loadAllAnswers(rid, round.round_no),
+            loadAllScores(rid, round.round_no),
+          ]);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsReconnecting(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOnline, roomId, round?.round_no]);
 
   useEffect(() => {
     if (roomStatus === "drawing") {
@@ -2117,6 +2189,34 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   return (
     <main
+        onClickCapture={(event) => {
+          if (isOnline) return;
+
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+
+          const control = target.closest(
+            "button, a, select, input, textarea"
+          );
+
+          if (!control) return;
+
+          const answerInput =
+            control instanceof HTMLTextAreaElement ||
+            (control instanceof HTMLInputElement &&
+              (control.type === "text" || control.type === "search"));
+
+          if (answerInput) return;
+
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+        onSubmitCapture={(event) => {
+          if (!isOnline) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }}
         style={{
           padding: 24,
           paddingTop: roomTier === "free"
@@ -2125,6 +2225,39 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           fontFamily: "system-ui",
         }}
       >
+      {(!isOnline || isReconnecting) && (
+        <section
+          role="status"
+          aria-live="polite"
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 100,
+            marginBottom: 12,
+            padding: "11px 14px",
+            border: "1px solid #c58b00",
+            borderRadius: 10,
+            background: isReconnecting ? "#e8f1ff" : "#fff4cc",
+            color: "#172033",
+            textAlign: "center",
+            fontSize: 14,
+            fontWeight: 700,
+          }}
+        >
+          {isReconnecting
+            ? uiLanguage === "es"
+              ? "Restableciendo la conexión y sincronizando la partida…"
+              : uiLanguage === "en"
+                ? "Restoring the connection and syncing the game…"
+                : "Obnovuji spojení a synchronizuji hru…"
+            : uiLanguage === "es"
+              ? "Sin conexión. Las respuestas escritas permanecen guardadas en este teléfono."
+              : uiLanguage === "en"
+                ? "You are offline. Your written answers remain saved on this phone."
+                : "Jsi offline. Rozepsané odpovědi zůstávají uložené v tomto telefonu."}
+        </section>
+      )}
+
       {showFreeAdBanner && (
         <section
           data-free-ad-banner

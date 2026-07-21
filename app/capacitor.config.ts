@@ -7,6 +7,7 @@ const config: CapacitorConfig = {
   server: {
     url: "https://zeme-mesto.vercel.app",
     cleartext: false,
+    errorPath: "offline.html",
   },
 };
 
