@@ -231,12 +231,6 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
     public void purchase(PluginCall call) {
         String productId = call.getString("productId");
 
-        if (!"premium".equals(productId) &&
-            !"super_premium".equals(productId)) {
-            call.reject("Neplatné ID produktu.");
-            return;
-        }
-
         ProductDetails details = productDetailsById.get(productId);
 
         if (details == null) {
