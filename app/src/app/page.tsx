@@ -15,7 +15,16 @@ import {
 } from "@/lib/playBilling";
 
 type Tier = "free" | "premium" | "super_premium";
-type RoomLanguage = "cs" | "en" | "es";
+type UiLanguage = "cs" | "en" | "es";
+type RoomLanguage =
+  | UiLanguage
+  | "pt-BR"
+  | "de"
+  | "fr"
+  | "id"
+  | "tr"
+  | "pl"
+  | "it";
 
 const FREE_CATEGORIES = ["Země", "Město", "Jméno"];
 
@@ -52,6 +61,245 @@ function tierLabel(tier: Tier) {
   return "Free";
 }
 
+const ENABLED_UI_LANGUAGES: readonly UiLanguage[] = [
+  "en",
+  "es",
+  "cs",
+];
+
+const ENABLED_GAME_LANGUAGES: readonly RoomLanguage[] = [
+  "en",
+  "es",
+  "cs",
+  "pt-BR",
+  "de",
+  "fr",
+  "id",
+  "tr",
+  "pl",
+  "it",
+];
+
+function isRoomLanguage(value: string | null): value is RoomLanguage {
+  return ENABLED_GAME_LANGUAGES.includes(value as RoomLanguage);
+}
+
+const LANGUAGE_FLAGS: Record<RoomLanguage, string> = {
+  cs: "🇨🇿",
+  en: "🇬🇧",
+  es: "🇪🇸",
+  "pt-BR": "🇧🇷",
+  de: "🇩🇪",
+  fr: "🇫🇷",
+  id: "🇮🇩",
+  tr: "🇹🇷",
+  pl: "🇵🇱",
+  it: "🇮🇹",
+};
+
+const LANGUAGE_NAMES: Record<
+  UiLanguage,
+  Record<RoomLanguage, string>
+> = {
+  cs: {
+    cs: "Čeština",
+    en: "Angličtina",
+    es: "Španělština",
+    "pt-BR": "Brazilská portugalština",
+    de: "Němčina",
+    fr: "Francouzština",
+    id: "Indonéština",
+    tr: "Turečtina",
+    pl: "Polština",
+    it: "Italština",
+  },
+  en: {
+    cs: "Czech",
+    en: "English",
+    es: "Spanish",
+    "pt-BR": "Brazilian Portuguese",
+    de: "German",
+    fr: "French",
+    id: "Indonesian",
+    tr: "Turkish",
+    pl: "Polish",
+    it: "Italian",
+  },
+  es: {
+    cs: "Checo",
+    en: "Inglés",
+    es: "Español",
+    "pt-BR": "Portugués de Brasil",
+    de: "Alemán",
+    fr: "Francés",
+    id: "Indonesio",
+    tr: "Turco",
+    pl: "Polaco",
+    it: "Italiano",
+  },
+};
+
+function languageOptionLabel(
+  optionLanguage: RoomLanguage,
+  uiLanguage: UiLanguage
+) {
+  return `${LANGUAGE_FLAGS[optionLanguage]} ${LANGUAGE_NAMES[uiLanguage][optionLanguage]}`;
+}
+
+const HOME_TEXT = {
+  cs: {
+    appTitleFirstLine: "Země Město",
+    appTitleSecondLine: "",
+    applicationLanguage: "Jazyk aplikace",
+    creatingRoom: "vytvářím místnost…",
+    roomCreateError: "❌ Místnost se nepodařilo vytvořit. Zkus to znovu.",
+    uniqueRoomCodeError:
+      "❌ Nepodařilo se vytvořit unikátní kód místnosti. Zkus to znovu.",
+    roomCodeRequired: "❗ Zadej kód místnosti.",
+    yourMode: "Tvůj režim",
+    active: "Aktivní",
+    gameLanguage: "Jazyk hry",
+    gameLanguageHelp:
+      "V tomto jazyce budeš psát odpovědi a zvolí se podle něj typ abecedy.",
+    diacriticsHelp:
+      "Diakritika se neřeší – odpovědi s háčky a čárkami i bez nich se berou stejně.",
+    likeApp: "Líbí se vám aplikace?",
+    haveRoomCode: "Mám kód místnosti",
+    roomCode: "Kód místnosti",
+    join: "Připojit se",
+    privacyPolicy: "Zásady ochrany soukromí",
+    intro: "Vytvoř místnost, pošli odkaz ostatním hráčům a hrajte společně.",
+    billingNotReady: "Google Play Billing zatím není připravený.",
+    productUnavailable: "Produkt zatím není dostupný.",
+    purchaseWindowError: "Nákupní okno se nepodařilo otevřít.",
+    purchaseStartError: "Nákup se nepodařilo spustit.",
+    freeDescription:
+      "Reklamy, až 3 hráči. Pevné kategorie: Země, Město, Jméno.",
+    premiumDescription:
+      "Bez reklam, max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina.",
+    superPremiumDescription:
+      "Bez reklam, neomezený počet hráčů, volba počtu a pořadí kategorií, časový limit na kolo, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií.",
+    superPremiumCategories:
+      "Kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina, Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport, Značka, Auto / Moto, Řeka / Hora, Povolání, Barva.",
+    creating: "Vytvářím…",
+    createRoom: "Vytvořit místnost",
+    hideOtherModes: "Skrýt další režimy",
+    showOtherModes: "Zobrazit další režimy",
+    includedInSuperPremium: "Součást Super Premium",
+    buyPremium: "Koupit Premium",
+    superPremiumPurchaseDescription:
+      "Bez reklam, neomezený počet hráčů, všechny základní i rozšířené kategorie v ceně, volba počtu a pořadí kategorií, časový limit na kolo, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií.",
+    upgradeToSuperPremium: "Upgradovat na Super Premium",
+    upgradeToSuperPremiumFor: "Upgradovat na Super Premium za",
+    buySuperPremium: "Koupit Super Premium",
+    ratingUnavailable:
+      "Hodnocení bude dostupné po vydání aplikace na Google Play.",
+  },
+  en: {
+    appTitleFirstLine: "Stop:",
+    appTitleSecondLine: "Categories Word Game",
+    applicationLanguage: "Application language",
+    creatingRoom: "creating room…",
+    roomCreateError: "❌ The room could not be created. Try again.",
+    uniqueRoomCodeError:
+      "❌ Could not create a unique room code. Try again.",
+    roomCodeRequired: "❗ Enter a room code.",
+    yourMode: "Your mode",
+    active: "Active",
+    gameLanguage: "Game language",
+    gameLanguageHelp:
+      "You will write answers in this language and it will choose the alphabet type.",
+    diacriticsHelp:
+      "Accents do not matter – accented and non-accented answers count the same.",
+    likeApp: "Do you like the app?",
+    haveRoomCode: "I have a room code",
+    roomCode: "Room code",
+    join: "Join",
+    privacyPolicy: "Privacy Policy",
+    intro: "Create a room, share the link with other players and play together.",
+    billingNotReady: "Google Play Billing is not ready.",
+    productUnavailable: "The product is not available.",
+    purchaseWindowError: "The purchase window could not be opened.",
+    purchaseStartError: "The purchase could not be started.",
+    freeDescription:
+      "Ads, up to 3 players. Fixed categories: Country, City, Name.",
+    premiumDescription:
+      "No ads, up to 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant.",
+    superPremiumDescription:
+      "No ads, unlimited players, category selection and ordering, optional time limit per round, number of rounds, and up to 5 custom categories.",
+    superPremiumCategories:
+      "Categories: Country, City, Name, Animal, Thing, Plant, Film / Series, Actor / Actress, Singer / Band, Sport, Brand, Car / Motorbike, River / Mountain, Job, Colour.",
+    creating: "Creating…",
+    createRoom: "Create room",
+    hideOtherModes: "Hide other modes",
+    showOtherModes: "Show other modes",
+    includedInSuperPremium: "Included in Super Premium",
+    buyPremium: "Buy Premium",
+    superPremiumPurchaseDescription:
+      "No ads, unlimited players, all basic and extended categories included, category selection and ordering, optional time limit per round, number of rounds, and up to 5 custom categories.",
+    upgradeToSuperPremium: "Upgrade to Super Premium",
+    upgradeToSuperPremiumFor: "Upgrade to Super Premium for",
+    buySuperPremium: "Buy Super Premium",
+    ratingUnavailable:
+      "Rating will be available after the app is released on Google Play.",
+  },
+  es: {
+    appTitleFirstLine: "Basta:",
+    appTitleSecondLine: "Juego de Categorías",
+    applicationLanguage: "Idioma de la aplicación",
+    creatingRoom: "creando sala…",
+    roomCreateError:
+      "❌ No se pudo crear la sala. Inténtalo de nuevo.",
+    uniqueRoomCodeError:
+      "❌ No se pudo crear un código de sala único. Inténtalo de nuevo.",
+    roomCodeRequired: "❗ Introduce el código de la sala.",
+    yourMode: "Tu modo",
+    active: "Activo",
+    gameLanguage: "Idioma del juego",
+    gameLanguageHelp:
+      "Escribirás las respuestas en este idioma y se elegirá el tipo de alfabeto según él.",
+    diacriticsHelp:
+      "Los acentos no importan – las respuestas con o sin acento cuentan igual.",
+    likeApp: "¿Te gusta la aplicación?",
+    haveRoomCode: "Tengo un código de sala",
+    roomCode: "Código de sala",
+    join: "Unirse",
+    privacyPolicy: "Política de privacidad",
+    intro: "Crea una sala, comparte el enlace con los demás jugadores y jugad juntos.",
+    billingNotReady: "Google Play Billing no está preparado.",
+    productUnavailable: "El producto no está disponible.",
+    purchaseWindowError: "No se pudo abrir la ventana de compra.",
+    purchaseStartError: "No se pudo iniciar la compra.",
+    freeDescription:
+      "Con anuncios, hasta 3 jugadores. Categorías fijas: País, Ciudad, Nombre.",
+    premiumDescription:
+      "Sin anuncios, hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta.",
+    superPremiumDescription:
+      "Sin anuncios, jugadores sin límite, selección y orden de categorías, límite de tiempo por ronda, número de rondas y hasta 5 categorías propias.",
+    superPremiumCategories:
+      "Categorías: País, Ciudad, Nombre, Animal, Cosa, Planta, Película / Serie, Actor / Actriz, Cantante / Banda, Deporte, Marca, Coche / Moto, Río / Montaña, Profesión, Color.",
+    creating: "Creando…",
+    createRoom: "Crear sala",
+    hideOtherModes: "Ocultar otros modos",
+    showOtherModes: "Mostrar otros modos",
+    includedInSuperPremium: "Incluido en Super Premium",
+    buyPremium: "Comprar Premium",
+    superPremiumPurchaseDescription:
+      "Sin anuncios, jugadores sin límite, todas las categorías básicas y ampliadas incluidas, selección y orden de categorías, límite de tiempo por ronda, número de rondas y hasta 5 categorías propias.",
+    upgradeToSuperPremium: "Pasar a Super Premium",
+    upgradeToSuperPremiumFor: "Pasar a Super Premium por",
+    buySuperPremium: "Comprar Super Premium",
+    ratingUnavailable:
+      "La valoración estará disponible después del lanzamiento en Google Play.",
+  },
+} as const;
+
+type HomeTextKey = keyof typeof HOME_TEXT.cs;
+
+function getHomeText(language: UiLanguage, key: HomeTextKey) {
+  return HOME_TEXT[language][key];
+}
+
 function uniqueNonEmpty(values: unknown[]) {
   const seen = new Set<string>();
   const result: string[] = [];
@@ -80,7 +328,7 @@ export default function Home() {
   const [creating, setCreating] = useState(false);
 
   const [tier, setTier] = useState<Tier>("free");
-  const [language, setLanguage] = useState<RoomLanguage>("cs");
+  const [language, setLanguage] = useState<UiLanguage>("cs");
   const [gameLanguage, setGameLanguage] = useState<RoomLanguage>("cs");
   const [nativeFreeBannerShown, setNativeFreeBannerShown] = useState(false);
   const [showOtherModes, setShowOtherModes] = useState(false);
@@ -91,28 +339,27 @@ export default function Home() {
 
   const en = language === "en";
   const es = language === "es";
+  const h = (key: HomeTextKey) => getHomeText(language, key);
 
   useEffect(() => {
     const savedUiLanguage = window.localStorage.getItem("zm_uiLanguage");
     const savedGameLanguage = window.localStorage.getItem("zm_gameLanguage");
     const deviceLanguage = window.navigator.language.toLowerCase();
 
-    const detectedLanguage: RoomLanguage =
+    const detectedLanguage: UiLanguage =
       deviceLanguage.startsWith("cs") || deviceLanguage.startsWith("sk")
         ? "cs"
         : deviceLanguage.startsWith("es")
           ? "es"
           : "en";
 
-    const initialUiLanguage: RoomLanguage =
+    const initialUiLanguage: UiLanguage =
       savedUiLanguage === "cs" || savedUiLanguage === "en" || savedUiLanguage === "es"
         ? savedUiLanguage
         : detectedLanguage;
 
     const initialGameLanguage: RoomLanguage =
-      savedGameLanguage === "cs" ||
-      savedGameLanguage === "en" ||
-      savedGameLanguage === "es"
+      isRoomLanguage(savedGameLanguage)
         ? savedGameLanguage
         : initialUiLanguage;
 
@@ -189,24 +436,12 @@ export default function Home() {
     productId: "premium" | "super_premium"
   ) {
     if (!isPlayBillingAvailable() || !billingReady) {
-      window.alert(
-        en
-          ? "Google Play Billing is not ready."
-          : es
-            ? "Google Play Billing no está preparado."
-            : "Google Play Billing zatím není připravený."
-      );
+      window.alert(h("billingNotReady"));
       return;
     }
 
     if (!billingProducts.some((product) => product.productId === productId)) {
-      window.alert(
-        en
-          ? "The product is not available."
-          : es
-            ? "El producto no está disponible."
-            : "Produkt zatím není dostupný."
-      );
+      window.alert(h("productUnavailable"));
       return;
     }
 
@@ -221,17 +456,12 @@ export default function Home() {
       });
 
       if (result.responseCode !== 0) {
-        window.alert(result.debugMessage || "Google Play Billing error.");
+        console.error("Google Play Billing error:", result.debugMessage);
+        window.alert(h("purchaseWindowError"));
       }
     } catch (error) {
       console.error("Google Play purchase failed:", error);
-      window.alert(
-        en
-          ? "The purchase could not be started."
-          : es
-            ? "No se pudo iniciar la compra."
-            : "Nákup se nepodařilo spustit."
-      );
+      window.alert(h("purchaseStartError"));
     } finally {
       setPurchaseBusy(null);
     }
@@ -312,7 +542,7 @@ export default function Home() {
     if (creating) return;
 
     setCreating(true);
-    setStatus(en ? "creating room…" : es ? "creando sala…" : "vytvářím místnost…");
+    setStatus(h("creatingRoom"));
 
     const roomSettings = getRoomSettings();
 
@@ -339,13 +569,14 @@ export default function Home() {
       }
 
       if (error.code !== "23505") {
-        setStatus(`❌ ${error.message}`);
+        console.error("Room creation failed:", error);
+        setStatus(h("roomCreateError"));
         setCreating(false);
         return;
       }
     }
 
-    setStatus(en ? "❌ Could not create a unique room code. Try again." : "❌ Nepodařilo se vytvořit unikátní kód místnosti. Zkus to znovu.");
+    setStatus(h("uniqueRoomCodeError"));
     setCreating(false);
   }
 
@@ -356,7 +587,7 @@ export default function Home() {
       .toUpperCase();
 
     if (!cleaned) {
-      setStatus(en ? "❗ enter a room code" : "❗ zadej kód místnosti");
+      setStatus(h("roomCodeRequired"));
       return;
     }
 
@@ -389,20 +620,14 @@ export default function Home() {
             lineHeight: 1.05,
           }}
         >
-          {en ? (
+          <span style={{ whiteSpace: "nowrap" }}>
+            {h("appTitleFirstLine")}
+          </span>
+          {h("appTitleSecondLine") && (
             <>
-              Stop:
               <br />
-              Categories Word Game
+              {h("appTitleSecondLine")}
             </>
-          ) : es ? (
-            <>
-              Basta:
-              <br />
-              Juego de Categorías
-            </>
-          ) : (
-            <span style={{ whiteSpace: "nowrap" }}>Země Město</span>
           )}
         </h1>
 
@@ -415,35 +640,31 @@ export default function Home() {
           }}
         >
 
-          <label aria-label={en ? "Application language" : es ? "Idioma de la aplicación" : "Jazyk aplikace"}>
+          <label aria-label={h("applicationLanguage")}>
             <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
-              {en ? "Application language" : es ? "Idioma de la aplicación" : "Jazyk aplikace"}
+              {h("applicationLanguage")}
             </span>
 
             <select
               value={language}
               onChange={(e) => {
-                const selectedLanguage = e.target.value as RoomLanguage;
+                const selectedLanguage = e.target.value as UiLanguage;
                 setLanguage(selectedLanguage);
                 window.localStorage.setItem("zm_uiLanguage", selectedLanguage);
               }}
               style={{ padding: 10, borderRadius: 8 }}
             >
-              <option value="en">🇬🇧 English</option>
-              <option value="es">🇪🇸 Español</option>
-              <option value="cs">🇨🇿 Čeština</option>
+              {ENABLED_UI_LANGUAGES.map((optionLanguage) => (
+                <option key={optionLanguage} value={optionLanguage}>
+                  {languageOptionLabel(optionLanguage, language)}
+                </option>
+              ))}
             </select>
           </label>
         </div>
       </div>
 
-      <p>
-        {en
-          ? "Create a room, share the link with other players and play together."
-          : es
-            ? "Crea una sala, comparte el enlace con los demás jugadores y jugad juntos."
-            : "Vytvoř místnost, pošli odkaz ostatním hráčům a hrajte společně."}
-      </p>
+      <p>{h("intro")}</p>
 
       <section
         style={{
@@ -464,7 +685,7 @@ export default function Home() {
           }}
         >
           <h2 style={{ margin: 0 }}>
-            {en ? "Your mode" : es ? "Tu modo" : "Tvůj režim"}: {tierLabel(tier)}
+            {h("yourMode")}: {tierLabel(tier)}
           </h2>
 
           <span
@@ -476,53 +697,30 @@ export default function Home() {
               fontSize: 13,
             }}
           >
-            {en ? "Active" : es ? "Activo" : "Aktivní"}
+            {h("active")}
           </span>
         </div>
 
         {tier === "free" && (
-          <p style={{ marginBottom: 0 }}>
-            {en
-              ? "Ads, up to 3 players. Fixed categories: Country, City, Name."
-              : es
-                ? "Con anuncios, hasta 3 jugadores. Categorías fijas: País, Ciudad, Nombre."
-                : "Reklamy, až 3 hráči. Pevné kategorie: Země, Město, Jméno."}
-          </p>
+          <p style={{ marginBottom: 0 }}>{h("freeDescription")}</p>
         )}
 
         {tier === "premium" && (
-          <p style={{ marginBottom: 0 }}>
-            {en
-              ? "No ads, up to 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant."
-              : es
-                ? "Sin anuncios, hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta."
-                : "Bez reklam, max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina."}
-          </p>
+          <p style={{ marginBottom: 0 }}>{h("premiumDescription")}</p>
         )}
 
         {tier === "super_premium" && (
           <div>
-            <p>
-              {en
-                ? "No ads, unlimited players, category selection and ordering, optional time limit per round, number of rounds, and up to 5 custom categories."
-                : es
-                  ? "Sin anuncios, jugadores sin límite, selección y orden de categorías, límite de tiempo por ronda, número de rondas y hasta 5 categorías propias."
-                  : "Bez reklam, neomezený počet hráčů, volba počtu a pořadí kategorií, časový limit na kolo, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií."}
-            </p>
-
+            <p>{h("superPremiumDescription")}</p>
             <p style={{ marginBottom: 0 }}>
-              {en
-                ? "Categories: Country, City, Name, Animal, Thing, Plant, Film / Series, Actor / Actress, Singer / Band, Sport, Brand, Car / Motorbike, River / Mountain, Job, Colour."
-                : es
-                  ? "Categorías: País, Ciudad, Nombre, Animal, Cosa, Planta, Película / Serie, Actor / Actriz, Cantante / Banda, Deporte, Marca, Coche / Moto, Río / Montaña, Profesión, Color."
-                  : "Kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina, Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport, Značka, Auto / Moto, Řeka / Hora, Povolání, Barva."}
+              {h("superPremiumCategories")}
             </p>
           </div>
         )}
 
         <label style={{ display: "block", marginTop: 16 }}>
           <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
-            {en ? "Game language" : es ? "Idioma del juego" : "Jazyk hry"}
+            {h("gameLanguage")}
           </span>
 
           <select
@@ -541,9 +739,11 @@ export default function Home() {
               borderRadius: 8,
             }}
           >
-            <option value="en">🇬🇧 English</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="cs">🇨🇿 Čeština</option>
+            {ENABLED_GAME_LANGUAGES.map((optionLanguage) => (
+              <option key={optionLanguage} value={optionLanguage}>
+                {languageOptionLabel(optionLanguage, language)}
+              </option>
+            ))}
           </select>
 
           <span
@@ -554,11 +754,7 @@ export default function Home() {
               opacity: 0.75,
             }}
           >
-            {en
-              ? "You will write answers in this language and it will choose the alphabet type."
-              : es
-                ? "Escribirás las respuestas en este idioma y se elegirá el tipo de alfabeto según él."
-                : "V tomto jazyce budeš psát odpovědi a zvolí se podle něj typ abecedy."}
+            {h("gameLanguageHelp")}
           </span>
 
             <span
@@ -569,11 +765,7 @@ export default function Home() {
                 opacity: 0.75,
               }}
             >
-              {en
-                ? "Accents do not matter – accented and non-accented answers count the same."
-                : es
-                  ? "Los acentos no importan – las respuestas con o sin acento cuentan igual."
-                  : "Diakritika se neřeší – odpovědi s háčky a čárkami i bez nich se berou stejně."}
+              {h("diacriticsHelp")}
             </span>
         </label>
 
@@ -588,17 +780,7 @@ export default function Home() {
             fontSize: 17,
           }}
         >
-          {creating
-            ? en
-              ? "Creating…"
-              : es
-                ? "Creando…"
-                : "Vytvářím…"
-            : en
-              ? "Create room"
-              : es
-                ? "Crear sala"
-                : "Vytvořit místnost"}
+          {creating ? h("creating") : h("createRoom")}
         </button>
       </section>
 
@@ -615,17 +797,7 @@ export default function Home() {
           fontWeight: 700,
         }}
       >
-        {showOtherModes
-          ? en
-            ? "Hide other modes"
-            : es
-              ? "Ocultar otros modos"
-              : "Skrýt další režimy"
-          : en
-            ? "Show other modes"
-            : es
-              ? "Mostrar otros modos"
-              : "Zobrazit další režimy"}
+        {showOtherModes ? h("hideOtherModes") : h("showOtherModes")}
       </button>
 
       {showOtherModes && (
@@ -638,15 +810,11 @@ export default function Home() {
               marginBottom: 12,
             }}
           >
-            <h3 style={{ marginTop: 0 }}>Premium{premiumPrice ? ` – ${premiumPrice}` : ""}</h3>
+            <h3 style={{ marginTop: 0 }}>
+              Premium{premiumPrice ? ` – ${premiumPrice}` : ""}
+            </h3>
 
-            <p>
-              {en
-                ? "No ads, up to 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant. The local price will be shown during purchase."
-                : es
-                  ? "Sin anuncios, hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta. El precio local se mostrará durante la compra."
-                  : "Bez reklam, max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina."}
-            </p>
+            <p>{h("premiumDescription")}</p>
 
             <button
               type="button"
@@ -659,22 +827,10 @@ export default function Home() {
               style={{ padding: 12, width: "100%" }}
             >
               {tier === "premium"
-                ? en
-                  ? "Active"
-                  : es
-                    ? "Activo"
-                    : "Aktivní"
+                ? h("active")
                 : tier === "super_premium"
-                  ? en
-                    ? "Included in Super Premium"
-                    : es
-                      ? "Incluido en Super Premium"
-                      : "Součást Super Premium"
-                  : en
-                    ? "Buy Premium"
-                    : es
-                      ? "Comprar Premium"
-                      : "Koupit Premium"}
+                  ? h("includedInSuperPremium")
+                  : h("buyPremium")}
             </button>
           </article>
 
@@ -685,57 +841,27 @@ export default function Home() {
               padding: 14,
             }}
           >
-            <h3 style={{ marginTop: 0 }}>Super Premium{superPremiumPrice ? ` – ${superPremiumPrice}` : ""}</h3>
+            <h3 style={{ marginTop: 0 }}>
+              Super Premium
+              {superPremiumPrice ? ` – ${superPremiumPrice}` : ""}
+            </h3>
 
-            <p>
-              {en
-                ? "No ads, unlimited players, all basic and extended categories included, category selection and ordering, optional time limit per round, number of rounds, and up to 5 custom categories. The local price will be shown during purchase."
-                : es
-                  ? "Sin anuncios, jugadores sin límite, todas las categorías básicas y ampliadas incluidas, selección y orden de categorías, límite de tiempo por ronda, número de rondas y hasta 5 categorías propias. El precio local se mostrará durante la compra."
-                  : "Bez reklam, neomezený počet hráčů, všechny základní i rozšířené kategorie v ceně, volba počtu a pořadí kategorií, časový limit na kolo, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií."}
-            </p>
-
-
-            <p>
-              {en
-                ? "Categories: Country, City, Name, Animal, Thing, Plant, Film / Series, Actor / Actress, Singer / Band, Sport, Brand, Car / Motorbike, River / Mountain, Job, Colour."
-                : es
-                  ? "Categorías: País, Ciudad, Nombre, Animal, Cosa, Planta, Película / Serie, Actor / Actriz, Cantante / Banda, Deporte, Marca, Coche / Moto, Río / Montaña, Profesión, Color."
-                  : "Kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina, Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport, Značka, Auto / Moto, Řeka / Hora, Povolání, Barva."}
-            </p>
+            <p>{h("superPremiumPurchaseDescription")}</p>
+            <p>{h("superPremiumCategories")}</p>
 
             <button
               type="button"
-              disabled={
-                tier === "super_premium" ||
-                purchaseBusy !== null
-              }
+              disabled={tier === "super_premium" || purchaseBusy !== null}
               onClick={() => void startPlayPurchase("super_premium")}
               style={{ padding: 12, width: "100%" }}
             >
               {tier === "super_premium"
-                ? en
-                  ? "Active"
-                  : es
-                    ? "Activo"
-                    : "Aktivní"
+                ? h("active")
                 : tier === "premium"
-                  ? en
-                    ? superPremiumUpgradePrice
-                      ? `Upgrade to Super Premium for ${superPremiumUpgradePrice}`
-                      : "Upgrade to Super Premium"
-                    : es
-                      ? superPremiumUpgradePrice
-                        ? `Pasar a Super Premium por ${superPremiumUpgradePrice}`
-                        : "Pasar a Super Premium"
-                      : superPremiumUpgradePrice
-                        ? `Upgradovat na Super Premium za ${superPremiumUpgradePrice}`
-                        : "Upgradovat na Super Premium"
-                  : en
-                    ? "Buy Super Premium"
-                    : es
-                      ? "Comprar Super Premium"
-                      : "Koupit Super Premium"}
+                  ? superPremiumUpgradePrice
+                    ? `${h("upgradeToSuperPremiumFor")} ${superPremiumUpgradePrice}`
+                    : h("upgradeToSuperPremium")
+                  : h("buySuperPremium")}
             </button>
           </article>
         </section>
@@ -744,13 +870,7 @@ export default function Home() {
               <button
           type="button"
           onClick={() =>
-            window.alert(
-              en
-                ? "Rating will be available after the app is released on Google Play."
-                : es
-                  ? "La valoración estará disponible después del lanzamiento en Google Play."
-                  : "Hodnocení bude dostupné po vydání aplikace na Google Play."
-            )
+            window.alert(h("ratingUnavailable"))
           }
           style={{
             marginTop: 14,
@@ -763,7 +883,7 @@ export default function Home() {
             cursor: "pointer",
           }}
         >
-          {en ? "Do you like the app?" : es ? "¿Te gusta la aplicación?" : "Líbí se vám aplikace?"}
+          {h("likeApp")}
         </button>
 
         <details
@@ -774,12 +894,12 @@ export default function Home() {
           }}
         >
           <summary style={{ cursor: "pointer", fontWeight: 700 }}>
-            {en ? "I have a room code" : es ? "Tengo un código de sala" : "Mám kód místnosti"}
+            {h("haveRoomCode")}
           </summary>
 
           <div style={{ marginTop: 12 }}>
             <input
-              placeholder={en ? "Room code" : es ? "Código de sala" : "Kód místnosti"}
+              placeholder={h("roomCode")}
               value={roomCodeInput}
               onChange={(e) => setRoomCodeInput(e.target.value)}
               onKeyDown={(e) => {
@@ -804,7 +924,7 @@ export default function Home() {
                 fontWeight: 700,
               }}
             >
-              {en ? "Join" : es ? "Unirse" : "Připojit se"}
+              {h("join")}
             </button>
           </div>
         </details>
@@ -812,7 +932,7 @@ export default function Home() {
       {status && <p style={{ marginTop: 16 }}>{status}</p>}
         <p style={{ marginTop: 18, fontSize: 13, textAlign: "center", opacity: 0.75 }}>
           <a href="/privacy" style={{ color: "inherit" }}>
-            {en ? "Privacy Policy" : es ? "Política de privacidad" : "Zásady ochrany soukromí"}
+            {h("privacyPolicy")}
           </a>
         </p>
 

@@ -23,6 +23,8 @@ import {
   getUiText,
   roomFullMessage,
   stopPressedMessage,
+  type GameLanguage,
+  type UiLanguage,
   type UiTextKey,
 } from "./uiText";
 
@@ -66,14 +68,29 @@ const CZECH_LETTERS = [
 
 const ENGLISH_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const SPANISH_LETTERS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+const GERMAN_LETTERS = [
+  "A", "Ä", "B", "C", "D", "E", "F", "G", "H", "I",
+  "J", "K", "L", "M", "N", "O", "Ö", "P", "Q", "R",
+  "S", "T", "U", "Ü", "V", "W", "X", "Y", "Z",
+];
 
-type RoomLanguage = "cs" | "en" | "es";
+const TURKISH_LETTERS = [
+  "A", "B", "C", "Ç", "D", "E", "F", "G", "Ğ", "H",
+  "I", "İ", "J", "K", "L", "M", "N", "O", "Ö", "P",
+  "R", "S", "Ş", "T", "U", "Ü", "V", "Y", "Z",
+];
 
-function getLettersForLanguage(language: RoomLanguage) {
-  if (language === "cs") return CZECH_LETTERS;
-  if (language === "es") return SPANISH_LETTERS;
-  return ENGLISH_LETTERS;
-}
+const POLISH_LETTERS = [
+  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+  "K", "L", "Ł", "M", "N", "O", "P", "R", "S", "T",
+  "U", "W", "Z",
+];
+
+const ITALIAN_LETTERS = [
+  "A", "B", "C", "D", "E", "F", "G", "H", "I", "L",
+  "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+  "Z",
+];
 const ROLL_MS = 5000;
 const TICK_MS = 35;
 const FREE_ROUND_BLOCK_SIZE = 3;
@@ -166,6 +183,236 @@ const CATEGORY_LABELS_ES: Record<string, string> = {
   Barva: "Color",
 };
 
+const CATEGORY_LABELS_DE: Record<string, string> = {
+  Země: "Land",
+  Město: "Stadt",
+  Jméno: "Name",
+  Zvíře: "Tier",
+  Věc: "Gegenstand",
+  Rostlina: "Pflanze",
+  "Film / Seriál": "Film / Serie",
+  "Herec / Herečka": "Schauspieler / Schauspielerin",
+  "Zpěvák / Zpěvačka / Kapela": "Sänger / Sängerin / Band",
+  Sport: "Sportart",
+  Značka: "Marke",
+  "Auto / Moto": "Auto / Motorrad",
+  "Řeka / Hora": "Fluss / Berg",
+  Povolání: "Beruf",
+  Barva: "Farbe",
+};
+
+const CATEGORY_LABELS_FR: Record<string, string> = {
+  Země: "Pays",
+  Město: "Ville",
+  Jméno: "Prénom",
+  Zvíře: "Animal",
+  Věc: "Objet",
+  Rostlina: "Plante",
+  "Film / Seriál": "Film / Série",
+  "Herec / Herečka": "Acteur / Actrice",
+  "Zpěvák / Zpěvačka / Kapela": "Chanteur / Chanteuse / Groupe",
+  Sport: "Sport",
+  Značka: "Marque",
+  "Auto / Moto": "Voiture / Moto",
+  "Řeka / Hora": "Fleuve / Montagne",
+  Povolání: "Métier",
+  Barva: "Couleur",
+};
+
+const CATEGORY_LABELS_PT_BR: Record<string, string> = {
+  Země: "País",
+  Město: "Cidade",
+  Jméno: "Nome",
+  Zvíře: "Animal",
+  Věc: "Objeto",
+  Rostlina: "Planta",
+  "Film / Seriál": "Filme / Série",
+  "Herec / Herečka": "Ator / Atriz",
+  "Zpěvák / Zpěvačka / Kapela": "Cantor / Cantora / Banda",
+  Sport: "Esporte",
+  Značka: "Marca",
+  "Auto / Moto": "Carro / Moto",
+  "Řeka / Hora": "Rio / Montanha",
+  Povolání: "Profissão",
+  Barva: "Cor",
+};
+
+const CATEGORY_LABELS_ID: Record<string, string> = {
+  Země: "Negara",
+  Město: "Kota",
+  Jméno: "Nama",
+  Zvíře: "Hewan",
+  Věc: "Benda",
+  Rostlina: "Tumbuhan",
+  "Film / Seriál": "Film / Serial",
+  "Herec / Herečka": "Aktor / Aktris",
+  "Zpěvák / Zpěvačka / Kapela": "Penyanyi / Band",
+  Sport: "Olahraga",
+  Značka: "Merek",
+  "Auto / Moto": "Mobil / Motor",
+  "Řeka / Hora": "Sungai / Gunung",
+  Povolání: "Pekerjaan",
+  Barva: "Warna",
+};
+
+const CATEGORY_LABELS_TR: Record<string, string> = {
+  Země: "Ülke",
+  Město: "Şehir",
+  Jméno: "İsim",
+  Zvíře: "Hayvan",
+  Věc: "Eşya",
+  Rostlina: "Bitki",
+  "Film / Seriál": "Film / Dizi",
+  "Herec / Herečka": "Aktör / Aktris",
+  "Zpěvák / Zpěvačka / Kapela": "Şarkıcı / Grup",
+  Sport: "Spor",
+  Značka: "Marka",
+  "Auto / Moto": "Araba / Motosiklet",
+  "Řeka / Hora": "Nehir / Dağ",
+  Povolání: "Meslek",
+  Barva: "Renk",
+};
+
+const CATEGORY_LABELS_PL: Record<string, string> = {
+  Země: "Państwo",
+  Město: "Miasto",
+  Jméno: "Imię",
+  Zvíře: "Zwierzę",
+  Věc: "Rzecz",
+  Rostlina: "Roślina",
+  "Film / Seriál": "Film / Serial",
+  "Herec / Herečka": "Aktor / Aktorka",
+  "Zpěvák / Zpěvačka / Kapela":
+    "Piosenkarz / Piosenkarka / Zespół",
+  Sport: "Sport",
+  Značka: "Marka",
+  "Auto / Moto": "Samochód / Motocykl",
+  "Řeka / Hora": "Rzeka / Góra",
+  Povolání: "Zawód",
+  Barva: "Kolor",
+};
+
+const CATEGORY_LABELS_IT: Record<string, string> = {
+  Země: "Paese",
+  Město: "Città",
+  Jméno: "Nome",
+  Zvíře: "Animale",
+  Věc: "Oggetto",
+  Rostlina: "Pianta",
+  "Film / Seriál": "Film / Serie TV",
+  "Herec / Herečka": "Attore / Attrice",
+  "Zpěvák / Zpěvačka / Kapela": "Cantante / Gruppo",
+  Sport: "Sport",
+  Značka: "Marca",
+  "Auto / Moto": "Auto / Moto",
+  "Řeka / Hora": "Fiume / Montagna",
+  Povolání: "Professione",
+  Barva: "Colore",
+};
+
+type AnswerNormalization =
+  | "plain"
+  | "czech"
+  | "polish"
+  | "turkish"
+  | "strip_diacritics"
+  | "strip_diacritics_except_enye";
+
+type GameLanguageConfig = {
+  letters: readonly string[];
+  locale: string;
+  flag: string;
+  hasDiacritics: boolean;
+  answerNormalization: AnswerNormalization;
+  categoryLabels?: Record<string, string>;
+};
+
+const GAME_LANGUAGE_CONFIG: Record<GameLanguage, GameLanguageConfig> = {
+  cs: {
+    letters: CZECH_LETTERS,
+    locale: "cs-CZ",
+    flag: "🇨🇿",
+    hasDiacritics: true,
+    answerNormalization: "czech",
+  },
+  en: {
+    letters: ENGLISH_LETTERS,
+    locale: "en-GB",
+    flag: "🇬🇧",
+    hasDiacritics: false,
+    answerNormalization: "plain",
+    categoryLabels: CATEGORY_LABELS_EN,
+  },
+  es: {
+    letters: SPANISH_LETTERS,
+    locale: "es-ES",
+    flag: "🇪🇸",
+    hasDiacritics: true,
+    answerNormalization: "strip_diacritics_except_enye",
+    categoryLabels: CATEGORY_LABELS_ES,
+  },
+  de: {
+    letters: GERMAN_LETTERS,
+    locale: "de-DE",
+    flag: "🇩🇪",
+    hasDiacritics: true,
+    answerNormalization: "strip_diacritics",
+    categoryLabels: CATEGORY_LABELS_DE,
+  },
+  fr: {
+    letters: ENGLISH_LETTERS,
+    locale: "fr-FR",
+    flag: "🇫🇷",
+    hasDiacritics: true,
+    answerNormalization: "strip_diacritics",
+    categoryLabels: CATEGORY_LABELS_FR,
+  },
+  "pt-BR": {
+    letters: ENGLISH_LETTERS,
+    locale: "pt-BR",
+    flag: "🇧🇷",
+    hasDiacritics: true,
+    answerNormalization: "strip_diacritics",
+    categoryLabels: CATEGORY_LABELS_PT_BR,
+  },
+  id: {
+    letters: ENGLISH_LETTERS,
+    locale: "id-ID",
+    flag: "🇮🇩",
+    hasDiacritics: false,
+    answerNormalization: "plain",
+    categoryLabels: CATEGORY_LABELS_ID,
+  },
+  tr: {
+    letters: TURKISH_LETTERS,
+    locale: "tr-TR",
+    flag: "🇹🇷",
+    hasDiacritics: true,
+    answerNormalization: "turkish",
+    categoryLabels: CATEGORY_LABELS_TR,
+  },
+  pl: {
+    letters: POLISH_LETTERS,
+    locale: "pl-PL",
+    flag: "🇵🇱",
+    hasDiacritics: true,
+    answerNormalization: "polish",
+    categoryLabels: CATEGORY_LABELS_PL,
+  },
+  it: {
+    letters: ITALIAN_LETTERS,
+    locale: "it-IT",
+    flag: "🇮🇹",
+    hasDiacritics: true,
+    answerNormalization: "strip_diacritics",
+    categoryLabels: CATEGORY_LABELS_IT,
+  },
+};
+
+function getLettersForLanguage(language: GameLanguage) {
+  return GAME_LANGUAGE_CONFIG[language].letters;
+}
+
 type RoomTier = "free" | "premium" | "super_premium";
 type Category = string;
 
@@ -231,12 +478,16 @@ export default function RoomPage() {
   const [billingReady, setBillingReady] = useState(false);
   const [ownedCategoryProductIds, setOwnedCategoryProductIds] = useState<string[]>([]);
   const [categoryPurchaseBusy, setCategoryPurchaseBusy] = useState<string | null>(null);
-  const [roomLanguage, setRoomLanguage] = useState<RoomLanguage>("cs");
+  const [roomLanguage, setRoomLanguage] = useState<GameLanguage>("cs");
   const [roundTimeLimitSeconds, setRoundTimeLimitSeconds] = useState<RoundTimeLimitSeconds>(null);
   const [roundCountLimit, setRoundCountLimit] = useState<RoundCountLimit>(null);
-  const [uiLanguage, setUiLanguage] = useState<RoomLanguage>("cs");
+  const [uiLanguage, setUiLanguage] = useState<UiLanguage>("cs");
   const [roomCustomCategories, setRoomCustomCategories] = useState(["", "", "", "", ""]);
   const t = (key: UiTextKey) => getUiText(uiLanguage, key);
+
+  function uiMessage(messages: Record<UiLanguage, string>) {
+    return messages[uiLanguage];
+  }
   const rulesText = getUiRules(uiLanguage);
   const superPremiumGameSettingsEnabled = roomTier === "super_premium";
   const [customCategorySlotCount, setCustomCategorySlotCount] = useState(0);
@@ -464,7 +715,10 @@ export default function RoomPage() {
           setCategoryPurchaseBusy(null);
 
           if (error) {
-            setMsg(`❌ Premium: ${error.message}`);
+            console.error("Premium room update failed:", error);
+            setMsg(
+              uiMessage({ cs: "❌ Premium se nepodařilo aktivovat.", en: "❌ Premium could not be activated.", es: "❌ No se pudo activar Premium." })
+            );
             return;
           }
 
@@ -501,7 +755,10 @@ export default function RoomPage() {
           setCategoryPurchaseBusy(null);
 
           if (error) {
-            setMsg(`❌ Super Premium: ${error.message}`);
+            console.error("Super Premium room update failed:", error);
+            setMsg(
+              uiMessage({ cs: "❌ Super Premium se nepodařilo aktivovat.", en: "❌ Super Premium could not be activated.", es: "❌ No se pudo activar Super Premium." })
+            );
             return;
           }
 
@@ -526,11 +783,7 @@ export default function RoomPage() {
       setCategoryPurchaseBusy(null);
       setPremiumLockedOfferCategory(null);
       setMsg(
-        uiLanguage === "en"
-          ? "The category has been unlocked."
-          : uiLanguage === "es"
-            ? "La categoría ha sido desbloqueada."
-            : "Kategorie byla odemčena."
+        uiMessage({ cs: "Kategorie byla odemčena.", en: "The category has been unlocked.", es: "La categoría ha sido desbloqueada." })
       );
     }).then((handle) => {
       if (!active) {
@@ -562,38 +815,50 @@ export default function RoomPage() {
       ?.formattedPrice;
 
   function categoryLabel(category: string) {
-    if (roomLanguage === "en") {
-      return CATEGORY_LABELS_EN[category] ?? category;
-    }
-
-    if (roomLanguage === "es") {
-      return CATEGORY_LABELS_ES[category] ?? category;
-    }
-
-    return category;
-  }
-
-  function normalizeAnswerStart(value: string) {
-    return value
-      .trim()
-      .charAt(0)
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toUpperCase();
+    return (
+      GAME_LANGUAGE_CONFIG[roomLanguage].categoryLabels?.[category] ??
+      category
+    );
   }
 
 function normalizeForCompare(value: string) {
-  const upperValue = value.trim().toLocaleUpperCase(
-    roomLanguage === "es" ? "es-ES" : "cs-CZ"
-  );
+  const config = GAME_LANGUAGE_CONFIG[roomLanguage];
+  const upperValue = value.trim().toLocaleUpperCase(config.locale);
 
-  if (roomLanguage !== "es") return upperValue;
+  if (config.answerNormalization === "polish") {
+    return upperValue
+      .replaceAll("Ł", "L")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
 
-  return upperValue
-    .replaceAll("Ñ", "__ENYE__")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replaceAll("__ENYE__", "Ñ");
+  if (config.answerNormalization === "turkish") {
+    return upperValue
+      .replaceAll("Ç", "C")
+      .replaceAll("Ğ", "G")
+      .replaceAll("Ö", "O")
+      .replaceAll("Ş", "S")
+      .replaceAll("Ü", "U");
+  }
+
+  if (config.answerNormalization === "strip_diacritics") {
+    return upperValue
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  if (
+    config.answerNormalization ===
+    "strip_diacritics_except_enye"
+  ) {
+    return upperValue
+      .replaceAll("Ñ", "__ENYE__")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replaceAll("__ENYE__", "Ñ");
+  }
+
+  return upperValue;
 }
 
 function answerStartsWithLetter(answer: string | undefined, selectedLetter: string | null) {
@@ -682,9 +947,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     try {
       await navigator.clipboard.writeText(url);
-      setMsg("✅ odkaz zkopírován");
+      setMsg(
+        uiMessage({ cs: "✅ Odkaz zkopírován.", en: "✅ Link copied.", es: "✅ Enlace copiado." })
+      );
     } catch {
-      setMsg("❌ odkaz se nepodařilo zkopírovat");
+      setMsg(
+        uiMessage({ cs: "❌ Odkaz se nepodařilo zkopírovat.", en: "❌ The link could not be copied.", es: "❌ No se pudo copiar el enlace." })
+      );
     }
   }
 
@@ -695,16 +964,22 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       if (navigator.share) {
         await navigator.share({
           title: "Země Město",
-          text: `Připoj se do místnosti ${code.toUpperCase()}`,
+          text: uiMessage({ cs: `Připoj se do místnosti ${code.toUpperCase()}`, en: `Join room ${code.toUpperCase()}`, es: `Únete a la sala ${code.toUpperCase()}` }),
           url,
         });
-        setMsg("✅ sdílení otevřeno");
+        setMsg(
+          uiMessage({ cs: "✅ Sdílení otevřeno.", en: "✅ Sharing opened.", es: "✅ Se abrió la opción de compartir." })
+        );
       } else {
         await navigator.clipboard.writeText(url);
-        setMsg("✅ sdílení není dostupné, odkaz zkopírován");
+        setMsg(
+          uiMessage({ cs: "✅ Sdílení není dostupné, odkaz byl zkopírován.", en: "✅ Sharing is unavailable, so the link was copied.", es: "✅ La opción de compartir no está disponible; el enlace fue copiado." })
+        );
       }
     } catch {
-      setMsg("ℹ️ sdílení zrušeno");
+      setMsg(
+        uiMessage({ cs: "ℹ️ Sdílení bylo zrušeno.", en: "ℹ️ Sharing was cancelled.", es: "ℹ️ Se canceló la acción de compartir." })
+      );
     }
   }
 
@@ -883,8 +1158,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .single();
 
     if (error || !data) {
+      console.error("Room loading failed:", error);
       setRoomId(null);
-      setMsg(`❌ místnost nenalezena: ${error?.message ?? ""}`);
+      setMsg(
+        uiMessage({ cs: "❌ Místnost nebyla nalezena.", en: "❌ Room not found.", es: "❌ Sala no encontrada." })
+      );
       return null;
     }
 
@@ -904,7 +1182,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setMaxPlayers(Number((data as any).max_players ?? 3));
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
     setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
-    setRoomLanguage(((data as any).language ?? "cs") as RoomLanguage);
+    setRoomLanguage(((data as any).language ?? "cs") as GameLanguage);
     setRoundTimeLimitSeconds(parseRoundTimeLimit((data as any).round_time_limit_seconds));
     setRoundCountLimit(parseRoundCountLimit((data as any).round_count_limit));
     setRoomCustomCategories([
@@ -938,7 +1216,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setMaxPlayers(Number((data as any).max_players ?? 3));
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
     setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
-    setRoomLanguage(((data as any).language ?? "cs") as RoomLanguage);
+    setRoomLanguage(((data as any).language ?? "cs") as GameLanguage);
     setRoundTimeLimitSeconds(parseRoundTimeLimit((data as any).round_time_limit_seconds));
     setRoundCountLimit(parseRoundCountLimit((data as any).round_count_limit));
 
@@ -954,7 +1232,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .order("created_at", { ascending: true });
 
     if (error) {
-      setMsg(`❌ hráči: ${error.message}`);
+      console.error("Players loading failed:", error);
+      setMsg(
+        uiMessage({ cs: "❌ Hráče se nepodařilo načíst.", en: "❌ The players could not be loaded.", es: "❌ No se pudieron cargar los jugadores." })
+      );
       return;
     }
 
@@ -984,7 +1265,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .limit(1);
 
     if (error) {
-      setMsg(`❌ kolo: ${error.message}`);
+      console.error("Round loading failed:", error);
+      setMsg(
+        uiMessage({ cs: "❌ Kolo se nepodařilo načíst.", en: "❌ The round could not be loaded.", es: "❌ No se pudo cargar la ronda." })
+      );
       return;
     }
 
@@ -1000,7 +1284,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .eq("round", roundNo);
 
     if (error) {
-      setMsg(`❌ odpovědi: ${error.message}`);
+      console.error("Answers loading failed:", error);
+      setMsg(
+        uiMessage({ cs: "❌ Odpovědi se nepodařilo načíst.", en: "❌ The answers could not be loaded.", es: "❌ No se pudieron cargar las respuestas." })
+      );
       return;
     }
 
@@ -1015,7 +1302,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .eq("round", roundNo);
 
     if (error) {
-      setMsg(`❌ body: ${error.message}`);
+      console.error("Scores loading failed:", error);
+      setMsg(
+        uiMessage({ cs: "❌ Body se nepodařilo načíst.", en: "❌ The scores could not be loaded.", es: "❌ No se pudieron cargar los puntos." })
+      );
       return;
     }
 
@@ -1050,7 +1340,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .order("round", { ascending: true });
 
     if (error) {
-      setMsg(`❌ celkové body: ${error.message}`);
+      console.error("Total scores loading failed:", error);
+      setMsg(
+        uiMessage({ cs: "❌ Celkové výsledky se nepodařilo načíst.", en: "❌ The overall scores could not be loaded.", es: "❌ No se pudieron cargar los resultados generales." })
+      );
       return;
     }
 
@@ -1234,7 +1527,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     const trimmed = nameInput.trim();
     if (!trimmed) {
-      setMsg("❗ napiš jméno");
+      setMsg(
+        uiMessage({ cs: "❗ Napiš jméno.", en: "❗ Enter your name.", es: "❗ Escribe tu nombre." })
+      );
       return;
     }
 
@@ -1286,18 +1581,23 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           setNameInput("");
           setMsg(
             existingPlayer.status === "waiting"
-              ? `⏳ ${trimmed} čeká na připojení po aktuálním kole`
+              ? uiMessage({ cs: `⏳ ${trimmed} čeká na připojení po aktuálním kole.`, en: `⏳ ${trimmed} will join after the current round.`, es: `⏳ ${trimmed} se unirá después de la ronda actual.` })
               : ""
           );
           await loadPlayers(roomId);
           return;
         }
 
-        setMsg("❌ Tohle jméno už v místnosti existuje. Zadej jiné.");
+        setMsg(
+          uiMessage({ cs: "❌ Tohle jméno už v místnosti existuje. Zadej jiné.", en: "❌ This name already exists in the room. Choose another one.", es: "❌ Este nombre ya existe en la sala. Elige otro." })
+        );
         return;
       }
 
-      setMsg(`❌ připojení: ${error?.message ?? "neznámá chyba"}`);
+      console.error("Player joining failed:", error);
+      setMsg(
+        uiMessage({ cs: "❌ Připojení do místnosti se nepodařilo.", en: "❌ Could not join the room.", es: "❌ No se pudo entrar en la sala." })
+      );
       return;
     }
 
@@ -1311,7 +1611,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setNameInput("");
     setMsg(
       newPlayer.status === "waiting"
-        ? `⏳ ${trimmed} čeká na připojení po aktuálním kole`
+        ? uiMessage({ cs: `⏳ ${trimmed} čeká na připojení po aktuálním kole.`, en: `⏳ ${trimmed} will join after the current round.`, es: `⏳ ${trimmed} se unirá después de la ronda actual.` })
         : ""
     );
     await loadPlayers(roomId);
@@ -1345,9 +1645,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .eq("id", myPlayer.id);
 
     if (error) {
-      setMsg(
-        `${t("changingPlayerErrorPrefix")}: ${error.message}`
-      );
+      console.error("Changing player failed:", error);
+      setMsg(t("changingPlayerErrorPrefix"));
       return;
     }
 
@@ -1374,7 +1673,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const { error } = await supabase.from("players").delete().eq("id", myPlayer.id);
 
     if (error) {
-      setMsg(`❌ odpojení: ${error.message}`);
+      console.error("Player disconnect failed:", error);
+      setMsg(
+        uiMessage({ cs: "❌ Odpojení se nepodařilo.", en: "❌ Could not leave the room.", es: "❌ No se pudo salir de la sala." })
+      );
       return;
     }
 
@@ -1413,7 +1715,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .single();
 
     if (error || !data) {
-      setMsg(`❌ vytvoření kola: ${error?.message ?? "neznámá chyba"}`);
+      console.error("Round creation failed:", error);
+      setMsg(
+        uiMessage({ cs: "❌ Nové kolo se nepodařilo vytvořit.", en: "❌ The new round could not be created.", es: "❌ No se pudo crear la nueva ronda." })
+      );
       return null;
     }
 
@@ -1455,7 +1760,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
 
     if (roomTier === "premium" && !premiumCategorySelectionUnlocked) {
-      setMsg("Premium má základní kategorie pevně dané. Výběr se odemkne po koupi alespoň jedné rozšířené kategorie.");
+      setMsg(
+        uiMessage({ cs: "Premium má základní kategorie pevně dané. Výběr se odemkne po koupi alespoň jedné rozšířené kategorie.", en: "Premium has fixed basic categories. Category selection unlocks after purchasing at least one extended category.", es: "Premium tiene categorías básicas fijas. La selección se desbloquea al comprar al menos una categoría ampliada." })
+      );
       return;
     }
 
@@ -1468,11 +1775,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       if (unownedExtendedCategories.length > 0) {
         setMsg(
-          uiLanguage === "en"
-            ? "This extended category has not been purchased."
-            : uiLanguage === "es"
-              ? "Esta categoría ampliada no ha sido comprada."
-              : "Tato rozšířená kategorie nebyla zakoupena."
+          uiMessage({ cs: "Tato rozšířená kategorie nebyla zakoupena.", en: "This extended category has not been purchased.", es: "Esta categoría ampliada no ha sido comprada." })
         );
         return;
       }
@@ -1485,7 +1788,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const finalCategories = uniqueNonEmpty([...predefinedCategories, ...cleanedCustomCategories]);
 
     if (finalCategories.length === 0) {
-      setMsg("❗ Vyber alespoň jednu kategorii.");
+      setMsg(
+        uiMessage({ cs: "❗ Vyber alespoň jednu kategorii.", en: "❗ Select at least one category.", es: "❗ Selecciona al menos una categoría." })
+      );
       return;
     }
 
@@ -1504,7 +1809,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .eq("id", roomId);
 
     if (error) {
-      setMsg(`❌ kategorie: ${error.message}`);
+      console.error("Category settings saving failed:", error);
+      setMsg(
+        uiMessage({ cs: "❌ Kategorie se nepodařilo uložit.", en: "❌ The categories could not be saved.", es: "❌ No se pudieron guardar las categorías." })
+      );
     }
   }
 
@@ -1523,11 +1831,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       !billingProducts.some((product) => product.productId === productId)
     ) {
       setMsg(
-        uiLanguage === "en"
-          ? "The category purchase is not available yet."
-          : uiLanguage === "es"
-            ? "La compra de la categoría todavía no está disponible."
-            : "Nákup kategorie zatím není dostupný."
+        uiMessage({ cs: "Nákup kategorie zatím není dostupný.", en: "The category purchase is not available yet.", es: "La compra de la categoría todavía no está disponible." })
       );
       return;
     }
@@ -1539,17 +1843,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       if (result.responseCode !== 0) {
         setCategoryPurchaseBusy(null);
-        setMsg(result.debugMessage || "Google Play Billing error.");
+        console.error("Google Play Billing error:", result.debugMessage);
+        setMsg(
+          uiMessage({ cs: "Nákupní okno se nepodařilo otevřít.", en: "The purchase window could not be opened.", es: "No se pudo abrir la ventana de compra." })
+        );
       }
     } catch (error) {
       console.error("Category purchase failed:", error);
       setCategoryPurchaseBusy(null);
       setMsg(
-        uiLanguage === "en"
-          ? "The purchase could not be started."
-          : uiLanguage === "es"
-            ? "No se pudo iniciar la compra."
-            : "Nákup se nepodařilo spustit."
+        uiMessage({ cs: "Nákup se nepodařilo spustit.", en: "The purchase could not be started.", es: "No se pudo iniciar la compra." })
       );
     }
   }
@@ -1566,11 +1869,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       !premiumProduct
     ) {
       setMsg(
-        uiLanguage === "en"
-          ? "The Premium purchase is not available yet."
-          : uiLanguage === "es"
-            ? "La compra de Premium todavía no está disponible."
-            : "Nákup Premium zatím není dostupný."
+        uiMessage({ cs: "Nákup Premium zatím není dostupný.", en: "The Premium purchase is not available yet.", es: "La compra de Premium todavía no está disponible." })
       );
       return;
     }
@@ -1584,17 +1883,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       if (result.responseCode !== 0) {
         setCategoryPurchaseBusy(null);
-        setMsg(result.debugMessage || "Google Play Billing error.");
+        console.error("Google Play Billing error:", result.debugMessage);
+        setMsg(
+          uiMessage({ cs: "Nákupní okno se nepodařilo otevřít.", en: "The purchase window could not be opened.", es: "No se pudo abrir la ventana de compra." })
+        );
       }
     } catch (error) {
       console.error("Premium purchase failed:", error);
       setCategoryPurchaseBusy(null);
       setMsg(
-        uiLanguage === "en"
-          ? "The purchase could not be started."
-          : uiLanguage === "es"
-            ? "No se pudo iniciar la compra."
-            : "Nákup se nepodařilo spustit."
+        uiMessage({ cs: "Nákup se nepodařilo spustit.", en: "The purchase could not be started.", es: "No se pudo iniciar la compra." })
       );
     }
   }
@@ -1616,11 +1914,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       !upgradeOfferAvailable
     ) {
       setMsg(
-        uiLanguage === "en"
-          ? "The Super Premium upgrade is not available yet."
-          : uiLanguage === "es"
-            ? "La mejora a Super Premium todavía no está disponible."
-            : "Upgrade na Super Premium zatím není dostupný."
+        uiMessage({ cs: "Upgrade na Super Premium zatím není dostupný.", en: "The Super Premium upgrade is not available yet.", es: "La mejora a Super Premium todavía no está disponible." })
       );
       return;
     }
@@ -1635,17 +1929,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       if (result.responseCode !== 0) {
         setCategoryPurchaseBusy(null);
-        setMsg(result.debugMessage || "Google Play Billing error.");
+        console.error("Google Play Billing error:", result.debugMessage);
+        setMsg(
+          uiMessage({ cs: "Nákupní okno se nepodařilo otevřít.", en: "The purchase window could not be opened.", es: "No se pudo abrir la ventana de compra." })
+        );
       }
     } catch (error) {
       console.error("Super Premium upgrade failed:", error);
       setCategoryPurchaseBusy(null);
       setMsg(
-        uiLanguage === "en"
-          ? "The purchase could not be started."
-          : uiLanguage === "es"
-            ? "No se pudo iniciar la compra."
-            : "Nákup se nepodařilo spustit."
+        uiMessage({ cs: "Nákup se nepodařilo spustit.", en: "The purchase could not be started.", es: "No se pudo iniciar la compra." })
       );
     }
   }
@@ -1720,7 +2013,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .eq("status", "lobby");
 
     if (error) {
-      setMsg(`${t("gameSettingsSaveErrorPrefix")}: ${error.message}`);
+      console.error("Game settings saving failed:", error);
+      setMsg(t("gameSettingsSaveErrorPrefix"));
     }
   }
 
@@ -1730,7 +2024,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const finalCategories = uniqueNonEmpty(nextCategories);
 
     if (finalCategories.length === 0) {
-      setMsg("❗ Vyber alespoň jednu kategorii.");
+      setMsg(
+        uiMessage({ cs: "❗ Vyber alespoň jednu kategorii.", en: "❗ Select at least one category.", es: "❗ Selecciona al menos una categoría." })
+      );
       return;
     }
 
@@ -1753,7 +2049,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .eq("id", roomId);
 
     if (error) {
-      setMsg(`❌ pořadí kategorií: ${error.message}`);
+      console.error("Category order saving failed:", error);
+      setMsg(
+        uiMessage({ cs: "❌ Pořadí kategorií se nepodařilo uložit.", en: "❌ The category order could not be saved.", es: "❌ No se pudo guardar el orden de las categorías." })
+      );
     }
   }
 
@@ -1785,7 +2084,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     const rid = roomId;
 
-    setMsg("… losujeme");
+    setMsg(t("drawingLetter"));
     setRoomStatus("drawing");
     setLetter(null);
 
@@ -1798,7 +2097,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .maybeSingle();
 
     if (lockError || !locked) {
-      setMsg("ℹ️ Losování už spustil jiný hráč.");
+      setMsg(
+        uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." })
+      );
       return;
     }
 
@@ -1831,7 +2132,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const rid = roomId;
     const currentRoundId = round.id;
 
-    setMsg("… losujeme znovu");
+    setMsg(t("drawingAgain"));
     setRoomStatus("drawing");
     setLetter(null);
     setAnswers(emptyAnswers(activeCategories));
@@ -1849,7 +2150,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .maybeSingle();
 
     if (lockError || !locked) {
-      setMsg("ℹ️ Losování už spustil jiný hráč.");
+      setMsg(
+        uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." })
+      );
       return;
     }
 
@@ -1903,7 +2206,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .maybeSingle();
 
     if (lockError || !locked) {
-      setMsg("ℹ️ STOP už stiskl jiný hráč.");
+      setMsg(
+        uiMessage({ cs: "ℹ️ STOP už stiskl jiný hráč.", en: "ℹ️ Another player has already pressed STOP.", es: "ℹ️ Otro jugador ya ha pulsado STOP." })
+      );
       return;
     }
 
@@ -1927,11 +2232,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     setMsg(
       stoppedByTimeout
-        ? uiLanguage === "en"
-          ? "Time is up."
-          : uiLanguage === "es"
-            ? "Se acabó el tiempo."
-            : "Čas vypršel."
+        ? uiMessage({ cs: "Čas vypršel.", en: "Time is up.", es: "Se acabó el tiempo." })
         : stopPressedMessage(uiLanguage, myPlayer.name)
     );
   }
@@ -1953,9 +2254,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .upsert(rows, { onConflict: "room_id,player_id,round,category" });
 
     if (error) {
-      setMsg(
-        `${t("savingScoresErrorPrefix")}: ${error.message}`
-      );
+      console.error("Scores saving failed:", error);
+      setMsg(t("savingScoresErrorPrefix"));
       return;
     }
 
@@ -2062,7 +2362,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .eq("id", roomId);
 
     if (error) {
-      setMsg(`${t("finishGameErrorPrefix")}: ${error.message}`);
+      console.error("Finishing game failed:", error);
+      setMsg(t("finishGameErrorPrefix"));
       return;
     }
 
@@ -2096,7 +2397,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const rid = roomId;
     const currentRoundId = round.id;
 
-    setMsg("… losujeme další kolo");
+    setMsg(t("drawingNextRound"));
     setRoomStatus("drawing");
     setLetter(null);
     setAnswers(emptyAnswers(activeCategories));
@@ -2114,7 +2415,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .maybeSingle();
 
     if (lockError || !locked) {
-      setMsg("ℹ️ Další kolo už spustil jiný hráč.");
+      setMsg(
+        uiMessage({ cs: "ℹ️ Další kolo už spustil jiný hráč.", en: "ℹ️ Another player has already started the next round.", es: "ℹ️ Otro jugador ya ha iniciado la siguiente ronda." })
+      );
       return;
     }
 
@@ -2143,21 +2446,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const gameLanguageInstruction = gameLanguageInstructionText(uiLanguage, roomLanguage);
 
-  const gameLanguageFlag =
-    roomLanguage === "en" ? "🇬🇧" : roomLanguage === "es" ? "🇪🇸" : "🇨🇿";
-
-  const diacriticGameLanguages = new Set<string>([
-    "cs",
-    "es",
-    "de",
-    "fr",
-    "pl",
-    "it",
-    "pt-BR",
-    "nl",
-    "tr",
-  ]);
-  const gameLanguageHasDiacritics = diacriticGameLanguages.has(roomLanguage);
+  const gameLanguageConfig = GAME_LANGUAGE_CONFIG[roomLanguage];
+  const gameLanguageFlag = gameLanguageConfig.flag;
+  const gameLanguageHasDiacritics =
+    gameLanguageConfig.hasDiacritics;
 
   const roomIsFull = !myPlayer && players.length + waitingPlayers.length >= maxPlayers;
   const activeMyPlayer = Boolean(myPlayer && myPlayer.status !== "waiting");
@@ -2173,11 +2465,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByTime
-      ? uiLanguage === "en"
-        ? "Time is up."
-        : uiLanguage === "es"
-          ? "Se acabó el tiempo."
-          : "Čas vypršel."
+      ? uiMessage({ cs: "Čas vypršel.", en: "Time is up.", es: "Se acabó el tiempo." })
       : (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
         ? stopPressedMessage(uiLanguage, stoppedByName)
         : roomStatus === "playing" && letter
@@ -2245,16 +2533,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           }}
         >
           {isReconnecting
-            ? uiLanguage === "es"
-              ? "Restableciendo la conexión y sincronizando la partida…"
-              : uiLanguage === "en"
-                ? "Restoring the connection and syncing the game…"
-                : "Obnovuji spojení a synchronizuji hru…"
-            : uiLanguage === "es"
-              ? "Sin conexión. Las respuestas escritas permanecen guardadas en este teléfono."
-              : uiLanguage === "en"
-                ? "You are offline. Your written answers remain saved on this phone."
-                : "Jsi offline. Rozepsané odpovědi zůstávají uložené v tomto telefonu."}
+            ? uiMessage({ cs: "Obnovuji spojení a synchronizuji hru…", en: "Restoring the connection and syncing the game…", es: "Restableciendo la conexión y sincronizando la partida…" })
+            : uiMessage({ cs: "Jsi offline. Rozepsané odpovědi zůstávají uložené v tomto telefonu.", en: "You are offline. Your written answers remain saved on this phone.", es: "Sin conexión. Las respuestas escritas permanecen guardadas en este teléfono." })}
         </section>
       )}
 
@@ -2764,11 +3044,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         {t("superPremiumLinkText")}
                       </button>
                       {superPremiumUpgradePrice
-                        ? uiLanguage === "en"
-                          ? ` for ${superPremiumUpgradePrice}`
-                          : uiLanguage === "es"
-                            ? ` por ${superPremiumUpgradePrice}`
-                            : ` za ${superPremiumUpgradePrice}`
+                        ? uiMessage({ cs: ` za ${superPremiumUpgradePrice}`, en: ` for ${superPremiumUpgradePrice}`, es: ` por ${superPremiumUpgradePrice}` })
                         : ""}{" "}
                       {t("superPremiumUpsellAfter")}
                     </p>
@@ -3422,18 +3698,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         }}
                       >
                         <p style={{ marginTop: 0, marginBottom: 6, fontWeight: 700 }}>
-                          {uiLanguage === "en"
-                            ? "Rewarded ad is playing…"
-                            : uiLanguage === "es"
-                              ? "El anuncio recompensado se está reproduciendo…"
-                              : "Rewarded reklama běží…"}
+                          {uiMessage({ cs: "Rewarded reklama běží…", en: "Rewarded ad is playing…", es: "El anuncio recompensado se está reproduciendo…" })}
                         </p>
                         <p style={{ margin: 0 }}>
-                          {uiLanguage === "en"
-                            ? "After the ad finishes, 3 more rounds will unlock automatically."
-                            : uiLanguage === "es"
-                              ? "Cuando termine el anuncio, se desbloquearán automáticamente 3 rondas más."
-                              : "Po doběhnutí reklamy se automaticky odemknou další 3 kola."}
+                          {uiMessage({ cs: "Po doběhnutí reklamy se automaticky odemknou další 3 kola.", en: "After the ad finishes, 3 more rounds will unlock automatically.", es: "Cuando termine el anuncio, se desbloquearán automáticamente 3 rondas más." })}
                         </p>
                       </section>
                     )}

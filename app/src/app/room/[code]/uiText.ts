@@ -1,5 +1,6 @@
 type RoomTier = "free" | "premium" | "super_premium";
-type GameLanguage = "cs" | "en" | "es";
+export type UiLanguage = "cs" | "en" | "es";
+export type GameLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
 
 export const UI_TEXT = {
   cs: {
@@ -296,7 +297,7 @@ export type UiTextKey = keyof typeof UI_TEXT.cs;
 
 const TEXTS = UI_TEXT as unknown as Record<string, Record<UiTextKey, string>>;
 
-export function getUiText(language: string, key: UiTextKey) {
+export function getUiText(language: UiLanguage, key: UiTextKey) {
   return TEXTS[language]?.[key] ?? UI_TEXT.cs[key];
 }
 
@@ -323,78 +324,187 @@ export const UI_RULES = {
 
 const RULES = UI_RULES as unknown as Record<string, typeof UI_RULES.cs>;
 
-export function getUiRules(language: string) {
+export function getUiRules(language: UiLanguage) {
   return RULES[language] ?? UI_RULES.cs;
 }
 
-export function roomFullMessage(language: string, maxPlayers: number) {
-  if (language === "en") {
-    return `❌ This room is full. The Free version allows up to ${maxPlayers} players. Upgrade to Premium for more players. More players, more fun! :-)`;
-  }
+const ROOM_FULL_MESSAGES: Record<
+  UiLanguage,
+  (maxPlayers: number) => string
+> = {
+  cs: (maxPlayers) =>
+    `❌ Místnost je plná. Free verze umožňuje max. ${maxPlayers} hráče. Pro více hráčů si kup Premium. Víc hráčů, větší zábava! :-)`,
+  en: (maxPlayers) =>
+    `❌ This room is full. The Free version allows up to ${maxPlayers} players. Upgrade to Premium for more players. More players, more fun! :-)`,
+  es: (maxPlayers) =>
+    `❌ La sala está llena. La versión Free permite hasta ${maxPlayers} jugadores. Compra Premium para más jugadores. Más jugadores, más diversión. :-)`,
+};
 
-  if (language === "es") {
-    return `❌ La sala está llena. La versión Free permite hasta ${maxPlayers} jugadores. Compra Premium para más jugadores. Más jugadores, más diversión. :-)`;
-  }
+const STOP_PRESSED_MESSAGES: Record<
+  UiLanguage,
+  (name: string) => string
+> = {
+  cs: (name) => `✅ STOP stiskl ${name}`,
+  en: (name) => `✅ STOP pressed by ${name}`,
+  es: (name) => `✅ ${name} pulsó STOP`,
+};
 
-  return `❌ Místnost je plná. Free verze umožňuje max. ${maxPlayers} hráče. Pro více hráčů si kup Premium. Víc hráčů, větší zábava! :-)`;
+const CATEGORY_HELP_TEXT: Record<
+  UiLanguage,
+  {
+    player: string;
+    premiumOrganizer: string;
+    superPremiumOrganizer: string;
+  }
+> = {
+  cs: {
+    player:
+      "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit.",
+    premiumOrganizer:
+      "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie jsou zamčené. Po dokoupení alespoň jedné rozšířené kategorie se odemkne volba počtu kategorií a jejich pořadí.",
+    superPremiumOrganizer:
+      "Super Premium: vyber základní i rozšířené kategorie. Můžeš měnit pořadí a používat vlastní kategorie.",
+  },
+  en: {
+    player:
+      "The organiser chooses the room categories. You can see the current selection and suggest changes.",
+    premiumOrganizer:
+      "Premium: the basic categories are fixed. Extended categories are locked. Buying at least one extended category unlocks category selection and ordering.",
+    superPremiumOrganizer:
+      "Super Premium: choose basic and extended categories, change their order and add custom categories.",
+  },
+  es: {
+    player:
+      "El organizador elige las categorías de la sala. Tú ves la selección actual y puedes sugerir cambios.",
+    premiumOrganizer:
+      "Premium: las categorías básicas son fijas. Las categorías ampliadas están bloqueadas. Al comprar al menos una categoría ampliada se desbloquea la selección y el orden de categorías.",
+    superPremiumOrganizer:
+      "Super Premium: elige categorías básicas y ampliadas, cambia su orden y añade categorías propias.",
+  },
+};
+
+export function roomFullMessage(
+  language: UiLanguage,
+  maxPlayers: number
+) {
+  return ROOM_FULL_MESSAGES[language](maxPlayers);
 }
 
-export function stopPressedMessage(language: string, name: string) {
-  if (language === "en") return `✅ STOP pressed by ${name}`;
-  if (language === "es") return `✅ ${name} pulsó STOP`;
-  return `✅ STOP stiskl ${name}`;
+export function stopPressedMessage(
+  language: UiLanguage,
+  name: string
+) {
+  return STOP_PRESSED_MESSAGES[language](name);
 }
 
-export function gameLanguageNameText(uiLanguage: string, roomLanguage: GameLanguage) {
-  if (roomLanguage === "en") {
-    if (uiLanguage === "en") return "English";
-    if (uiLanguage === "es") return "Inglés";
-    return "Angličtina";
-  }
+const GAME_LANGUAGE_NAMES: Record<
+  UiLanguage,
+  Record<GameLanguage, string>
+> = {
+  cs: {
+    cs: "Čeština",
+    en: "Angličtina",
+    es: "Španělština",
+    de: "Němčina",
+    fr: "Francouzština",
+    "pt-BR": "Brazilská portugalština",
+    id: "Indonéština",
+    tr: "Turečtina",
+    pl: "Polština",
+    it: "Italština",
+  },
+  en: {
+    cs: "Czech",
+    en: "English",
+    es: "Spanish",
+    de: "German",
+    fr: "French",
+    "pt-BR": "Brazilian Portuguese",
+    id: "Indonesian",
+    tr: "Turkish",
+    pl: "Polish",
+    it: "Italian",
+  },
+  es: {
+    cs: "Checo",
+    en: "Inglés",
+    es: "Español",
+    de: "Alemán",
+    fr: "Francés",
+    "pt-BR": "Portugués de Brasil",
+    id: "Indonesio",
+    tr: "Turco",
+    pl: "Polaco",
+    it: "Italiano",
+  },
+};
 
-  if (roomLanguage === "es") {
-    if (uiLanguage === "en") return "Spanish";
-    if (uiLanguage === "es") return "Español";
-    return "Španělština";
-  }
+const GAME_LANGUAGE_INSTRUCTIONS: Record<
+  UiLanguage,
+  Record<GameLanguage, string>
+> = {
+  cs: {
+    cs: "Všechny odpovědi piš česky.",
+    en: "Všechny odpovědi piš anglicky.",
+    es: "Všechny odpovědi piš španělsky.",
+    de: "Všechny odpovědi piš německy.",
+    fr: "Všechny odpovědi piš francouzsky.",
+    "pt-BR": "Všechny odpovědi piš brazilskou portugalštinou.",
+    id: "Všechny odpovědi piš indonésky.",
+    tr: "Všechny odpovědi piš turecky.",
+    pl: "Všechny odpovědi piš polsky.",
+    it: "Všechny odpovědi piš italsky.",
+  },
+  en: {
+    cs: "Write all answers in Czech.",
+    en: "Write all answers in English.",
+    es: "Write all answers in Spanish.",
+    de: "Write all answers in German.",
+    fr: "Write all answers in French.",
+    "pt-BR": "Write all answers in Brazilian Portuguese.",
+    id: "Write all answers in Indonesian.",
+    tr: "Write all answers in Turkish.",
+    pl: "Write all answers in Polish.",
+    it: "Write all answers in Italian.",
+  },
+  es: {
+    cs: "Escribe todas las respuestas en checo.",
+    en: "Escribe todas las respuestas en inglés.",
+    es: "Escribe todas las respuestas en español.",
+    de: "Escribe todas las respuestas en alemán.",
+    fr: "Escribe todas las respuestas en francés.",
+    "pt-BR": "Escribe todas las respuestas en portugués de Brasil.",
+    id: "Escribe todas las respuestas en indonesio.",
+    tr: "Escribe todas las respuestas en turco.",
+    pl: "Escribe todas las respuestas en polaco.",
+    it: "Escribe todas las respuestas en italiano.",
+  },
+};
 
-  if (uiLanguage === "en") return "Czech";
-  if (uiLanguage === "es") return "Checo";
-  return "Čeština";
+export function gameLanguageNameText(
+  uiLanguage: UiLanguage,
+  roomLanguage: GameLanguage
+) {
+  return GAME_LANGUAGE_NAMES[uiLanguage][roomLanguage];
 }
 
-export function gameLanguageInstructionText(uiLanguage: string, roomLanguage: GameLanguage) {
-  if (roomLanguage === "en") {
-    if (uiLanguage === "en") return "Write all answers in English.";
-    if (uiLanguage === "es") return "Escribe todas las respuestas en inglés.";
-    return "Všechny odpovědi piš anglicky.";
-  }
-
-  if (roomLanguage === "es") {
-    if (uiLanguage === "en") return "Write all answers in Spanish.";
-    if (uiLanguage === "es") return "Escribe todas las respuestas en español.";
-    return "Všechny odpovědi piš španělsky.";
-  }
-
-  if (uiLanguage === "en") return "Write all answers in Czech.";
-  if (uiLanguage === "es") return "Escribe todas las respuestas en checo.";
-  return "Všechny odpovědi piš česky.";
+export function gameLanguageInstructionText(
+  uiLanguage: UiLanguage,
+  roomLanguage: GameLanguage
+) {
+  return GAME_LANGUAGE_INSTRUCTIONS[uiLanguage][roomLanguage];
 }
 
-export function categoryHelpText(language: string, isOrganizer: boolean, roomTier: RoomTier) {
-  if (language === "en") {
-    if (!isOrganizer) return "The organiser chooses the room categories. You can see the current selection and suggest changes.";
-    if (roomTier === "premium") return "Premium: the basic categories are fixed. Extended categories are locked. Buying at least one extended category unlocks category selection and ordering.";
-    return "Super Premium: choose basic and extended categories, change their order and add custom categories.";
-  }
+export function categoryHelpText(
+  language: UiLanguage,
+  isOrganizer: boolean,
+  roomTier: RoomTier
+) {
+  const texts = CATEGORY_HELP_TEXT[language];
 
-  if (language === "es") {
-    if (!isOrganizer) return "El organizador elige las categorías de la sala. Tú ves la selección actual y puedes sugerir cambios.";
-    if (roomTier === "premium") return "Premium: las categorías básicas son fijas. Las categorías ampliadas están bloqueadas. Al comprar al menos una categoría ampliada se desbloquea la selección y el orden de categorías.";
-    return "Super Premium: elige categorías básicas y ampliadas, cambia su orden y añade categorías propias.";
-  }
+  if (!isOrganizer) return texts.player;
 
-  if (!isOrganizer) return "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit.";
-  if (roomTier === "premium") return "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie jsou zamčené. Po dokoupení alespoň jedné rozšířené kategorie se odemkne volba počtu kategorií a jejich pořadí.";
-  return "Super Premium: vyber základní i rozšířené kategorie. Můžeš měnit pořadí a používat vlastní kategorie.";
+  return roomTier === "premium"
+    ? texts.premiumOrganizer
+    : texts.superPremiumOrganizer;
 }
