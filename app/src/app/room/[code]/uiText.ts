@@ -1,5 +1,5 @@
 type RoomTier = "free" | "premium" | "super_premium";
-export type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id";
+export type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr";
 export type GameLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
 
 export const UI_TEXT = {
@@ -678,6 +678,102 @@ export const UI_TEXT = {
     freeRewardUnlocked: "✅ 3 ronde tambahan telah dibuka.",
     freeLimitReachedMessage: "Batas Free tercapai. Pilih Premium atau iklan berhadiah untuk melanjutkan.",
   },
+  tr: {
+    room: "Oda",
+    signedIn: "Katıldın",
+    notSignedIn: "Henüz katılmadın",
+    bossRoom: "Ödemeyi sen yaptın, bu yüzden bu odanın yöneticisi sensin!",
+    likeApp: "Uygulamayı beğendin mi?",
+    ratingUnavailable: "Uygulama Google Play'de yayınlandıktan sonra puanlama kullanılabilir olacak.",
+    newGame: "Yeni oyun",
+    rules: "Kurallar",
+    copyLink: "Bağlantıyı kopyala",
+    share: "Paylaş",
+    disconnect: "Bağlantıyı kes",
+    gameLanguage: "Oyun dili",
+    diacriticsOptional: "Türkçe karakterler kullanılmasa da yanıt geçerlidir.",
+    joinGame: "Oyuna katıl",
+    yourName: "Adın",
+    join: "Katıl",
+    startGame: "Oyunu başlat",
+    gameSettings: "Oyun ayarları",
+    timeLimit: "Süre sınırı",
+    noTimeLimit: "Süre sınırı yok",
+    roundCount: "Tur sayısı",
+    unlimitedRounds: "Sınırsız",
+    roundsCountSuffix: "tur",
+    gameSettingsSaveErrorPrefix: "❌ oyun ayarları kaydedilirken",
+    availableLetters: "Kullanılabilir harfler",
+    players: "Oyuncular",
+    waitingPlayers: "Bekleyen oyuncular",
+    roomCategories: "Oda kategorileri",
+    basicCategories: "Temel kategoriler",
+    extendedCategories: "Ek kategoriler",
+    customCategories: "Özel kategoriler",
+    categoryOrder: "Kategori sırası",
+    playing: "Oynanıyor",
+    drawAgain: "Yeniden çek",
+    scoring: "Puanlama",
+    submitted: "Gönderildi",
+    playersAnswers: "Oyuncuların yanıtları",
+    player: "Oyuncu",
+    totalPoints: "Toplam puan",
+    round: "Tur",
+    myScoring: "Puanlamam",
+    submitScoring: "Puanlamayı gönder",
+    newRound: "Yeni tur",
+    finishGame: "Oyunu bitir ve final sonuçlarını göster",
+    finalResults: "Final sonuçları",
+    position: "Sıra",
+    gameFinishedMessage: "✅ Oyun bitti. İşte final sonuçları.",
+    finishGameErrorPrefix: "❌ oyun bitirilirken",
+    letterDrawn: "✅ harf çekildi",
+    drawingAgain: "… yeniden harf çekiliyor",
+    drawingNextRound: "… sonraki tur için harf çekiliyor",
+    drawingLetter: "… harf çekiliyor",
+    changePlayerAfterScoring: "Oyuncuyu yalnızca puanlama bittikten sonra değiştirebilirsin.",
+    changingPlayerErrorPrefix: "❌ oyuncu değiştirilirken",
+    previousPlayerRemoved: "ℹ️ Önceki oyuncu bu cihazdan kaldırıldı. Başka bir ad gir.",
+    disconnectedRoomCleared: "✅ bağlantı kesildi, oda verileri silindi",
+    disconnected: "✅ bağlantı kesildi",
+    joinNameFirst: "❗ Önce adını girerek oyuna katıl.",
+    savingScoresErrorPrefix: "❌ puanlar kaydedilirken",
+    stopAfterFields: "Tüm alanları doldurduktan sonra STOP'a basabilirsin.",
+    minTwoChars: "Her alan en az iki karakter içermelidir.",
+    mustStartWithLetter: "Her yanıt çekilen harfle başlamalıdır.",
+    waitingToJoin: "⏳ Katılmak için bekliyorsun. Bir sonraki turdan itibaren oyuna dahil olacaksın.",
+    enterNameAnswers: "Yanıtlarını göndermek için yukarıya adını gir.",
+    statusSubmitted: " – gönderildi",
+    statusWaiting: " – bekliyor",
+    hideRoundHistory: "Tur geçmişini gizle",
+    showRoundHistory: "Tur geçmişini göster",
+    noRoundScores: "Henüz kaydedilmiş tur puanı yok.",
+    zeroPoints: "0 puan",
+    fivePoints: "5 puan",
+    tenPoints: "10 puan",
+    minusFivePoints: "-5 puan",
+    minusTenPoints: "-10 puan",
+    scoringSubmitted: "✅ Puanlama gönderildi. Bekleyen oyuncular Yeni tur düğmesine basıldığında otomatik olarak katılacak.",
+    enterNameScoring: "Puanlamanı göndermek için yukarıya adını gir.",
+    waitingForAllPlayers: "Tüm oyuncular bekleniyor…",
+    customCategoryPrefix: "Özel kategori",
+    removeCustomCategory: "Özel kategoriyi kaldır",
+    addCustomCategory: "+ Özel kategori ekle",
+    maxCustomCategories: "En fazla 5 özel kategori.",
+    premiumLockedCategoryOfferIntro: "Bir ek kategori satın almak, kategori sayısı ve sıralaması seçimini otomatik olarak açar.",
+    superPremiumUpsellBefore: "Ya da",
+    superPremiumLinkText: "Super Premium",
+    superPremiumUpsellAfter: "satın alarak kategori sayısını ve sırasını seçebilir, tüm ek kategorileri ve 5 özel kategoriyi açabilirsin.",
+    changePlayerOnDevice: "Bu cihazdaki oyuncuyu değiştir",
+    waitingPlayerNextRound: "bir sonraki turdan itibaren katılacak",
+    freeLimitTitle: "Free sınırına ulaşıldı",
+    freeLimitText: "Free sürümü 3 tur içerir. Devam etmek için Premium'a geç veya 3 ek turun kilidini açmak üzere reklam izle.",
+    freeUpgradeButton: "Premium'a geç",
+    freeRewardButton: "Reklamı izle ve 3 ek turun kilidini aç",
+    backHome: "Ana sayfaya dön",
+    freeRewardUnlocked: "✅ 3 ek turun kilidi açıldı.",
+    freeLimitReachedMessage: "Free sınırına ulaşıldı. Devam etmek için Premium'u veya ödüllü reklamı seç.",
+  },
 } as const;
 
 export type UiTextKey = keyof typeof UI_TEXT.cs;
@@ -743,6 +839,12 @@ export const UI_RULES = {
     scoringTitle: "Penilaian",
     scoring: "Setelah STOP ditekan, semua pemain dapat melihat jawaban pemain lain dan memberi nilai. 10 poin untuk jawaban unik, 5 poin untuk jawaban yang sama, dan 0 poin untuk jawaban kosong. Poin negatif juga dapat diberikan untuk jawaban yang tidak valid.",
   },
+  tr: {
+    join: "Oda sahibi, “Bağlantıyı kopyala” veya “Paylaş” düğmesini kullanarak oda bağlantısını paylaşır. Diğer oyuncular bağlantıyı açar, adlarını girer ve aynı odaya katılır.",
+    play: "Tüm oyuncular çekilen harfle oynar ve her kategori için bir yanıt yazar. Tüm alanlar doldurulduğunda oyunculardan biri STOP'a basabilir. Her yanıt çekilen harfle başlamalı ve en az iki karakterden oluşmalıdır. ENTER tuşuyla bir sonraki alana geçebilir, son alanda STOP'a basabilirsin.",
+    scoringTitle: "Puanlama",
+    scoring: "STOP'a basıldıktan sonra tüm oyuncular diğer oyuncuların yanıtlarını görür ve puanlar. Benzersiz yanıt 10 puan, aynı yanıt 5 puan, boş yanıt 0 puan alır. Geçersiz yanıtlar için eksi puan da verilebilir.",
+  },
 } as const;
 
 const RULES = UI_RULES as unknown as Record<string, typeof UI_RULES.cs>;
@@ -773,6 +875,9 @@ const ROOM_FULL_MESSAGES: Record<
   id: (maxPlayers) =>
     `❌ Ruang ini penuh. Versi Free memungkinkan maksimal ${maxPlayers} pemain. Tingkatkan ke Premium untuk menambah jumlah pemain. Makin banyak pemain, makin seru! :-)`,
 
+  tr: (maxPlayers) =>
+    `❌ Bu oda dolu. Free sürümü en fazla ${maxPlayers} oyuncuya izin verir. Daha fazla oyuncu için Premium'a geç. Ne kadar çok oyuncu, o kadar çok eğlence! :-)`,
+
 };
 
 const STOP_PRESSED_MESSAGES: Record<
@@ -789,6 +894,8 @@ const STOP_PRESSED_MESSAGES: Record<
 
   "pt-BR": (name) => `✅ ${name} apertou STOP`,
   id: (name) => `✅ ${name} menekan STOP`,
+
+  tr: (name) => `✅ ${name} STOP'a bastı`,
 
 };
 
@@ -848,6 +955,11 @@ const CATEGORY_HELP_TEXT = {
     player: "Penyelenggara memilih kategori ruang. Kamu dapat melihat pilihan saat ini dan menyarankan perubahan.",
     premiumOrganizer: "Premium: kategori dasar bersifat tetap. Kategori tambahan terkunci. Membeli setidaknya satu kategori tambahan akan membuka pilihan dan urutan kategori.",
     superPremiumOrganizer: "Super Premium: pilih kategori dasar dan tambahan, ubah urutannya, dan tambahkan kategori buatan sendiri.",
+  },
+  tr: {
+    player: "Oda sahibi oda kategorilerini seçer. Geçerli seçimi görebilir ve değişiklik önerebilirsin.",
+    premiumOrganizer: "Premium: temel kategoriler sabittir. Ek kategoriler kilitlidir. En az bir ek kategori satın alındığında kategori seçimi ve sıralaması açılır.",
+    superPremiumOrganizer: "Super Premium: temel ve ek kategorileri seç, sıralarını değiştir ve özel kategoriler ekle.",
   },
 };
 
@@ -957,6 +1069,19 @@ const GAME_LANGUAGE_NAMES: Record<
     it: "Italia",
   },
 
+  tr: {
+    cs: "Çekçe",
+    en: "İngilizce",
+    es: "İspanyolca",
+    de: "Almanca",
+    fr: "Fransızca",
+    "pt-BR": "Brezilya Portekizcesi",
+    id: "Endonezce",
+    tr: "Türkçe",
+    pl: "Lehçe",
+    it: "İtalyanca",
+  },
+
 };
 
 const GAME_LANGUAGE_INSTRUCTIONS: Record<
@@ -1049,6 +1174,19 @@ const GAME_LANGUAGE_INSTRUCTIONS: Record<
     tr: "Tulis semua jawaban dalam bahasa Turki.",
     pl: "Tulis semua jawaban dalam bahasa Polandia.",
     it: "Tulis semua jawaban dalam bahasa Italia.",
+  },
+
+  tr: {
+    cs: "Tüm yanıtları Çekçe yaz.",
+    en: "Tüm yanıtları İngilizce yaz.",
+    es: "Tüm yanıtları İspanyolca yaz.",
+    de: "Tüm yanıtları Almanca yaz.",
+    fr: "Tüm yanıtları Fransızca yaz.",
+    "pt-BR": "Tüm yanıtları Brezilya Portekizcesiyle yaz.",
+    id: "Tüm yanıtları Endonezce yaz.",
+    tr: "Tüm yanıtları Türkçe yaz.",
+    pl: "Tüm yanıtları Lehçe yaz.",
+    it: "Tüm yanıtları İtalyanca yaz.",
   },
 
 };

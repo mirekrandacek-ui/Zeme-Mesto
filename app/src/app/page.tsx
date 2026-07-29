@@ -15,7 +15,7 @@ import {
 } from "@/lib/playBilling";
 
 type Tier = "free" | "premium" | "super_premium";
-type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id";
+type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr";
 type RoomLanguage =
   | UiLanguage
   | "pt-BR"
@@ -68,6 +68,7 @@ const ENABLED_UI_LANGUAGES: readonly UiLanguage[] = [
   "fr",
   "pt-BR",
   "id",
+  "tr",
   "cs",
 ];
 
@@ -191,6 +192,19 @@ const LANGUAGE_NAMES: Record<
     tr: "Turki",
     pl: "Polandia",
     it: "Italia",
+  },
+
+  tr: {
+    cs: "Çekçe",
+    en: "İngilizce",
+    es: "İspanyolca",
+    "pt-BR": "Brezilya Portekizcesi",
+    de: "Almanca",
+    fr: "Fransızca",
+    id: "Endonezce",
+    tr: "Türkçe",
+    pl: "Lehçe",
+    it: "İtalyanca",
   },
 
 };
@@ -518,6 +532,45 @@ const HOME_TEXT = {
     buySuperPremium: "Beli Super Premium",
     ratingUnavailable: "Penilaian akan tersedia setelah aplikasi dirilis di Google Play.",
   },
+  tr: {
+    appTitleFirstLine: "İsim Şehir:",
+    appTitleSecondLine: "Kelime Oyunu",
+    applicationLanguage: "Uygulama dili",
+    creatingRoom: "oda oluşturuluyor…",
+    roomCreateError: "❌ Oda oluşturulamadı. Tekrar dene.",
+    uniqueRoomCodeError: "❌ Benzersiz oda kodu oluşturulamadı. Tekrar dene.",
+    roomCodeRequired: "❗ Oda kodunu gir.",
+    yourMode: "Modun",
+    active: "Aktif",
+    gameLanguage: "Oyun dili",
+    gameLanguageHelp: "Yanıtlar bu dilde yazılacak ve uygun alfabe otomatik olarak seçilecek.",
+    diacriticsHelp: "Türkçe karakterler zorunlu değildir – yanıtlar Türkçe karakterlerle veya bunlar olmadan aynı şekilde değerlendirilir.",
+    likeApp: "Uygulamayı beğendin mi?",
+    haveRoomCode: "Oda kodum var",
+    roomCode: "Oda kodu",
+    join: "Katıl",
+    privacyPolicy: "Gizlilik Politikası",
+    intro: "Bir oda oluştur, bağlantıyı diğer oyuncularla paylaş ve birlikte oyna.",
+    billingNotReady: "Google Play Billing henüz hazır değil.",
+    productUnavailable: "Ürün kullanılamıyor.",
+    purchaseWindowError: "Satın alma penceresi açılamadı.",
+    purchaseStartError: "Satın alma başlatılamadı.",
+    freeDescription: "Reklamlı, en fazla 3 oyuncu. Sabit kategoriler: Ülke, Şehir, İsim.",
+    premiumDescription: "Reklamsız, en fazla 5 oyuncu. Sabit temel kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya, Bitki.",
+    superPremiumDescription: "Reklamsız, sınırsız oyuncu, kategori seçimi ve sıralaması, tur başına isteğe bağlı süre sınırı, tur sayısı ve en fazla 5 özel kategori.",
+    superPremiumCategories: "Kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya, Bitki, Film / Dizi, Oyuncu, Şarkıcı / Müzik Grubu, Spor, Marka, Araba / Motosiklet, Nehir / Dağ, Meslek, Renk.",
+    creating: "Oluşturuluyor…",
+    createRoom: "Oda oluştur",
+    hideOtherModes: "Diğer modları gizle",
+    showOtherModes: "Diğer modları göster",
+    includedInSuperPremium: "Super Premium'a dahil",
+    buyPremium: "Premium satın al",
+    superPremiumPurchaseDescription: "Reklamsız, sınırsız oyuncu, tüm temel ve ek kategoriler, kategori seçimi ve sıralaması, tur başına isteğe bağlı süre sınırı, tur sayısı ve en fazla 5 özel kategori.",
+    upgradeToSuperPremium: "Super Premium'a yükselt",
+    upgradeToSuperPremiumFor: "Şu fiyata Super Premium'a yükselt",
+    buySuperPremium: "Super Premium satın al",
+    ratingUnavailable: "Uygulama Google Play'de yayınlandıktan sonra puanlama kullanılabilir olacak.",
+  },
 } as const;
 
 type HomeTextKey = keyof typeof HOME_TEXT.cs;
@@ -585,7 +638,9 @@ export default function Home() {
                 ? "pt-BR"
                 : deviceLanguage.startsWith("id")
                   ? "id"
-                  : "en";
+                  : deviceLanguage.startsWith("tr")
+                    ? "tr"
+                    : "en";
 
     const initialUiLanguage: UiLanguage =
       savedUiLanguage === "cs" ||
@@ -594,7 +649,8 @@ export default function Home() {
       savedUiLanguage === "de" ||
       savedUiLanguage === "fr" ||
       savedUiLanguage === "pt-BR" ||
-      savedUiLanguage === "id"
+      savedUiLanguage === "id" ||
+      savedUiLanguage === "tr"
         ? savedUiLanguage
         : detectedLanguage;
 
