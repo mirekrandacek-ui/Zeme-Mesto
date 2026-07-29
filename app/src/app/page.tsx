@@ -15,7 +15,7 @@ import {
 } from "@/lib/playBilling";
 
 type Tier = "free" | "premium" | "super_premium";
-type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR";
+type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id";
 type RoomLanguage =
   | UiLanguage
   | "pt-BR"
@@ -67,6 +67,7 @@ const ENABLED_UI_LANGUAGES: readonly UiLanguage[] = [
   "de",
   "fr",
   "pt-BR",
+  "id",
   "cs",
 ];
 
@@ -177,6 +178,19 @@ const LANGUAGE_NAMES: Record<
     tr: "Turco",
     pl: "Polonês",
     it: "Italiano",
+  },
+
+  id: {
+    cs: "Ceko",
+    en: "Inggris",
+    es: "Spanyol",
+    "pt-BR": "Portugis Brasil",
+    de: "Jerman",
+    fr: "Prancis",
+    id: "Indonesia",
+    tr: "Turki",
+    pl: "Polandia",
+    it: "Italia",
   },
 
 };
@@ -465,6 +479,45 @@ const HOME_TEXT = {
     buySuperPremium: "Comprar Super Premium",
     ratingUnavailable: "A avaliação estará disponível depois que o aplicativo for publicado no Google Play.",
   },
+  id: {
+    appTitleFirstLine: "ABC Lima Dasar:",
+    appTitleSecondLine: "Permainan Kata",
+    applicationLanguage: "Bahasa aplikasi",
+    creatingRoom: "membuat ruang…",
+    roomCreateError: "❌ Ruang tidak dapat dibuat. Coba lagi.",
+    uniqueRoomCodeError: "❌ Kode ruang unik tidak dapat dibuat. Coba lagi.",
+    roomCodeRequired: "❗ Masukkan kode ruang.",
+    yourMode: "Mode kamu",
+    active: "Aktif",
+    gameLanguage: "Bahasa permainan",
+    gameLanguageHelp: "Jawaban akan ditulis dalam bahasa ini, dan alfabet yang sesuai akan dipilih secara otomatis.",
+    diacriticsHelp: "Tanda diakritik tidak wajib – jawaban dengan atau tanpa tanda diakritik dinilai sama.",
+    likeApp: "Suka aplikasi ini?",
+    haveRoomCode: "Saya punya kode ruang",
+    roomCode: "Kode ruang",
+    join: "Gabung",
+    privacyPolicy: "Kebijakan Privasi",
+    intro: "Buat ruang, bagikan tautannya kepada pemain lain, lalu bermain bersama.",
+    billingNotReady: "Google Play Billing belum siap.",
+    productUnavailable: "Produk tidak tersedia.",
+    purchaseWindowError: "Jendela pembelian tidak dapat dibuka.",
+    purchaseStartError: "Pembelian tidak dapat dimulai.",
+    freeDescription: "Iklan, maksimal 3 pemain. Kategori tetap: Negara, Kota, Nama.",
+    premiumDescription: "Tanpa iklan, maksimal 5 pemain. Kategori dasar tetap: Negara, Kota, Nama, Hewan, Benda, Tumbuhan.",
+    superPremiumDescription: "Tanpa iklan, jumlah pemain tak terbatas, pilihan dan urutan kategori, batas waktu opsional per ronde, jumlah ronde, dan hingga 5 kategori buatan sendiri.",
+    superPremiumCategories: "Kategori: Negara, Kota, Nama, Hewan, Benda, Tumbuhan, Film / Serial, Aktor / Aktris, Penyanyi / Grup Musik, Olahraga, Merek, Mobil / Motor, Sungai / Gunung, Pekerjaan, Warna.",
+    creating: "Membuat…",
+    createRoom: "Buat ruang",
+    hideOtherModes: "Sembunyikan mode lain",
+    showOtherModes: "Tampilkan mode lain",
+    includedInSuperPremium: "Termasuk dalam Super Premium",
+    buyPremium: "Beli Premium",
+    superPremiumPurchaseDescription: "Tanpa iklan, jumlah pemain tak terbatas, semua kategori dasar dan tambahan tersedia, pilihan dan urutan kategori, batas waktu opsional per ronde, jumlah ronde, dan hingga 5 kategori buatan sendiri.",
+    upgradeToSuperPremium: "Tingkatkan ke Super Premium",
+    upgradeToSuperPremiumFor: "Tingkatkan ke Super Premium seharga",
+    buySuperPremium: "Beli Super Premium",
+    ratingUnavailable: "Penilaian akan tersedia setelah aplikasi dirilis di Google Play.",
+  },
 } as const;
 
 type HomeTextKey = keyof typeof HOME_TEXT.cs;
@@ -530,7 +583,9 @@ export default function Home() {
               ? "fr"
               : deviceLanguage.startsWith("pt")
                 ? "pt-BR"
-                : "en";
+                : deviceLanguage.startsWith("id")
+                  ? "id"
+                  : "en";
 
     const initialUiLanguage: UiLanguage =
       savedUiLanguage === "cs" ||
@@ -538,7 +593,8 @@ export default function Home() {
       savedUiLanguage === "es" ||
       savedUiLanguage === "de" ||
       savedUiLanguage === "fr" ||
-      savedUiLanguage === "pt-BR"
+      savedUiLanguage === "pt-BR" ||
+      savedUiLanguage === "id"
         ? savedUiLanguage
         : detectedLanguage;
 

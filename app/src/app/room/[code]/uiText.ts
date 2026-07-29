@@ -1,5 +1,5 @@
 type RoomTier = "free" | "premium" | "super_premium";
-export type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR";
+export type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id";
 export type GameLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
 
 export const UI_TEXT = {
@@ -582,6 +582,102 @@ export const UI_TEXT = {
     freeRewardUnlocked: "✅ Mais 3 rodadas foram liberadas.",
     freeLimitReachedMessage: "Limite Free atingido. Escolha Premium ou um anúncio com recompensa para continuar.",
   },
+  id: {
+    room: "Ruang",
+    signedIn: "Sudah masuk",
+    notSignedIn: "Belum masuk",
+    bossRoom: "Kamu sudah membayar, jadi kamu adalah pemimpin ruang ini!",
+    likeApp: "Suka aplikasi ini?",
+    ratingUnavailable: "Penilaian akan tersedia setelah aplikasi dirilis di Google Play.",
+    newGame: "Permainan baru",
+    rules: "Aturan",
+    copyLink: "Salin tautan",
+    share: "Bagikan",
+    disconnect: "Putuskan koneksi",
+    gameLanguage: "Bahasa permainan",
+    diacriticsOptional: "Jawaban tetap valid meskipun tanpa tanda diakritik.",
+    joinGame: "Gabung permainan",
+    yourName: "Nama kamu",
+    join: "Gabung",
+    startGame: "Mulai permainan",
+    gameSettings: "Pengaturan permainan",
+    timeLimit: "Batas waktu",
+    noTimeLimit: "Tanpa batas",
+    roundCount: "Jumlah ronde",
+    unlimitedRounds: "Tak terbatas",
+    roundsCountSuffix: "ronde",
+    gameSettingsSaveErrorPrefix: "❌ menyimpan pengaturan permainan",
+    availableLetters: "Huruf yang tersedia",
+    players: "Pemain",
+    waitingPlayers: "Pemain yang menunggu",
+    roomCategories: "Kategori ruang",
+    basicCategories: "Kategori dasar",
+    extendedCategories: "Kategori tambahan",
+    customCategories: "Kategori buatan sendiri",
+    categoryOrder: "Urutan kategori",
+    playing: "Sedang bermain",
+    drawAgain: "Undi lagi",
+    scoring: "Penilaian",
+    submitted: "Sudah dikirim",
+    playersAnswers: "Jawaban pemain",
+    player: "Pemain",
+    totalPoints: "Total poin",
+    round: "Ronde",
+    myScoring: "Penilaian saya",
+    submitScoring: "Kirim penilaian",
+    newRound: "Ronde baru",
+    finishGame: "Akhiri permainan dan tampilkan hasil akhir",
+    finalResults: "Hasil akhir",
+    position: "Peringkat",
+    gameFinishedMessage: "✅ Permainan selesai. Berikut hasil akhirnya.",
+    finishGameErrorPrefix: "❌ mengakhiri permainan",
+    letterDrawn: "✅ huruf telah diundi",
+    drawingAgain: "… mengundi lagi",
+    drawingNextRound: "… mengundi huruf untuk ronde berikutnya",
+    drawingLetter: "… mengundi huruf",
+    changePlayerAfterScoring: "Kamu hanya dapat mengganti pemain setelah penilaian selesai.",
+    changingPlayerErrorPrefix: "❌ mengganti pemain",
+    previousPlayerRemoved: "ℹ️ Pemain sebelumnya telah dihapus dari perangkat ini. Masukkan nama lain.",
+    disconnectedRoomCleared: "✅ koneksi terputus, data ruang dihapus",
+    disconnected: "✅ koneksi terputus",
+    joinNameFirst: "❗ Gabung terlebih dahulu menggunakan nama.",
+    savingScoresErrorPrefix: "❌ menyimpan poin",
+    stopAfterFields: "Kamu dapat menekan STOP setelah mengisi semua kolom.",
+    minTwoChars: "Setiap kolom harus berisi setidaknya dua karakter.",
+    mustStartWithLetter: "Setiap jawaban harus dimulai dengan huruf yang diundi.",
+    waitingToJoin: "⏳ Kamu sedang menunggu untuk bergabung. Kamu akan masuk mulai ronde berikutnya.",
+    enterNameAnswers: "Masukkan nama kamu di atas untuk mengirim jawaban.",
+    statusSubmitted: " – sudah dikirim",
+    statusWaiting: " – menunggu",
+    hideRoundHistory: "Sembunyikan riwayat ronde",
+    showRoundHistory: "Tampilkan riwayat ronde",
+    noRoundScores: "Belum ada poin ronde yang disimpan.",
+    zeroPoints: "0 poin",
+    fivePoints: "5 poin",
+    tenPoints: "10 poin",
+    minusFivePoints: "-5 poin",
+    minusTenPoints: "-10 poin",
+    scoringSubmitted: "✅ Penilaian telah dikirim. Pemain yang menunggu akan bergabung secara otomatis setelah tombol Ronde baru ditekan.",
+    enterNameScoring: "Masukkan nama kamu di atas untuk mengirim penilaian.",
+    waitingForAllPlayers: "Menunggu semua pemain…",
+    customCategoryPrefix: "Kategori buatan sendiri",
+    removeCustomCategory: "Hapus kategori buatan sendiri",
+    addCustomCategory: "+ Tambahkan kategori buatan sendiri",
+    maxCustomCategories: "Maksimal 5 kategori buatan sendiri.",
+    premiumLockedCategoryOfferIntro: "Membeli satu kategori tambahan akan otomatis membuka pilihan jumlah dan urutan kategori.",
+    superPremiumUpsellBefore: "Atau beli",
+    superPremiumLinkText: "Super Premium",
+    superPremiumUpsellAfter: "untuk mendapatkan pilihan jumlah dan urutan kategori, semua kategori tambahan, serta 5 kategori buatan sendiri.",
+    changePlayerOnDevice: "Ganti pemain di perangkat ini",
+    waitingPlayerNextRound: "akan bergabung mulai ronde berikutnya",
+    freeLimitTitle: "Batas Free tercapai",
+    freeLimitText: "Versi Free mencakup 3 ronde. Untuk melanjutkan, tingkatkan ke Premium atau tonton iklan untuk membuka 3 ronde tambahan.",
+    freeUpgradeButton: "Dapatkan Premium",
+    freeRewardButton: "Tonton iklan dan buka 3 ronde tambahan",
+    backHome: "Kembali ke halaman utama",
+    freeRewardUnlocked: "✅ 3 ronde tambahan telah dibuka.",
+    freeLimitReachedMessage: "Batas Free tercapai. Pilih Premium atau iklan berhadiah untuk melanjutkan.",
+  },
 } as const;
 
 export type UiTextKey = keyof typeof UI_TEXT.cs;
@@ -641,6 +737,12 @@ export const UI_RULES = {
     scoring:
       "Depois que STOP for apertado, todos podem ver as respostas dos outros jogadores e atribuir pontos. São 10 pontos para uma resposta única, 5 pontos para uma resposta repetida e 0 ponto para uma resposta vazia. Também podem ser usados pontos negativos para uma resposta inválida.",
   },
+  id: {
+    join: "Penyelenggara membagikan tautan ruang menggunakan tombol “Salin tautan” atau “Bagikan”. Pemain lain membuka tautan, memasukkan nama mereka, lalu bergabung ke ruang yang sama.",
+    play: "Semua pemain bermain dengan huruf yang diundi dan mengisi satu jawaban untuk setiap kategori. Setelah semua kolom terisi, seorang pemain dapat menekan STOP. Setiap jawaban harus dimulai dengan huruf yang diundi dan terdiri dari setidaknya dua karakter. Tombol ENTER dapat digunakan untuk berpindah ke kolom berikutnya dan menekan STOP pada kolom terakhir.",
+    scoringTitle: "Penilaian",
+    scoring: "Setelah STOP ditekan, semua pemain dapat melihat jawaban pemain lain dan memberi nilai. 10 poin untuk jawaban unik, 5 poin untuk jawaban yang sama, dan 0 poin untuk jawaban kosong. Poin negatif juga dapat diberikan untuk jawaban yang tidak valid.",
+  },
 } as const;
 
 const RULES = UI_RULES as unknown as Record<string, typeof UI_RULES.cs>;
@@ -668,6 +770,9 @@ const ROOM_FULL_MESSAGES: Record<
 
   "pt-BR": (maxPlayers) =>
     `❌ Esta sala está cheia. A versão Free permite até ${maxPlayers} jogadores. Faça upgrade para Premium para jogar com mais pessoas. Mais jogadores, mais diversão! :-)`,
+  id: (maxPlayers) =>
+    `❌ Ruang ini penuh. Versi Free memungkinkan maksimal ${maxPlayers} pemain. Tingkatkan ke Premium untuk menambah jumlah pemain. Makin banyak pemain, makin seru! :-)`,
+
 };
 
 const STOP_PRESSED_MESSAGES: Record<
@@ -683,6 +788,8 @@ const STOP_PRESSED_MESSAGES: Record<
   fr: (name) => `✅ ${name} a appuyé sur STOP`,
 
   "pt-BR": (name) => `✅ ${name} apertou STOP`,
+  id: (name) => `✅ ${name} menekan STOP`,
+
 };
 
 const CATEGORY_HELP_TEXT = {
@@ -736,6 +843,11 @@ const CATEGORY_HELP_TEXT = {
       "Premium: as categorias básicas são fixas. As categorias adicionais ficam bloqueadas. A compra de pelo menos uma categoria adicional libera a seleção e a ordem das categorias.",
     superPremiumOrganizer:
       "Super Premium: escolha categorias básicas e adicionais, altere a ordem e adicione categorias personalizadas.",
+  },
+  id: {
+    player: "Penyelenggara memilih kategori ruang. Kamu dapat melihat pilihan saat ini dan menyarankan perubahan.",
+    premiumOrganizer: "Premium: kategori dasar bersifat tetap. Kategori tambahan terkunci. Membeli setidaknya satu kategori tambahan akan membuka pilihan dan urutan kategori.",
+    superPremiumOrganizer: "Super Premium: pilih kategori dasar dan tambahan, ubah urutannya, dan tambahkan kategori buatan sendiri.",
   },
 };
 
@@ -832,6 +944,19 @@ const GAME_LANGUAGE_NAMES: Record<
     pl: "Polonês",
     it: "Italiano",
   },
+  id: {
+    cs: "Ceko",
+    en: "Inggris",
+    es: "Spanyol",
+    de: "Jerman",
+    fr: "Prancis",
+    "pt-BR": "Portugis Brasil",
+    id: "Indonesia",
+    tr: "Turki",
+    pl: "Polandia",
+    it: "Italia",
+  },
+
 };
 
 const GAME_LANGUAGE_INSTRUCTIONS: Record<
@@ -913,6 +1038,19 @@ const GAME_LANGUAGE_INSTRUCTIONS: Record<
     pl: "Escreva todas as respostas em polonês.",
     it: "Escreva todas as respostas em italiano.",
   },
+  id: {
+    cs: "Tulis semua jawaban dalam bahasa Ceko.",
+    en: "Tulis semua jawaban dalam bahasa Inggris.",
+    es: "Tulis semua jawaban dalam bahasa Spanyol.",
+    de: "Tulis semua jawaban dalam bahasa Jerman.",
+    fr: "Tulis semua jawaban dalam bahasa Prancis.",
+    "pt-BR": "Tulis semua jawaban dalam bahasa Portugis Brasil.",
+    id: "Tulis semua jawaban dalam bahasa Indonesia.",
+    tr: "Tulis semua jawaban dalam bahasa Turki.",
+    pl: "Tulis semua jawaban dalam bahasa Polandia.",
+    it: "Tulis semua jawaban dalam bahasa Italia.",
+  },
+
 };
 
 export function gameLanguageNameText(
