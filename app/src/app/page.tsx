@@ -15,7 +15,7 @@ import {
 } from "@/lib/playBilling";
 
 type Tier = "free" | "premium" | "super_premium";
-type UiLanguage = "cs" | "en" | "es" | "de" | "fr";
+type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR";
 type RoomLanguage =
   | UiLanguage
   | "pt-BR"
@@ -66,6 +66,7 @@ const ENABLED_UI_LANGUAGES: readonly UiLanguage[] = [
   "es",
   "de",
   "fr",
+  "pt-BR",
   "cs",
 ];
 
@@ -163,6 +164,19 @@ const LANGUAGE_NAMES: Record<
     tr: "Turc",
     pl: "Polonais",
     it: "Italien",
+  },
+
+  "pt-BR": {
+    cs: "Tcheco",
+    en: "Inglês",
+    es: "Espanhol",
+    "pt-BR": "Português do Brasil",
+    de: "Alemão",
+    fr: "Francês",
+    id: "Indonésio",
+    tr: "Turco",
+    pl: "Polonês",
+    it: "Italiano",
   },
 
 };
@@ -411,6 +425,46 @@ const HOME_TEXT = {
     buySuperPremium: "Acheter Super Premium",
     ratingUnavailable: "L’évaluation sera disponible après la publication de l’application sur Google Play.",
   },
+
+  "pt-BR": {
+    appTitleFirstLine: "Stop:",
+    appTitleSecondLine: "Adedonha",
+    applicationLanguage: "Idioma do aplicativo",
+    creatingRoom: "criando sala…",
+    roomCreateError: "❌ Não foi possível criar a sala. Tente novamente.",
+    uniqueRoomCodeError: "❌ Não foi possível criar um código de sala exclusivo. Tente novamente.",
+    roomCodeRequired: "❗ Digite o código da sala.",
+    yourMode: "Seu modo",
+    active: "Ativo",
+    gameLanguage: "Idioma do jogo",
+    gameLanguageHelp: "Você escreverá as respostas neste idioma, e o alfabeto adequado será escolhido automaticamente.",
+    diacriticsHelp: "Os acentos não são obrigatórios – respostas com ou sem acentos valem da mesma forma.",
+    likeApp: "Você gostou do aplicativo?",
+    haveRoomCode: "Tenho um código de sala",
+    roomCode: "Código da sala",
+    join: "Entrar",
+    privacyPolicy: "Política de Privacidade",
+    intro: "Crie uma sala, compartilhe o link com os outros jogadores e joguem juntos.",
+    billingNotReady: "O faturamento do Google Play ainda não está pronto.",
+    productUnavailable: "O produto não está disponível.",
+    purchaseWindowError: "Não foi possível abrir a janela de compra.",
+    purchaseStartError: "Não foi possível iniciar a compra.",
+    freeDescription: "Anúncios, até 3 jogadores. Categorias fixas: País, Cidade, Nome.",
+    premiumDescription: "Sem anúncios, até 5 jogadores. Categorias básicas fixas: País, Cidade, Nome, Animal, Objeto, Planta.",
+    superPremiumDescription: "Sem anúncios, jogadores ilimitados, seleção e ordem das categorias, limite de tempo opcional por rodada, número de rodadas e até 5 categorias personalizadas.",
+    superPremiumCategories: "Categorias: País, Cidade, Nome, Animal, Objeto, Planta, Filme / Série, Ator / Atriz, Cantor / Cantora / Banda, Esporte, Marca, Carro / Moto, Rio / Montanha, Profissão, Cor.",
+    creating: "Criando…",
+    createRoom: "Criar sala",
+    hideOtherModes: "Ocultar outros modos",
+    showOtherModes: "Mostrar outros modos",
+    includedInSuperPremium: "Incluído no Super Premium",
+    buyPremium: "Comprar Premium",
+    superPremiumPurchaseDescription: "Sem anúncios, jogadores ilimitados, todas as categorias básicas e adicionais incluídas, seleção e ordem das categorias, limite de tempo opcional por rodada, número de rodadas e até 5 categorias personalizadas.",
+    upgradeToSuperPremium: "Fazer upgrade para Super Premium",
+    upgradeToSuperPremiumFor: "Fazer upgrade para Super Premium por",
+    buySuperPremium: "Comprar Super Premium",
+    ratingUnavailable: "A avaliação estará disponível depois que o aplicativo for publicado no Google Play.",
+  },
 } as const;
 
 type HomeTextKey = keyof typeof HOME_TEXT.cs;
@@ -474,14 +528,17 @@ export default function Home() {
             ? "de"
             : deviceLanguage.startsWith("fr")
               ? "fr"
-              : "en";
+              : deviceLanguage.startsWith("pt")
+                ? "pt-BR"
+                : "en";
 
     const initialUiLanguage: UiLanguage =
       savedUiLanguage === "cs" ||
       savedUiLanguage === "en" ||
       savedUiLanguage === "es" ||
       savedUiLanguage === "de" ||
-      savedUiLanguage === "fr"
+      savedUiLanguage === "fr" ||
+      savedUiLanguage === "pt-BR"
         ? savedUiLanguage
         : detectedLanguage;
 
