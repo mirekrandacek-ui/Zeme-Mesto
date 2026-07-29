@@ -15,7 +15,7 @@ import {
 } from "@/lib/playBilling";
 
 type Tier = "free" | "premium" | "super_premium";
-type UiLanguage = "cs" | "en" | "es";
+type UiLanguage = "cs" | "en" | "es" | "de";
 type RoomLanguage =
   | UiLanguage
   | "pt-BR"
@@ -64,6 +64,7 @@ function tierLabel(tier: Tier) {
 const ENABLED_UI_LANGUAGES: readonly UiLanguage[] = [
   "en",
   "es",
+  "de",
   "cs",
 ];
 
@@ -137,6 +138,19 @@ const LANGUAGE_NAMES: Record<
     pl: "Polaco",
     it: "Italiano",
   },
+  de: {
+    cs: "Tschechisch",
+    en: "Englisch",
+    es: "Spanisch",
+    "pt-BR": "Brasilianisches Portugiesisch",
+    de: "Deutsch",
+    fr: "Französisch",
+    id: "Indonesisch",
+    tr: "Türkisch",
+    pl: "Polnisch",
+    it: "Italienisch",
+  },
+
 };
 
 function languageOptionLabel(
@@ -292,6 +306,57 @@ const HOME_TEXT = {
     ratingUnavailable:
       "La valoración estará disponible después del lanzamiento en Google Play.",
   },
+
+  de: {
+    appTitleFirstLine: "Stadt Land Fluss:",
+    appTitleSecondLine: "Wortspiel",
+    applicationLanguage: "App-Sprache",
+    creatingRoom: "Raum wird erstellt…",
+    roomCreateError:
+      "❌ Der Raum konnte nicht erstellt werden. Versuche es erneut.",
+    uniqueRoomCodeError:
+      "❌ Es konnte kein eindeutiger Raumcode erstellt werden. Versuche es erneut.",
+    roomCodeRequired: "❗ Gib einen Raumcode ein.",
+    yourMode: "Dein Modus",
+    active: "Aktiv",
+    gameLanguage: "Spielsprache",
+    gameLanguageHelp:
+      "Du schreibst die Antworten in dieser Sprache. Das passende Alphabet wird automatisch ausgewählt.",
+    diacriticsHelp:
+      "Sonderzeichen sind optional – Antworten mit und ohne sie werden gleich gewertet.",
+    likeApp: "Gefällt dir die App?",
+    haveRoomCode: "Ich habe einen Raumcode",
+    roomCode: "Raumcode",
+    join: "Beitreten",
+    privacyPolicy: "Datenschutzerklärung",
+    intro:
+      "Erstelle einen Raum, teile den Link mit den anderen Spielern und spielt gemeinsam.",
+    billingNotReady: "Google Play Billing ist noch nicht bereit.",
+    productUnavailable: "Das Produkt ist derzeit nicht verfügbar.",
+    purchaseWindowError: "Das Kauffenster konnte nicht geöffnet werden.",
+    purchaseStartError: "Der Kauf konnte nicht gestartet werden.",
+    freeDescription:
+      "Werbung, bis zu 3 Spieler. Feste Kategorien: Land, Stadt, Name.",
+    premiumDescription:
+      "Keine Werbung, bis zu 5 Spieler. Feste Grundkategorien: Land, Stadt, Name, Tier, Gegenstand, Pflanze.",
+    superPremiumDescription:
+      "Keine Werbung, unbegrenzt viele Spieler, Auswahl und Reihenfolge der Kategorien, optionales Zeitlimit pro Runde, Anzahl der Runden und bis zu 5 eigene Kategorien.",
+    superPremiumCategories:
+      "Kategorien: Land, Stadt, Name, Tier, Gegenstand, Pflanze, Film / Serie, Schauspieler / Schauspielerin, Sänger / Sängerin / Band, Sportart, Marke, Auto / Motorrad, Fluss / Berg, Beruf, Farbe.",
+    creating: "Wird erstellt…",
+    createRoom: "Raum erstellen",
+    hideOtherModes: "Weitere Modi ausblenden",
+    showOtherModes: "Weitere Modi anzeigen",
+    includedInSuperPremium: "In Super Premium enthalten",
+    buyPremium: "Premium kaufen",
+    superPremiumPurchaseDescription:
+      "Keine Werbung, unbegrenzt viele Spieler, alle Grund- und Zusatzkategorien enthalten, Auswahl und Reihenfolge der Kategorien, optionales Zeitlimit pro Runde, Anzahl der Runden und bis zu 5 eigene Kategorien.",
+    upgradeToSuperPremium: "Auf Super Premium upgraden",
+    upgradeToSuperPremiumFor: "Auf Super Premium upgraden für",
+    buySuperPremium: "Super Premium kaufen",
+    ratingUnavailable:
+      "Die Bewertung ist verfügbar, sobald die App bei Google Play veröffentlicht wurde.",
+  },
 } as const;
 
 type HomeTextKey = keyof typeof HOME_TEXT.cs;
@@ -351,10 +416,15 @@ export default function Home() {
         ? "cs"
         : deviceLanguage.startsWith("es")
           ? "es"
-          : "en";
+          : deviceLanguage.startsWith("de")
+            ? "de"
+            : "en";
 
     const initialUiLanguage: UiLanguage =
-      savedUiLanguage === "cs" || savedUiLanguage === "en" || savedUiLanguage === "es"
+      savedUiLanguage === "cs" ||
+      savedUiLanguage === "en" ||
+      savedUiLanguage === "es" ||
+      savedUiLanguage === "de"
         ? savedUiLanguage
         : detectedLanguage;
 
