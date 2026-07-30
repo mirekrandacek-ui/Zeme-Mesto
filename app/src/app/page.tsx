@@ -15,7 +15,7 @@ import {
 } from "@/lib/playBilling";
 
 type Tier = "free" | "premium" | "super_premium";
-type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl";
+type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
 type RoomLanguage =
   | UiLanguage
   | "pt-BR"
@@ -70,6 +70,7 @@ const ENABLED_UI_LANGUAGES: readonly UiLanguage[] = [
   "id",
   "tr",
   "pl",
+  "it",
   "cs",
 ];
 
@@ -219,6 +220,18 @@ const LANGUAGE_NAMES: Record<
     tr: "Turecki",
     pl: "Polski",
     it: "Włoski",
+  },
+  it: {
+    cs: "Ceco",
+    en: "Inglese",
+    es: "Spagnolo",
+    "pt-BR": "Portoghese brasiliano",
+    de: "Tedesco",
+    fr: "Francese",
+    id: "Indonesiano",
+    tr: "Turco",
+    pl: "Polacco",
+    it: "Italiano",
   },
 };
 
@@ -624,6 +637,46 @@ const HOME_TEXT = {
     ratingUnavailable: "Ocena będzie dostępna po wydaniu aplikacji w Google Play.",
   },
 
+  it: {
+    appTitleFirstLine: "Nomi Cose Città",
+    appTitleSecondLine: "Gioco di parole",
+    applicationLanguage: "Lingua dell’app",
+    creatingRoom: "creazione della stanza…",
+    roomCreateError: "❌ Impossibile creare la stanza. Riprova.",
+    uniqueRoomCodeError: "❌ Impossibile creare un codice stanza univoco. Riprova.",
+    roomCodeRequired: "❗ Inserisci il codice della stanza.",
+    yourMode: "La tua modalità",
+    active: "Attivo",
+    gameLanguage: "Lingua di gioco",
+    gameLanguageHelp: "In questa lingua inserirai le risposte; in base ad essa verrà scelto l’alfabeto.",
+    diacriticsHelp: "I segni diacritici non contano: le risposte con o senza accenti sono considerate equivalenti.",
+    likeApp: "Ti piace l’app?",
+    haveRoomCode: "Ho un codice stanza",
+    roomCode: "Codice stanza",
+    join: "Entra",
+    privacyPolicy: "Informativa sulla privacy",
+    intro: "Crea una stanza, condividi il link con gli altri giocatori e giocate insieme.",
+    billingNotReady: "I pagamenti Google Play non sono pronti.",
+    productUnavailable: "Il prodotto non è disponibile.",
+    purchaseWindowError: "Impossibile aprire la finestra di acquisto.",
+    purchaseStartError: "Impossibile avviare l’acquisto.",
+    freeDescription: "Pubblicità, massimo 3 giocatori. Categorie fisse: Nazione, Città, Nome.",
+    premiumDescription: "Senza pubblicità, massimo 5 giocatori. Categorie base fisse: Nazione, Città, Nome, Animale, Cosa, Pianta.",
+    superPremiumDescription: "Senza pubblicità, numero illimitato di giocatori, scelta e ordine delle categorie, limite di tempo facoltativo per turno, numero di turni e fino a 5 categorie personalizzate.",
+    superPremiumCategories: "Categorie: Nazione, Città, Nome, Animale, Cosa, Pianta, Film / Serie TV, Attore / Attrice, Cantante / Gruppo, Sport, Marca, Auto / Moto, Fiume / Montagna, Professione, Colore.",
+    creating: "Creazione…",
+    createRoom: "Crea stanza",
+    hideOtherModes: "Nascondi le altre modalità",
+    showOtherModes: "Mostra le altre modalità",
+    includedInSuperPremium: "Incluso in Super Premium",
+    buyPremium: "Acquista Premium",
+    superPremiumPurchaseDescription: "Senza pubblicità, numero illimitato di giocatori, tutte le categorie base ed estese incluse, scelta e ordine delle categorie, limite di tempo facoltativo per turno, numero di turni e fino a 5 categorie personalizzate.",
+    upgradeToSuperPremium: "Passa a Super Premium",
+    upgradeToSuperPremiumFor: "Passa a Super Premium per",
+    buySuperPremium: "Acquista Super Premium",
+    ratingUnavailable: "La valutazione sarà disponibile dopo la pubblicazione dell’app su Google Play.",
+  },
+
 } as const;
 
 type HomeTextKey = keyof typeof HOME_TEXT.cs;
@@ -695,7 +748,9 @@ export default function Home() {
                     ? "tr"
                     : deviceLanguage.startsWith("pl")
                       ? "pl"
-                      : "en";
+                      : deviceLanguage.startsWith("it")
+                        ? "it"
+                        : "en";
 
     const initialUiLanguage: UiLanguage =
       savedUiLanguage === "cs" ||
@@ -706,7 +761,8 @@ export default function Home() {
       savedUiLanguage === "pt-BR" ||
       savedUiLanguage === "id" ||
       savedUiLanguage === "tr" ||
-      savedUiLanguage === "pl"
+      savedUiLanguage === "pl" ||
+      savedUiLanguage === "it"
         ? savedUiLanguage
         : detectedLanguage;
 

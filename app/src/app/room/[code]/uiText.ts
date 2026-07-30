@@ -1,5 +1,5 @@
 type RoomTier = "free" | "premium" | "super_premium";
-export type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl";
+export type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
 export type GameLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
 
 export const UI_TEXT = {
@@ -870,6 +870,102 @@ export const UI_TEXT = {
     freeRewardUnlocked: "✅ Odblokowano 3 kolejne rundy.",
     freeLimitReachedMessage: "Osiągnięto limit wersji Free. Aby kontynuować, wybierz Premium albo reklamę z nagrodą.",
   },
+  it: {
+    room: "Stanza",
+    signedIn: "Accesso effettuato",
+    notSignedIn: "Accesso non effettuato",
+    bossRoom: "Hai pagato tu, quindi sei il capo di questa stanza!",
+    likeApp: "Ti piace l’app?",
+    ratingUnavailable: "La valutazione sarà disponibile dopo la pubblicazione dell’app su Google Play.",
+    newGame: "Nuova partita",
+    rules: "Regole",
+    copyLink: "Copia link",
+    share: "Condividi",
+    disconnect: "Disconnetti",
+    gameLanguage: "Lingua di gioco",
+    diacriticsOptional: "Le risposte sono valide anche senza segni diacritici.",
+    joinGame: "Unisciti alla partita",
+    yourName: "Il tuo nome",
+    join: "Entra",
+    startGame: "Avvia partita",
+    gameSettings: "Impostazioni di gioco",
+    timeLimit: "Limite di tempo",
+    noTimeLimit: "Nessun limite",
+    roundCount: "Numero di turni",
+    unlimitedRounds: "Illimitati",
+    roundsCountSuffix: "turni",
+    gameSettingsSaveErrorPrefix: "❌ impostazioni di gioco",
+    availableLetters: "Lettere disponibili",
+    players: "Giocatori",
+    waitingPlayers: "Giocatori in attesa",
+    roomCategories: "Categorie della stanza",
+    basicCategories: "Categorie base",
+    extendedCategories: "Categorie estese",
+    customCategories: "Categorie personalizzate",
+    categoryOrder: "Ordine delle categorie",
+    playing: "In gioco",
+    drawAgain: "Estrai di nuovo",
+    scoring: "Punteggio",
+    submitted: "Inviato",
+    playersAnswers: "Risposte dei giocatori",
+    player: "Giocatore",
+    totalPoints: "Punti totali",
+    round: "Turno",
+    myScoring: "Il mio punteggio",
+    submitScoring: "Invia punteggio",
+    newRound: "Nuovo turno",
+    finishGame: "Termina la partita e mostra i risultati finali",
+    finalResults: "Risultati finali",
+    position: "Posizione",
+    gameFinishedMessage: "✅ Partita terminata. Ecco i risultati finali.",
+    finishGameErrorPrefix: "❌ chiusura della partita",
+    letterDrawn: "✅ lettera estratta",
+    drawingAgain: "… nuova estrazione",
+    drawingNextRound: "… estrazione della lettera per il turno successivo",
+    drawingLetter: "… estrazione della lettera",
+    changePlayerAfterScoring: "Puoi cambiare giocatore solo dopo la fine del punteggio.",
+    changingPlayerErrorPrefix: "❌ cambio del giocatore",
+    previousPlayerRemoved: "ℹ️ Il giocatore precedente è stato rimosso da questo dispositivo. Inserisci un nome diverso.",
+    disconnectedRoomCleared: "✅ disconnesso, dati della stanza cancellati",
+    disconnected: "✅ disconnesso",
+    joinNameFirst: "❗ prima entra inserendo un nome",
+    savingScoresErrorPrefix: "❌ salvataggio dei punteggi",
+    stopAfterFields: "Puoi premere STOP dopo aver compilato tutti i campi.",
+    minTwoChars: "Ogni campo deve contenere almeno due caratteri.",
+    mustStartWithLetter: "Ogni risposta deve iniziare con la lettera estratta.",
+    waitingToJoin: "⏳ Sei in attesa di entrare. Parteciperai alla partita dal turno successivo.",
+    enterNameAnswers: "Inserisci il tuo nome qui sopra per inviare le risposte.",
+    statusSubmitted: " – inviato",
+    statusWaiting: " – in attesa",
+    hideRoundHistory: "Nascondi cronologia turni",
+    showRoundHistory: "Mostra cronologia turni",
+    noRoundScores: "Non è stato ancora salvato alcun punteggio del turno.",
+    zeroPoints: "0 punti",
+    fivePoints: "5 punti",
+    tenPoints: "10 punti",
+    minusFivePoints: "-5 punti",
+    minusTenPoints: "-10 punti",
+    scoringSubmitted: "✅ Punteggio inviato. I giocatori in attesa entreranno automaticamente dopo aver premuto Nuovo turno.",
+    enterNameScoring: "Inserisci il tuo nome qui sopra per inviare il punteggio.",
+    waitingForAllPlayers: "In attesa di tutti i giocatori…",
+    customCategoryPrefix: "Categoria personalizzata",
+    removeCustomCategory: "Rimuovi categoria personalizzata",
+    addCustomCategory: "+ Aggiungi categoria personalizzata",
+    maxCustomCategories: "È possibile aggiungere al massimo 5 categorie personalizzate.",
+    premiumLockedCategoryOfferIntro: "L’acquisto di una categoria estesa sblocca automaticamente la possibilità di scegliere il numero e l’ordine delle categorie con cui vuoi giocare.",
+    superPremiumUpsellBefore: "Oppure acquista",
+    superPremiumLinkText: "Super Premium",
+    superPremiumUpsellAfter: "e otterrai la scelta del numero e dell’ordine delle categorie, tutte le categorie estese e 5 categorie personalizzate.",
+    changePlayerOnDevice: "Cambia giocatore su questo dispositivo",
+    waitingPlayerNextRound: "entrerà dal turno successivo",
+    freeLimitTitle: "Limite della versione Free raggiunto",
+    freeLimitText: "La versione Free include 3 turni. Per continuare, passa a Premium oppure guarda un annuncio e sblocca altri 3 turni.",
+    freeUpgradeButton: "Passa a Premium",
+    freeRewardButton: "Guarda un annuncio e sblocca altri 3 turni",
+    backHome: "Torna alla home page",
+    freeRewardUnlocked: "✅ Sbloccati altri 3 turni.",
+    freeLimitReachedMessage: "Limite della versione Free raggiunto. Per continuare, scegli Premium oppure un annuncio con premio.",
+  },
 } as const;
 
 export type UiTextKey = keyof typeof UI_TEXT.cs;
@@ -947,6 +1043,12 @@ export const UI_RULES = {
     scoringTitle: "Punktacja",
     scoring: "Po naciśnięciu STOP wszyscy widzą odpowiedzi pozostałych graczy i przyznają punkty za każdą odpowiedź. 10 punktów za unikalną odpowiedź, 5 punktów za powtórzoną odpowiedź, 0 punktów za brak odpowiedzi. Za nieprawidłową odpowiedź można również przyznać punkty ujemne.",
   },
+  it: {
+    join: "L’organizzatore condivide il link della stanza usando il pulsante Copia link o Condividi. Gli altri giocatori aprono il link, inseriscono il proprio nome ed entrano nella stessa stanza.",
+    play: "Tutti giocano con la lettera estratta e inseriscono una risposta per ogni categoria. Dopo aver compilato tutti i campi, un giocatore può premere STOP. Ogni risposta deve iniziare con la lettera estratta e contenere almeno due caratteri. È possibile usare INVIO per passare al campo successivo e per premere lo STOP finale.",
+    scoringTitle: "Punteggio",
+    scoring: "Dopo aver premuto STOP, tutti possono vedere le risposte degli altri giocatori e assegnare i punti a ciascuna risposta. 10 punti per una risposta unica, 5 punti per una risposta ripetuta, 0 punti per una risposta vuota. È possibile assegnare anche punti negativi a una risposta non valida.",
+  },
 } as const;
 
 const RULES = UI_RULES as unknown as Record<string, typeof UI_RULES.cs>;
@@ -982,6 +1084,8 @@ const ROOM_FULL_MESSAGES: Record<
 
   pl: (maxPlayers) =>
     `❌ Pokój jest pełny. Wersja Free pozwala na maksymalnie ${maxPlayers} graczy. Kup Premium, aby grać w większym gronie. Więcej graczy, więcej zabawy! :-)`,
+  it: (maxPlayers) =>
+    `❌ La stanza è piena. La versione Free consente un massimo di ${maxPlayers} giocatori. Acquista Premium per giocare con più persone. Più giocatori, più divertimento! :-)`,
 };
 
 const STOP_PRESSED_MESSAGES: Record<
@@ -1002,6 +1106,8 @@ const STOP_PRESSED_MESSAGES: Record<
   tr: (name) => `✅ ${name} STOP'a bastı`,
 
   pl: (name) => `✅ ${name} nacisnął STOP`,
+
+  it: (name) => `✅ ${name} ha premuto STOP`,
 
 };
 
@@ -1074,6 +1180,14 @@ const CATEGORY_HELP_TEXT = {
       "Premium: podstawowe kategorie są stałe. Kategorie rozszerzone są zablokowane. Zakup co najmniej jednej kategorii rozszerzonej odblokowuje wybór i kolejność kategorii.",
     superPremiumOrganizer:
       "Super Premium: wybierz kategorie podstawowe i rozszerzone, zmień ich kolejność i dodaj własne kategorie.",
+  },
+  it: {
+    player:
+      "L’organizzatore sceglie le categorie della stanza. Puoi vedere la selezione attuale e suggerire modifiche.",
+    premiumOrganizer:
+      "Premium: le categorie base sono fisse. Le categorie estese sono bloccate. L’acquisto di almeno una categoria estesa sblocca la scelta e l’ordine delle categorie.",
+    superPremiumOrganizer:
+      "Super Premium: scegli le categorie base ed estese, modificane l’ordine e aggiungi categorie personalizzate.",
   },
 };
 
@@ -1208,6 +1322,18 @@ const GAME_LANGUAGE_NAMES: Record<
     pl: "Polski",
     it: "Włoski",
   },
+  it: {
+    cs: "Ceco",
+    en: "Inglese",
+    es: "Spagnolo",
+    de: "Tedesco",
+    fr: "Francese",
+    "pt-BR": "Portoghese brasiliano",
+    id: "Indonesiano",
+    tr: "Turco",
+    pl: "Polacco",
+    it: "Italiano",
+  },
 };
 
 const GAME_LANGUAGE_INSTRUCTIONS: Record<
@@ -1326,6 +1452,18 @@ const GAME_LANGUAGE_INSTRUCTIONS: Record<
     tr: "Wszystkie odpowiedzi wpisuj po turecku.",
     pl: "Wszystkie odpowiedzi wpisuj po polsku.",
     it: "Wszystkie odpowiedzi wpisuj po włosku.",
+  },
+  it: {
+    cs: "Scrivi tutte le risposte in ceco.",
+    en: "Scrivi tutte le risposte in inglese.",
+    es: "Scrivi tutte le risposte in spagnolo.",
+    de: "Scrivi tutte le risposte in tedesco.",
+    fr: "Scrivi tutte le risposte in francese.",
+    "pt-BR": "Scrivi tutte le risposte in portoghese brasiliano.",
+    id: "Scrivi tutte le risposte in indonesiano.",
+    tr: "Scrivi tutte le risposte in turco.",
+    pl: "Scrivi tutte le risposte in polacco.",
+    it: "Scrivi tutte le risposte in italiano.",
   },
 };
 
