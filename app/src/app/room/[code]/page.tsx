@@ -1,5 +1,6 @@
 "use client";
 
+import { Share } from "@capacitor/share";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
@@ -1000,8 +1001,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const url = getRoomUrl();
 
     try {
-      if (navigator.share) {
-        await navigator.share({
+      const shareSupport = await Share.canShare();
+
+      if (shareSupport.value) {
+        await Share.share({
           title: "Země Město",
           text: uiMessage({ cs: `Připoj se do místnosti ${code.toUpperCase()}`, en: `Join room ${code.toUpperCase()}`, es: `Únete a la sala ${code.toUpperCase()}` , de: `Dem Raum ${code.toUpperCase()} beitreten`, fr: `Rejoindre la salle ${code.toUpperCase()}`, "pt-BR": `Entrar na sala ${code.toUpperCase()}`, id: `Gabung ke ruang ${code.toUpperCase()}`, tr: `Odaya katıl: ${code.toUpperCase()}`, pl: `Dołącz do pokoju ${code.toUpperCase()}`, it: `Entra nella stanza ${code.toUpperCase()}`}),
           url,
