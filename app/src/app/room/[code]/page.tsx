@@ -638,7 +638,8 @@ export default function RoomPage() {
       urlUiLanguage === "fr" ||
       urlUiLanguage === "pt-BR" ||
       urlUiLanguage === "id" ||
-      urlUiLanguage === "tr"
+      urlUiLanguage === "tr" ||
+      urlUiLanguage === "pl"
     ) {
       setUiLanguage(urlUiLanguage);
       window.localStorage.setItem("zm_uiLanguage", urlUiLanguage);
@@ -653,7 +654,8 @@ export default function RoomPage() {
       savedUiLanguage === "fr" ||
       savedUiLanguage === "pt-BR" ||
       savedUiLanguage === "id" ||
-      savedUiLanguage === "tr"
+      savedUiLanguage === "tr" ||
+      savedUiLanguage === "pl"
     ) {
       setUiLanguage(savedUiLanguage);
       return;
@@ -676,7 +678,9 @@ export default function RoomPage() {
                   ? "id"
                   : deviceLanguage.startsWith("tr")
                     ? "tr"
-                    : "en"
+                    : deviceLanguage.startsWith("pl")
+                      ? "pl"
+                      : "en"
     );
   }, []);
 
@@ -748,7 +752,7 @@ export default function RoomPage() {
           if (error) {
             console.error("Premium room update failed:", error);
             setMsg(
-              uiMessage({ cs: "❌ Premium se nepodařilo aktivovat.", en: "❌ Premium could not be activated.", es: "❌ No se pudo activar Premium." , de: "❌ Premium konnte nicht aktiviert werden.", fr: "❌ Impossible d’activer Premium.", "pt-BR": "❌ Não foi possível ativar o Premium.", id: "❌ Premium tidak dapat diaktifkan.", tr: "❌ Premium etkinleştirilemedi."})
+              uiMessage({ cs: "❌ Premium se nepodařilo aktivovat.", en: "❌ Premium could not be activated.", es: "❌ No se pudo activar Premium." , de: "❌ Premium konnte nicht aktiviert werden.", fr: "❌ Impossible d’activer Premium.", "pt-BR": "❌ Não foi possível ativar o Premium.", id: "❌ Premium tidak dapat diaktifkan.", tr: "❌ Premium etkinleştirilemedi.", pl: "❌ Nie udało się aktywować Premium."})
             );
             return;
           }
@@ -788,7 +792,7 @@ export default function RoomPage() {
           if (error) {
             console.error("Super Premium room update failed:", error);
             setMsg(
-              uiMessage({ cs: "❌ Super Premium se nepodařilo aktivovat.", en: "❌ Super Premium could not be activated.", es: "❌ No se pudo activar Super Premium." , de: "❌ Super Premium konnte nicht aktiviert werden.", fr: "❌ Impossible d’activer Super Premium.", "pt-BR": "❌ Não foi possível ativar o Super Premium.", id: "❌ Super Premium tidak dapat diaktifkan.", tr: "❌ Super Premium etkinleştirilemedi."})
+              uiMessage({ cs: "❌ Super Premium se nepodařilo aktivovat.", en: "❌ Super Premium could not be activated.", es: "❌ No se pudo activar Super Premium." , de: "❌ Super Premium konnte nicht aktiviert werden.", fr: "❌ Impossible d’activer Super Premium.", "pt-BR": "❌ Não foi possível ativar o Super Premium.", id: "❌ Super Premium tidak dapat diaktifkan.", tr: "❌ Super Premium etkinleştirilemedi.", pl: "❌ Nie udało się aktywować Super Premium."})
             );
             return;
           }
@@ -814,7 +818,7 @@ export default function RoomPage() {
       setCategoryPurchaseBusy(null);
       setPremiumLockedOfferCategory(null);
       setMsg(
-        uiMessage({ cs: "Kategorie byla odemčena.", en: "The category has been unlocked.", es: "La categoría ha sido desbloqueada." , de: "Die Kategorie wurde freigeschaltet.", fr: "La catégorie a été déverrouillée.", "pt-BR": "A categoria foi desbloqueada.", id: "Kategori telah dibuka.", tr: "Kategorinin kilidi açıldı."})
+        uiMessage({ cs: "Kategorie byla odemčena.", en: "The category has been unlocked.", es: "La categoría ha sido desbloqueada." , de: "Die Kategorie wurde freigeschaltet.", fr: "La catégorie a été déverrouillée.", "pt-BR": "A categoria foi desbloqueada.", id: "Kategori telah dibuka.", tr: "Kategorinin kilidi açıldı.", pl: "Kategoria została odblokowana."})
       );
     }).then((handle) => {
       if (!active) {
@@ -979,11 +983,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     try {
       await navigator.clipboard.writeText(url);
       setMsg(
-        uiMessage({ cs: "✅ Odkaz zkopírován.", en: "✅ Link copied.", es: "✅ Enlace copiado." , de: "✅ Link kopiert.", fr: "✅ Lien copié.", "pt-BR": "✅ Link copiado.", id: "✅ Tautan disalin.", tr: "✅ Bağlantı kopyalandı."})
+        uiMessage({ cs: "✅ Odkaz zkopírován.", en: "✅ Link copied.", es: "✅ Enlace copiado." , de: "✅ Link kopiert.", fr: "✅ Lien copié.", "pt-BR": "✅ Link copiado.", id: "✅ Tautan disalin.", tr: "✅ Bağlantı kopyalandı.", pl: "✅ Link skopiowany."})
       );
     } catch {
       setMsg(
-        uiMessage({ cs: "❌ Odkaz se nepodařilo zkopírovat.", en: "❌ The link could not be copied.", es: "❌ No se pudo copiar el enlace." , de: "❌ Der Link konnte nicht kopiert werden.", fr: "❌ Impossible de copier le lien.", "pt-BR": "❌ Não foi possível copiar o link.", id: "❌ Tautan tidak dapat disalin.", tr: "❌ Bağlantı kopyalanamadı."})
+        uiMessage({ cs: "❌ Odkaz se nepodařilo zkopírovat.", en: "❌ The link could not be copied.", es: "❌ No se pudo copiar el enlace." , de: "❌ Der Link konnte nicht kopiert werden.", fr: "❌ Impossible de copier le lien.", "pt-BR": "❌ Não foi possível copiar o link.", id: "❌ Tautan tidak dapat disalin.", tr: "❌ Bağlantı kopyalanamadı.", pl: "❌ Nie udało się skopiować linku."})
       );
     }
   }
@@ -995,21 +999,21 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       if (navigator.share) {
         await navigator.share({
           title: "Země Město",
-          text: uiMessage({ cs: `Připoj se do místnosti ${code.toUpperCase()}`, en: `Join room ${code.toUpperCase()}`, es: `Únete a la sala ${code.toUpperCase()}` , de: `Dem Raum ${code.toUpperCase()} beitreten`, fr: `Rejoindre la salle ${code.toUpperCase()}`, "pt-BR": `Entrar na sala ${code.toUpperCase()}`, id: `Gabung ke ruang ${code.toUpperCase()}`, tr: `Odaya katıl: ${code.toUpperCase()}`}),
+          text: uiMessage({ cs: `Připoj se do místnosti ${code.toUpperCase()}`, en: `Join room ${code.toUpperCase()}`, es: `Únete a la sala ${code.toUpperCase()}` , de: `Dem Raum ${code.toUpperCase()} beitreten`, fr: `Rejoindre la salle ${code.toUpperCase()}`, "pt-BR": `Entrar na sala ${code.toUpperCase()}`, id: `Gabung ke ruang ${code.toUpperCase()}`, tr: `Odaya katıl: ${code.toUpperCase()}`, pl: `Dołącz do pokoju ${code.toUpperCase()}`}),
           url,
         });
         setMsg(
-          uiMessage({ cs: "✅ Sdílení otevřeno.", en: "✅ Sharing opened.", es: "✅ Se abrió la opción de compartir." , de: "✅ Teilen geöffnet.", fr: "✅ Partage ouvert.", "pt-BR": "✅ Compartilhamento aberto.", id: "✅ Menu berbagi dibuka.", tr: "✅ Paylaşım menüsü açıldı."})
+          uiMessage({ cs: "✅ Sdílení otevřeno.", en: "✅ Sharing opened.", es: "✅ Se abrió la opción de compartir." , de: "✅ Teilen geöffnet.", fr: "✅ Partage ouvert.", "pt-BR": "✅ Compartilhamento aberto.", id: "✅ Menu berbagi dibuka.", tr: "✅ Paylaşım menüsü açıldı.", pl: "✅ Otworzono udostępnianie."})
         );
       } else {
         await navigator.clipboard.writeText(url);
         setMsg(
-          uiMessage({ cs: "✅ Sdílení není dostupné, odkaz byl zkopírován.", en: "✅ Sharing is unavailable, so the link was copied.", es: "✅ La opción de compartir no está disponible; el enlace fue copiado." , de: "✅ Teilen ist nicht verfügbar, daher wurde der Link kopiert.", fr: "✅ Le partage n’est pas disponible, le lien a donc été copié.", "pt-BR": "✅ O compartilhamento não está disponível, então o link foi copiado.", id: "✅ Fitur berbagi tidak tersedia, jadi tautan telah disalin.", tr: "✅ Paylaşım özelliği kullanılamadığı için bağlantı kopyalandı."})
+          uiMessage({ cs: "✅ Sdílení není dostupné, odkaz byl zkopírován.", en: "✅ Sharing is unavailable, so the link was copied.", es: "✅ La opción de compartir no está disponible; el enlace fue copiado." , de: "✅ Teilen ist nicht verfügbar, daher wurde der Link kopiert.", fr: "✅ Le partage n’est pas disponible, le lien a donc été copié.", "pt-BR": "✅ O compartilhamento não está disponível, então o link foi copiado.", id: "✅ Fitur berbagi tidak tersedia, jadi tautan telah disalin.", tr: "✅ Paylaşım özelliği kullanılamadığı için bağlantı kopyalandı.", pl: "✅ Udostępnianie jest niedostępne, więc link został skopiowany."})
         );
       }
     } catch {
       setMsg(
-        uiMessage({ cs: "ℹ️ Sdílení bylo zrušeno.", en: "ℹ️ Sharing was cancelled.", es: "ℹ️ Se canceló la acción de compartir." , de: "ℹ️ Teilen wurde abgebrochen.", fr: "ℹ️ Partage annulé.", "pt-BR": "ℹ️ Compartilhamento cancelado.", id: "ℹ️ Berbagi dibatalkan.", tr: "ℹ️ Paylaşım iptal edildi."})
+        uiMessage({ cs: "ℹ️ Sdílení bylo zrušeno.", en: "ℹ️ Sharing was cancelled.", es: "ℹ️ Se canceló la acción de compartir." , de: "ℹ️ Teilen wurde abgebrochen.", fr: "ℹ️ Partage annulé.", "pt-BR": "ℹ️ Compartilhamento cancelado.", id: "ℹ️ Berbagi dibatalkan.", tr: "ℹ️ Paylaşım iptal edildi.", pl: "ℹ️ Udostępnianie zostało anulowane."})
       );
     }
   }
@@ -1192,7 +1196,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       console.error("Room loading failed:", error);
       setRoomId(null);
       setMsg(
-        uiMessage({ cs: "❌ Místnost nebyla nalezena.", en: "❌ Room not found.", es: "❌ Sala no encontrada." , de: "❌ Raum nicht gefunden.", fr: "❌ Salle introuvable.", "pt-BR": "❌ Sala não encontrada.", id: "❌ Ruang tidak ditemukan.", tr: "❌ Oda bulunamadı."})
+        uiMessage({ cs: "❌ Místnost nebyla nalezena.", en: "❌ Room not found.", es: "❌ Sala no encontrada." , de: "❌ Raum nicht gefunden.", fr: "❌ Salle introuvable.", "pt-BR": "❌ Sala não encontrada.", id: "❌ Ruang tidak ditemukan.", tr: "❌ Oda bulunamadı.", pl: "❌ Nie znaleziono pokoju."})
       );
       return null;
     }
@@ -1265,7 +1269,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error) {
       console.error("Players loading failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Hráče se nepodařilo načíst.", en: "❌ The players could not be loaded.", es: "❌ No se pudieron cargar los jugadores." , de: "❌ Die Spieler konnten nicht geladen werden.", fr: "❌ Impossible de charger les joueurs.", "pt-BR": "❌ Não foi possível carregar os jogadores.", id: "❌ Data pemain tidak dapat dimuat.", tr: "❌ Oyuncu verileri yüklenemedi."})
+        uiMessage({ cs: "❌ Hráče se nepodařilo načíst.", en: "❌ The players could not be loaded.", es: "❌ No se pudieron cargar los jugadores." , de: "❌ Die Spieler konnten nicht geladen werden.", fr: "❌ Impossible de charger les joueurs.", "pt-BR": "❌ Não foi possível carregar os jogadores.", id: "❌ Data pemain tidak dapat dimuat.", tr: "❌ Oyuncu verileri yüklenemedi.", pl: "❌ Nie udało się wczytać graczy."})
       );
       return;
     }
@@ -1298,7 +1302,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error) {
       console.error("Round loading failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Kolo se nepodařilo načíst.", en: "❌ The round could not be loaded.", es: "❌ No se pudo cargar la ronda." , de: "❌ Die Runde konnte nicht geladen werden.", fr: "❌ Impossible de charger la manche.", "pt-BR": "❌ Não foi possível carregar a rodada.", id: "❌ Ronde tidak dapat dimuat.", tr: "❌ Turlar yüklenemedi."})
+        uiMessage({ cs: "❌ Kolo se nepodařilo načíst.", en: "❌ The round could not be loaded.", es: "❌ No se pudo cargar la ronda." , de: "❌ Die Runde konnte nicht geladen werden.", fr: "❌ Impossible de charger la manche.", "pt-BR": "❌ Não foi possível carregar a rodada.", id: "❌ Ronde tidak dapat dimuat.", tr: "❌ Turlar yüklenemedi.", pl: "❌ Nie udało się wczytać rundy."})
       );
       return;
     }
@@ -1317,7 +1321,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error) {
       console.error("Answers loading failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Odpovědi se nepodařilo načíst.", en: "❌ The answers could not be loaded.", es: "❌ No se pudieron cargar las respuestas." , de: "❌ Die Antworten konnten nicht geladen werden.", fr: "❌ Impossible de charger les réponses.", "pt-BR": "❌ Não foi possível carregar as respostas.", id: "❌ Jawaban tidak dapat dimuat.", tr: "❌ Yanıtlar yüklenemedi."})
+        uiMessage({ cs: "❌ Odpovědi se nepodařilo načíst.", en: "❌ The answers could not be loaded.", es: "❌ No se pudieron cargar las respuestas." , de: "❌ Die Antworten konnten nicht geladen werden.", fr: "❌ Impossible de charger les réponses.", "pt-BR": "❌ Não foi possível carregar as respostas.", id: "❌ Jawaban tidak dapat dimuat.", tr: "❌ Yanıtlar yüklenemedi.", pl: "❌ Nie udało się wczytać odpowiedzi."})
       );
       return;
     }
@@ -1335,7 +1339,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error) {
       console.error("Scores loading failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Body se nepodařilo načíst.", en: "❌ The scores could not be loaded.", es: "❌ No se pudieron cargar los puntos." , de: "❌ Die Punkte konnten nicht geladen werden.", fr: "❌ Impossible de charger les scores.", "pt-BR": "❌ Não foi possível carregar as pontuações.", id: "❌ Poin tidak dapat dimuat.", tr: "❌ Puanlar yüklenemedi."})
+        uiMessage({ cs: "❌ Body se nepodařilo načíst.", en: "❌ The scores could not be loaded.", es: "❌ No se pudieron cargar los puntos." , de: "❌ Die Punkte konnten nicht geladen werden.", fr: "❌ Impossible de charger les scores.", "pt-BR": "❌ Não foi possível carregar as pontuações.", id: "❌ Poin tidak dapat dimuat.", tr: "❌ Puanlar yüklenemedi.", pl: "❌ Nie udało się wczytać punktów."})
       );
       return;
     }
@@ -1373,7 +1377,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error) {
       console.error("Total scores loading failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Celkové výsledky se nepodařilo načíst.", en: "❌ The overall scores could not be loaded.", es: "❌ No se pudieron cargar los resultados generales." , de: "❌ Die Gesamtpunktzahlen konnten nicht geladen werden.", fr: "❌ Impossible de charger les scores totaux.", "pt-BR": "❌ Não foi possível carregar as pontuações totais.", id: "❌ Total poin tidak dapat dimuat.", tr: "❌ Toplam puanlar yüklenemedi."})
+        uiMessage({ cs: "❌ Celkové výsledky se nepodařilo načíst.", en: "❌ The overall scores could not be loaded.", es: "❌ No se pudieron cargar los resultados generales." , de: "❌ Die Gesamtpunktzahlen konnten nicht geladen werden.", fr: "❌ Impossible de charger les scores totaux.", "pt-BR": "❌ Não foi possível carregar as pontuações totais.", id: "❌ Total poin tidak dapat dimuat.", tr: "❌ Toplam puanlar yüklenemedi.", pl: "❌ Nie udało się wczytać wyników łącznych."})
       );
       return;
     }
@@ -1559,7 +1563,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const trimmed = nameInput.trim();
     if (!trimmed) {
       setMsg(
-        uiMessage({ cs: "❗ Napiš jméno.", en: "❗ Enter your name.", es: "❗ Escribe tu nombre." , de: "❗ Gib deinen Namen ein.", fr: "❗ Saisis ton nom.", "pt-BR": "❗ Digite seu nome.", id: "❗ Masukkan nama kamu.", tr: "❗ Adını gir."})
+        uiMessage({ cs: "❗ Napiš jméno.", en: "❗ Enter your name.", es: "❗ Escribe tu nombre." , de: "❗ Gib deinen Namen ein.", fr: "❗ Saisis ton nom.", "pt-BR": "❗ Digite seu nome.", id: "❗ Masukkan nama kamu.", tr: "❗ Adını gir.", pl: "❗ Wpisz swoje imię."})
       );
       return;
     }
@@ -1612,7 +1616,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           setNameInput("");
           setMsg(
             existingPlayer.status === "waiting"
-              ? uiMessage({ cs: `⏳ ${trimmed} čeká na připojení po aktuálním kole.`, en: `⏳ ${trimmed} will join after the current round.`, es: `⏳ ${trimmed} se unirá después de la ronda actual.` , de: `⏳ ${trimmed} tritt nach der aktuellen Runde bei.`, fr: `⏳ ${trimmed} rejoindra la partie après la manche en cours.`, "pt-BR": `⏳ ${trimmed} entrará depois da rodada atual.`, id: `⏳ ${trimmed} akan bergabung setelah ronde saat ini.`, tr: `⏳ ${trimmed} mevcut turdan sonra katılacak.`})
+              ? uiMessage({ cs: `⏳ ${trimmed} čeká na připojení po aktuálním kole.`, en: `⏳ ${trimmed} will join after the current round.`, es: `⏳ ${trimmed} se unirá después de la ronda actual.` , de: `⏳ ${trimmed} tritt nach der aktuellen Runde bei.`, fr: `⏳ ${trimmed} rejoindra la partie après la manche en cours.`, "pt-BR": `⏳ ${trimmed} entrará depois da rodada atual.`, id: `⏳ ${trimmed} akan bergabung setelah ronde saat ini.`, tr: `⏳ ${trimmed} mevcut turdan sonra katılacak.`, pl: `⏳ ${trimmed} dołączy po zakończeniu bieżącej rundy.`})
               : ""
           );
           await loadPlayers(roomId);
@@ -1620,14 +1624,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         }
 
         setMsg(
-          uiMessage({ cs: "❌ Tohle jméno už v místnosti existuje. Zadej jiné.", en: "❌ This name already exists in the room. Choose another one.", es: "❌ Este nombre ya existe en la sala. Elige otro." , de: "❌ Dieser Name existiert bereits im Raum. Wähle einen anderen.", fr: "❌ Ce nom existe déjà dans la salle. Choisis-en un autre.", "pt-BR": "❌ Este nome já existe na sala. Escolha outro.", id: "❌ Nama ini sudah digunakan di dalam ruang. Pilih nama lain.", tr: "❌ Bu ad odada zaten kullanılıyor. Başka bir ad seç."})
+          uiMessage({ cs: "❌ Tohle jméno už v místnosti existuje. Zadej jiné.", en: "❌ This name already exists in the room. Choose another one.", es: "❌ Este nombre ya existe en la sala. Elige otro." , de: "❌ Dieser Name existiert bereits im Raum. Wähle einen anderen.", fr: "❌ Ce nom existe déjà dans la salle. Choisis-en un autre.", "pt-BR": "❌ Este nome já existe na sala. Escolha outro.", id: "❌ Nama ini sudah digunakan di dalam ruang. Pilih nama lain.", tr: "❌ Bu ad odada zaten kullanılıyor. Başka bir ad seç.", pl: "❌ To imię już istnieje w pokoju. Wybierz inne."})
         );
         return;
       }
 
       console.error("Player joining failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Připojení do místnosti se nepodařilo.", en: "❌ Could not join the room.", es: "❌ No se pudo entrar en la sala." , de: "❌ Der Beitritt zum Raum ist fehlgeschlagen.", fr: "❌ Impossible de rejoindre la salle.", "pt-BR": "❌ Não foi possível entrar na sala.", id: "❌ Tidak dapat bergabung ke ruang.", tr: "❌ Odaya katılınamadı."})
+        uiMessage({ cs: "❌ Připojení do místnosti se nepodařilo.", en: "❌ Could not join the room.", es: "❌ No se pudo entrar en la sala." , de: "❌ Der Beitritt zum Raum ist fehlgeschlagen.", fr: "❌ Impossible de rejoindre la salle.", "pt-BR": "❌ Não foi possível entrar na sala.", id: "❌ Tidak dapat bergabung ke ruang.", tr: "❌ Odaya katılınamadı.", pl: "❌ Nie udało się dołączyć do pokoju."})
       );
       return;
     }
@@ -1642,7 +1646,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setNameInput("");
     setMsg(
       newPlayer.status === "waiting"
-        ? uiMessage({ cs: `⏳ ${trimmed} čeká na připojení po aktuálním kole.`, en: `⏳ ${trimmed} will join after the current round.`, es: `⏳ ${trimmed} se unirá después de la ronda actual.` , de: `⏳ ${trimmed} tritt nach der aktuellen Runde bei.`, fr: `⏳ ${trimmed} rejoindra la partie après la manche en cours.`, "pt-BR": `⏳ ${trimmed} entrará depois da rodada atual.`, id: `⏳ ${trimmed} akan bergabung setelah ronde saat ini.`, tr: `⏳ ${trimmed} mevcut turdan sonra katılacak.`})
+        ? uiMessage({ cs: `⏳ ${trimmed} čeká na připojení po aktuálním kole.`, en: `⏳ ${trimmed} will join after the current round.`, es: `⏳ ${trimmed} se unirá después de la ronda actual.` , de: `⏳ ${trimmed} tritt nach der aktuellen Runde bei.`, fr: `⏳ ${trimmed} rejoindra la partie après la manche en cours.`, "pt-BR": `⏳ ${trimmed} entrará depois da rodada atual.`, id: `⏳ ${trimmed} akan bergabung setelah ronde saat ini.`, tr: `⏳ ${trimmed} mevcut turdan sonra katılacak.`, pl: `⏳ ${trimmed} dołączy po zakończeniu bieżącej rundy.`})
         : ""
     );
     await loadPlayers(roomId);
@@ -1706,7 +1710,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error) {
       console.error("Player disconnect failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Odpojení se nepodařilo.", en: "❌ Could not leave the room.", es: "❌ No se pudo salir de la sala." , de: "❌ Der Raum konnte nicht verlassen werden.", fr: "❌ Impossible de quitter la salle.", "pt-BR": "❌ Não foi possível sair da sala.", id: "❌ Tidak dapat keluar dari ruang.", tr: "❌ Odadan çıkılamadı."})
+        uiMessage({ cs: "❌ Odpojení se nepodařilo.", en: "❌ Could not leave the room.", es: "❌ No se pudo salir de la sala." , de: "❌ Der Raum konnte nicht verlassen werden.", fr: "❌ Impossible de quitter la salle.", "pt-BR": "❌ Não foi possível sair da sala.", id: "❌ Tidak dapat keluar dari ruang.", tr: "❌ Odadan çıkılamadı.", pl: "❌ Nie udało się opuścić pokoju."})
       );
       return;
     }
@@ -1748,7 +1752,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error || !data) {
       console.error("Round creation failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Nové kolo se nepodařilo vytvořit.", en: "❌ The new round could not be created.", es: "❌ No se pudo crear la nueva ronda." , de: "❌ Die neue Runde konnte nicht erstellt werden.", fr: "❌ Impossible de créer la nouvelle manche.", "pt-BR": "❌ Não foi possível criar a nova rodada.", id: "❌ Ronde baru tidak dapat dibuat.", tr: "❌ Yeni tur oluşturulamadı."})
+        uiMessage({ cs: "❌ Nové kolo se nepodařilo vytvořit.", en: "❌ The new round could not be created.", es: "❌ No se pudo crear la nueva ronda." , de: "❌ Die neue Runde konnte nicht erstellt werden.", fr: "❌ Impossible de créer la nouvelle manche.", "pt-BR": "❌ Não foi possível criar a nova rodada.", id: "❌ Ronde baru tidak dapat dibuat.", tr: "❌ Yeni tur oluşturulamadı.", pl: "❌ Nie udało się utworzyć nowej rundy."})
       );
       return null;
     }
@@ -1792,7 +1796,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (roomTier === "premium" && !premiumCategorySelectionUnlocked) {
       setMsg(
-        uiMessage({ cs: "Premium má základní kategorie pevně dané. Výběr se odemkne po koupi alespoň jedné rozšířené kategorie.", en: "Premium has fixed basic categories. Category selection unlocks after purchasing at least one extended category.", es: "Premium tiene categorías básicas fijas. La selección se desbloquea al comprar al menos una categoría ampliada." , de: "Premium hat feste Grundkategorien. Die Kategorieauswahl wird nach dem Kauf mindestens einer Zusatzkategorie freigeschaltet.", fr: "Premium propose des catégories de base fixes. La sélection des catégories se déverrouille après l’achat d’au moins une catégorie supplémentaire.", "pt-BR": "O Premium tem categorias básicas fixas. A seleção de categorias é liberada após a compra de pelo menos uma categoria adicional.", id: "Premium memiliki kategori dasar tetap. Pemilihan kategori akan terbuka setelah membeli setidaknya satu kategori tambahan.", tr: "Premium'da temel kategoriler sabittir. En az bir ek kategori satın alındığında kategori seçimi açılır."})
+        uiMessage({ cs: "Premium má základní kategorie pevně dané. Výběr se odemkne po koupi alespoň jedné rozšířené kategorie.", en: "Premium has fixed basic categories. Category selection unlocks after purchasing at least one extended category.", es: "Premium tiene categorías básicas fijas. La selección se desbloquea al comprar al menos una categoría ampliada." , de: "Premium hat feste Grundkategorien. Die Kategorieauswahl wird nach dem Kauf mindestens einer Zusatzkategorie freigeschaltet.", fr: "Premium propose des catégories de base fixes. La sélection des catégories se déverrouille après l’achat d’au moins une catégorie supplémentaire.", "pt-BR": "O Premium tem categorias básicas fixas. A seleção de categorias é liberada após a compra de pelo menos uma categoria adicional.", id: "Premium memiliki kategori dasar tetap. Pemilihan kategori akan terbuka setelah membeli setidaknya satu kategori tambahan.", tr: "Premium'da temel kategoriler sabittir. En az bir ek kategori satın alındığında kategori seçimi açılır.", pl: "Premium ma stałe kategorie podstawowe. Wybór kategorii zostanie odblokowany po zakupie co najmniej jednej kategorii rozszerzonej."})
       );
       return;
     }
@@ -1806,7 +1810,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       if (unownedExtendedCategories.length > 0) {
         setMsg(
-          uiMessage({ cs: "Tato rozšířená kategorie nebyla zakoupena.", en: "This extended category has not been purchased.", es: "Esta categoría ampliada no ha sido comprada." , de: "Diese Zusatzkategorie wurde nicht gekauft.", fr: "Cette catégorie supplémentaire n’a pas été achetée.", "pt-BR": "Esta categoria adicional não foi comprada.", id: "Kategori tambahan ini belum dibeli.", tr: "Bu ek kategori henüz satın alınmadı."})
+          uiMessage({ cs: "Tato rozšířená kategorie nebyla zakoupena.", en: "This extended category has not been purchased.", es: "Esta categoría ampliada no ha sido comprada." , de: "Diese Zusatzkategorie wurde nicht gekauft.", fr: "Cette catégorie supplémentaire n’a pas été achetée.", "pt-BR": "Esta categoria adicional não foi comprada.", id: "Kategori tambahan ini belum dibeli.", tr: "Bu ek kategori henüz satın alınmadı.", pl: "Ta kategoria rozszerzona nie została zakupiona."})
         );
         return;
       }
@@ -1820,7 +1824,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (finalCategories.length === 0) {
       setMsg(
-        uiMessage({ cs: "❗ Vyber alespoň jednu kategorii.", en: "❗ Select at least one category.", es: "❗ Selecciona al menos una categoría." , de: "❗ Wähle mindestens eine Kategorie aus.", fr: "❗ Sélectionne au moins une catégorie.", "pt-BR": "❗ Selecione pelo menos uma categoria.", id: "❗ Pilih setidaknya satu kategori.", tr: "❗ En az bir kategori seç."})
+        uiMessage({ cs: "❗ Vyber alespoň jednu kategorii.", en: "❗ Select at least one category.", es: "❗ Selecciona al menos una categoría." , de: "❗ Wähle mindestens eine Kategorie aus.", fr: "❗ Sélectionne au moins une catégorie.", "pt-BR": "❗ Selecione pelo menos uma categoria.", id: "❗ Pilih setidaknya satu kategori.", tr: "❗ En az bir kategori seç.", pl: "❗ Wybierz co najmniej jedną kategorię."})
       );
       return;
     }
@@ -1842,7 +1846,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error) {
       console.error("Category settings saving failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Kategorie se nepodařilo uložit.", en: "❌ The categories could not be saved.", es: "❌ No se pudieron guardar las categorías." , de: "❌ Die Kategorien konnten nicht gespeichert werden.", fr: "❌ Impossible d’enregistrer les catégories.", "pt-BR": "❌ Não foi possível salvar as categorias.", id: "❌ Kategori tidak dapat disimpan.", tr: "❌ Kategoriler kaydedilemedi."})
+        uiMessage({ cs: "❌ Kategorie se nepodařilo uložit.", en: "❌ The categories could not be saved.", es: "❌ No se pudieron guardar las categorías." , de: "❌ Die Kategorien konnten nicht gespeichert werden.", fr: "❌ Impossible d’enregistrer les catégories.", "pt-BR": "❌ Não foi possível salvar as categorias.", id: "❌ Kategori tidak dapat disimpan.", tr: "❌ Kategoriler kaydedilemedi.", pl: "❌ Nie udało się zapisać kategorii."})
       );
     }
   }
@@ -1862,7 +1866,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       !billingProducts.some((product) => product.productId === productId)
     ) {
       setMsg(
-        uiMessage({ cs: "Nákup kategorie zatím není dostupný.", en: "The category purchase is not available yet.", es: "La compra de la categoría todavía no está disponible." , de: "Der Kauf der Kategorie ist noch nicht verfügbar.", fr: "L’achat de cette catégorie n’est pas encore disponible.", "pt-BR": "A compra desta categoria ainda não está disponível.", id: "Pembelian kategori ini belum tersedia.", tr: "Bu kategoriyi satın alma henüz kullanılamıyor."})
+        uiMessage({ cs: "Nákup kategorie zatím není dostupný.", en: "The category purchase is not available yet.", es: "La compra de la categoría todavía no está disponible." , de: "Der Kauf der Kategorie ist noch nicht verfügbar.", fr: "L’achat de cette catégorie n’est pas encore disponible.", "pt-BR": "A compra desta categoria ainda não está disponível.", id: "Pembelian kategori ini belum tersedia.", tr: "Bu kategoriyi satın alma henüz kullanılamıyor.", pl: "Zakup kategorii nie jest jeszcze dostępny."})
       );
       return;
     }
@@ -1876,14 +1880,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         setCategoryPurchaseBusy(null);
         console.error("Google Play Billing error:", result.debugMessage);
         setMsg(
-          uiMessage({ cs: "Nákupní okno se nepodařilo otevřít.", en: "The purchase window could not be opened.", es: "No se pudo abrir la ventana de compra." , de: "Das Kauffenster konnte nicht geöffnet werden.", fr: "Impossible d’ouvrir la fenêtre d’achat.", "pt-BR": "Não foi possível abrir a janela de compra.", id: "Jendela pembelian tidak dapat dibuka.", tr: "Satın alma penceresi açılamadı."})
+          uiMessage({ cs: "Nákupní okno se nepodařilo otevřít.", en: "The purchase window could not be opened.", es: "No se pudo abrir la ventana de compra." , de: "Das Kauffenster konnte nicht geöffnet werden.", fr: "Impossible d’ouvrir la fenêtre d’achat.", "pt-BR": "Não foi possível abrir a janela de compra.", id: "Jendela pembelian tidak dapat dibuka.", tr: "Satın alma penceresi açılamadı.", pl: "Nie udało się otworzyć okna zakupu."})
         );
       }
     } catch (error) {
       console.error("Category purchase failed:", error);
       setCategoryPurchaseBusy(null);
       setMsg(
-        uiMessage({ cs: "Nákup se nepodařilo spustit.", en: "The purchase could not be started.", es: "No se pudo iniciar la compra." , de: "Der Kauf konnte nicht gestartet werden.", fr: "Impossible de démarrer l’achat.", "pt-BR": "Não foi possível iniciar a compra.", id: "Pembelian tidak dapat dimulai.", tr: "Satın alma başlatılamadı."})
+        uiMessage({ cs: "Nákup se nepodařilo spustit.", en: "The purchase could not be started.", es: "No se pudo iniciar la compra." , de: "Der Kauf konnte nicht gestartet werden.", fr: "Impossible de démarrer l’achat.", "pt-BR": "Não foi possível iniciar a compra.", id: "Pembelian tidak dapat dimulai.", tr: "Satın alma başlatılamadı.", pl: "Nie udało się rozpocząć zakupu."})
       );
     }
   }
@@ -1900,7 +1904,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       !premiumProduct
     ) {
       setMsg(
-        uiMessage({ cs: "Nákup Premium zatím není dostupný.", en: "The Premium purchase is not available yet.", es: "La compra de Premium todavía no está disponible." , de: "Der Premium-Kauf ist noch nicht verfügbar.", fr: "L’achat de Premium n’est pas encore disponible.", "pt-BR": "A compra do Premium ainda não está disponível.", id: "Pembelian Premium belum tersedia.", tr: "Premium satın alma henüz kullanılamıyor."})
+        uiMessage({ cs: "Nákup Premium zatím není dostupný.", en: "The Premium purchase is not available yet.", es: "La compra de Premium todavía no está disponible." , de: "Der Premium-Kauf ist noch nicht verfügbar.", fr: "L’achat de Premium n’est pas encore disponible.", "pt-BR": "A compra do Premium ainda não está disponível.", id: "Pembelian Premium belum tersedia.", tr: "Premium satın alma henüz kullanılamıyor.", pl: "Zakup Premium nie jest jeszcze dostępny."})
       );
       return;
     }
@@ -1916,14 +1920,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         setCategoryPurchaseBusy(null);
         console.error("Google Play Billing error:", result.debugMessage);
         setMsg(
-          uiMessage({ cs: "Nákupní okno se nepodařilo otevřít.", en: "The purchase window could not be opened.", es: "No se pudo abrir la ventana de compra." , de: "Das Kauffenster konnte nicht geöffnet werden.", fr: "Impossible d’ouvrir la fenêtre d’achat.", "pt-BR": "Não foi possível abrir a janela de compra.", id: "Jendela pembelian tidak dapat dibuka.", tr: "Satın alma penceresi açılamadı."})
+          uiMessage({ cs: "Nákupní okno se nepodařilo otevřít.", en: "The purchase window could not be opened.", es: "No se pudo abrir la ventana de compra." , de: "Das Kauffenster konnte nicht geöffnet werden.", fr: "Impossible d’ouvrir la fenêtre d’achat.", "pt-BR": "Não foi possível abrir a janela de compra.", id: "Jendela pembelian tidak dapat dibuka.", tr: "Satın alma penceresi açılamadı.", pl: "Nie udało się otworzyć okna zakupu."})
         );
       }
     } catch (error) {
       console.error("Premium purchase failed:", error);
       setCategoryPurchaseBusy(null);
       setMsg(
-        uiMessage({ cs: "Nákup se nepodařilo spustit.", en: "The purchase could not be started.", es: "No se pudo iniciar la compra." , de: "Der Kauf konnte nicht gestartet werden.", fr: "Impossible de démarrer l’achat.", "pt-BR": "Não foi possível iniciar a compra.", id: "Pembelian tidak dapat dimulai.", tr: "Satın alma başlatılamadı."})
+        uiMessage({ cs: "Nákup se nepodařilo spustit.", en: "The purchase could not be started.", es: "No se pudo iniciar la compra." , de: "Der Kauf konnte nicht gestartet werden.", fr: "Impossible de démarrer l’achat.", "pt-BR": "Não foi possível iniciar a compra.", id: "Pembelian tidak dapat dimulai.", tr: "Satın alma başlatılamadı.", pl: "Nie udało się rozpocząć zakupu."})
       );
     }
   }
@@ -1945,7 +1949,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       !upgradeOfferAvailable
     ) {
       setMsg(
-        uiMessage({ cs: "Upgrade na Super Premium zatím není dostupný.", en: "The Super Premium upgrade is not available yet.", es: "La mejora a Super Premium todavía no está disponible." , de: "Das Upgrade auf Super Premium ist noch nicht verfügbar.", fr: "La mise à niveau vers Super Premium n’est pas encore disponible.", "pt-BR": "O upgrade para Super Premium ainda não está disponível.", id: "Upgrade ke Super Premium belum tersedia.", tr: "Super Premium'a yükseltme henüz kullanılamıyor."})
+        uiMessage({ cs: "Upgrade na Super Premium zatím není dostupný.", en: "The Super Premium upgrade is not available yet.", es: "La mejora a Super Premium todavía no está disponible." , de: "Das Upgrade auf Super Premium ist noch nicht verfügbar.", fr: "La mise à niveau vers Super Premium n’est pas encore disponible.", "pt-BR": "O upgrade para Super Premium ainda não está disponível.", id: "Upgrade ke Super Premium belum tersedia.", tr: "Super Premium'a yükseltme henüz kullanılamıyor.", pl: "Przejście na Super Premium nie jest jeszcze dostępne."})
       );
       return;
     }
@@ -1962,14 +1966,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         setCategoryPurchaseBusy(null);
         console.error("Google Play Billing error:", result.debugMessage);
         setMsg(
-          uiMessage({ cs: "Nákupní okno se nepodařilo otevřít.", en: "The purchase window could not be opened.", es: "No se pudo abrir la ventana de compra." , de: "Das Kauffenster konnte nicht geöffnet werden.", fr: "Impossible d’ouvrir la fenêtre d’achat.", "pt-BR": "Não foi possível abrir a janela de compra.", id: "Jendela pembelian tidak dapat dibuka.", tr: "Satın alma penceresi açılamadı."})
+          uiMessage({ cs: "Nákupní okno se nepodařilo otevřít.", en: "The purchase window could not be opened.", es: "No se pudo abrir la ventana de compra." , de: "Das Kauffenster konnte nicht geöffnet werden.", fr: "Impossible d’ouvrir la fenêtre d’achat.", "pt-BR": "Não foi possível abrir a janela de compra.", id: "Jendela pembelian tidak dapat dibuka.", tr: "Satın alma penceresi açılamadı.", pl: "Nie udało się otworzyć okna zakupu."})
         );
       }
     } catch (error) {
       console.error("Super Premium upgrade failed:", error);
       setCategoryPurchaseBusy(null);
       setMsg(
-        uiMessage({ cs: "Nákup se nepodařilo spustit.", en: "The purchase could not be started.", es: "No se pudo iniciar la compra." , de: "Der Kauf konnte nicht gestartet werden.", fr: "Impossible de démarrer l’achat.", "pt-BR": "Não foi possível iniciar a compra.", id: "Pembelian tidak dapat dimulai.", tr: "Satın alma başlatılamadı."})
+        uiMessage({ cs: "Nákup se nepodařilo spustit.", en: "The purchase could not be started.", es: "No se pudo iniciar la compra." , de: "Der Kauf konnte nicht gestartet werden.", fr: "Impossible de démarrer l’achat.", "pt-BR": "Não foi possível iniciar a compra.", id: "Pembelian tidak dapat dimulai.", tr: "Satın alma başlatılamadı.", pl: "Nie udało się rozpocząć zakupu."})
       );
     }
   }
@@ -2056,7 +2060,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (finalCategories.length === 0) {
       setMsg(
-        uiMessage({ cs: "❗ Vyber alespoň jednu kategorii.", en: "❗ Select at least one category.", es: "❗ Selecciona al menos una categoría." , de: "❗ Wähle mindestens eine Kategorie aus.", fr: "❗ Sélectionne au moins une catégorie.", "pt-BR": "❗ Selecione pelo menos uma categoria.", id: "❗ Pilih setidaknya satu kategori.", tr: "❗ En az bir kategori seç."})
+        uiMessage({ cs: "❗ Vyber alespoň jednu kategorii.", en: "❗ Select at least one category.", es: "❗ Selecciona al menos una categoría." , de: "❗ Wähle mindestens eine Kategorie aus.", fr: "❗ Sélectionne au moins une catégorie.", "pt-BR": "❗ Selecione pelo menos uma categoria.", id: "❗ Pilih setidaknya satu kategori.", tr: "❗ En az bir kategori seç.", pl: "❗ Wybierz co najmniej jedną kategorię."})
       );
       return;
     }
@@ -2082,7 +2086,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error) {
       console.error("Category order saving failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Pořadí kategorií se nepodařilo uložit.", en: "❌ The category order could not be saved.", es: "❌ No se pudo guardar el orden de las categorías." , de: "❌ Die Reihenfolge der Kategorien konnte nicht gespeichert werden.", fr: "❌ Impossible d’enregistrer l’ordre des catégories.", "pt-BR": "❌ Não foi possível salvar a ordem das categorias.", id: "❌ Urutan kategori tidak dapat disimpan.", tr: "❌ Kategori sırası kaydedilemedi."})
+        uiMessage({ cs: "❌ Pořadí kategorií se nepodařilo uložit.", en: "❌ The category order could not be saved.", es: "❌ No se pudo guardar el orden de las categorías." , de: "❌ Die Reihenfolge der Kategorien konnte nicht gespeichert werden.", fr: "❌ Impossible d’enregistrer l’ordre des catégories.", "pt-BR": "❌ Não foi possível salvar a ordem das categorias.", id: "❌ Urutan kategori tidak dapat disimpan.", tr: "❌ Kategori sırası kaydedilemedi.", pl: "❌ Nie udało się zapisać kolejności kategorii."})
       );
     }
   }
@@ -2129,7 +2133,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (lockError || !locked) {
       setMsg(
-        uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." , de: "ℹ️ Ein anderer Spieler hat bereits mit dem Auslosen des Buchstabens begonnen.", fr: "ℹ️ Un autre joueur a déjà commencé à tirer la lettre.", "pt-BR": "ℹ️ Outro jogador já começou a sortear a letra.", id: "ℹ️ Pemain lain sudah mulai mengundi huruf.", tr: "ℹ️ Başka bir oyuncu harf çekmeye başladı."})
+        uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." , de: "ℹ️ Ein anderer Spieler hat bereits mit dem Auslosen des Buchstabens begonnen.", fr: "ℹ️ Un autre joueur a déjà commencé à tirer la lettre.", "pt-BR": "ℹ️ Outro jogador já começou a sortear a letra.", id: "ℹ️ Pemain lain sudah mulai mengundi huruf.", tr: "ℹ️ Başka bir oyuncu harf çekmeye başladı.", pl: "ℹ️ Inny gracz rozpoczął już losowanie litery."})
       );
       return;
     }
@@ -2182,7 +2186,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (lockError || !locked) {
       setMsg(
-        uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." , de: "ℹ️ Ein anderer Spieler hat bereits mit dem Auslosen des Buchstabens begonnen.", fr: "ℹ️ Un autre joueur a déjà commencé à tirer la lettre.", "pt-BR": "ℹ️ Outro jogador já começou a sortear a letra.", id: "ℹ️ Pemain lain sudah mulai mengundi huruf.", tr: "ℹ️ Başka bir oyuncu harf çekmeye başladı."})
+        uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." , de: "ℹ️ Ein anderer Spieler hat bereits mit dem Auslosen des Buchstabens begonnen.", fr: "ℹ️ Un autre joueur a déjà commencé à tirer la lettre.", "pt-BR": "ℹ️ Outro jogador já começou a sortear a letra.", id: "ℹ️ Pemain lain sudah mulai mengundi huruf.", tr: "ℹ️ Başka bir oyuncu harf çekmeye başladı.", pl: "ℹ️ Inny gracz rozpoczął już losowanie litery."})
       );
       return;
     }
@@ -2238,7 +2242,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (lockError || !locked) {
       setMsg(
-        uiMessage({ cs: "ℹ️ STOP už stiskl jiný hráč.", en: "ℹ️ Another player has already pressed STOP.", es: "ℹ️ Otro jugador ya ha pulsado STOP." , de: "ℹ️ Ein anderer Spieler hat bereits STOP gedrückt.", fr: "ℹ️ Un autre joueur a déjà appuyé sur STOP.", "pt-BR": "ℹ️ Outro jogador já apertou STOP.", id: "ℹ️ Pemain lain sudah menekan STOP.", tr: "ℹ️ Başka bir oyuncu STOP'a bastı."})
+        uiMessage({ cs: "ℹ️ STOP už stiskl jiný hráč.", en: "ℹ️ Another player has already pressed STOP.", es: "ℹ️ Otro jugador ya ha pulsado STOP." , de: "ℹ️ Ein anderer Spieler hat bereits STOP gedrückt.", fr: "ℹ️ Un autre joueur a déjà appuyé sur STOP.", "pt-BR": "ℹ️ Outro jogador já apertou STOP.", id: "ℹ️ Pemain lain sudah menekan STOP.", tr: "ℹ️ Başka bir oyuncu STOP'a bastı.", pl: "ℹ️ Inny gracz nacisnął już STOP."})
       );
       return;
     }
@@ -2263,7 +2267,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     setMsg(
       stoppedByTimeout
-        ? uiMessage({ cs: "Čas vypršel.", en: "Time is up.", es: "Se acabó el tiempo." , de: "Die Zeit ist abgelaufen.", fr: "Le temps est écoulé.", "pt-BR": "O tempo acabou.", id: "Waktu habis.", tr: "Süre doldu."})
+        ? uiMessage({ cs: "Čas vypršel.", en: "Time is up.", es: "Se acabó el tiempo." , de: "Die Zeit ist abgelaufen.", fr: "Le temps est écoulé.", "pt-BR": "O tempo acabou.", id: "Waktu habis.", tr: "Süre doldu.", pl: "Czas minął."})
         : stopPressedMessage(uiLanguage, myPlayer.name)
     );
   }
@@ -2447,7 +2451,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (lockError || !locked) {
       setMsg(
-        uiMessage({ cs: "ℹ️ Další kolo už spustil jiný hráč.", en: "ℹ️ Another player has already started the next round.", es: "ℹ️ Otro jugador ya ha iniciado la siguiente ronda." , de: "ℹ️ Ein anderer Spieler hat bereits die nächste Runde gestartet.", fr: "ℹ️ Un autre joueur a déjà démarré la manche suivante.", "pt-BR": "ℹ️ Outro jogador já iniciou a próxima rodada.", id: "ℹ️ Pemain lain sudah memulai ronde berikutnya.", tr: "ℹ️ Başka bir oyuncu sonraki turu başlattı."})
+        uiMessage({ cs: "ℹ️ Další kolo už spustil jiný hráč.", en: "ℹ️ Another player has already started the next round.", es: "ℹ️ Otro jugador ya ha iniciado la siguiente ronda." , de: "ℹ️ Ein anderer Spieler hat bereits die nächste Runde gestartet.", fr: "ℹ️ Un autre joueur a déjà démarré la manche suivante.", "pt-BR": "ℹ️ Outro jogador já iniciou a próxima rodada.", id: "ℹ️ Pemain lain sudah memulai ronde berikutnya.", tr: "ℹ️ Başka bir oyuncu sonraki turu başlattı.", pl: "ℹ️ Inny gracz rozpoczął już następną rundę."})
       );
       return;
     }
@@ -2496,7 +2500,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByTime
-      ? uiMessage({ cs: "Čas vypršel.", en: "Time is up.", es: "Se acabó el tiempo." , de: "Die Zeit ist abgelaufen.", fr: "Le temps est écoulé.", "pt-BR": "O tempo acabou.", id: "Waktu habis.", tr: "Süre doldu."})
+      ? uiMessage({ cs: "Čas vypršel.", en: "Time is up.", es: "Se acabó el tiempo." , de: "Die Zeit ist abgelaufen.", fr: "Le temps est écoulé.", "pt-BR": "O tempo acabou.", id: "Waktu habis.", tr: "Süre doldu.", pl: "Czas minął."})
       : (roomStatus === "scoring" || roomStatus === "finished") && stoppedByName
         ? stopPressedMessage(uiLanguage, stoppedByName)
         : roomStatus === "playing" && letter
@@ -2564,8 +2568,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           }}
         >
           {isReconnecting
-            ? uiMessage({ cs: "Obnovuji spojení a synchronizuji hru…", en: "Restoring the connection and syncing the game…", es: "Restableciendo la conexión y sincronizando la partida…" , de: "Verbindung wird wiederhergestellt und das Spiel synchronisiert…", fr: "Rétablissement de la connexion et synchronisation de la partie…", "pt-BR": "Restabelecendo a conexão e sincronizando o jogo…", id: "Memulihkan koneksi dan menyinkronkan permainan…", tr: "Bağlantı yeniden kuruluyor ve oyun eşitleniyor…"})
-            : uiMessage({ cs: "Jsi offline. Rozepsané odpovědi zůstávají uložené v tomto telefonu.", en: "You are offline. Your written answers remain saved on this phone.", es: "Sin conexión. Las respuestas escritas permanecen guardadas en este teléfono." , de: "Du bist offline. Deine eingetragenen Antworten bleiben auf diesem Gerät gespeichert.", fr: "Tu es hors ligne. Tes réponses saisies restent enregistrées sur cet appareil.", "pt-BR": "Você está offline. As respostas digitadas continuam salvas neste aparelho.", id: "Kamu sedang offline. Jawaban yang sudah ditulis tetap tersimpan di perangkat ini.", tr: "Çevrimdışısın. Yazdığın yanıtlar bu cihazda kayıtlı kalır."})}
+            ? uiMessage({ cs: "Obnovuji spojení a synchronizuji hru…", en: "Restoring the connection and syncing the game…", es: "Restableciendo la conexión y sincronizando la partida…" , de: "Verbindung wird wiederhergestellt und das Spiel synchronisiert…", fr: "Rétablissement de la connexion et synchronisation de la partie…", "pt-BR": "Restabelecendo a conexão e sincronizando o jogo…", id: "Memulihkan koneksi dan menyinkronkan permainan…", tr: "Bağlantı yeniden kuruluyor ve oyun eşitleniyor…", pl: "Przywracanie połączenia i synchronizacja gry…"})
+            : uiMessage({ cs: "Jsi offline. Rozepsané odpovědi zůstávají uložené v tomto telefonu.", en: "You are offline. Your written answers remain saved on this phone.", es: "Sin conexión. Las respuestas escritas permanecen guardadas en este teléfono." , de: "Du bist offline. Deine eingetragenen Antworten bleiben auf diesem Gerät gespeichert.", fr: "Tu es hors ligne. Tes réponses saisies restent enregistrées sur cet appareil.", "pt-BR": "Você está offline. As respostas digitadas continuam salvas neste aparelho.", id: "Kamu sedang offline. Jawaban yang sudah ditulis tetap tersimpan di perangkat ini.", tr: "Çevrimdışısın. Yazdığın yanıtlar bu cihazda kayıtlı kalır.", pl: "Jesteś offline. Wpisane odpowiedzi pozostają zapisane na tym telefonie."})}
         </section>
       )}
 
@@ -3075,7 +3079,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         {t("superPremiumLinkText")}
                       </button>
                       {superPremiumUpgradePrice
-                        ? uiMessage({ cs: ` za ${superPremiumUpgradePrice}`, en: ` for ${superPremiumUpgradePrice}`, es: ` por ${superPremiumUpgradePrice}` , de: ` für ${superPremiumUpgradePrice}`, fr: ` pour ${superPremiumUpgradePrice}`, "pt-BR": ` por ${superPremiumUpgradePrice}`, id: ` seharga ${superPremiumUpgradePrice}`, tr: `: ${superPremiumUpgradePrice}`})
+                        ? uiMessage({ cs: ` za ${superPremiumUpgradePrice}`, en: ` for ${superPremiumUpgradePrice}`, es: ` por ${superPremiumUpgradePrice}` , de: ` für ${superPremiumUpgradePrice}`, fr: ` pour ${superPremiumUpgradePrice}`, "pt-BR": ` por ${superPremiumUpgradePrice}`, id: ` seharga ${superPremiumUpgradePrice}`, tr: `: ${superPremiumUpgradePrice}`, pl: ` za ${superPremiumUpgradePrice}`})
                         : ""}{" "}
                       {t("superPremiumUpsellAfter")}
                     </p>
@@ -3729,10 +3733,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         }}
                       >
                         <p style={{ marginTop: 0, marginBottom: 6, fontWeight: 700 }}>
-                          {uiMessage({ cs: "Rewarded reklama běží…", en: "Rewarded ad is playing…", es: "El anuncio recompensado se está reproduciendo…" , de: "Werbung mit Belohnung wird abgespielt…", fr: "Lecture de la publicité récompensée…", "pt-BR": "Reproduzindo anúncio com recompensa…", id: "Iklan berhadiah sedang diputar…", tr: "Ödüllü reklam oynatılıyor…"})}
+                          {uiMessage({ cs: "Rewarded reklama běží…", en: "Rewarded ad is playing…", es: "El anuncio recompensado se está reproduciendo…" , de: "Werbung mit Belohnung wird abgespielt…", fr: "Lecture de la publicité récompensée…", "pt-BR": "Reproduzindo anúncio com recompensa…", id: "Iklan berhadiah sedang diputar…", tr: "Ödüllü reklam oynatılıyor…", pl: "Trwa reklama z nagrodą…"})}
                         </p>
                         <p style={{ margin: 0 }}>
-                          {uiMessage({ cs: "Po doběhnutí reklamy se automaticky odemknou další 3 kola.", en: "After the ad finishes, 3 more rounds will unlock automatically.", es: "Cuando termine el anuncio, se desbloquearán automáticamente 3 rondas más." , de: "Nach Ende der Werbung werden automatisch 3 weitere Runden freigeschaltet.", fr: "À la fin de la publicité, 3 manches supplémentaires seront automatiquement débloquées.", "pt-BR": "Quando o anúncio terminar, mais 3 rodadas serão liberadas automaticamente.", id: "Setelah iklan selesai, 3 ronde tambahan akan terbuka secara otomatis.", tr: "Reklam tamamlandığında 3 ek turun kilidi otomatik olarak açılacak."})}
+                          {uiMessage({ cs: "Po doběhnutí reklamy se automaticky odemknou další 3 kola.", en: "After the ad finishes, 3 more rounds will unlock automatically.", es: "Cuando termine el anuncio, se desbloquearán automáticamente 3 rondas más." , de: "Nach Ende der Werbung werden automatisch 3 weitere Runden freigeschaltet.", fr: "À la fin de la publicité, 3 manches supplémentaires seront automatiquement débloquées.", "pt-BR": "Quando o anúncio terminar, mais 3 rodadas serão liberadas automaticamente.", id: "Setelah iklan selesai, 3 ronde tambahan akan terbuka secara otomatis.", tr: "Reklam tamamlandığında 3 ek turun kilidi otomatik olarak açılacak.", pl: "Po zakończeniu reklamy automatycznie odblokują się 3 kolejne rundy."})}
                         </p>
                       </section>
                     )}

@@ -1,5 +1,5 @@
 type RoomTier = "free" | "premium" | "super_premium";
-export type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr";
+export type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl";
 export type GameLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
 
 export const UI_TEXT = {
@@ -774,6 +774,102 @@ export const UI_TEXT = {
     freeRewardUnlocked: "✅ 3 ek turun kilidi açıldı.",
     freeLimitReachedMessage: "Free sınırına ulaşıldı. Devam etmek için Premium'u veya ödüllü reklamı seç.",
   },
+  pl: {
+    room: "Pokój",
+    signedIn: "Zalogowano",
+    notSignedIn: "Niezalogowany",
+    bossRoom: "To Ty zapłaciłeś, więc jesteś szefem tego pokoju!",
+    likeApp: "Podoba Ci się aplikacja?",
+    ratingUnavailable: "Ocena będzie dostępna po wydaniu aplikacji w Google Play.",
+    newGame: "Nowa gra",
+    rules: "Zasady",
+    copyLink: "Kopiuj link",
+    share: "Udostępnij",
+    disconnect: "Rozłącz",
+    gameLanguage: "Język gry",
+    diacriticsOptional: "Odpowiedzi są uznawane również bez znaków diakrytycznych.",
+    joinGame: "Dołącz do gry",
+    yourName: "Twoje imię",
+    join: "Dołącz",
+    startGame: "Rozpocznij grę",
+    gameSettings: "Ustawienia gry",
+    timeLimit: "Limit czasu",
+    noTimeLimit: "Bez limitu",
+    roundCount: "Liczba rund",
+    unlimitedRounds: "Bez limitu",
+    roundsCountSuffix: "rund",
+    gameSettingsSaveErrorPrefix: "❌ ustawienia gry",
+    availableLetters: "Dostępne litery",
+    players: "Gracze",
+    waitingPlayers: "Oczekujący gracze",
+    roomCategories: "Kategorie w pokoju",
+    basicCategories: "Kategorie podstawowe",
+    extendedCategories: "Kategorie rozszerzone",
+    customCategories: "Własne kategorie",
+    categoryOrder: "Kolejność kategorii",
+    playing: "Grają",
+    drawAgain: "Losuj ponownie",
+    scoring: "Punktacja",
+    submitted: "Wysłano",
+    playersAnswers: "Odpowiedzi graczy",
+    player: "Gracz",
+    totalPoints: "Łączna liczba punktów",
+    round: "Runda",
+    myScoring: "Moja punktacja",
+    submitScoring: "Wyślij punktację",
+    newRound: "Nowa runda",
+    finishGame: "Zakończ grę i pokaż wyniki końcowe",
+    finalResults: "Wyniki końcowe",
+    position: "Miejsce",
+    gameFinishedMessage: "✅ Gra zakończona. Oto wyniki końcowe.",
+    finishGameErrorPrefix: "❌ kończenie gry",
+    letterDrawn: "✅ wylosowano literę",
+    drawingAgain: "… ponowne losowanie",
+    drawingNextRound: "… losowanie litery na następną rundę",
+    drawingLetter: "… losowanie litery",
+    changePlayerAfterScoring: "Gracza można zmienić dopiero po zakończeniu punktacji.",
+    changingPlayerErrorPrefix: "❌ zmiana gracza",
+    previousPlayerRemoved: "ℹ️ Poprzedni gracz został usunięty z tego urządzenia. Wpisz inne imię.",
+    disconnectedRoomCleared: "✅ rozłączono i wyczyszczono pokój",
+    disconnected: "✅ rozłączono",
+    joinNameFirst: "❗ najpierw dołącz, podając imię",
+    savingScoresErrorPrefix: "❌ zapisywanie punktacji",
+    stopAfterFields: "Możesz nacisnąć STOP po uzupełnieniu wszystkich pól.",
+    minTwoChars: "Każde pole musi zawierać co najmniej dwa znaki.",
+    mustStartWithLetter: "Każda odpowiedź musi zaczynać się od wylosowanej litery.",
+    waitingToJoin: "⏳ Czekasz na dołączenie. Wejdziesz do gry od następnej rundy.",
+    enterNameAnswers: "Wpisz swoje imię powyżej, aby wysłać odpowiedzi.",
+    statusSubmitted: " – wysłano",
+    statusWaiting: " – oczekuje",
+    hideRoundHistory: "Ukryj historię rund",
+    showRoundHistory: "Pokaż historię rund",
+    noRoundScores: "Nie zapisano jeszcze punktów z żadnej rundy.",
+    zeroPoints: "0 punktów",
+    fivePoints: "5 punktów",
+    tenPoints: "10 punktów",
+    minusFivePoints: "-5 punktów",
+    minusTenPoints: "-10 punktów",
+    scoringSubmitted: "✅ Punktacja wysłana. Oczekujący gracze automatycznie dołączą po naciśnięciu przycisku Nowa runda.",
+    enterNameScoring: "Wpisz swoje imię powyżej, aby wysłać punktację.",
+    waitingForAllPlayers: "Oczekiwanie na wszystkich graczy…",
+    customCategoryPrefix: "Własna kategoria",
+    removeCustomCategory: "Usuń własną kategorię",
+    addCustomCategory: "+ Dodaj własną kategorię",
+    maxCustomCategories: "Maksymalnie można dodać 5 własnych kategorii.",
+    premiumLockedCategoryOfferIntro: "Zakup rozszerzonej kategorii automatycznie odblokuje możliwość wyboru liczby i kolejności kategorii, którymi chcesz grać.",
+    superPremiumUpsellBefore: "Lub kup",
+    superPremiumLinkText: "Super Premium",
+    superPremiumUpsellAfter: "i zyskasz wybór liczby i kolejności kategorii, wszystkie kategorie rozszerzone oraz 5 własnych kategorii.",
+    changePlayerOnDevice: "Zmień gracza na tym urządzeniu",
+    waitingPlayerNextRound: "dołączy od następnej rundy",
+    freeLimitTitle: "Osiągnięto limit wersji Free",
+    freeLimitText: "Wersja Free obejmuje 3 rundy. Aby kontynuować, przejdź na Premium albo obejrzyj reklamę i odblokuj 3 kolejne rundy.",
+    freeUpgradeButton: "Kup Premium",
+    freeRewardButton: "Obejrzyj reklamę i odblokuj 3 kolejne rundy",
+    backHome: "Wróć na stronę główną",
+    freeRewardUnlocked: "✅ Odblokowano 3 kolejne rundy.",
+    freeLimitReachedMessage: "Osiągnięto limit wersji Free. Aby kontynuować, wybierz Premium albo reklamę z nagrodą.",
+  },
 } as const;
 
 export type UiTextKey = keyof typeof UI_TEXT.cs;
@@ -845,6 +941,12 @@ export const UI_RULES = {
     scoringTitle: "Puanlama",
     scoring: "STOP'a basıldıktan sonra tüm oyuncular diğer oyuncuların yanıtlarını görür ve puanlar. Benzersiz yanıt 10 puan, aynı yanıt 5 puan, boş yanıt 0 puan alır. Geçersiz yanıtlar için eksi puan da verilebilir.",
   },
+  pl: {
+    join: "Organizator udostępnia link do pokoju za pomocą przycisku Kopiuj link lub Udostępnij. Pozostali gracze otwierają link, wpisują swoje imię i dołączają do tego samego pokoju.",
+    play: "Wszyscy grają na wylosowaną literę i wpisują po jednej odpowiedzi w każdej kategorii. Po uzupełnieniu wszystkich pól gracz może nacisnąć STOP. Każda odpowiedź musi zaczynać się od wylosowanej litery i zawierać co najmniej dwa znaki. Klawisza ENTER można użyć do przejścia do następnego pola odpowiedzi oraz do końcowego naciśnięcia STOP.",
+    scoringTitle: "Punktacja",
+    scoring: "Po naciśnięciu STOP wszyscy widzą odpowiedzi pozostałych graczy i przyznają punkty za każdą odpowiedź. 10 punktów za unikalną odpowiedź, 5 punktów za powtórzoną odpowiedź, 0 punktów za brak odpowiedzi. Za nieprawidłową odpowiedź można również przyznać punkty ujemne.",
+  },
 } as const;
 
 const RULES = UI_RULES as unknown as Record<string, typeof UI_RULES.cs>;
@@ -878,6 +980,8 @@ const ROOM_FULL_MESSAGES: Record<
   tr: (maxPlayers) =>
     `❌ Bu oda dolu. Free sürümü en fazla ${maxPlayers} oyuncuya izin verir. Daha fazla oyuncu için Premium'a geç. Ne kadar çok oyuncu, o kadar çok eğlence! :-)`,
 
+  pl: (maxPlayers) =>
+    `❌ Pokój jest pełny. Wersja Free pozwala na maksymalnie ${maxPlayers} graczy. Kup Premium, aby grać w większym gronie. Więcej graczy, więcej zabawy! :-)`,
 };
 
 const STOP_PRESSED_MESSAGES: Record<
@@ -896,6 +1000,8 @@ const STOP_PRESSED_MESSAGES: Record<
   id: (name) => `✅ ${name} menekan STOP`,
 
   tr: (name) => `✅ ${name} STOP'a bastı`,
+
+  pl: (name) => `✅ ${name} nacisnął STOP`,
 
 };
 
@@ -960,6 +1066,14 @@ const CATEGORY_HELP_TEXT = {
     player: "Oda sahibi oda kategorilerini seçer. Geçerli seçimi görebilir ve değişiklik önerebilirsin.",
     premiumOrganizer: "Premium: temel kategoriler sabittir. Ek kategoriler kilitlidir. En az bir ek kategori satın alındığında kategori seçimi ve sıralaması açılır.",
     superPremiumOrganizer: "Super Premium: temel ve ek kategorileri seç, sıralarını değiştir ve özel kategoriler ekle.",
+  },
+  pl: {
+    player:
+      "Organizator wybiera kategorie pokoju. Możesz zobaczyć aktualny wybór i zaproponować zmiany.",
+    premiumOrganizer:
+      "Premium: podstawowe kategorie są stałe. Kategorie rozszerzone są zablokowane. Zakup co najmniej jednej kategorii rozszerzonej odblokowuje wybór i kolejność kategorii.",
+    superPremiumOrganizer:
+      "Super Premium: wybierz kategorie podstawowe i rozszerzone, zmień ich kolejność i dodaj własne kategorie.",
   },
 };
 
@@ -1082,6 +1196,18 @@ const GAME_LANGUAGE_NAMES: Record<
     it: "İtalyanca",
   },
 
+  pl: {
+    cs: "Czeski",
+    en: "Angielski",
+    es: "Hiszpański",
+    de: "Niemiecki",
+    fr: "Francuski",
+    "pt-BR": "Portugalski brazylijski",
+    id: "Indonezyjski",
+    tr: "Turecki",
+    pl: "Polski",
+    it: "Włoski",
+  },
 };
 
 const GAME_LANGUAGE_INSTRUCTIONS: Record<
@@ -1189,6 +1315,18 @@ const GAME_LANGUAGE_INSTRUCTIONS: Record<
     it: "Tüm yanıtları İtalyanca yaz.",
   },
 
+  pl: {
+    cs: "Wszystkie odpowiedzi wpisuj po czesku.",
+    en: "Wszystkie odpowiedzi wpisuj po angielsku.",
+    es: "Wszystkie odpowiedzi wpisuj po hiszpańsku.",
+    de: "Wszystkie odpowiedzi wpisuj po niemiecku.",
+    fr: "Wszystkie odpowiedzi wpisuj po francusku.",
+    "pt-BR": "Wszystkie odpowiedzi wpisuj w brazylijskiej odmianie języka portugalskiego.",
+    id: "Wszystkie odpowiedzi wpisuj po indonezyjsku.",
+    tr: "Wszystkie odpowiedzi wpisuj po turecku.",
+    pl: "Wszystkie odpowiedzi wpisuj po polsku.",
+    it: "Wszystkie odpowiedzi wpisuj po włosku.",
+  },
 };
 
 export function gameLanguageNameText(
