@@ -13,3 +13,62 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Horní hlavička úvodní stránky */
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.home-title {
+  min-width: 0;
+  margin: 0 0 8px;
+  line-height: 1.05;
+}
+
+.home-title-first-line {
+  white-space: nowrap;
+}
+
+.home-language {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.home-language select {
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .home-header {
+    flex-direction: column;
+  }
+
+  .home-language {
+    order: -1;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .home-language label,
+  .home-language select {
+    width: 100%;
+  }
+
+  .home-title {
+    font-size: 2.15rem;
+  }
+
+  .home-title--two-lines {
+    font-size: 1.85rem;
+  }
+
+  .home-title-first-line {
+    white-space: normal;
+  }
+}

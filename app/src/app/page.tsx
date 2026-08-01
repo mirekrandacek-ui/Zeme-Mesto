@@ -1014,21 +1014,13 @@ export default function Home() {
         margin: "0 auto",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: 12,
-        }}
-      >
+      <div className="home-header">
         <h1
-          style={{
-            marginBottom: 8,
-            lineHeight: 1.05,
-          }}
+          className={`home-title${
+            h("appTitleSecondLine") ? " home-title--two-lines" : ""
+          }`}
         >
-          <span style={{ whiteSpace: "nowrap" }}>
+          <span className="home-title-first-line">
             {h("appTitleFirstLine")}
           </span>
           {h("appTitleSecondLine") && (
@@ -1039,14 +1031,7 @@ export default function Home() {
           )}
         </h1>
 
-        <div
-          style={{
-            display: "flex",
-            gap: 8,
-            flexWrap: "wrap",
-            justifyContent: "flex-end",
-          }}
-        >
+        <div className="home-language">
 
           <label aria-label={h("applicationLanguage")}>
             <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
