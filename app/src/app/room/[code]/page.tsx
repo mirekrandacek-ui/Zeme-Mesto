@@ -15,6 +15,12 @@ import {
   PlayBilling,
   type BillingProduct,
 } from "@/lib/playBilling";
+import {
+  consumeFreeRound,
+  FREE_ROUND_BLOCK_SIZE,
+  getFreeQuotaState,
+  unlockFreeRoundBlock,
+} from "@/lib/freeQuota";
 
 import {
   categoryHelpText,
@@ -94,8 +100,6 @@ const ITALIAN_LETTERS = [
 ];
 const ROLL_MS = 5000;
 const TICK_MS = 35;
-const FREE_ROUND_BLOCK_SIZE = 3;
-const FREE_INITIAL_UNLOCKED_ROUNDS = 3;
 const ROUND_TIME_LIMIT_OPTIONS = [30, 60, 90, 120, 180] as const;
 const ROUND_COUNT_LIMIT_OPTIONS = [5, 10, 15, 20] as const;
 
@@ -508,7 +512,10 @@ export default function RoomPage() {
   const [showFreeLimitUpsell, setShowFreeLimitUpsell] = useState(false);
   const [showRewardedAdPlaceholder, setShowRewardedAdPlaceholder] = useState(false);
   const [nativeFreeBannerShown, setNativeFreeBannerShown] = useState(false);
-  const [freeUnlockedRounds, setFreeUnlockedRounds] = useState(FREE_INITIAL_UNLOCKED_ROUNDS);
+  const [freeRoundsRemaining, setFreeRoundsRemaining] = useState(FREE_ROUND_BLOCK_SIZE);
+  const [roomFreeRoundsUnlocked, setRoomFreeRoundsUnlocked] =
+    useState(FREE_ROUND_BLOCK_SIZE);
+  const [roomFreeRoundsStarted, setRoomFreeRoundsStarted] = useState(0);
 
   const [round, setRound] = useState<RoundLite | null>(null);
   const [serverTimeOffsetMs, setServerTimeOffsetMs] = useState(0);
@@ -1102,17 +1109,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }, [roomTier]);
 
   useEffect(() => {
-    if (!roomId || roomTier !== "free") return;
+    if (roomTier !== "free") return;
 
-    const saved = window.localStorage.getItem(`zm_freeUnlockedRounds_${roomId}`);
-    const parsed = Number(saved);
-
-    setFreeUnlockedRounds(
-      Number.isFinite(parsed) && parsed >= FREE_INITIAL_UNLOCKED_ROUNDS
-        ? parsed
-        : FREE_INITIAL_UNLOCKED_ROUNDS
-    );
-  }, [roomId, roomTier]);
+    setFreeRoundsRemaining(getFreeQuotaState().remainingRounds);
+  }, [roomTier]);
 
   useEffect(() => {
     setAnswers((current) => alignStringRecord(current, activeCategories));
@@ -1195,7 +1195,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function loadRoomByCode() {
     const { data, error } = await supabase
       .from("rooms")
-      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language,round_time_limit_seconds,round_count_limit")
+      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language,round_time_limit_seconds,round_count_limit,free_rounds_unlocked,free_rounds_started")
       .eq("code", code)
       .single();
 
@@ -1227,6 +1227,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setRoomLanguage(((data as any).language ?? "cs") as GameLanguage);
     setRoundTimeLimitSeconds(parseRoundTimeLimit((data as any).round_time_limit_seconds));
     setRoundCountLimit(parseRoundCountLimit((data as any).round_count_limit));
+    setRoomFreeRoundsUnlocked(
+      Number((data as any).free_rounds_unlocked ?? FREE_ROUND_BLOCK_SIZE)
+    );
+    setRoomFreeRoundsStarted(
+      Number((data as any).free_rounds_started ?? 0)
+    );
     setRoomCustomCategories([
       ...customCategories,
       ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
@@ -1241,7 +1247,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function refreshRoomState(rid: string) {
     const { data, error } = await supabase
       .from("rooms")
-      .select("status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language,round_time_limit_seconds,round_count_limit")
+      .select("status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language,round_time_limit_seconds,round_count_limit,free_rounds_unlocked,free_rounds_started")
       .eq("id", rid)
       .single();
 
@@ -1261,6 +1267,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setRoomLanguage(((data as any).language ?? "cs") as GameLanguage);
     setRoundTimeLimitSeconds(parseRoundTimeLimit((data as any).round_time_limit_seconds));
     setRoundCountLimit(parseRoundCountLimit((data as any).round_count_limit));
+    setRoomFreeRoundsUnlocked(
+      Number((data as any).free_rounds_unlocked ?? FREE_ROUND_BLOCK_SIZE)
+    );
+    setRoomFreeRoundsStarted(
+      Number((data as any).free_rounds_started ?? 0)
+    );
 
     setAnswers((current) => alignStringRecord(current, roomCategories));
     setScores((current) => alignScoreRecord(current, roomCategories));
@@ -1417,13 +1429,19 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const poll = window.setInterval(async () => {
       const { data } = await supabase
         .from("rooms")
-        .select("status,letter")
+        .select("status,letter,free_rounds_unlocked,free_rounds_started")
         .eq("id", roomId)
         .single();
 
       if (data) {
         setRoomStatus(data.status as RoomStatus);
         setLetter((data.letter ?? null) as string | null);
+        setRoomFreeRoundsUnlocked(
+          Number((data as any).free_rounds_unlocked ?? FREE_ROUND_BLOCK_SIZE)
+        );
+        setRoomFreeRoundsStarted(
+          Number((data as any).free_rounds_started ?? 0)
+        );
       }
 
       await loadPlayers(roomId);
@@ -1566,6 +1584,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   async function joinRoom() {
     if (!roomId) return;
+
+    const currentQuota = getFreeQuotaState();
+    setFreeRoundsRemaining(currentQuota.remainingRounds);
+
+    if (roomTier === "free" && currentQuota.remainingRounds <= 0) {
+      setMsg(t("freeLimitReachedMessage"));
+      return;
+    }
 
     const trimmed = nameInput.trim();
     if (!trimmed) {
@@ -2114,6 +2140,59 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     void saveRoomCategoryOrder(nextCategories);
   }
 
+  async function beginFreeRoomRound(
+    rid: string,
+    expectedStatus: "lobby" | "scoring"
+  ): Promise<"started" | "limit" | "already_started" | "error"> {
+    const { data, error } = await (supabase as any).rpc(
+      "begin_free_round",
+      {
+        p_room_id: rid,
+        p_expected_status: expectedStatus,
+      }
+    );
+
+    if (error) {
+      console.error("Free round start failed:", error);
+      return "error";
+    }
+
+    const startedRounds = Number(data ?? 0);
+
+    if (startedRounds > 0) {
+      setRoomFreeRoundsStarted(startedRounds);
+      return "started";
+    }
+
+    const { data: roomData, error: roomError } = await supabase
+      .from("rooms")
+      .select("status,free_rounds_unlocked,free_rounds_started")
+      .eq("id", rid)
+      .single();
+
+    if (roomError || !roomData) {
+      console.error("Free room limit check failed:", roomError);
+      return "error";
+    }
+
+    const unlocked = Number(
+      (roomData as any).free_rounds_unlocked ?? FREE_ROUND_BLOCK_SIZE
+    );
+    const started = Number(
+      (roomData as any).free_rounds_started ?? 0
+    );
+
+    setRoomFreeRoundsUnlocked(unlocked);
+    setRoomFreeRoundsStarted(started);
+    setRoomStatus((roomData as any).status as RoomStatus);
+
+    if (started >= unlocked) {
+      return "limit";
+    }
+
+    return "already_started";
+  }
+
   async function startGame() {
     if (roomId) {
       await refreshRoomState(roomId);
@@ -2126,24 +2205,41 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     const rid = roomId;
 
+    if (roomTier === "free") {
+      const result = await beginFreeRoomRound(rid, "lobby");
+
+      if (result === "limit") {
+        setShowFreeLimitUpsell(true);
+        setMsg(t("freeLimitReachedMessage"));
+        return;
+      }
+
+      if (result !== "started") {
+        setMsg(
+          uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." , de: "ℹ️ Ein anderer Spieler hat bereits mit dem Auslosen des Buchstabens begonnen.", fr: "ℹ️ Un autre joueur a déjà commencé à tirer la lettre.", "pt-BR": "ℹ️ Outro jogador já começou a sortear a letra.", id: "ℹ️ Pemain lain sudah mulai mengundi huruf.", tr: "ℹ️ Başka bir oyuncu harf çekmeye başladı.", pl: "ℹ️ Inny gracz rozpoczął już losowanie litery.", it: "ℹ️ Un altro giocatore ha già iniziato l’estrazione della lettera."})
+        );
+        return;
+      }
+    } else {
+      const { data: locked, error: lockError } = await supabase
+        .from("rooms")
+        .update({ status: "drawing", letter: null })
+        .eq("id", rid)
+        .eq("status", "lobby")
+        .select("id")
+        .maybeSingle();
+
+      if (lockError || !locked) {
+        setMsg(
+          uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." , de: "ℹ️ Ein anderer Spieler hat bereits mit dem Auslosen des Buchstabens begonnen.", fr: "ℹ️ Un autre joueur a déjà commencé à tirer la lettre.", "pt-BR": "ℹ️ Outro jogador já começou a sortear a letra.", id: "ℹ️ Pemain lain sudah mulai mengundi huruf.", tr: "ℹ️ Başka bir oyuncu harf çekmeye başladı.", pl: "ℹ️ Inny gracz rozpoczął już losowanie litery.", it: "ℹ️ Un altro giocatore ha già iniziato l’estrazione della lettera."})
+        );
+        return;
+      }
+    }
+
     setMsg(t("drawingLetter"));
     setRoomStatus("drawing");
     setLetter(null);
-
-    const { data: locked, error: lockError } = await supabase
-      .from("rooms")
-      .update({ status: "drawing", letter: null })
-      .eq("id", rid)
-      .eq("status", "lobby")
-      .select("id")
-      .maybeSingle();
-
-    if (lockError || !locked) {
-      setMsg(
-        uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." , de: "ℹ️ Ein anderer Spieler hat bereits mit dem Auslosen des Buchstabens begonnen.", fr: "ℹ️ Un autre joueur a déjà commencé à tirer la lettre.", "pt-BR": "ℹ️ Outro jogador já começou a sortear a letra.", id: "ℹ️ Pemain lain sudah mulai mengundi huruf.", tr: "ℹ️ Başka bir oyuncu harf çekmeye başladı.", pl: "ℹ️ Inny gracz rozpoczął już losowanie litery.", it: "ℹ️ Un altro giocatore ha già iniziato l’estrazione della lettera."})
-      );
-      return;
-    }
 
     window.setTimeout(async () => {
       const finalLetter = await pickLetter(rid);
@@ -2314,6 +2410,32 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   );
 
   const everyoneScored = players.length > 0 && scoredPlayerIds.size === players.length;
+
+  useEffect(() => {
+    if (
+      roomTier !== "free" ||
+      roomStatus !== "playing" ||
+      !roomId ||
+      roomFreeRoundsStarted <= 0 ||
+      !myPlayer ||
+      myPlayer.status === "waiting"
+    ) {
+      return;
+    }
+
+    const nextQuota = consumeFreeRound(
+      `${roomId}:free-round:${roomFreeRoundsStarted}`
+    );
+    setFreeRoundsRemaining(nextQuota.remainingRounds);
+  }, [
+    roomTier,
+    roomStatus,
+    roomId,
+    roomFreeRoundsStarted,
+    myPlayer?.id,
+    myPlayer?.status,
+  ]);
+
   const currentRoundNo = round?.round_no ?? 0;
   const isFinalScoringRound =
     superPremiumGameSettingsEnabled &&
@@ -2325,7 +2447,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const freeLimitReached =
     roomTier === "free" &&
     everyoneScored &&
-    currentRoundNo >= freeUnlockedRounds;
+    roomFreeRoundsStarted >= roomFreeRoundsUnlocked;
 
   const shouldShowFreeLimitUpsell = freeLimitReached || showFreeLimitUpsell;
 
@@ -2368,25 +2490,44 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     const nativeRewardShown = await showFreeRewardedAdForNativeApp();
 
-    if (nativeRewardShown) {
-      unlockFreeRoundsByRewardedAd();
+    if (!nativeRewardShown) {
+      setShowRewardedAdPlaceholder(false);
+      setMsg(t("freeLimitReachedMessage"));
       return;
     }
 
-    window.setTimeout(() => {
-      unlockFreeRoundsByRewardedAd();
-    }, 3000);
+    await unlockFreeRoundsByRewardedAd();
   }
 
-  function unlockFreeRoundsByRewardedAd() {
-    if (!roomId || !round?.round_no) return;
+  async function unlockFreeRoundsByRewardedAd() {
+    if (!roomId) {
+      setShowRewardedAdPlaceholder(false);
+      return;
+    }
 
-    const nextLimit = Math.max(freeUnlockedRounds, round.round_no) + FREE_ROUND_BLOCK_SIZE;
+    const { data, error } = await (supabase as any).rpc(
+      "unlock_free_rounds",
+      { p_room_id: roomId }
+    );
 
-    setFreeUnlockedRounds(nextLimit);
+    if (error) {
+      console.error("Free room unlock failed:", error);
+      setShowRewardedAdPlaceholder(false);
+      setMsg(t("freeLimitReachedMessage"));
+      return;
+    }
+
+    const nextRoomLimit = Number(
+      data ?? roomFreeRoundsUnlocked + FREE_ROUND_BLOCK_SIZE
+    );
+
+    setRoomFreeRoundsUnlocked(nextRoomLimit);
+
+    const nextQuota = unlockFreeRoundBlock();
+    setFreeRoundsRemaining(nextQuota.remainingRounds);
+
     setShowFreeLimitUpsell(false);
     setShowRewardedAdPlaceholder(false);
-    window.localStorage.setItem(`zm_freeUnlockedRounds_${roomId}`, String(nextLimit));
     setMsg(t("freeRewardUnlocked"));
   }
 
@@ -2420,10 +2561,39 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       return;
     }
 
-    if (roomTier === "free" && round.round_no >= freeUnlockedRounds) {
-      setShowFreeLimitUpsell(true);
-      setMsg(t("freeLimitReachedMessage"));
-      return;
+    const rid = roomId;
+    const currentRoundId = round.id;
+
+    if (roomTier === "free") {
+      const result = await beginFreeRoomRound(rid, "scoring");
+
+      if (result === "limit") {
+        setShowFreeLimitUpsell(true);
+        setMsg(t("freeLimitReachedMessage"));
+        return;
+      }
+
+      if (result !== "started") {
+        setMsg(
+          uiMessage({ cs: "ℹ️ Další kolo už spustil jiný hráč.", en: "ℹ️ Another player has already started the next round.", es: "ℹ️ Otro jugador ya ha iniciado la siguiente ronda.", de: "ℹ️ Ein anderer Spieler hat bereits die nächste Runde gestartet.", fr: "ℹ️ Un autre joueur a déjà démarré la manche suivante.", "pt-BR": "ℹ️ Outro jogador já iniciou a próxima rodada.", id: "ℹ️ Pemain lain sudah memulai ronde berikutnya.", tr: "ℹ️ Başka bir oyuncu sonraki turu başlattı.", pl: "ℹ️ Inny gracz rozpoczął już następną rundę.", it: "ℹ️ Un altro giocatore ha già avviato il turno successivo."})
+        );
+        return;
+      }
+    } else {
+      const { data: locked, error: lockError } = await supabase
+        .from("rooms")
+        .update({ status: "drawing", letter: null })
+        .eq("id", rid)
+        .eq("status", "scoring")
+        .select("id")
+        .maybeSingle();
+
+      if (lockError || !locked) {
+        setMsg(
+          uiMessage({ cs: "ℹ️ Další kolo už spustil jiný hráč.", en: "ℹ️ Another player has already started the next round.", es: "ℹ️ Otro jugador ya ha iniciado la siguiente ronda.", de: "ℹ️ Ein anderer Spieler hat bereits die nächste Runde gestartet.", fr: "ℹ️ Un autre joueur a déjà démarré la manche suivante.", "pt-BR": "ℹ️ Outro jogador já iniciou a próxima rodada.", id: "ℹ️ Pemain lain sudah memulai ronde berikutnya.", tr: "ℹ️ Başka bir oyuncu sonraki turu başlattı.", pl: "ℹ️ Inny gracz rozpoczął już następną rundę.", it: "ℹ️ Un altro giocatore ha già avviato il turno successivo."})
+        );
+        return;
+      }
     }
 
     if (waitingPlayers.length > 0) {
@@ -2436,9 +2606,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       await loadPlayers(roomId);
     }
 
-    const rid = roomId;
-    const currentRoundId = round.id;
-
     setMsg(t("drawingNextRound"));
     setRoomStatus("drawing");
     setLetter(null);
@@ -2447,21 +2614,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setAllAnswers([]);
     setAllScores([]);
     setMyScoreSubmitted(false);
-
-    const { data: locked, error: lockError } = await supabase
-      .from("rooms")
-      .update({ status: "drawing", letter: null })
-      .eq("id", rid)
-      .eq("status", "scoring")
-      .select("id")
-      .maybeSingle();
-
-    if (lockError || !locked) {
-      setMsg(
-        uiMessage({ cs: "ℹ️ Další kolo už spustil jiný hráč.", en: "ℹ️ Another player has already started the next round.", es: "ℹ️ Otro jugador ya ha iniciado la siguiente ronda." , de: "ℹ️ Ein anderer Spieler hat bereits die nächste Runde gestartet.", fr: "ℹ️ Un autre joueur a déjà démarré la manche suivante.", "pt-BR": "ℹ️ Outro jogador já iniciou a próxima rodada.", id: "ℹ️ Pemain lain sudah memulai ronde berikutnya.", tr: "ℹ️ Başka bir oyuncu sonraki turu başlattı.", pl: "ℹ️ Inny gracz rozpoczął już następną rundę.", it: "ℹ️ Un altro giocatore ha già avviato il turno successivo."})
-      );
-      return;
-    }
 
     await supabase.from("rounds").update({ status: "done" }).eq("id", currentRoundId);
 
@@ -2494,6 +2646,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     gameLanguageConfig.hasDiacritics;
 
   const roomIsFull = !myPlayer && players.length + waitingPlayers.length >= maxPlayers;
+  const freeJoinBlocked =
+    roomTier === "free" && freeRoundsRemaining <= 0;
   const activeMyPlayer = Boolean(myPlayer && myPlayer.status !== "waiting");
 
   const filledCustomCategoryCount = roomCustomCategories.filter((value) => value.trim().length > 0).length;
@@ -2739,7 +2893,32 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             {t("joinGame")}
           </h2>
 
-          {roomIsFull ? (
+          {freeJoinBlocked ? (
+            <section
+              style={{
+                padding: 14,
+                border: "2px solid #f59e0b",
+                borderRadius: 10,
+                background: "#fff7ed",
+              }}
+            >
+              <h3 style={{ marginTop: 0 }}>{t("freeLimitTitle")}</h3>
+              <p>{t("freeLimitText")}</p>
+
+              <button
+                type="button"
+                disabled={showRewardedAdPlaceholder}
+                onClick={() => void startFreeRewardedAd()}
+                style={{
+                  padding: 14,
+                  width: "100%",
+                  fontWeight: 700,
+                }}
+              >
+                {t("freeRewardButton")}
+              </button>
+            </section>
+          ) : roomIsFull ? (
             <p>
               {roomFullMessage(uiLanguage, maxPlayers)}
             </p>

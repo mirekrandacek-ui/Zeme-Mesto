@@ -7,12 +7,18 @@ import {
   hideFreeBannerAdForNativeApp,
   isNativeAdMobAvailable,
   showFreeBannerAdForNativeApp,
+  showFreeRewardedAdForNativeApp,
 } from "@/lib/admob";
 import {
   isPlayBillingAvailable,
   PlayBilling,
   type BillingProduct,
 } from "@/lib/playBilling";
+import {
+  getFreeQuotaState,
+  unlockFreeRoundBlock,
+} from "@/lib/freeQuota";
+import { getUiText as getRoomUiText } from "@/app/room/[code]/uiText";
 
 type Tier = "free" | "premium" | "super_premium";
 type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
@@ -711,6 +717,8 @@ export default function Home() {
   const [status, setStatus] = useState("");
   const [roomCodeInput, setRoomCodeInput] = useState("");
   const [creating, setCreating] = useState(false);
+  const [freeRoundsRemaining, setFreeRoundsRemaining] = useState(3);
+  const [rewardedBusy, setRewardedBusy] = useState(false);
 
   const [tier, setTier] = useState<Tier>("free");
   const [language, setLanguage] = useState<UiLanguage>("cs");
@@ -725,6 +733,23 @@ export default function Home() {
   const en = language === "en";
   const es = language === "es";
   const h = (key: HomeTextKey) => getHomeText(language, key);
+  const freeQuotaExhausted =
+    tier === "free" && freeRoundsRemaining <= 0;
+
+  useEffect(() => {
+    const syncFreeQuota = () => {
+      setFreeRoundsRemaining(getFreeQuotaState().remainingRounds);
+    };
+
+    syncFreeQuota();
+    window.addEventListener("focus", syncFreeQuota);
+    window.addEventListener("pageshow", syncFreeQuota);
+
+    return () => {
+      window.removeEventListener("focus", syncFreeQuota);
+      window.removeEventListener("pageshow", syncFreeQuota);
+    };
+  }, []);
 
   useEffect(() => {
     const savedUiLanguage = window.localStorage.getItem("zm_uiLanguage");
@@ -946,8 +971,37 @@ export default function Home() {
     };
   }, [tier]);
 
+  async function startHomeFreeRewardedAd() {
+    if (rewardedBusy) return;
+
+    setRewardedBusy(true);
+    setStatus("");
+
+    const rewardEarned = await showFreeRewardedAdForNativeApp();
+
+    if (!rewardEarned) {
+      setRewardedBusy(false);
+      setStatus(getRoomUiText(language, "freeLimitReachedMessage"));
+      return;
+    }
+
+    const nextQuota = unlockFreeRoundBlock();
+    setFreeRoundsRemaining(nextQuota.remainingRounds);
+    setRewardedBusy(false);
+    setStatus(getRoomUiText(language, "freeRewardUnlocked"));
+  }
+
   async function createRoom() {
     if (creating) return;
+
+    const currentQuota = getFreeQuotaState();
+    setFreeRoundsRemaining(currentQuota.remainingRounds);
+
+    if (tier === "free" && currentQuota.remainingRounds <= 0) {
+      setShowOtherModes(true);
+      setStatus(getRoomUiText(language, "freeLimitReachedMessage"));
+      return;
+    }
 
     setCreating(true);
     setStatus(h("creatingRoom"));
@@ -965,6 +1019,12 @@ export default function Home() {
         creator_token: creatorToken,
         language: gameLanguage,
         ...roomSettings,
+        ...(tier === "free"
+          ? {
+              free_rounds_unlocked: currentQuota.remainingRounds,
+              free_rounds_started: 0,
+            }
+          : {}),
       });
 
       if (!error) {
@@ -1162,9 +1222,40 @@ export default function Home() {
             </span>
         </label>
 
+        {freeQuotaExhausted && (
+          <section
+            style={{
+              marginTop: 16,
+              padding: 14,
+              border: "2px solid #f59e0b",
+              borderRadius: 10,
+              background: "#fff7ed",
+            }}
+          >
+            <h3 style={{ marginTop: 0 }}>
+              {getRoomUiText(language, "freeLimitTitle")}
+            </h3>
+
+            <p>{getRoomUiText(language, "freeLimitText")}</p>
+
+            <button
+              type="button"
+              disabled={rewardedBusy}
+              onClick={() => void startHomeFreeRewardedAd()}
+              style={{
+                padding: 14,
+                width: "100%",
+                fontWeight: 700,
+              }}
+            >
+              {getRoomUiText(language, "freeRewardButton")}
+            </button>
+          </section>
+        )}
+
         <button
           onClick={createRoom}
-          disabled={creating}
+          disabled={creating || freeQuotaExhausted}
           style={{
             padding: 16,
             marginTop: 16,
