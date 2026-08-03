@@ -3412,6 +3412,29 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
             )}
 
+          {roomStatus === "playing" && letter && myPlayer && (
+            <div style={{ textAlign: "right", marginBottom: 8 }}>
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm(`${t("disconnect")}?`)) {
+                    void signOut();
+                  }
+                }}
+                style={{
+                  padding: "8px 12px",
+                  border: "1px solid #dc2626",
+                  borderRadius: 6,
+                  background: "#fff",
+                  color: "#b91c1c",
+                  fontWeight: 700,
+                }}
+              >
+                {t("disconnect")}
+              </button>
+            </div>
+          )}
+
           {roomStatus === "playing" && letter && activeMyPlayer && round && (
               <div
                 ref={answerScrollBoxRef}
