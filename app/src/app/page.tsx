@@ -70,28 +70,28 @@ function tierLabel(tier: Tier) {
 
 const ENABLED_UI_LANGUAGES: readonly UiLanguage[] = [
   "en",
-  "es",
-  "de",
-  "fr",
-  "pt-BR",
-  "id",
-  "tr",
-  "pl",
-  "it",
   "cs",
+  "de",
+  "es",
+  "fr",
+  "it",
+  "pl",
+  "pt-BR",
+  "tr",
+  "id",
 ];
 
 const ENABLED_GAME_LANGUAGES: readonly RoomLanguage[] = [
   "en",
-  "es",
   "cs",
-  "pt-BR",
   "de",
+  "es",
   "fr",
-  "id",
-  "tr",
-  "pl",
   "it",
+  "pl",
+  "pt-BR",
+  "tr",
+  "id",
 ];
 
 function isRoomLanguage(value: string | null): value is RoomLanguage {
