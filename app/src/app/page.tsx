@@ -18,6 +18,7 @@ import {
   getFreeQuotaState,
   unlockFreeRoundBlock,
 } from "@/lib/freeQuota";
+import { getOrCreateLetterDeckOwnerId } from "@/lib/letterDeckOwner";
 import { getUiText as getRoomUiText } from "@/app/room/[code]/uiText";
 
 type Tier = "free" | "premium" | "super_premium";
@@ -1007,6 +1008,7 @@ export default function Home() {
     setStatus(h("creatingRoom"));
 
     const roomSettings = getRoomSettings();
+    const letterDeckOwnerId = getOrCreateLetterDeckOwnerId();
 
     for (let attempt = 1; attempt <= 5; attempt++) {
       const roomCode = createRoomCode();
@@ -1017,6 +1019,7 @@ export default function Home() {
         status: "lobby",
         letter: null,
         creator_token: creatorToken,
+        letter_deck_owner_id: letterDeckOwnerId,
         language: gameLanguage,
         ...roomSettings,
         ...(tier === "free"

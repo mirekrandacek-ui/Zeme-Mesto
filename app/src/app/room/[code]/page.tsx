@@ -951,34 +951,34 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     return `zm_myPlayer_${rid}`;
   }
 
-  async function pickLetter(rid: string) {
-    const letters = getLettersForLanguage(roomLanguage);
-    const { data } = await supabase
-      .from("rounds")
-      .select("letter")
-      .eq("room_id", rid)
-      .order("round_no", { ascending: true });
-
-    let usedInCurrentCycle = new Set<string>();
-
-    for (const row of data ?? []) {
-      const usedLetter = String((row as { letter: string }).letter ?? "").toUpperCase();
-
-      if (usedInCurrentCycle.size >= letters.length) {
-        usedInCurrentCycle = new Set<string>();
+  async function pickLetter(rid: string): Promise<string | null> {
+    const { data, error } = await (supabase as any).rpc(
+      "draw_room_letter",
+      {
+        p_room_id: rid,
       }
+    );
 
-      if (letters.includes(usedLetter)) {
-        usedInCurrentCycle.add(usedLetter);
-      }
+    if (error || typeof data !== "string" || !data.trim()) {
+      console.error("Letter drawing failed:", error);
+      setMsg(
+        uiMessage({
+          cs: "❌ Písmeno se nepodařilo vylosovat.",
+          en: "❌ The letter could not be drawn.",
+          es: "❌ No se pudo sortear la letra.",
+          de: "❌ Der Buchstabe konnte nicht ausgelost werden.",
+          fr: "❌ Impossible de tirer la lettre.",
+          "pt-BR": "❌ Não foi possível sortear a letra.",
+          id: "❌ Huruf tidak dapat diundi.",
+          tr: "❌ Harf çekilemedi.",
+          pl: "❌ Nie udało się wylosować litery.",
+          it: "❌ Non è stato possibile estrarre la lettera.",
+        })
+      );
+      return null;
     }
 
-    const availableLetters =
-      usedInCurrentCycle.size >= letters.length
-        ? letters
-        : letters.filter((ltr) => !usedInCurrentCycle.has(ltr));
-
-    return availableLetters[Math.floor(Math.random() * availableLetters.length)];
+    return data.trim();
   }
 
   function getRoomUrl() {
@@ -2243,6 +2243,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     window.setTimeout(async () => {
       const finalLetter = await pickLetter(rid);
+      if (!finalLetter) return;
+
       const newRound = await createRound(rid, finalLetter);
       if (!newRound) return;
 
@@ -2298,6 +2300,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     window.setTimeout(async () => {
       const finalLetter = await pickLetter(rid);
+      if (!finalLetter) return;
+
       const newRound = await createRound(rid, finalLetter);
       if (!newRound) return;
 
@@ -2619,6 +2623,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     window.setTimeout(async () => {
       const finalLetter = await pickLetter(rid);
+      if (!finalLetter) return;
+
       const newRound = await createRound(rid, finalLetter);
       if (!newRound) return;
 
