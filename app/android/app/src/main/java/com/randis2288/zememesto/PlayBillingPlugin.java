@@ -329,6 +329,10 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
                         "acknowledged",
                         purchase.isAcknowledged()
                     );
+                    purchaseItem.put(
+                        "purchaseToken",
+                        purchase.getPurchaseToken()
+                    );
 
                     resultPurchases.put(purchaseItem);
                 }
@@ -430,6 +434,11 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
             for (String productId : purchase.getProducts()) {
                 productIds.put(productId);
             }
+
+            result.put(
+                "purchaseToken",
+                purchase.getPurchaseToken()
+            );
         }
 
         result.put("productIds", productIds);

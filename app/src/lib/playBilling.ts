@@ -21,6 +21,7 @@ export type BillingPurchase = {
   productIds: string[];
   purchaseState: number;
   acknowledged: boolean;
+  purchaseToken: string;
 };
 
 type BillingStatus = {
@@ -40,6 +41,7 @@ export type PurchaseUpdatedEvent = {
   responseCode: number;
   debugMessage: string;
   productIds: string[];
+  purchaseToken?: string;
 };
 
 type PurchaseLaunchResult = {
