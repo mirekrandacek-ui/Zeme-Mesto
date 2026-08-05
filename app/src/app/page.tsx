@@ -1078,22 +1078,6 @@ export default function Home() {
       }}
     >
       <div className="home-header">
-        <h1
-          className={`home-title${
-            h("appTitleSecondLine") ? " home-title--two-lines" : ""
-          }`}
-        >
-          <span className="home-title-first-line">
-            {h("appTitleFirstLine")}
-          </span>
-          {h("appTitleSecondLine") && (
-            <>
-              <br />
-              {h("appTitleSecondLine")}
-            </>
-          )}
-        </h1>
-
         <div className="home-language">
 
           <label aria-label={h("applicationLanguage")}>

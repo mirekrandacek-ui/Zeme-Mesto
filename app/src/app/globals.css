@@ -22,16 +22,6 @@ body {
   gap: 12px;
 }
 
-.home-title {
-  min-width: 0;
-  margin: 0 0 8px;
-  line-height: 1.05;
-}
-
-.home-title-first-line {
-  white-space: nowrap;
-}
-
 .home-language {
   display: flex;
   flex-shrink: 0;
@@ -60,15 +50,4 @@ body {
     width: 100%;
   }
 
-  .home-title {
-    font-size: 2.15rem;
-  }
-
-  .home-title--two-lines {
-    font-size: 1.85rem;
-  }
-
-  .home-title-first-line {
-    white-space: normal;
-  }
 }
