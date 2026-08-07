@@ -131,10 +131,20 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Google Play purchase verification failed:", error);
 
+    const googleStatus =
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      typeof (error as { response?: { status?: unknown } }).response?.status ===
+        "number"
+        ? (error as { response: { status: number } }).response.status
+        : null;
+
     return NextResponse.json(
       {
         valid: false,
         error: "verification_failed",
+        googleStatus,
       },
       { status: 502 }
     );
