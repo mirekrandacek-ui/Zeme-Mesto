@@ -2864,9 +2864,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           {gameLanguageName} {gameLanguageFlag}
         </div>
 
-        <div style={{ marginTop: 3 }}>
-          {gameLanguageInstruction}
-        </div>
+        {uiLanguage !== roomLanguage && (
+          <div style={{ marginTop: 3 }}>
+            {gameLanguageInstruction}
+          </div>
+        )}
 
           {roomStatus === "lobby" && gameLanguageHasDiacritics && (
             <div style={{ marginTop: 6, fontSize: 13, opacity: 0.8 }}>

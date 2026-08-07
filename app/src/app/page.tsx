@@ -724,6 +724,8 @@ export default function Home() {
   const [tier, setTier] = useState<Tier>("free");
   const [language, setLanguage] = useState<UiLanguage>("cs");
   const [gameLanguage, setGameLanguage] = useState<RoomLanguage>("cs");
+  const [gameLanguageManuallySelected, setGameLanguageManuallySelected] =
+    useState(false);
   const [nativeFreeBannerShown, setNativeFreeBannerShown] = useState(false);
   const [showOtherModes, setShowOtherModes] = useState(false);
   const [billingProducts, setBillingProducts] = useState<BillingProduct[]>([]);
@@ -799,6 +801,9 @@ export default function Home() {
 
     setLanguage(initialUiLanguage);
     setGameLanguage(initialGameLanguage);
+    setGameLanguageManuallySelected(
+      initialGameLanguage !== initialUiLanguage
+    );
   }, []);
 
   useEffect(() => {
@@ -1089,8 +1094,22 @@ export default function Home() {
               value={language}
               onChange={(e) => {
                 const selectedLanguage = e.target.value as UiLanguage;
+
                 setLanguage(selectedLanguage);
-                window.localStorage.setItem("zm_uiLanguage", selectedLanguage);
+                window.localStorage.setItem(
+                  "zm_uiLanguage",
+                  selectedLanguage
+                );
+
+                if (!gameLanguageManuallySelected) {
+                  setGameLanguage(selectedLanguage);
+                  window.localStorage.setItem(
+                    "zm_gameLanguage",
+                    selectedLanguage
+                  );
+                } else if (gameLanguage === selectedLanguage) {
+                  setGameLanguageManuallySelected(false);
+                }
               }}
               style={{ padding: 10, borderRadius: 8 }}
             >
@@ -1167,7 +1186,12 @@ export default function Home() {
             value={gameLanguage}
             onChange={(e) => {
               const selectedGameLanguage = e.target.value as RoomLanguage;
+
               setGameLanguage(selectedGameLanguage);
+              setGameLanguageManuallySelected(
+                selectedGameLanguage !== language
+              );
+
               window.localStorage.setItem(
                 "zm_gameLanguage",
                 selectedGameLanguage
@@ -1197,16 +1221,6 @@ export default function Home() {
             {h("gameLanguageHelp")}
           </span>
 
-            <span
-              style={{
-                display: "block",
-                marginTop: 6,
-                fontSize: 13,
-                opacity: 0.75,
-              }}
-            >
-              {h("diacriticsHelp")}
-            </span>
         </label>
 
         {freeQuotaExhausted && (
