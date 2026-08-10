@@ -823,6 +823,18 @@ export default function Home() {
 
         setBillingProducts(productsResult.products ?? []);
 
+      const purchasedPurchases = (purchasesResult.purchases ?? []).filter(
+        (purchase) => purchase.purchaseState === 1
+      );
+
+      if (purchasedPurchases.length === 0) {
+        await fetch("/api/verify-purchase", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId: "premium", purchaseToken: "none" }),
+        });
+      }
+
       for (const purchase of purchasesResult.purchases ?? []) {
         if (purchase.purchaseState !== 1 || !purchase.purchaseToken) continue;
 
