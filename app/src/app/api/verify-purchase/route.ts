@@ -121,6 +121,14 @@ export async function POST(request: Request) {
       purchaseState === "PURCHASED" &&
       productIds.includes(body.productId);
 
+  console.log("Google Play purchase verification result:", {
+    productId: body.productId,
+    valid,
+    purchaseState: purchaseState ?? null,
+    acknowledgementState:
+      googleResponse.data.acknowledgementState ?? null,
+  });
+
     return NextResponse.json({
       valid,
       productId: valid ? body.productId : null,
