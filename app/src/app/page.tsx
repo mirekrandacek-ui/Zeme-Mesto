@@ -823,6 +823,29 @@ export default function Home() {
 
         setBillingProducts(productsResult.products ?? []);
 
+      for (const purchase of purchasesResult.purchases ?? []) {
+        if (purchase.purchaseState !== 1 || !purchase.purchaseToken) continue;
+
+        for (const productId of purchase.productIds) {
+          const response = await fetch("/api/verify-purchase", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              productId,
+              purchaseToken: purchase.purchaseToken,
+            }),
+          });
+
+          const verification = await response.json();
+
+          console.log("Google Play verification diagnostic:", {
+            productId,
+            httpStatus: response.status,
+            verification,
+          });
+        }
+      }
+
         const ownedProducts = new Set(
           (purchasesResult.purchases ?? [])
             .filter((purchase) => purchase.purchaseState === 1)
