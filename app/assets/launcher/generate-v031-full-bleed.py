@@ -2,8 +2,8 @@
 """Build the v031 full-bleed Android adaptive-icon foregrounds and preview.
 
 Requires Pillow (``python3 -m pip install Pillow``).  The approved 124% globe and
-STOP render is read from generated-v031-adaptive; only the previously transparent
-area is filled with a lit, textured ocean extension.
+STOP render is read from generated-v031-adaptive.  The globe stays full-size, while
+STOP is independently inset into the adaptive-icon safe zone.
 """
 
 from __future__ import annotations
@@ -21,6 +21,19 @@ OUTPUT = ROOT / "generated-v031-full-bleed"
 ANDROID_RES = ROOT.parents[1] / "android/app/src/main/res"
 PREVIEW = ROOT / "v031-adaptive-full-bleed-preview.png"
 SCALES = {"mdpi": 108, "hdpi": 162, "xhdpi": 216, "xxhdpi": 324, "xxxhdpi": 432}
+REFERENCE_SIZE = 432
+# Inclusive pixel bounds measured on the xxxhdpi source.  The polygons follow the
+# four raised tiles (including their bevels and shadows), rather than treating the
+# whole lower part of the globe as STOP.
+STOP_SOURCE_BBOX = (33, 238, 400, 380)
+STOP_SCALE = 0.58
+STOP_TARGET_CENTER = (216, 264)
+STOP_TILE_POLYGONS = (
+    ((33, 272), (48, 244), (113, 238), (139, 259), (135, 334), (116, 361), (57, 352), (37, 326)),
+    ((124, 280), (145, 266), (203, 270), (222, 286), (219, 352), (204, 375), (145, 369), (126, 349)),
+    ((211, 286), (231, 269), (286, 268), (307, 287), (307, 352), (287, 378), (231, 374), (213, 353)),
+    ((294, 263), (313, 242), (377, 238), (397, 258), (400, 326), (380, 350), (319, 361), (298, 341)),
+)
 
 
 def ocean_extension(size: int) -> Image.Image:
@@ -54,13 +67,56 @@ def ocean_extension(size: int) -> Image.Image:
     return Image.alpha_composite(image.convert("RGBA"), bands)
 
 
+def scaled_point(point: tuple[int, int], size: int) -> tuple[int, int]:
+    return tuple(round(value * size / REFERENCE_SIZE) for value in point)
+
+
+def stop_mask(size: int) -> Image.Image:
+    """Return a feathered mask covering only the four STOP tile renders."""
+    mask = Image.new("L", (size, size), 0)
+    draw = ImageDraw.Draw(mask)
+    for polygon in STOP_TILE_POLYGONS:
+        draw.polygon([scaled_point(point, size) for point in polygon], fill=255)
+    return mask.filter(ImageFilter.GaussianBlur(max(0.5, size / REFERENCE_SIZE)))
+
+
+def inset_stop(approved: Image.Image, ocean: Image.Image, size: int) -> Image.Image:
+    """Move STOP without scaling the globe, and restore ocean below its old pixels."""
+    mask = stop_mask(size)
+    # A broad feather avoids leaving four tile-shaped seams where the old STOP was.
+    # The replacement is deliberately ocean: the globe artwork itself remains at
+    # its approved scale and is allowed to run beyond every launcher mask.
+    spread = max(3, round(101 * size / REFERENCE_SIZE)) | 1
+    restore_mask = mask.filter(ImageFilter.MaxFilter(spread)).filter(
+        ImageFilter.GaussianBlur(max(2, 28 * size / REFERENCE_SIZE)))
+    globe = Image.composite(ocean, approved, restore_mask)
+
+    left, top, right, bottom = (round(value * size / REFERENCE_SIZE)
+                                for value in STOP_SOURCE_BBOX)
+    # PIL crop's right/bottom are exclusive; the measured bbox above is inclusive.
+    source_box = (left, top, right + 1, bottom + 1)
+    stop = approved.crop(source_box)
+    stop_alpha = mask.crop(source_box)
+    target_size = tuple(round(value * STOP_SCALE) for value in stop.size)
+    stop = stop.resize(target_size, Image.Resampling.LANCZOS)
+    stop_alpha = stop_alpha.resize(target_size, Image.Resampling.LANCZOS)
+    center = scaled_point(STOP_TARGET_CENTER, size)
+    target_origin = (center[0] - target_size[0] // 2,
+                     center[1] - target_size[1] // 2)
+    # Suppress the crop's rectangular ocean pixels and retain only the
+    # independently transformed STOP.
+    clean = Image.new("RGBA", (size, size))
+    clean.paste(stop, target_origin, stop_alpha)
+    return Image.alpha_composite(globe, clean)
+
+
 def build_foreground(density: str, size: int) -> Image.Image:
     approved = Image.open(SOURCE / f"ic_launcher_foreground-{density}.png").convert("RGBA")
     if approved.size != (size, size):
         raise ValueError(f"Unexpected {density} source size: {approved.size}")
-    # Alpha-compositing preserves every non-transparent source pixel and therefore
-    # the exact approved STOP scale and position.
-    return Image.alpha_composite(ocean_extension(size), approved)
+    ocean = ocean_extension(size)
+    approved_full_bleed = Image.alpha_composite(ocean, approved)
+    return inset_stop(approved_full_bleed, ocean, size)
 
 
 def adaptive_mask(kind: str, size: int) -> Image.Image:
