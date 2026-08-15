@@ -1,4 +1,8 @@
-import { Capacitor, registerPlugin, type PluginListenerHandle } from "@capacitor/core";
+import {
+  Capacitor,
+  registerPlugin,
+  type PluginListenerHandle,
+} from "@capacitor/core";
 
 export type BillingOffer = {
   offerId?: string;
@@ -42,6 +46,7 @@ export type PurchaseUpdatedEvent = {
   debugMessage: string;
   productIds: string[];
   purchaseToken?: string;
+  acknowledged: boolean;
 };
 
 type PurchaseLaunchResult = {
@@ -63,10 +68,49 @@ interface PlayBillingPlugin {
     offerId?: string;
   }): Promise<PurchaseLaunchResult>;
   getPurchases(): Promise<PurchasesResult>;
+  acknowledge(options: { purchaseToken: string }): Promise<BillingStatus>;
   addListener(
     eventName: "purchaseUpdated",
-    listener: (event: PurchaseUpdatedEvent) => void
+    listener: (event: PurchaseUpdatedEvent) => void,
   ): Promise<PluginListenerHandle>;
+}
+
+export async function verifyPlayPurchase(
+  productId: string,
+  purchaseToken: string,
+): Promise<boolean> {
+  if (!productId || !purchaseToken) return false;
+
+  const response = await fetch("/api/verify-purchase", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ productId, purchaseToken }),
+  });
+
+  if (!response.ok) return false;
+
+  const result = (await response.json()) as {
+    valid?: unknown;
+    productId?: unknown;
+  };
+
+  return result.valid === true && result.productId === productId;
+}
+
+export async function acknowledgePlayPurchase(
+  purchaseToken: string,
+): Promise<boolean> {
+  const result = await PlayBilling.acknowledge({ purchaseToken });
+  const acknowledged = result.ready && result.responseCode === 0;
+
+  if (!acknowledged) {
+    console.error("Google Play acknowledgement failed:", {
+      responseCode: result.responseCode,
+      debugMessage: result.debugMessage,
+    });
+  }
+
+  return acknowledged;
 }
 
 const PlayBilling = registerPlugin<PlayBillingPlugin>("PlayBilling");

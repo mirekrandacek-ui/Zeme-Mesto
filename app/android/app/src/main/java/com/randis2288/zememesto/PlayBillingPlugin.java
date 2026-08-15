@@ -394,27 +394,32 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
                 continue;
             }
 
-            if (purchase.isAcknowledged()) {
-                emitPurchaseResult("purchased", billingResult, purchase);
-                continue;
-            }
-
-            AcknowledgePurchaseParams params =
-                AcknowledgePurchaseParams.newBuilder()
-                    .setPurchaseToken(purchase.getPurchaseToken())
-                    .build();
-
-            billingClient.acknowledgePurchase(params, acknowledgeResult -> {
-                emitPurchaseResult(
-                    acknowledgeResult.getResponseCode() ==
-                        BillingClient.BillingResponseCode.OK
-                        ? "purchased"
-                        : "error",
-                    acknowledgeResult,
-                    purchase
-                );
-            });
+            emitPurchaseResult("purchased", billingResult, purchase);
         }
+    }
+
+    @PluginMethod
+    public void acknowledge(PluginCall call) {
+        ensureBillingClient();
+
+        String purchaseToken = call.getString("purchaseToken");
+        if (!billingClient.isReady() || purchaseToken == null || purchaseToken.isEmpty()) {
+            call.reject("Billing není připojený nebo chybí purchase token.");
+            return;
+        }
+
+        AcknowledgePurchaseParams params = AcknowledgePurchaseParams.newBuilder()
+            .setPurchaseToken(purchaseToken)
+            .build();
+
+        billingClient.acknowledgePurchase(params, result ->
+            resolveStatus(
+                call,
+                result.getResponseCode() == BillingClient.BillingResponseCode.OK,
+                result.getResponseCode(),
+                result.getDebugMessage()
+            )
+        );
     }
 
     private void emitPurchaseResult(
@@ -439,6 +444,7 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
                 "purchaseToken",
                 purchase.getPurchaseToken()
             );
+            result.put("acknowledged", purchase.isAcknowledged());
         }
 
         result.put("productIds", productIds);

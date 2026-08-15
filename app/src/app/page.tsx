@@ -9,9 +9,11 @@ import {
   showFreeRewardedAdForNativeApp,
 } from "@/lib/admob";
 import {
+  acknowledgePlayPurchase,
   isPlayBillingAvailable,
   PlayBilling,
   type BillingProduct,
+  verifyPlayPurchase,
 } from "@/lib/playBilling";
 import {
   getFreeQuotaState,
@@ -822,51 +824,32 @@ export default function Home() {
 
         setBillingProducts(productsResult.products ?? []);
 
-      const purchasedPurchases = (purchasesResult.purchases ?? []).filter(
-        (purchase) => purchase.purchaseState === 1
-      );
+        const ownedProducts = new Set<string>();
+        const purchaseTokensToAcknowledge: string[] = [];
+        for (const purchase of purchasesResult.purchases ?? []) {
+          if (purchase.purchaseState !== 1 || !purchase.purchaseToken) continue;
 
-      if (purchasedPurchases.length === 0) {
-        await fetch("/api/verify-purchase", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId: "premium", purchaseToken: "none" }),
-        });
-      }
+          const verified = await Promise.all(
+            purchase.productIds.map((productId) =>
+              verifyPlayPurchase(productId, purchase.purchaseToken)
+            )
+          );
+          if (verified.some((valid) => !valid)) continue;
 
-      for (const purchase of purchasesResult.purchases ?? []) {
-        if (purchase.purchaseState !== 1 || !purchase.purchaseToken) continue;
-
-        for (const productId of purchase.productIds) {
-          const response = await fetch("/api/verify-purchase", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              productId,
-              purchaseToken: purchase.purchaseToken,
-            }),
-          });
-
-          const verification = await response.json();
-
-          console.log("Google Play verification diagnostic:", {
-            productId,
-            httpStatus: response.status,
-            verification,
-          });
+          purchase.productIds.forEach((productId) => ownedProducts.add(productId));
+          if (!purchase.acknowledged) {
+            purchaseTokensToAcknowledge.push(purchase.purchaseToken);
+          }
         }
-      }
-
-        const ownedProducts = new Set(
-          (purchasesResult.purchases ?? [])
-            .filter((purchase) => purchase.purchaseState === 1)
-            .flatMap((purchase) => purchase.productIds)
-        );
 
         if (ownedProducts.has("super_premium")) {
           setTier("super_premium");
         } else if (ownedProducts.has("premium")) {
           setTier("premium");
+        }
+
+        for (const purchaseToken of purchaseTokensToAcknowledge) {
+          await acknowledgePlayPurchase(purchaseToken);
         }
       } catch (error) {
         console.error("Google Play Billing init failed:", error);
@@ -882,13 +865,32 @@ export default function Home() {
     let active = true;
     let listenerHandle: { remove: () => Promise<void> } | undefined;
 
-    void PlayBilling.addListener("purchaseUpdated", (event) => {
-      if (!active || event.status !== "purchased") return;
+    void PlayBilling.addListener("purchaseUpdated", async (event) => {
+      if (!active || event.status !== "purchased" || !event.purchaseToken) return;
 
-      if (event.productIds.includes("super_premium")) {
-        setTier("super_premium");
-      } else if (event.productIds.includes("premium")) {
-        setTier("premium");
+      try {
+        const verified = await Promise.all(
+          event.productIds.map((productId) =>
+            verifyPlayPurchase(productId, event.purchaseToken!)
+          )
+        );
+        if (!active || verified.some((valid) => !valid)) {
+          window.alert(h("purchaseStartError"));
+          return;
+        }
+
+        if (event.productIds.includes("super_premium")) {
+          setTier("super_premium");
+        } else if (event.productIds.includes("premium")) {
+          setTier("premium");
+        }
+
+        if (!event.acknowledged) {
+          await acknowledgePlayPurchase(event.purchaseToken);
+        }
+      } catch (error) {
+        console.error("Google Play purchase verification failed:", error);
+        window.alert(h("purchaseStartError"));
       }
     }).then((handle) => {
       if (!active) {
