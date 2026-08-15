@@ -25,7 +25,7 @@ REFERENCE_SIZE = 432
 # The crop includes padding for the feathered tile edges. It is deliberately not
 # reported as the visible STOP bbox; that is measured from the alpha mask below.
 STOP_SOURCE_CROP = (28, 233, 405, 385)
-STOP_SCALE = 0.68
+STOP_SCALE = 0.65
 STOP_TARGET_CENTER = (215, 226)
 VISIBLE_ALPHA_THRESHOLD = 8
 STOP_TILE_POLYGONS = (
