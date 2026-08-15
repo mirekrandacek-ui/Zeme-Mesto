@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 import {
-  hideFreeBannerAdForNativeApp,
   isNativeAdMobAvailable,
   showFreeBannerAdForNativeApp,
   showFreeRewardedAdForNativeApp,
@@ -279,9 +278,9 @@ const HOME_TEXT = {
     freeDescription:
       "Reklamy, až 3 hráči. Pevné kategorie: Země, Město, Jméno.",
     premiumDescription:
-      "Bez reklam, max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina.",
+      "Max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina.",
     superPremiumDescription:
-      "Bez reklam, neomezený počet hráčů, volba počtu a pořadí kategorií, časový limit na kolo, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií.",
+      "Neomezený počet hráčů, volba počtu a pořadí kategorií, časový limit na kolo, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií.",
     superPremiumCategories:
       "Kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina, Film / Seriál, Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Sport, Značka, Auto / Moto, Řeka / Hora, Povolání, Barva.",
     creating: "Vytvářím…",
@@ -291,7 +290,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Součást Super Premium",
     buyPremium: "Koupit Premium",
     superPremiumPurchaseDescription:
-      "Bez reklam, neomezený počet hráčů, všechny základní i rozšířené kategorie v ceně, volba počtu a pořadí kategorií, časový limit na kolo, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií.",
+      "Neomezený počet hráčů, všechny základní i rozšířené kategorie v ceně, volba počtu a pořadí kategorií, časový limit na kolo, nastavení počtu kol a možnost vytvořit až 5 vlastních kategorií.",
     upgradeToSuperPremium: "Upgradovat na Super Premium",
     upgradeToSuperPremiumFor: "Upgradovat na Super Premium za",
     buySuperPremium: "Koupit Super Premium",
@@ -327,9 +326,9 @@ const HOME_TEXT = {
     freeDescription:
       "Ads, up to 3 players. Fixed categories: Country, City, Name.",
     premiumDescription:
-      "No ads, up to 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant.",
+      "Up to 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant.",
     superPremiumDescription:
-      "No ads, unlimited players, category selection and ordering, optional time limit per round, number of rounds, and up to 5 custom categories.",
+      "Unlimited players, category selection and ordering, optional time limit per round, number of rounds, and up to 5 custom categories.",
     superPremiumCategories:
       "Categories: Country, City, Name, Animal, Thing, Plant, Film / Series, Actor / Actress, Singer / Band, Sport, Brand, Car / Motorbike, River / Mountain, Job, Colour.",
     creating: "Creating…",
@@ -339,7 +338,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Included in Super Premium",
     buyPremium: "Buy Premium",
     superPremiumPurchaseDescription:
-      "No ads, unlimited players, all basic and extended categories included, category selection and ordering, optional time limit per round, number of rounds, and up to 5 custom categories.",
+      "Unlimited players, all basic and extended categories included, category selection and ordering, optional time limit per round, number of rounds, and up to 5 custom categories.",
     upgradeToSuperPremium: "Upgrade to Super Premium",
     upgradeToSuperPremiumFor: "Upgrade to Super Premium for",
     buySuperPremium: "Buy Super Premium",
@@ -376,9 +375,9 @@ const HOME_TEXT = {
     freeDescription:
       "Con anuncios, hasta 3 jugadores. Categorías fijas: País, Ciudad, Nombre.",
     premiumDescription:
-      "Sin anuncios, hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta.",
+      "Hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta.",
     superPremiumDescription:
-      "Sin anuncios, jugadores sin límite, selección y orden de categorías, límite de tiempo por ronda, número de rondas y hasta 5 categorías propias.",
+      "Jugadores sin límite, selección y orden de categorías, límite de tiempo por ronda, número de rondas y hasta 5 categorías propias.",
     superPremiumCategories:
       "Categorías: País, Ciudad, Nombre, Animal, Cosa, Planta, Película / Serie, Actor / Actriz, Cantante / Banda, Deporte, Marca, Coche / Moto, Río / Montaña, Profesión, Color.",
     creating: "Creando…",
@@ -388,7 +387,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Incluido en Super Premium",
     buyPremium: "Comprar Premium",
     superPremiumPurchaseDescription:
-      "Sin anuncios, jugadores sin límite, todas las categorías básicas y ampliadas incluidas, selección y orden de categorías, límite de tiempo por ronda, número de rondas y hasta 5 categorías propias.",
+      "Jugadores sin límite, todas las categorías básicas y ampliadas incluidas, selección y orden de categorías, límite de tiempo por ronda, número de rondas y hasta 5 categorías propias.",
     upgradeToSuperPremium: "Pasar a Super Premium",
     upgradeToSuperPremiumFor: "Pasar a Super Premium por",
     buySuperPremium: "Comprar Super Premium",
@@ -427,9 +426,9 @@ const HOME_TEXT = {
     freeDescription:
       "Werbung, bis zu 3 Spieler. Feste Kategorien: Land, Stadt, Name.",
     premiumDescription:
-      "Keine Werbung, bis zu 5 Spieler. Feste Grundkategorien: Land, Stadt, Name, Tier, Gegenstand, Pflanze.",
+      "Bis zu 5 Spieler. Feste Grundkategorien: Land, Stadt, Name, Tier, Gegenstand, Pflanze.",
     superPremiumDescription:
-      "Keine Werbung, unbegrenzt viele Spieler, Auswahl und Reihenfolge der Kategorien, optionales Zeitlimit pro Runde, Anzahl der Runden und bis zu 5 eigene Kategorien.",
+      "Unbegrenzt viele Spieler, Auswahl und Reihenfolge der Kategorien, optionales Zeitlimit pro Runde, Anzahl der Runden und bis zu 5 eigene Kategorien.",
     superPremiumCategories:
       "Kategorien: Land, Stadt, Name, Tier, Gegenstand, Pflanze, Film / Serie, Schauspieler / Schauspielerin, Sänger / Sängerin / Band, Sportart, Marke, Auto / Motorrad, Fluss / Berg, Beruf, Farbe.",
     creating: "Wird erstellt…",
@@ -439,7 +438,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "In Super Premium enthalten",
     buyPremium: "Premium kaufen",
     superPremiumPurchaseDescription:
-      "Keine Werbung, unbegrenzt viele Spieler, alle Grund- und Zusatzkategorien enthalten, Auswahl und Reihenfolge der Kategorien, optionales Zeitlimit pro Runde, Anzahl der Runden und bis zu 5 eigene Kategorien.",
+      "Unbegrenzt viele Spieler, alle Grund- und Zusatzkategorien enthalten, Auswahl und Reihenfolge der Kategorien, optionales Zeitlimit pro Runde, Anzahl der Runden und bis zu 5 eigene Kategorien.",
     upgradeToSuperPremium: "Auf Super Premium upgraden",
     upgradeToSuperPremiumFor: "Auf Super Premium upgraden für",
     buySuperPremium: "Super Premium kaufen",
@@ -471,8 +470,8 @@ const HOME_TEXT = {
     purchaseWindowError: "Impossible d’ouvrir la fenêtre d’achat.",
     purchaseStartError: "Impossible de démarrer l’achat.",
     freeDescription: "Publicités, jusqu’à 3 joueurs. Catégories fixes : Pays, Ville, Prénom.",
-    premiumDescription: "Sans publicité, jusqu’à 5 joueurs. Catégories de base fixes : Pays, Ville, Prénom, Animal, Objet, Plante.",
-    superPremiumDescription: "Sans publicité, nombre de joueurs illimité, sélection et ordre des catégories, limite de temps facultative par manche, nombre de manches et jusqu’à 5 catégories personnalisées.",
+    premiumDescription: "Jusqu’à 5 joueurs. Catégories de base fixes : Pays, Ville, Prénom, Animal, Objet, Plante.",
+    superPremiumDescription: "Nombre de joueurs illimité, sélection et ordre des catégories, limite de temps facultative par manche, nombre de manches et jusqu’à 5 catégories personnalisées.",
     superPremiumCategories: "Catégories : Pays, Ville, Prénom, Animal, Objet, Plante, Film / Série, Acteur / Actrice, Chanteur / Chanteuse / Groupe, Sport, Marque, Voiture / Moto, Rivière / Montagne, Métier, Couleur.",
     creating: "Création…",
     createRoom: "Créer une salle",
@@ -480,7 +479,7 @@ const HOME_TEXT = {
     showOtherModes: "Afficher les autres modes",
     includedInSuperPremium: "Inclus dans Super Premium",
     buyPremium: "Acheter Premium",
-    superPremiumPurchaseDescription: "Sans publicité, nombre de joueurs illimité, toutes les catégories de base et supplémentaires incluses, sélection et ordre des catégories, limite de temps facultative par manche, nombre de manches et jusqu’à 5 catégories personnalisées.",
+    superPremiumPurchaseDescription: "Nombre de joueurs illimité, toutes les catégories de base et supplémentaires incluses, sélection et ordre des catégories, limite de temps facultative par manche, nombre de manches et jusqu’à 5 catégories personnalisées.",
     upgradeToSuperPremium: "Passer à Super Premium",
     upgradeToSuperPremiumFor: "Passer à Super Premium pour",
     buySuperPremium: "Acheter Super Premium",
@@ -511,8 +510,8 @@ const HOME_TEXT = {
     purchaseWindowError: "Não foi possível abrir a janela de compra.",
     purchaseStartError: "Não foi possível iniciar a compra.",
     freeDescription: "Anúncios, até 3 jogadores. Categorias fixas: País, Cidade, Nome.",
-    premiumDescription: "Sem anúncios, até 5 jogadores. Categorias básicas fixas: País, Cidade, Nome, Animal, Objeto, Planta.",
-    superPremiumDescription: "Sem anúncios, jogadores ilimitados, seleção e ordem das categorias, limite de tempo opcional por rodada, número de rodadas e até 5 categorias personalizadas.",
+    premiumDescription: "Até 5 jogadores. Categorias básicas fixas: País, Cidade, Nome, Animal, Objeto, Planta.",
+    superPremiumDescription: "Jogadores ilimitados, seleção e ordem das categorias, limite de tempo opcional por rodada, número de rodadas e até 5 categorias personalizadas.",
     superPremiumCategories: "Categorias: País, Cidade, Nome, Animal, Objeto, Planta, Filme / Série, Ator / Atriz, Cantor / Cantora / Banda, Esporte, Marca, Carro / Moto, Rio / Montanha, Profissão, Cor.",
     creating: "Criando…",
     createRoom: "Criar sala",
@@ -520,7 +519,7 @@ const HOME_TEXT = {
     showOtherModes: "Mostrar outros modos",
     includedInSuperPremium: "Incluído no Super Premium",
     buyPremium: "Comprar Premium",
-    superPremiumPurchaseDescription: "Sem anúncios, jogadores ilimitados, todas as categorias básicas e adicionais incluídas, seleção e ordem das categorias, limite de tempo opcional por rodada, número de rodadas e até 5 categorias personalizadas.",
+    superPremiumPurchaseDescription: "Jogadores ilimitados, todas as categorias básicas e adicionais incluídas, seleção e ordem das categorias, limite de tempo opcional por rodada, número de rodadas e até 5 categorias personalizadas.",
     upgradeToSuperPremium: "Fazer upgrade para Super Premium",
     upgradeToSuperPremiumFor: "Fazer upgrade para Super Premium por",
     buySuperPremium: "Comprar Super Premium",
@@ -550,8 +549,8 @@ const HOME_TEXT = {
     purchaseWindowError: "Jendela pembelian tidak dapat dibuka.",
     purchaseStartError: "Pembelian tidak dapat dimulai.",
     freeDescription: "Iklan, maksimal 3 pemain. Kategori tetap: Negara, Kota, Nama.",
-    premiumDescription: "Tanpa iklan, maksimal 5 pemain. Kategori dasar tetap: Negara, Kota, Nama, Hewan, Benda, Tumbuhan.",
-    superPremiumDescription: "Tanpa iklan, jumlah pemain tak terbatas, pilihan dan urutan kategori, batas waktu opsional per ronde, jumlah ronde, dan hingga 5 kategori buatan sendiri.",
+    premiumDescription: "Maksimal 5 pemain. Kategori dasar tetap: Negara, Kota, Nama, Hewan, Benda, Tumbuhan.",
+    superPremiumDescription: "Jumlah pemain tak terbatas, pilihan dan urutan kategori, batas waktu opsional per ronde, jumlah ronde, dan hingga 5 kategori buatan sendiri.",
     superPremiumCategories: "Kategori: Negara, Kota, Nama, Hewan, Benda, Tumbuhan, Film / Serial, Aktor / Aktris, Penyanyi / Grup Musik, Olahraga, Merek, Mobil / Motor, Sungai / Gunung, Pekerjaan, Warna.",
     creating: "Membuat…",
     createRoom: "Buat ruang",
@@ -559,7 +558,7 @@ const HOME_TEXT = {
     showOtherModes: "Tampilkan mode lain",
     includedInSuperPremium: "Termasuk dalam Super Premium",
     buyPremium: "Beli Premium",
-    superPremiumPurchaseDescription: "Tanpa iklan, jumlah pemain tak terbatas, semua kategori dasar dan tambahan tersedia, pilihan dan urutan kategori, batas waktu opsional per ronde, jumlah ronde, dan hingga 5 kategori buatan sendiri.",
+    superPremiumPurchaseDescription: "Jumlah pemain tak terbatas, semua kategori dasar dan tambahan tersedia, pilihan dan urutan kategori, batas waktu opsional per ronde, jumlah ronde, dan hingga 5 kategori buatan sendiri.",
     upgradeToSuperPremium: "Tingkatkan ke Super Premium",
     upgradeToSuperPremiumFor: "Tingkatkan ke Super Premium seharga",
     buySuperPremium: "Beli Super Premium",
@@ -589,8 +588,8 @@ const HOME_TEXT = {
     purchaseWindowError: "Satın alma penceresi açılamadı.",
     purchaseStartError: "Satın alma başlatılamadı.",
     freeDescription: "Reklamlı, en fazla 3 oyuncu. Sabit kategoriler: Ülke, Şehir, İsim.",
-    premiumDescription: "Reklamsız, en fazla 5 oyuncu. Sabit temel kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya, Bitki.",
-    superPremiumDescription: "Reklamsız, sınırsız oyuncu, kategori seçimi ve sıralaması, tur başına isteğe bağlı süre sınırı, tur sayısı ve en fazla 5 özel kategori.",
+    premiumDescription: "En fazla 5 oyuncu. Sabit temel kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya, Bitki.",
+    superPremiumDescription: "Sınırsız oyuncu, kategori seçimi ve sıralaması, tur başına isteğe bağlı süre sınırı, tur sayısı ve en fazla 5 özel kategori.",
     superPremiumCategories: "Kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya, Bitki, Film / Dizi, Oyuncu, Şarkıcı / Müzik Grubu, Spor, Marka, Araba / Motosiklet, Nehir / Dağ, Meslek, Renk.",
     creating: "Oluşturuluyor…",
     createRoom: "Oda oluştur",
@@ -598,7 +597,7 @@ const HOME_TEXT = {
     showOtherModes: "Diğer modları göster",
     includedInSuperPremium: "Super Premium'a dahil",
     buyPremium: "Premium satın al",
-    superPremiumPurchaseDescription: "Reklamsız, sınırsız oyuncu, tüm temel ve ek kategoriler, kategori seçimi ve sıralaması, tur başına isteğe bağlı süre sınırı, tur sayısı ve en fazla 5 özel kategori.",
+    superPremiumPurchaseDescription: "Sınırsız oyuncu, tüm temel ve ek kategoriler, kategori seçimi ve sıralaması, tur başına isteğe bağlı süre sınırı, tur sayısı ve en fazla 5 özel kategori.",
     upgradeToSuperPremium: "Super Premium'a yükselt",
     upgradeToSuperPremiumFor: "Şu fiyata Super Premium'a yükselt",
     buySuperPremium: "Super Premium satın al",
@@ -628,8 +627,8 @@ const HOME_TEXT = {
     purchaseWindowError: "Nie udało się otworzyć okna zakupu.",
     purchaseStartError: "Nie udało się rozpocząć zakupu.",
     freeDescription: "Reklamy, maks. 3 graczy. Stałe kategorie: Państwo, Miasto, Imię.",
-    premiumDescription: "Bez reklam, maks. 5 graczy. Stałe kategorie podstawowe: Państwo, Miasto, Imię, Zwierzę, Rzecz, Roślina.",
-    superPremiumDescription: "Bez reklam, nieograniczona liczba graczy, wybór i kolejność kategorii, opcjonalny limit czasu na rundę, liczba rund oraz do 5 własnych kategorii.",
+    premiumDescription: "Maks. 5 graczy. Stałe kategorie podstawowe: Państwo, Miasto, Imię, Zwierzę, Rzecz, Roślina.",
+    superPremiumDescription: "Nieograniczona liczba graczy, wybór i kolejność kategorii, opcjonalny limit czasu na rundę, liczba rund oraz do 5 własnych kategorii.",
     superPremiumCategories: "Kategorie: Państwo, Miasto, Imię, Zwierzę, Rzecz, Roślina, Film / Serial, Aktor / Aktorka, Piosenkarz / Zespół, Sport, Marka, Samochód / Motocykl, Rzeka / Góra, Zawód, Kolor.",
     creating: "Tworzenie…",
     createRoom: "Utwórz pokój",
@@ -637,7 +636,7 @@ const HOME_TEXT = {
     showOtherModes: "Pokaż pozostałe tryby",
     includedInSuperPremium: "Wliczone w Super Premium",
     buyPremium: "Kup Premium",
-    superPremiumPurchaseDescription: "Bez reklam, nieograniczona liczba graczy, wszystkie kategorie podstawowe i rozszerzone w cenie, wybór i kolejność kategorii, opcjonalny limit czasu na rundę, liczba rund oraz do 5 własnych kategorii.",
+    superPremiumPurchaseDescription: "Nieograniczona liczba graczy, wszystkie kategorie podstawowe i rozszerzone w cenie, wybór i kolejność kategorii, opcjonalny limit czasu na rundę, liczba rund oraz do 5 własnych kategorii.",
     upgradeToSuperPremium: "Przejdź na Super Premium",
     upgradeToSuperPremiumFor: "Przejdź na Super Premium za",
     buySuperPremium: "Kup Super Premium",
@@ -668,8 +667,8 @@ const HOME_TEXT = {
     purchaseWindowError: "Impossibile aprire la finestra di acquisto.",
     purchaseStartError: "Impossibile avviare l’acquisto.",
     freeDescription: "Pubblicità, massimo 3 giocatori. Categorie fisse: Nazione, Città, Nome.",
-    premiumDescription: "Senza pubblicità, massimo 5 giocatori. Categorie base fisse: Nazione, Città, Nome, Animale, Cosa, Pianta.",
-    superPremiumDescription: "Senza pubblicità, numero illimitato di giocatori, scelta e ordine delle categorie, limite di tempo facoltativo per turno, numero di turni e fino a 5 categorie personalizzate.",
+    premiumDescription: "Massimo 5 giocatori. Categorie base fisse: Nazione, Città, Nome, Animale, Cosa, Pianta.",
+    superPremiumDescription: "Numero illimitato di giocatori, scelta e ordine delle categorie, limite di tempo facoltativo per turno, numero di turni e fino a 5 categorie personalizzate.",
     superPremiumCategories: "Categorie: Nazione, Città, Nome, Animale, Cosa, Pianta, Film / Serie TV, Attore / Attrice, Cantante / Gruppo, Sport, Marca, Auto / Moto, Fiume / Montagna, Professione, Colore.",
     creating: "Creazione…",
     createRoom: "Crea stanza",
@@ -677,7 +676,7 @@ const HOME_TEXT = {
     showOtherModes: "Mostra le altre modalità",
     includedInSuperPremium: "Incluso in Super Premium",
     buyPremium: "Acquista Premium",
-    superPremiumPurchaseDescription: "Senza pubblicità, numero illimitato di giocatori, tutte le categorie base ed estese incluse, scelta e ordine delle categorie, limite di tempo facoltativo per turno, numero di turni e fino a 5 categorie personalizzate.",
+    superPremiumPurchaseDescription: "Numero illimitato di giocatori, tutte le categorie base ed estese incluse, scelta e ordine delle categorie, limite di tempo facoltativo per turno, numero di turni e fino a 5 categorie personalizzate.",
     upgradeToSuperPremium: "Passa a Super Premium",
     upgradeToSuperPremiumFor: "Passa a Super Premium per",
     buySuperPremium: "Acquista Super Premium",
@@ -963,7 +962,7 @@ export default function Home() {
         max_players: 5,
         active_categories: PREMIUM_CATEGORIES,
         custom_category: null,
-        ads_enabled: false,
+        ads_enabled: true,
       };
     }
 
@@ -973,7 +972,7 @@ export default function Home() {
         max_players: 999,
         active_categories: [...PREMIUM_CATEGORIES, ...EXTENDED_CATEGORIES],
         custom_category: null,
-        ads_enabled: false,
+        ads_enabled: true,
       };
     }
 
@@ -989,23 +988,17 @@ export default function Home() {
   useEffect(() => {
     let cancelled = false;
 
-    async function updateHomeFreeBanner() {
+    async function updateHomeBanner() {
       if (!isNativeAdMobAvailable()) {
         setNativeFreeBannerShown(false);
         return;
       }
 
-      if (tier === "free") {
-        if (!cancelled) setNativeFreeBannerShown(true);
-        await showFreeBannerAdForNativeApp();
-        return;
-      }
-
-      await hideFreeBannerAdForNativeApp();
-      if (!cancelled) setNativeFreeBannerShown(false);
+      if (!cancelled) setNativeFreeBannerShown(true);
+      await showFreeBannerAdForNativeApp();
     }
 
-    void updateHomeFreeBanner();
+    void updateHomeBanner();
 
     return () => {
       cancelled = true;
@@ -1109,9 +1102,7 @@ export default function Home() {
     <main
       style={{
         padding: 24,
-        paddingTop: tier === "free"
-          ? "calc(72px + env(safe-area-inset-top))"
-          : 24,
+        paddingTop: "calc(72px + env(safe-area-inset-top))",
         fontFamily: "system-ui",
         maxWidth: 520,
         margin: "0 auto",
