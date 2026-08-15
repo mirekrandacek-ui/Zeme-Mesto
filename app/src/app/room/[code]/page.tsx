@@ -10,6 +10,7 @@ import {
   showFreeRewardedAdForNativeApp,
 } from "@/lib/admob";
 import {
+  acknowledgePlayPurchase,
   isPlayBillingAvailable,
   PlayBilling,
   type BillingProduct,
@@ -719,6 +720,7 @@ export default function RoomPage() {
         setBillingProducts(productsResult.products ?? []);
 
         const ownedCategoryIds: string[] = [];
+        const purchaseTokensToAcknowledge: string[] = [];
         for (const purchase of purchasesResult.purchases ?? []) {
           if (purchase.purchaseState !== 1 || !purchase.purchaseToken) continue;
 
@@ -735,11 +737,14 @@ export default function RoomPage() {
             )
           );
           if (!purchase.acknowledged) {
-            await PlayBilling.acknowledge({ purchaseToken: purchase.purchaseToken });
+            purchaseTokensToAcknowledge.push(purchase.purchaseToken);
           }
         }
 
         setOwnedCategoryProductIds([...new Set(ownedCategoryIds)]);
+        for (const purchaseToken of purchaseTokensToAcknowledge) {
+          await acknowledgePlayPurchase(purchaseToken);
+        }
       } catch (error) {
         console.error("Google Play room billing failed:", error);
       }
@@ -815,7 +820,9 @@ export default function RoomPage() {
           setShowFreeLimitUpsell(false);
           setPremiumLockedOfferCategory(null);
           setMsg("");
-          await PlayBilling.acknowledge({ purchaseToken: event.purchaseToken! });
+          if (!event.acknowledged) {
+            await acknowledgePlayPurchase(event.purchaseToken!);
+          }
         })();
 
         return;
@@ -853,7 +860,9 @@ export default function RoomPage() {
           setMaxPlayers(999);
           setPremiumLockedOfferCategory(null);
           setMsg("");
-          await PlayBilling.acknowledge({ purchaseToken: event.purchaseToken! });
+          if (!event.acknowledged) {
+            await acknowledgePlayPurchase(event.purchaseToken!);
+          }
         })();
 
         return;
@@ -873,7 +882,9 @@ export default function RoomPage() {
       setMsg(
         uiMessage({ cs: "Kategorie byla odemčena.", en: "The category has been unlocked.", es: "La categoría ha sido desbloqueada." , de: "Die Kategorie wurde freigeschaltet.", fr: "La catégorie a été déverrouillée.", "pt-BR": "A categoria foi desbloqueada.", id: "Kategori telah dibuka.", tr: "Kategorinin kilidi açıldı.", pl: "Kategoria została odblokowana.", it: "La categoria è stata sbloccata."})
       );
-      await PlayBilling.acknowledge({ purchaseToken: event.purchaseToken });
+      if (!event.acknowledged) {
+        await acknowledgePlayPurchase(event.purchaseToken);
+      }
     }).then((handle) => {
       if (!active) {
         void handle.remove();

@@ -46,6 +46,7 @@ export type PurchaseUpdatedEvent = {
   debugMessage: string;
   productIds: string[];
   purchaseToken?: string;
+  acknowledged: boolean;
 };
 
 type PurchaseLaunchResult = {
@@ -94,6 +95,22 @@ export async function verifyPlayPurchase(
   };
 
   return result.valid === true && result.productId === productId;
+}
+
+export async function acknowledgePlayPurchase(
+  purchaseToken: string,
+): Promise<boolean> {
+  const result = await PlayBilling.acknowledge({ purchaseToken });
+  const acknowledged = result.ready && result.responseCode === 0;
+
+  if (!acknowledged) {
+    console.error("Google Play acknowledgement failed:", {
+      responseCode: result.responseCode,
+      debugMessage: result.debugMessage,
+    });
+  }
+
+  return acknowledged;
 }
 
 const PlayBilling = registerPlugin<PlayBillingPlugin>("PlayBilling");

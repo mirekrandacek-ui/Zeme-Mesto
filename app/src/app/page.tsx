@@ -9,6 +9,7 @@ import {
   showFreeRewardedAdForNativeApp,
 } from "@/lib/admob";
 import {
+  acknowledgePlayPurchase,
   isPlayBillingAvailable,
   PlayBilling,
   type BillingProduct,
@@ -824,6 +825,7 @@ export default function Home() {
         setBillingProducts(productsResult.products ?? []);
 
         const ownedProducts = new Set<string>();
+        const purchaseTokensToAcknowledge: string[] = [];
         for (const purchase of purchasesResult.purchases ?? []) {
           if (purchase.purchaseState !== 1 || !purchase.purchaseToken) continue;
 
@@ -836,9 +838,7 @@ export default function Home() {
 
           purchase.productIds.forEach((productId) => ownedProducts.add(productId));
           if (!purchase.acknowledged) {
-            await PlayBilling.acknowledge({
-              purchaseToken: purchase.purchaseToken,
-            });
+            purchaseTokensToAcknowledge.push(purchase.purchaseToken);
           }
         }
 
@@ -846,6 +846,10 @@ export default function Home() {
           setTier("super_premium");
         } else if (ownedProducts.has("premium")) {
           setTier("premium");
+        }
+
+        for (const purchaseToken of purchaseTokensToAcknowledge) {
+          await acknowledgePlayPurchase(purchaseToken);
         }
       } catch (error) {
         console.error("Google Play Billing init failed:", error);
@@ -881,7 +885,9 @@ export default function Home() {
           setTier("premium");
         }
 
-        await PlayBilling.acknowledge({ purchaseToken: event.purchaseToken });
+        if (!event.acknowledged) {
+          await acknowledgePlayPurchase(event.purchaseToken);
+        }
       } catch (error) {
         console.error("Google Play purchase verification failed:", error);
         window.alert(h("purchaseStartError"));

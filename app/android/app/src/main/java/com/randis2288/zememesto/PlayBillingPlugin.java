@@ -444,6 +444,7 @@ public class PlayBillingPlugin extends Plugin implements PurchasesUpdatedListene
                 "purchaseToken",
                 purchase.getPurchaseToken()
             );
+            result.put("acknowledged", purchase.isAcknowledged());
         }
 
         result.put("productIds", productIds);
