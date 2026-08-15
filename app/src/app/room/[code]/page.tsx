@@ -13,6 +13,7 @@ import {
   isPlayBillingAvailable,
   PlayBilling,
   type BillingProduct,
+  verifyPlayPurchase,
 } from "@/lib/playBilling";
 import {
   consumeFreeRound,
@@ -717,10 +718,26 @@ export default function RoomPage() {
 
         setBillingProducts(productsResult.products ?? []);
 
-        const ownedCategoryIds = (purchasesResult.purchases ?? [])
-          .filter((purchase) => purchase.purchaseState === 1)
-          .flatMap((purchase) => purchase.productIds)
-          .filter((productId) => CATEGORY_PRODUCT_IDS.has(productId));
+        const ownedCategoryIds: string[] = [];
+        for (const purchase of purchasesResult.purchases ?? []) {
+          if (purchase.purchaseState !== 1 || !purchase.purchaseToken) continue;
+
+          const verified = await Promise.all(
+            purchase.productIds.map((productId) =>
+              verifyPlayPurchase(productId, purchase.purchaseToken)
+            )
+          );
+          if (verified.some((valid) => !valid)) continue;
+
+          ownedCategoryIds.push(
+            ...purchase.productIds.filter((productId) =>
+              CATEGORY_PRODUCT_IDS.has(productId)
+            )
+          );
+          if (!purchase.acknowledged) {
+            await PlayBilling.acknowledge({ purchaseToken: purchase.purchaseToken });
+          }
+        }
 
         setOwnedCategoryProductIds([...new Set(ownedCategoryIds)]);
       } catch (error) {
@@ -730,11 +747,34 @@ export default function RoomPage() {
 
     void loadRoomBilling();
 
-    void PlayBilling.addListener("purchaseUpdated", (event) => {
+    void PlayBilling.addListener("purchaseUpdated", async (event) => {
       if (!active) return;
 
       if (event.status !== "purchased") {
         setCategoryPurchaseBusy(null);
+        return;
+      }
+
+      if (!event.purchaseToken) {
+        setCategoryPurchaseBusy(null);
+        return;
+      }
+
+      try {
+        const verified = await Promise.all(
+          event.productIds.map((productId) =>
+            verifyPlayPurchase(productId, event.purchaseToken!)
+          )
+        );
+        if (verified.some((valid) => !valid)) {
+          setCategoryPurchaseBusy(null);
+          setMsg(uiMessage({ cs: "❌ Nákup se nepodařilo ověřit.", en: "❌ The purchase could not be verified.", es: "❌ No se pudo verificar la compra.", de: "❌ Der Kauf konnte nicht überprüft werden.", fr: "❌ L’achat n’a pas pu être vérifié.", "pt-BR": "❌ Não foi possível verificar a compra.", id: "❌ Pembelian tidak dapat diverifikasi.", tr: "❌ Satın alma doğrulanamadı.", pl: "❌ Nie udało się zweryfikować zakupu.", it: "❌ Non è stato possibile verificare l’acquisto." }));
+          return;
+        }
+      } catch (error) {
+        console.error("Google Play purchase verification failed:", error);
+        setCategoryPurchaseBusy(null);
+        setMsg(uiMessage({ cs: "❌ Nákup se nepodařilo ověřit.", en: "❌ The purchase could not be verified.", es: "❌ No se pudo verificar la compra.", de: "❌ Der Kauf konnte nicht überprüft werden.", fr: "❌ L’achat n’a pas pu être vérifié.", "pt-BR": "❌ Não foi possível verificar a compra.", id: "❌ Pembelian tidak dapat diverifikasi.", tr: "❌ Satın alma doğrulanamadı.", pl: "❌ Nie udało się zweryfikować zakupu.", it: "❌ Non è stato possibile verificare l’acquisto." }));
         return;
       }
 
@@ -775,6 +815,7 @@ export default function RoomPage() {
           setShowFreeLimitUpsell(false);
           setPremiumLockedOfferCategory(null);
           setMsg("");
+          await PlayBilling.acknowledge({ purchaseToken: event.purchaseToken! });
         })();
 
         return;
@@ -812,6 +853,7 @@ export default function RoomPage() {
           setMaxPlayers(999);
           setPremiumLockedOfferCategory(null);
           setMsg("");
+          await PlayBilling.acknowledge({ purchaseToken: event.purchaseToken! });
         })();
 
         return;
@@ -831,6 +873,7 @@ export default function RoomPage() {
       setMsg(
         uiMessage({ cs: "Kategorie byla odemčena.", en: "The category has been unlocked.", es: "La categoría ha sido desbloqueada." , de: "Die Kategorie wurde freigeschaltet.", fr: "La catégorie a été déverrouillée.", "pt-BR": "A categoria foi desbloqueada.", id: "Kategori telah dibuka.", tr: "Kategorinin kilidi açıldı.", pl: "Kategoria została odblokowana.", it: "La categoria è stata sbloccata."})
       );
+      await PlayBilling.acknowledge({ purchaseToken: event.purchaseToken });
     }).then((handle) => {
       if (!active) {
         void handle.remove();
