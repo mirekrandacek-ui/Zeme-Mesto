@@ -22,12 +22,12 @@ ANDROID_RES = ROOT.parents[1] / "android/app/src/main/res"
 PREVIEW = ROOT / "v031-adaptive-full-bleed-preview.png"
 SCALES = {"mdpi": 108, "hdpi": 162, "xhdpi": 216, "xxhdpi": 324, "xxxhdpi": 432}
 REFERENCE_SIZE = 432
-# Inclusive pixel bounds measured on the xxxhdpi source.  The polygons follow the
-# four raised tiles (including their bevels and shadows), rather than treating the
-# whole lower part of the globe as STOP.
-STOP_SOURCE_BBOX = (33, 238, 400, 380)
-STOP_SCALE = 0.58
-STOP_TARGET_CENTER = (216, 264)
+# The crop includes padding for the feathered tile edges. It is deliberately not
+# reported as the visible STOP bbox; that is measured from the alpha mask below.
+STOP_SOURCE_CROP = (28, 233, 405, 385)
+STOP_SCALE = 0.68
+STOP_TARGET_CENTER = (215, 226)
+VISIBLE_ALPHA_THRESHOLD = 8
 STOP_TILE_POLYGONS = (
     ((33, 272), (48, 244), (113, 238), (139, 259), (135, 334), (116, 361), (57, 352), (37, 326)),
     ((124, 280), (145, 266), (203, 270), (222, 286), (219, 352), (204, 375), (145, 369), (126, 349)),
@@ -80,7 +80,17 @@ def stop_mask(size: int) -> Image.Image:
     return mask.filter(ImageFilter.GaussianBlur(max(0.5, size / REFERENCE_SIZE)))
 
 
-def inset_stop(approved: Image.Image, ocean: Image.Image, size: int) -> Image.Image:
+def visible_bbox(mask: Image.Image) -> tuple[int, int, int, int]:
+    """Measure inclusive bounds of pixels that are visibly part of STOP."""
+    thresholded = mask.point(lambda alpha: 255 if alpha > VISIBLE_ALPHA_THRESHOLD else 0)
+    bbox = thresholded.getbbox()
+    if bbox is None:
+        raise ValueError("STOP mask is empty")
+    left, top, right, bottom = bbox
+    return left, top, right - 1, bottom - 1
+
+
+def inset_stop(approved: Image.Image, ocean: Image.Image, size: int) -> tuple[Image.Image, Image.Image]:
     """Move STOP without scaling the globe, and restore ocean below its old pixels."""
     mask = stop_mask(size)
     # A broad feather avoids leaving four tile-shaped seams where the old STOP was.
@@ -92,8 +102,8 @@ def inset_stop(approved: Image.Image, ocean: Image.Image, size: int) -> Image.Im
     globe = Image.composite(ocean, approved, restore_mask)
 
     left, top, right, bottom = (round(value * size / REFERENCE_SIZE)
-                                for value in STOP_SOURCE_BBOX)
-    # PIL crop's right/bottom are exclusive; the measured bbox above is inclusive.
+                                for value in STOP_SOURCE_CROP)
+    # PIL crop's right/bottom are exclusive; this configured crop is inclusive.
     source_box = (left, top, right + 1, bottom + 1)
     stop = approved.crop(source_box)
     stop_alpha = mask.crop(source_box)
@@ -107,16 +117,17 @@ def inset_stop(approved: Image.Image, ocean: Image.Image, size: int) -> Image.Im
     # independently transformed STOP.
     clean = Image.new("RGBA", (size, size))
     clean.paste(stop, target_origin, stop_alpha)
-    return Image.alpha_composite(globe, clean)
+    return Image.alpha_composite(globe, clean), clean.getchannel("A")
 
 
-def build_foreground(density: str, size: int) -> Image.Image:
+def build_foreground(density: str, size: int) -> tuple[Image.Image, Image.Image, Image.Image]:
     approved = Image.open(SOURCE / f"ic_launcher_foreground-{density}.png").convert("RGBA")
     if approved.size != (size, size):
         raise ValueError(f"Unexpected {density} source size: {approved.size}")
     ocean = ocean_extension(size)
     approved_full_bleed = Image.alpha_composite(ocean, approved)
-    return inset_stop(approved_full_bleed, ocean, size)
+    foreground, transformed_mask = inset_stop(approved_full_bleed, ocean, size)
+    return foreground, stop_mask(size), transformed_mask
 
 
 def adaptive_mask(kind: str, size: int) -> Image.Image:
@@ -162,13 +173,29 @@ def build_preview(foreground: Image.Image) -> None:
 def main() -> None:
     OUTPUT.mkdir(exist_ok=True)
     rendered = {}
+    measured = None
     for density, size in SCALES.items():
-        foreground = build_foreground(density, size)
+        foreground, source_mask, transformed_mask = build_foreground(density, size)
         rendered[density] = foreground
         name = f"ic_launcher_foreground-{density}.png"
         foreground.save(OUTPUT / name, optimize=True)
         foreground.save(ANDROID_RES / f"mipmap-{density}" / "ic_launcher_foreground.png", optimize=True)
+        if density == "xxxhdpi":
+            measured = visible_bbox(source_mask), visible_bbox(transformed_mask)
     build_preview(rendered["xxxhdpi"])
+    if measured is None:
+        raise ValueError("xxxhdpi output is required for STOP geometry reporting")
+    before, after = measured
+    before_size = (before[2] - before[0] + 1, before[3] - before[1] + 1)
+    after_size = (after[2] - after[0] + 1, after[3] - after[1] + 1)
+    before_center = ((before[0] + before[2]) / 2, (before[1] + before[3]) / 2)
+    after_center = ((after[0] + after[2]) / 2, (after[1] + after[3]) / 2)
+    reduction = tuple(100 * (1 - new / old) for old, new in zip(before_size, after_size))
+    movement = tuple(new - old for old, new in zip(before_center, after_center))
+    print(f"STOP visible bbox xxxhdpi: {before} ({before_size[0]}x{before_size[1]})")
+    print(f"STOP target bbox xxxhdpi:  {after} ({after_size[0]}x{after_size[1]})")
+    print(f"STOP linear reduction: width {reduction[0]:.1f}%, height {reduction[1]:.1f}%")
+    print(f"STOP center movement: dx {movement[0]:+.1f}px, dy {movement[1]:+.1f}px")
 
 
 if __name__ == "__main__":
