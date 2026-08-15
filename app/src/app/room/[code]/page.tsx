@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 import {
-  hideFreeBannerAdForNativeApp,
   isNativeAdMobAvailable,
   showFreeBannerAdForNativeApp,
   showFreeRewardedAdForNativeApp,
@@ -755,7 +754,7 @@ export default function RoomPage() {
               max_players: 5,
               active_categories: PREMIUM_CATEGORIES,
               custom_category: null,
-              ads_enabled: false,
+              ads_enabled: true,
             })
             .eq("id", currentRoomId);
 
@@ -795,7 +794,7 @@ export default function RoomPage() {
             .update({
               creator_tier: "super_premium",
               max_players: 999,
-              ads_enabled: false,
+              ads_enabled: true,
             })
             .eq("id", currentRoomId);
 
@@ -1085,23 +1084,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   useEffect(() => {
     let cancelled = false;
 
-    async function updateFreeBanner() {
+    async function updateBanner() {
       if (!isNativeAdMobAvailable()) {
         setNativeFreeBannerShown(false);
         return;
       }
 
-      if (roomTier === "free") {
-        if (!cancelled) setNativeFreeBannerShown(true);
-        await showFreeBannerAdForNativeApp();
-        return;
-      }
-
-      await hideFreeBannerAdForNativeApp();
-      if (!cancelled) setNativeFreeBannerShown(false);
+      if (!cancelled) setNativeFreeBannerShown(true);
+      await showFreeBannerAdForNativeApp();
     }
 
-    void updateFreeBanner();
+    void updateBanner();
 
     return () => {
       cancelled = true;
@@ -2663,7 +2656,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   );
 
   const isAnswering = roomStatus === "playing" && Boolean(letter);
-  const showFreeAdBanner = roomTier === "free" && !nativeFreeBannerShown;
+  const showAdBanner = !nativeFreeBannerShown;
 
   const statusMessage =
     (roomStatus === "scoring" || roomStatus === "finished") && stoppedByTime
@@ -2709,9 +2702,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         }}
         style={{
           padding: 24,
-          paddingTop: roomTier === "free"
-          ? "calc(72px + env(safe-area-inset-top))"
-          : 24,
+          paddingTop: "calc(72px + env(safe-area-inset-top))",
           fontFamily: "system-ui",
         }}
       >
@@ -2740,7 +2731,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </section>
       )}
 
-      {showFreeAdBanner && (
+      {showAdBanner && (
         <section
           data-free-ad-banner
           aria-label="Reklamní banner"

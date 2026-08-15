@@ -64,12 +64,14 @@ export default function PrivacyPolicyPage() {
       <p>
         Herní data jsou ukládána v databázi Supabase, aby mohli hráči hrát
         společně v reálném čase. Aplikace může používat Google AdMob pro
-        zobrazování reklam ve Free verzi.
+        zobrazování reklamního banneru ve všech verzích a odměňované reklamy
+        ve Free verzi.
       </p>
 
       <p>
         Game data is stored in Supabase to enable real-time multiplayer gameplay.
-        The app may use Google AdMob to display ads in the Free version.
+        The app may use Google AdMob to display a banner ad in all versions and
+        rewarded ads in the Free version.
       </p>
 
       <p>
