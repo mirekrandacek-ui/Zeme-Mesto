@@ -27,6 +27,10 @@ REFERENCE_SIZE = 432
 STOP_SOURCE_CROP = (28, 233, 405, 385)
 STOP_SCALE = 0.65
 STOP_TARGET_CENTER = (215, 226)
+# Phone captures from v032 showed that the correctly sized composition sits too
+# high inside the launcher mask.  Keep this in reference (xxxhdpi) pixels so all
+# density outputs receive exactly the same proportional translation.
+COMPOSITION_OFFSET_Y = 20
 VISIBLE_ALPHA_THRESHOLD = 8
 STOP_TILE_POLYGONS = (
     ((33, 272), (48, 244), (113, 238), (139, 259), (135, 334), (116, 361), (57, 352), (37, 326)),
@@ -91,26 +95,35 @@ def visible_bbox(mask: Image.Image) -> tuple[int, int, int, int]:
 
 
 def inset_stop(approved: Image.Image, ocean: Image.Image, size: int) -> tuple[Image.Image, Image.Image]:
-    """Move STOP without scaling the globe, and restore ocean below its old pixels."""
+    """Inset STOP, then translate it and the globe together over full-bleed ocean."""
     mask = stop_mask(size)
+    offset_y = round(COMPOSITION_OFFSET_Y * size / REFERENCE_SIZE)
+    shifted_approved = Image.new("RGBA", (size, size))
+    shifted_approved.paste(approved, (0, offset_y))
+    shifted_mask = Image.new("L", (size, size), 0)
+    shifted_mask.paste(mask, (0, offset_y))
     # A broad feather avoids leaving four tile-shaped seams where the old STOP was.
     # The replacement is deliberately ocean: the globe artwork itself remains at
     # its approved scale and is allowed to run beyond every launcher mask.
     spread = max(3, round(101 * size / REFERENCE_SIZE)) | 1
-    restore_mask = mask.filter(ImageFilter.MaxFilter(spread)).filter(
+    restore_mask = shifted_mask.filter(ImageFilter.MaxFilter(spread)).filter(
         ImageFilter.GaussianBlur(max(2, 28 * size / REFERENCE_SIZE)))
-    globe = Image.composite(ocean, approved, restore_mask)
+    # The ocean remains fixed and opaque while only the source globe moves.  This
+    # avoids exposing a transparent strip along the top edge after translation.
+    globe = Image.alpha_composite(ocean, shifted_approved)
+    globe = Image.composite(ocean, globe, restore_mask)
 
     left, top, right, bottom = (round(value * size / REFERENCE_SIZE)
                                 for value in STOP_SOURCE_CROP)
     # PIL crop's right/bottom are exclusive; this configured crop is inclusive.
     source_box = (left, top, right + 1, bottom + 1)
-    stop = approved.crop(source_box)
+    source_art = Image.alpha_composite(ocean, approved)
+    stop = source_art.crop(source_box)
     stop_alpha = mask.crop(source_box)
     target_size = tuple(round(value * STOP_SCALE) for value in stop.size)
     stop = stop.resize(target_size, Image.Resampling.LANCZOS)
     stop_alpha = stop_alpha.resize(target_size, Image.Resampling.LANCZOS)
-    center = scaled_point(STOP_TARGET_CENTER, size)
+    center = scaled_point((STOP_TARGET_CENTER[0], STOP_TARGET_CENTER[1] + COMPOSITION_OFFSET_Y), size)
     target_origin = (center[0] - target_size[0] // 2,
                      center[1] - target_size[1] // 2)
     # Suppress the crop's rectangular ocean pixels and retain only the
@@ -125,8 +138,7 @@ def build_foreground(density: str, size: int) -> tuple[Image.Image, Image.Image,
     if approved.size != (size, size):
         raise ValueError(f"Unexpected {density} source size: {approved.size}")
     ocean = ocean_extension(size)
-    approved_full_bleed = Image.alpha_composite(ocean, approved)
-    foreground, transformed_mask = inset_stop(approved_full_bleed, ocean, size)
+    foreground, transformed_mask = inset_stop(approved, ocean, size)
     return foreground, stop_mask(size), transformed_mask
 
 
@@ -152,6 +164,19 @@ def adaptive_mask(kind: str, size: int) -> Image.Image:
     return mask
 
 
+def safe_mask_margin(stop_alpha: Image.Image, kind: str) -> int:
+    """Return the pixel radius by which STOP fits inside an adaptive-icon mask."""
+    visible = stop_alpha.point(lambda alpha: 255 if alpha > VISIBLE_ALPHA_THRESHOLD else 0)
+    mask = adaptive_mask(kind, stop_alpha.width)
+    if ImageChops.subtract(visible, mask).getbbox() is not None:
+        raise ValueError(f"STOP extends outside the {kind} mask")
+    for margin in range(1, stop_alpha.width // 4):
+        mask = mask.filter(ImageFilter.MinFilter(3))
+        if ImageChops.subtract(visible, mask).getbbox() is not None:
+            return margin - 1
+    raise ValueError(f"Unable to determine STOP clearance for the {kind} mask")
+
+
 def build_preview(foreground: Image.Image) -> None:
     panel = 432
     gutter = 28
@@ -174,6 +199,7 @@ def main() -> None:
     OUTPUT.mkdir(exist_ok=True)
     rendered = {}
     measured = None
+    measured_alpha = None
     for density, size in SCALES.items():
         foreground, source_mask, transformed_mask = build_foreground(density, size)
         rendered[density] = foreground
@@ -182,8 +208,9 @@ def main() -> None:
         foreground.save(ANDROID_RES / f"mipmap-{density}" / "ic_launcher_foreground.png", optimize=True)
         if density == "xxxhdpi":
             measured = visible_bbox(source_mask), visible_bbox(transformed_mask)
+            measured_alpha = transformed_mask
     build_preview(rendered["xxxhdpi"])
-    if measured is None:
+    if measured is None or measured_alpha is None:
         raise ValueError("xxxhdpi output is required for STOP geometry reporting")
     before, after = measured
     before_size = (before[2] - before[0] + 1, before[3] - before[1] + 1)
@@ -196,6 +223,9 @@ def main() -> None:
     print(f"STOP target bbox xxxhdpi:  {after} ({after_size[0]}x{after_size[1]})")
     print(f"STOP linear reduction: width {reduction[0]:.1f}%, height {reduction[1]:.1f}%")
     print(f"STOP center movement: dx {movement[0]:+.1f}px, dy {movement[1]:+.1f}px")
+    for kind in ("circle", "squircle", "rounded square"):
+        margin = safe_mask_margin(measured_alpha, kind)
+        print(f"STOP {kind} safe-mask clearance: {margin}px")
 
 
 if __name__ == "__main__":
