@@ -5,9 +5,9 @@ import {
   BannerAdSize,
 } from "@capacitor-community/admob";
 
-export const ADMOB_TEST_APP_ID = "ca-app-pub-3940256099942544~3347511713";
-export const ADMOB_TEST_BANNER_ID = "ca-app-pub-3940256099942544/9214589741";
-export const ADMOB_TEST_REWARDED_ID = "ca-app-pub-3940256099942544/5224354917";
+export const ADMOB_TEST_APP_ID = "ca-app-pub-9232105399279318~4724249575";
+export const ADMOB_TEST_BANNER_ID = "ca-app-pub-9232105399279318/1813492693";
+export const ADMOB_TEST_REWARDED_ID = "ca-app-pub-9232105399279318/1454400045";
 
 let initializePromise: Promise<boolean> | null = null;
 
@@ -19,7 +19,7 @@ export function initializeAdMobForTesting() {
   if (!isNativeAdMobAvailable()) return Promise.resolve(false);
 
   initializePromise ??= AdMob.initialize({
-    initializeForTesting: true,
+    initializeForTesting: false,
   })
     .then(() => true)
     .catch((error) => {
@@ -40,7 +40,7 @@ export async function showFreeBannerAdForNativeApp() {
       adSize: BannerAdSize.ADAPTIVE_BANNER,
       position: BannerAdPosition.TOP_CENTER,
       margin: 0,
-      isTesting: true,
+      isTesting: false,
     });
 
     return true;
@@ -57,7 +57,7 @@ export async function showFreeRewardedAdForNativeApp() {
   try {
     await AdMob.prepareRewardVideoAd({
       adId: ADMOB_TEST_REWARDED_ID,
-      isTesting: true,
+      isTesting: false,
     });
 
     await AdMob.showRewardVideoAd();
