@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""Build the v031 full-bleed Android adaptive-icon foregrounds and preview.
+"""Build and preview the full-bleed Android adaptive launcher foreground.
 
-Requires Pillow (``python3 -m pip install Pillow``).  The approved 124% globe and
-STOP render is read from generated-v031-adaptive.  The globe stays full-size, while
-STOP is independently inset into the adaptive-icon safe zone.
+The approved v031 render supplies both the globe and STOP artwork.  The globe is
+intentionally larger than the launcher canvas: Android's launcher mask is
+allowed to crop it, while STOP is placed separately in the central safe area.
 """
 
 from __future__ import annotations
 
 import math
-import random
 from pathlib import Path
 
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
@@ -22,15 +21,14 @@ ANDROID_RES = ROOT.parents[1] / "android/app/src/main/res"
 PREVIEW = ROOT / "v031-adaptive-full-bleed-preview.png"
 SCALES = {"mdpi": 108, "hdpi": 162, "xhdpi": 216, "xxhdpi": 324, "xxxhdpi": 432}
 REFERENCE_SIZE = 432
-# The crop includes padding for the feathered tile edges. It is deliberately not
-# reported as the visible STOP bbox; that is measured from the alpha mask below.
-STOP_SOURCE_CROP = (28, 233, 405, 385)
-STOP_SCALE = 0.65
-STOP_TARGET_CENTER = (215, 226)
-# Phone captures from v032 showed that the correctly sized composition sits too
-# high inside the launcher mask.  Keep this in reference (xxxhdpi) pixels so all
-# density outputs receive exactly the same proportional translation.
-COMPOSITION_OFFSET_Y = 20
+
+# Geometry in xxxhdpi reference pixels.  The globe deliberately overflows the
+# canvas; only the independently scaled STOP must fit every launcher mask.
+GLOBE_SCALE = 1.22
+GLOBE_CENTER = (216, 226)
+STOP_SOURCE_CROP = (28, 233, 406, 386)
+STOP_SCALE = 0.68
+STOP_TARGET_CENTER = (216, 248)
 VISIBLE_ALPHA_THRESHOLD = 8
 STOP_TILE_POLYGONS = (
     ((33, 272), (48, 244), (113, 238), (139, 259), (135, 334), (116, 361), (57, 352), (37, 326)),
@@ -40,110 +38,81 @@ STOP_TILE_POLYGONS = (
 )
 
 
-def ocean_extension(size: int) -> Image.Image:
-    """Create a globe-like ocean field that continues beyond the source globe."""
-    rng = random.Random(31031)
-    image = Image.new("RGB", (size, size))
-    pixels = image.load()
-    for y in range(size):
-        ny = y / max(1, size - 1)
-        for x in range(size):
-            nx = (x - size * 0.48) / size
-            # Broad top-left illumination follows the existing 3D globe lighting.
-            glow = math.exp(-((nx / 0.44) ** 2 + ((ny - 0.08) / 0.35) ** 2))
-            edge = min(1.0, abs(nx) * 1.05 + max(0.0, ny - 0.55) * 0.52)
-            ripple = math.sin(nx * 15.0 + ny * 7.0) * 2.2
-            noise = rng.uniform(-1.7, 1.7)
-            r = 3 + 12 * glow - 2 * edge + noise
-            g = 73 + 111 * glow - 28 * edge + ripple + noise
-            b = 174 + 74 * glow - 18 * edge + ripple * 0.5 + noise
-            pixels[x, y] = tuple(max(0, min(255, round(c))) for c in (r, g, b))
-
-    # Large, soft reflected-light bands prevent the extension looking like a flat fill.
-    bands = Image.new("RGBA", (size, size))
-    draw = ImageDraw.Draw(bands)
-    width = max(1, round(size * 0.018))
-    draw.arc((-size * 0.34, size * 0.12, size * 1.34, size * 1.42), 196, 344,
-             fill=(50, 180, 255, 28), width=width)
-    draw.arc((-size * 0.18, size * 0.25, size * 1.18, size * 1.50), 198, 342,
-             fill=(0, 28, 128, 25), width=width)
-    bands = bands.filter(ImageFilter.GaussianBlur(max(1, size * 0.025)))
-    return Image.alpha_composite(image.convert("RGBA"), bands)
-
-
-def scaled_point(point: tuple[int, int], size: int) -> tuple[int, int]:
+def scale_point(point: tuple[int, int], size: int) -> tuple[int, int]:
     return tuple(round(value * size / REFERENCE_SIZE) for value in point)
 
 
 def stop_mask(size: int) -> Image.Image:
-    """Return a feathered mask covering only the four STOP tile renders."""
-    mask = Image.new("L", (size, size), 0)
+    """Mask the approved STOP tiles, excluding the surrounding globe."""
+    mask = Image.new("L", (size, size))
     draw = ImageDraw.Draw(mask)
     for polygon in STOP_TILE_POLYGONS:
-        draw.polygon([scaled_point(point, size) for point in polygon], fill=255)
+        draw.polygon([scale_point(point, size) for point in polygon], fill=255)
     return mask.filter(ImageFilter.GaussianBlur(max(0.5, size / REFERENCE_SIZE)))
 
 
-def visible_bbox(mask: Image.Image) -> tuple[int, int, int, int]:
-    """Measure inclusive bounds of pixels that are visibly part of STOP."""
-    thresholded = mask.point(lambda alpha: 255 if alpha > VISIBLE_ALPHA_THRESHOLD else 0)
-    bbox = thresholded.getbbox()
-    if bbox is None:
-        raise ValueError("STOP mask is empty")
-    left, top, right, bottom = bbox
-    return left, top, right - 1, bottom - 1
+def ocean_fill(size: int) -> Image.Image:
+    """Return an opaque blue field behind the oversized globe."""
+    image = Image.new("RGBA", (size, size))
+    pixels = image.load()
+    for y in range(size):
+        position = y / max(1, size - 1)
+        for x in range(size):
+            highlight = max(0.0, 1.0 - math.hypot((x / size - 0.43) * 0.8, position - 0.05))
+            pixels[x, y] = (
+                round(3 + 8 * highlight),
+                round(66 + 99 * highlight - 20 * position),
+                round(164 + 78 * highlight - 24 * position),
+                255,
+            )
+    return image
 
 
-def inset_stop(approved: Image.Image, ocean: Image.Image, size: int) -> tuple[Image.Image, Image.Image]:
-    """Inset STOP, then translate it and the globe together over full-bleed ocean."""
-    mask = stop_mask(size)
-    offset_y = round(COMPOSITION_OFFSET_Y * size / REFERENCE_SIZE)
-    shifted_approved = Image.new("RGBA", (size, size))
-    shifted_approved.paste(approved, (0, offset_y))
-    shifted_mask = Image.new("L", (size, size), 0)
-    shifted_mask.paste(mask, (0, offset_y))
-    # A broad feather avoids leaving four tile-shaped seams where the old STOP was.
-    # The replacement is deliberately ocean: the globe artwork itself remains at
-    # its approved scale and is allowed to run beyond every launcher mask.
-    spread = max(3, round(101 * size / REFERENCE_SIZE)) | 1
-    restore_mask = shifted_mask.filter(ImageFilter.MaxFilter(spread)).filter(
-        ImageFilter.GaussianBlur(max(2, 28 * size / REFERENCE_SIZE)))
-    # The ocean remains fixed and opaque while only the source globe moves.  This
-    # avoids exposing a transparent strip along the top edge after translation.
-    globe = Image.alpha_composite(ocean, shifted_approved)
-    globe = Image.composite(ocean, globe, restore_mask)
-
-    left, top, right, bottom = (round(value * size / REFERENCE_SIZE)
-                                for value in STOP_SOURCE_CROP)
-    # PIL crop's right/bottom are exclusive; this configured crop is inclusive.
-    source_box = (left, top, right + 1, bottom + 1)
-    source_art = Image.alpha_composite(ocean, approved)
-    stop = source_art.crop(source_box)
-    stop_alpha = mask.crop(source_box)
-    target_size = tuple(round(value * STOP_SCALE) for value in stop.size)
-    stop = stop.resize(target_size, Image.Resampling.LANCZOS)
-    stop_alpha = stop_alpha.resize(target_size, Image.Resampling.LANCZOS)
-    center = scaled_point((STOP_TARGET_CENTER[0], STOP_TARGET_CENTER[1] + COMPOSITION_OFFSET_Y), size)
-    target_origin = (center[0] - target_size[0] // 2,
-                     center[1] - target_size[1] // 2)
-    # Suppress the crop's rectangular ocean pixels and retain only the
-    # independently transformed STOP.
-    clean = Image.new("RGBA", (size, size))
-    clean.paste(stop, target_origin, stop_alpha)
-    return Image.alpha_composite(globe, clean), clean.getchannel("A")
+def resize_about_center(image: Image.Image, scale: float, center: tuple[int, int]) -> Image.Image:
+    """Scale an image and paste its centre at ``center``, cropping overflow."""
+    size = image.width
+    scaled_size = round(size * scale)
+    scaled = image.resize((scaled_size, scaled_size), Image.Resampling.LANCZOS)
+    result = Image.new(image.mode, image.size)
+    origin = (center[0] - scaled_size // 2, center[1] - scaled_size // 2)
+    result.paste(scaled, origin)
+    return result
 
 
-def build_foreground(density: str, size: int) -> tuple[Image.Image, Image.Image, Image.Image]:
+def build_foreground(density: str, size: int) -> tuple[Image.Image, Image.Image]:
     approved = Image.open(SOURCE / f"ic_launcher_foreground-{density}.png").convert("RGBA")
     if approved.size != (size, size):
         raise ValueError(f"Unexpected {density} source size: {approved.size}")
-    ocean = ocean_extension(size)
-    foreground, transformed_mask = inset_stop(approved, ocean, size)
-    return foreground, stop_mask(size), transformed_mask
+
+    ocean = ocean_fill(size)
+    center = scale_point(GLOBE_CENTER, size)
+    globe = resize_about_center(approved, GLOBE_SCALE, center)
+    foreground = Image.alpha_composite(ocean, globe)
+
+    # Remove the source STOP with one simple feathered rectangle.  There is no
+    # edge reconstruction: this area is ocean and will be covered by the safely
+    # positioned approved STOP immediately below.
+    crop = tuple(round(value * size / REFERENCE_SIZE) for value in STOP_SOURCE_CROP)
+    erase = Image.new("L", (size, size))
+    ImageDraw.Draw(erase).rectangle(crop, fill=255)
+    erase = resize_about_center(erase, GLOBE_SCALE, center).filter(
+        ImageFilter.GaussianBlur(max(1, round(5 * size / REFERENCE_SIZE))))
+    foreground = Image.composite(ocean, foreground, erase)
+
+    source_stop = approved.crop(crop)
+    source_alpha = stop_mask(size).crop(crop)
+    target_size = tuple(round(value * STOP_SCALE) for value in source_stop.size)
+    source_stop = source_stop.resize(target_size, Image.Resampling.LANCZOS)
+    source_alpha = source_alpha.resize(target_size, Image.Resampling.LANCZOS)
+    target_center = scale_point(STOP_TARGET_CENTER, size)
+    origin = (target_center[0] - target_size[0] // 2, target_center[1] - target_size[1] // 2)
+    stop_layer = Image.new("RGBA", (size, size))
+    stop_layer.paste(source_stop, origin, source_alpha)
+    return Image.alpha_composite(foreground, stop_layer), stop_layer.getchannel("A")
 
 
 def adaptive_mask(kind: str, size: int) -> Image.Image:
-    mask = Image.new("L", (size, size), 0)
+    mask = Image.new("L", (size, size))
     draw = ImageDraw.Draw(mask)
     inset = round(size * 0.035)
     box = (inset, inset, size - inset - 1, size - inset - 1)
@@ -152,35 +121,34 @@ def adaptive_mask(kind: str, size: int) -> Image.Image:
     elif kind == "rounded square":
         draw.rounded_rectangle(box, radius=round(size * 0.22), fill=255)
     elif kind == "squircle":
+        radius, center = (size - 2 * inset) / 2, (size - 1) / 2
         points = []
-        radius = (size - 2 * inset) / 2
-        center = (size - 1) / 2
         for degree in range(361):
             angle = math.radians(degree)
-            c, s = math.cos(angle), math.sin(angle)
-            points.append((center + radius * math.copysign(abs(c) ** 0.5, c),
-                           center + radius * math.copysign(abs(s) ** 0.5, s)))
+            cosine, sine = math.cos(angle), math.sin(angle)
+            points.append((center + radius * math.copysign(abs(cosine) ** 0.5, cosine),
+                           center + radius * math.copysign(abs(sine) ** 0.5, sine)))
         draw.polygon(points, fill=255)
+    else:
+        raise ValueError(f"Unknown mask: {kind}")
     return mask
 
 
-def safe_mask_margin(stop_alpha: Image.Image, kind: str) -> int:
-    """Return the pixel radius by which STOP fits inside an adaptive-icon mask."""
-    visible = stop_alpha.point(lambda alpha: 255 if alpha > VISIBLE_ALPHA_THRESHOLD else 0)
-    mask = adaptive_mask(kind, stop_alpha.width)
-    if ImageChops.subtract(visible, mask).getbbox() is not None:
+def visible_bbox(alpha: Image.Image) -> tuple[int, int, int, int]:
+    bbox = alpha.point(lambda value: 255 if value > VISIBLE_ALPHA_THRESHOLD else 0).getbbox()
+    if bbox is None:
+        raise ValueError("STOP mask is empty")
+    return bbox[0], bbox[1], bbox[2] - 1, bbox[3] - 1
+
+
+def check_stop(alpha: Image.Image, kind: str) -> None:
+    visible = alpha.point(lambda value: 255 if value > VISIBLE_ALPHA_THRESHOLD else 0)
+    if ImageChops.subtract(visible, adaptive_mask(kind, alpha.width)).getbbox() is not None:
         raise ValueError(f"STOP extends outside the {kind} mask")
-    for margin in range(1, stop_alpha.width // 4):
-        mask = mask.filter(ImageFilter.MinFilter(3))
-        if ImageChops.subtract(visible, mask).getbbox() is not None:
-            return margin - 1
-    raise ValueError(f"Unable to determine STOP clearance for the {kind} mask")
 
 
 def build_preview(foreground: Image.Image) -> None:
-    panel = 432
-    gutter = 28
-    header = 62
+    panel, gutter, header = 432, 28, 62
     board = Image.new("RGB", (panel * 3 + gutter * 4, panel + header + gutter), "#eef3f8")
     font = ImageFont.load_default(size=22)
     draw = ImageDraw.Draw(board)
@@ -189,43 +157,32 @@ def build_preview(foreground: Image.Image) -> None:
         icon = foreground.copy()
         icon.putalpha(adaptive_mask(kind, panel))
         board.paste(icon, (x, header), icon)
-        label_box = draw.textbbox((0, 0), kind, font=font)
-        label_width = label_box[2] - label_box[0]
+        label_width = draw.textbbox((0, 0), kind, font=font)[2]
         draw.text((x + (panel - label_width) / 2, 20), kind, font=font, fill="#17324d")
     board.save(PREVIEW, optimize=True)
 
 
 def main() -> None:
     OUTPUT.mkdir(exist_ok=True)
-    rendered = {}
-    measured = None
+    rendered: dict[str, Image.Image] = {}
     measured_alpha = None
     for density, size in SCALES.items():
-        foreground, source_mask, transformed_mask = build_foreground(density, size)
+        foreground, stop_alpha = build_foreground(density, size)
         rendered[density] = foreground
-        name = f"ic_launcher_foreground-{density}.png"
-        foreground.save(OUTPUT / name, optimize=True)
-        foreground.save(ANDROID_RES / f"mipmap-{density}" / "ic_launcher_foreground.png", optimize=True)
+        filename = "ic_launcher_foreground.png"
+        foreground.save(OUTPUT / f"ic_launcher_foreground-{density}.png", optimize=True)
+        foreground.save(ANDROID_RES / f"mipmap-{density}" / filename, optimize=True)
         if density == "xxxhdpi":
-            measured = visible_bbox(source_mask), visible_bbox(transformed_mask)
-            measured_alpha = transformed_mask
+            measured_alpha = stop_alpha
+
+    if measured_alpha is None:
+        raise ValueError("xxxhdpi output is required")
     build_preview(rendered["xxxhdpi"])
-    if measured is None or measured_alpha is None:
-        raise ValueError("xxxhdpi output is required for STOP geometry reporting")
-    before, after = measured
-    before_size = (before[2] - before[0] + 1, before[3] - before[1] + 1)
-    after_size = (after[2] - after[0] + 1, after[3] - after[1] + 1)
-    before_center = ((before[0] + before[2]) / 2, (before[1] + before[3]) / 2)
-    after_center = ((after[0] + after[2]) / 2, (after[1] + after[3]) / 2)
-    reduction = tuple(100 * (1 - new / old) for old, new in zip(before_size, after_size))
-    movement = tuple(new - old for old, new in zip(before_center, after_center))
-    print(f"STOP visible bbox xxxhdpi: {before} ({before_size[0]}x{before_size[1]})")
-    print(f"STOP target bbox xxxhdpi:  {after} ({after_size[0]}x{after_size[1]})")
-    print(f"STOP linear reduction: width {reduction[0]:.1f}%, height {reduction[1]:.1f}%")
-    print(f"STOP center movement: dx {movement[0]:+.1f}px, dy {movement[1]:+.1f}px")
+    print(f"Globe scale: {GLOBE_SCALE:.2f}x; center xxxhdpi: {GLOBE_CENTER}")
+    print(f"STOP visible bbox xxxhdpi: {visible_bbox(measured_alpha)}")
     for kind in ("circle", "squircle", "rounded square"):
-        margin = safe_mask_margin(measured_alpha, kind)
-        print(f"STOP {kind} safe-mask clearance: {margin}px")
+        check_stop(measured_alpha, kind)
+        print(f"STOP fully visible in {kind}: yes")
 
 
 if __name__ == "__main__":
