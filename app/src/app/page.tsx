@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 import {
@@ -1100,355 +1101,138 @@ export default function Home() {
     router.push(`/room/${cleaned}?ui=${language}`);
   }
 
+  const selectGameLanguage = (selectedGameLanguage: RoomLanguage) => {
+    setGameLanguage(selectedGameLanguage);
+    setGameLanguageManuallySelected(selectedGameLanguage !== language);
+    window.localStorage.setItem("zm_gameLanguage", selectedGameLanguage);
+  };
+
   return (
-    <main
-      style={{
-        padding: 24,
-        paddingTop: "calc(72px + env(safe-area-inset-top))",
-        fontFamily: "system-ui",
-        maxWidth: 520,
-        margin: "0 auto",
-      }}
-    >
-      <div className="home-header">
-        <div className="home-language">
-
-          <label aria-label={h("applicationLanguage")}>
-            <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
-              {h("applicationLanguage")}
-            </span>
-
-            <select
-              value={language}
-              onChange={(e) => {
-                const selectedLanguage = e.target.value as UiLanguage;
-
-                setLanguage(selectedLanguage);
-                window.localStorage.setItem(
-                  "zm_uiLanguage",
-                  selectedLanguage
-                );
-
-                if (!gameLanguageManuallySelected) {
-                  setGameLanguage(selectedLanguage);
-                  window.localStorage.setItem(
-                    "zm_gameLanguage",
-                    selectedLanguage
-                  );
-                } else if (gameLanguage === selectedLanguage) {
-                  setGameLanguageManuallySelected(false);
-                }
-              }}
-              style={{ padding: 10, borderRadius: 8 }}
-            >
-              {ENABLED_UI_LANGUAGES.map((optionLanguage) => (
-                <option key={optionLanguage} value={optionLanguage}>
-                  {languageOptionLabel(optionLanguage, language)}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
+    <main className={styles.homepage}>
+      <div className={styles.photoMosaic} aria-hidden="true">
+        {[
+          "mountains", "castle", "eiffel", "colosseum", "woman", "elephant",
+          "dog", "plant", "camera", "headphones", "backpack", "sunflower",
+        ].map((photo) => <span key={photo} className={`${styles.photo} ${styles[photo]}`} />)}
       </div>
+      <div className={styles.blueVeil} aria-hidden="true" />
 
-      <p>{h("intro")}</p>
+      <div className={styles.content}>
+        <header className={styles.header}>
+          <label className={styles.applicationLanguage} aria-label={h("applicationLanguage")}>
+            <span>{h("applicationLanguage")}</span>
+            <span className={styles.selectShell}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
+              <select
+                value={language}
+                onChange={(e) => {
+                  const selectedLanguage = e.target.value as UiLanguage;
+                  setLanguage(selectedLanguage);
+                  window.localStorage.setItem("zm_uiLanguage", selectedLanguage);
+                  if (!gameLanguageManuallySelected) {
+                    setGameLanguage(selectedLanguage);
+                    window.localStorage.setItem("zm_gameLanguage", selectedLanguage);
+                  } else if (gameLanguage === selectedLanguage) {
+                    setGameLanguageManuallySelected(false);
+                  }
+                }}
+              >
+                {ENABLED_UI_LANGUAGES.map((optionLanguage) => (
+                  <option key={optionLanguage} value={optionLanguage}>
+                    {languageOptionLabel(optionLanguage, language)}
+                  </option>
+                ))}
+              </select>
+              <svg className={styles.chevron} viewBox="0 0 24 24" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg>
+            </span>
+          </label>
+          <p className={styles.intro}>{h("intro")}</p>
+        </header>
 
-      <section
-        style={{
-          border: "2px solid #2563eb",
-          borderRadius: 12,
-          padding: 16,
-          marginTop: 16,
-          background: "#f8fbff",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: 12,
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <h2 style={{ margin: 0 }}>
-            {h("yourMode")}: {tierLabel(tier)}
-          </h2>
-
-          <span
-            style={{
-              padding: "4px 9px",
-              borderRadius: 999,
-              background: "#dbeafe",
-              fontWeight: 700,
-              fontSize: 13,
-            }}
-          >
-            {h("active")}
-          </span>
-        </div>
-
-        {tier === "free" && (
-          <p style={{ marginBottom: 0 }}>{h("freeDescription")}</p>
-        )}
-
-        {tier === "premium" && (
-          <p style={{ marginBottom: 0 }}>{h("premiumDescription")}</p>
-        )}
-
-        {tier === "super_premium" && (
-          <div>
-            <p>{h("superPremiumDescription")}</p>
-            <p style={{ marginBottom: 0 }}>
-              {h("superPremiumCategories")}
-            </p>
+        <section className={styles.modeCard}>
+          <div className={styles.cardShine} aria-hidden="true" />
+          <div className={styles.modeHeading}>
+            <div><span>{h("yourMode")}</span><strong>{tierLabel(tier)}</strong></div>
+            <span className={styles.active}>{h("active")}</span>
           </div>
-        )}
 
-        <label style={{ display: "block", marginTop: 16 }}>
-          <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
-            {h("gameLanguage")}
-          </span>
+          <div className={styles.description}>
+            {tier === "free" && <p>{h("freeDescription")}</p>}
+            {tier === "premium" && <p>{h("premiumDescription")}</p>}
+            {tier === "super_premium" && <><p>{h("superPremiumDescription")}</p><p>{h("superPremiumCategories")}</p></>}
+          </div>
 
-          <select
-            value={gameLanguage}
-            onChange={(e) => {
-              const selectedGameLanguage = e.target.value as RoomLanguage;
+          <div className={styles.divider} />
+          <fieldset className={styles.gameLanguage}>
+            <legend>{h("gameLanguage")}</legend>
+            <div className={styles.languageSegments}>
+              {ENABLED_GAME_LANGUAGES.map((optionLanguage) => (
+                <button key={optionLanguage} type="button"
+                  className={gameLanguage === optionLanguage ? styles.selectedLanguage : ""}
+                  onClick={() => selectGameLanguage(optionLanguage)}
+                  aria-pressed={gameLanguage === optionLanguage}>
+                  <span>{LANGUAGE_FLAGS[optionLanguage]}</span>{LANGUAGE_NAMES[language][optionLanguage]}
+                </button>
+              ))}
+            </div>
+            <small>{h("gameLanguageHelp")}</small>
+          </fieldset>
 
-              setGameLanguage(selectedGameLanguage);
-              setGameLanguageManuallySelected(
-                selectedGameLanguage !== language
-              );
+          {tier === "free" && !freeQuotaExhausted && (
+            <p className={styles.quota}><span>✓</span><strong>{freeRoundsRemaining}</strong><span aria-hidden="true"> / 3</span></p>
+          )}
+          {freeQuotaExhausted && (
+            <section className={styles.rewardPanel}>
+              <h3>{getRoomUiText(language, "freeLimitTitle")}</h3>
+              <p>{getRoomUiText(language, "freeLimitText")}</p>
+              <button type="button" disabled={rewardedBusy} onClick={() => void startHomeFreeRewardedAd()}>
+                {getRoomUiText(language, "freeRewardButton")}
+              </button>
+            </section>
+          )}
 
-              window.localStorage.setItem(
-                "zm_gameLanguage",
-                selectedGameLanguage
-              );
-            }}
-            style={{
-              width: "100%",
-              padding: 12,
-              borderRadius: 8,
-            }}
-          >
-            {ENABLED_GAME_LANGUAGES.map((optionLanguage) => (
-              <option key={optionLanguage} value={optionLanguage}>
-                {languageOptionLabel(optionLanguage, language)}
-              </option>
-            ))}
-          </select>
+          <button className={styles.createButton} onClick={createRoom} disabled={creating || freeQuotaExhausted}>
+            <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="11" cy="10" r="5"/><path d="M2 27c0-6 3-9 9-9s9 3 9 9M24 13v12M18 19h12"/></svg>
+            {creating ? h("creating") : h("createRoom")}
+          </button>
+        </section>
 
-          <span
-            style={{
-              display: "block",
-              marginTop: 6,
-              fontSize: 13,
-              opacity: 0.75,
-            }}
-          >
-            {h("gameLanguageHelp")}
-          </span>
+        <button type="button" className={styles.optionsButton} onClick={() => setShowOtherModes((value) => !value)}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5l.8 3a8 8 0 0 1 2 1.2l3-.9 2.5 4.4-2.2 2.1v2.4l2.2 2.1-2.5 4.4-3-.9a8 8 0 0 1-2 1.2l-.8 3h-5l-.8-3a8 8 0 0 1-2-1.2l-3 .9-2.5-4.4 2.2-2.1v-2.4L1.2 10.7l2.5-4.4 3 .9a8 8 0 0 1 2-1.2l.8-3Z"/><circle cx="12" cy="14" r="3"/></svg>
+          <span>{showOtherModes ? h("hideOtherModes") : h("showOtherModes")}</span>
+          <span className={`${styles.arrow} ${showOtherModes ? styles.arrowOpen : ""}`}>⌄</span>
+        </button>
 
-        </label>
-
-        {freeQuotaExhausted && (
-          <section
-            style={{
-              marginTop: 16,
-              padding: 14,
-              border: "2px solid #f59e0b",
-              borderRadius: 10,
-              background: "#fff7ed",
-            }}
-          >
-            <h3 style={{ marginTop: 0 }}>
-              {getRoomUiText(language, "freeLimitTitle")}
-            </h3>
-
-            <p>{getRoomUiText(language, "freeLimitText")}</p>
-
-            <button
-              type="button"
-              disabled={rewardedBusy}
-              onClick={() => void startHomeFreeRewardedAd()}
-              style={{
-                padding: 14,
-                width: "100%",
-                fontWeight: 700,
-              }}
-            >
-              {getRoomUiText(language, "freeRewardButton")}
-            </button>
+        {showOtherModes && (
+          <section className={styles.purchaseOptions}>
+            <article><h3>Premium{premiumPrice ? ` – ${premiumPrice}` : ""}</h3><p>{h("premiumDescription")}</p>
+              <button type="button" disabled={tier === "premium" || tier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("premium")}>
+                {tier === "premium" ? h("active") : tier === "super_premium" ? h("includedInSuperPremium") : h("buyPremium")}
+              </button>
+            </article>
+            <article><h3>Super Premium{superPremiumPrice ? ` – ${superPremiumPrice}` : ""}</h3><p>{h("superPremiumPurchaseDescription")}</p><p>{h("superPremiumCategories")}</p>
+              <button type="button" disabled={tier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("super_premium")}>
+                {tier === "super_premium" ? h("active") : tier === "premium" ? superPremiumUpgradePrice ? `${h("upgradeToSuperPremiumFor")} ${superPremiumUpgradePrice}` : h("upgradeToSuperPremium") : h("buySuperPremium")}
+              </button>
+            </article>
           </section>
         )}
 
-        <button
-          onClick={createRoom}
-          disabled={creating || freeQuotaExhausted}
-          style={{
-            padding: 16,
-            marginTop: 16,
-            width: "100%",
-            fontWeight: 700,
-            fontSize: 17,
-          }}
-        >
-          {creating ? h("creating") : h("createRoom")}
-        </button>
-      </section>
-
-      <button
-        type="button"
-        onClick={() => setShowOtherModes((value) => !value)}
-        style={{
-          marginTop: 14,
-          padding: 12,
-          width: "100%",
-          background: "transparent",
-          border: "1px solid #aaa",
-          borderRadius: 8,
-          fontWeight: 700,
-        }}
-      >
-        {showOtherModes ? h("hideOtherModes") : h("showOtherModes")}
-      </button>
-
-      {showOtherModes && (
-        <section style={{ marginTop: 14 }}>
-          <article
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 10,
-              padding: 14,
-              marginBottom: 12,
-            }}
-          >
-            <h3 style={{ marginTop: 0 }}>
-              Premium{premiumPrice ? ` – ${premiumPrice}` : ""}
-            </h3>
-
-            <p>{h("premiumDescription")}</p>
-
-            <button
-              type="button"
-              disabled={
-                tier === "premium" ||
-                tier === "super_premium" ||
-                purchaseBusy !== null
-              }
-              onClick={() => void startPlayPurchase("premium")}
-              style={{ padding: 12, width: "100%" }}
-            >
-              {tier === "premium"
-                ? h("active")
-                : tier === "super_premium"
-                  ? h("includedInSuperPremium")
-                  : h("buyPremium")}
-            </button>
-          </article>
-
-          <article
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 10,
-              padding: 14,
-            }}
-          >
-            <h3 style={{ marginTop: 0 }}>
-              Super Premium
-              {superPremiumPrice ? ` – ${superPremiumPrice}` : ""}
-            </h3>
-
-            <p>{h("superPremiumPurchaseDescription")}</p>
-            <p>{h("superPremiumCategories")}</p>
-
-            <button
-              type="button"
-              disabled={tier === "super_premium" || purchaseBusy !== null}
-              onClick={() => void startPlayPurchase("super_premium")}
-              style={{ padding: 12, width: "100%" }}
-            >
-              {tier === "super_premium"
-                ? h("active")
-                : tier === "premium"
-                  ? superPremiumUpgradePrice
-                    ? `${h("upgradeToSuperPremiumFor")} ${superPremiumUpgradePrice}`
-                    : h("upgradeToSuperPremium")
-                  : h("buySuperPremium")}
-            </button>
-          </article>
-        </section>
-      )}
-
-              <button
-          type="button"
-          onClick={() =>
-            window.alert(h("ratingUnavailable"))
-          }
-          style={{
-            marginTop: 14,
-            padding: "9px 12px",
-            width: "100%",
-            border: "1px solid #b38b00",
-            borderRadius: 8,
-            background: "#fff5bf",
-            fontWeight: 700,
-            cursor: "pointer",
-          }}
-        >
-          {h("likeApp")}
+        <button type="button" className={styles.likeButton} onClick={() => window.alert(h("ratingUnavailable"))}>
+          <span>{h("likeApp")}</span><span className={styles.heart}>♥</span>
         </button>
 
-        <details
-          style={{
-            marginTop: 16,
-            borderTop: "1px solid #ddd",
-            paddingTop: 14,
-          }}
-        >
-          <summary style={{ cursor: "pointer", fontWeight: 700 }}>
-            {h("haveRoomCode")}
-          </summary>
-
-          <div style={{ marginTop: 12 }}>
-            <input
-              placeholder={h("roomCode")}
-              value={roomCodeInput}
-              onChange={(e) => setRoomCodeInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") joinRoomByCode();
-              }}
-              style={{
-                boxSizing: "border-box",
-                padding: 12,
-                width: "100%",
-                textTransform: "uppercase",
-                borderRadius: 8,
-                border: "1px solid #bbb",
-              }}
-            />
-
-            <button
-              onClick={joinRoomByCode}
-              style={{
-                padding: 14,
-                marginTop: 10,
-                width: "100%",
-                fontWeight: 700,
-              }}
-            >
-              {h("join")}
-            </button>
+        <details className={styles.roomCode}>
+          <summary><span>{h("haveRoomCode")}</span><svg viewBox="0 0 24 28" aria-hidden="true"><rect x="4" y="11" width="16" height="14" rx="2"/><path d="M7 11V8a5 5 0 0 1 10 0v3"/><circle cx="12" cy="17" r="1.5"/><path d="M12 18v3"/></svg></summary>
+          <div className={styles.roomCodeForm}>
+            <input placeholder={h("roomCode")} value={roomCodeInput} onChange={(e) => setRoomCodeInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") joinRoomByCode(); }} />
+            <button onClick={joinRoomByCode}>{h("join")}</button>
           </div>
         </details>
 
-      {status && <p style={{ marginTop: 16 }}>{status}</p>}
-        <p style={{ marginTop: 18, fontSize: 13, textAlign: "center", opacity: 0.75 }}>
-          <a href="/privacy" style={{ color: "inherit" }}>
-            {h("privacyPolicy")}
-          </a>
-        </p>
-
+        {status && <p className={styles.status} role="status">{status}</p>}
+        <p className={styles.privacy}><a href="/privacy">{h("privacyPolicy")}</a></p>
+      </div>
     </main>
   );
 }
