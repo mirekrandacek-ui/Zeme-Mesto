@@ -1165,16 +1165,36 @@ export default function Home() {
           <div className={styles.divider} />
           <fieldset className={styles.gameLanguage}>
             <legend>{h("gameLanguage")}</legend>
-            <div className={styles.languageSegments}>
-              {ENABLED_GAME_LANGUAGES.map((optionLanguage) => (
-                <button key={optionLanguage} type="button"
-                  className={gameLanguage === optionLanguage ? styles.selectedLanguage : ""}
-                  onClick={() => selectGameLanguage(optionLanguage)}
-                  aria-pressed={gameLanguage === optionLanguage}>
-                  <span>{LANGUAGE_FLAGS[optionLanguage]}</span>{LANGUAGE_NAMES[language][optionLanguage]}
-                </button>
-              ))}
-            </div>
+
+            <details className={styles.gameLanguageDropdown}>
+              <summary>
+                <span className={styles.gameLanguageCurrent}>
+                  <span>{LANGUAGE_FLAGS[gameLanguage]}</span>
+                  {LANGUAGE_NAMES[language][gameLanguage]}
+                </span>
+              </summary>
+
+              <div className={styles.gameLanguageMenu}>
+                {ENABLED_GAME_LANGUAGES
+                  .filter((optionLanguage) => optionLanguage !== gameLanguage)
+                  .map((optionLanguage) => (
+                    <button
+                      key={optionLanguage}
+                      type="button"
+                      onClick={(event) => {
+                        selectGameLanguage(optionLanguage);
+                        event.currentTarget
+                          .closest("details")
+                          ?.removeAttribute("open");
+                      }}
+                    >
+                      <span>{LANGUAGE_FLAGS[optionLanguage]}</span>
+                      {LANGUAGE_NAMES[language][optionLanguage]}
+                    </button>
+                  ))}
+              </div>
+            </details>
+
             <small>{h("gameLanguageHelp")}</small>
           </fieldset>
 
@@ -1222,7 +1242,19 @@ export default function Home() {
           <span>{h("likeApp")}</span><span className={styles.heart}>♥</span>
         </button>
 
-        <details className={styles.roomCode}>
+        <details
+          className={styles.roomCode}
+          onToggle={(event) => {
+            if (event.currentTarget.open) {
+              window.requestAnimationFrame(() => {
+                event.currentTarget.scrollIntoView({
+                  behavior: "smooth",
+                  block: "end",
+                });
+              });
+            }
+          }}
+        >
           <summary><span>{h("haveRoomCode")}</span><svg viewBox="0 0 24 28" aria-hidden="true"><rect x="4" y="11" width="16" height="14" rx="2"/><path d="M7 11V8a5 5 0 0 1 10 0v3"/><circle cx="12" cy="17" r="1.5"/><path d="M12 18v3"/></svg></summary>
           <div className={styles.roomCodeForm}>
             <input placeholder={h("roomCode")} value={roomCodeInput} onChange={(e) => setRoomCodeInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") joinRoomByCode(); }} />
