@@ -1156,7 +1156,7 @@ export default function Home() {
             <span className={styles.active}>{h("active")}</span>
           </div>
 
-          <div className={styles.description}>
+          <div className={tier === "free" ? styles.description : `${styles.description} ${styles.descriptionFull}`}>
             {tier === "free" && <p>{h("freeDescription")}</p>}
             {tier === "premium" && <p>{h("premiumDescription")}</p>}
             {tier === "super_premium" && <><p>{h("superPremiumDescription")}</p><p>{h("superPremiumCategories")}</p></>}
