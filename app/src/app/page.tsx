@@ -279,7 +279,7 @@ const HOME_TEXT = {
     purchaseWindowError: "Nákupní okno se nepodařilo otevřít.",
     purchaseStartError: "Nákup se nepodařilo spustit.",
     freeDescription:
-      "Reklamy, až 3 hráči. Pevné kategorie: Země, Město, Jméno.",
+      "Až 3 hráči. Pevné kategorie: Země, Město, Jméno.",
     premiumDescription:
       "Max. 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina.",
     superPremiumDescription:
@@ -327,7 +327,7 @@ const HOME_TEXT = {
     purchaseWindowError: "The purchase window could not be opened.",
     purchaseStartError: "The purchase could not be started.",
     freeDescription:
-      "Ads, up to 3 players. Fixed categories: Country, City, Name.",
+      "Up to 3 players. Fixed categories: Country, City, Name.",
     premiumDescription:
       "Up to 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant.",
     superPremiumDescription:
@@ -376,7 +376,7 @@ const HOME_TEXT = {
     purchaseWindowError: "No se pudo abrir la ventana de compra.",
     purchaseStartError: "No se pudo iniciar la compra.",
     freeDescription:
-      "Con anuncios, hasta 3 jugadores. Categorías fijas: País, Ciudad, Nombre.",
+      "Hasta 3 jugadores. Categorías fijas: País, Ciudad, Nombre.",
     premiumDescription:
       "Hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta.",
     superPremiumDescription:
@@ -427,7 +427,7 @@ const HOME_TEXT = {
     purchaseWindowError: "Das Kauffenster konnte nicht geöffnet werden.",
     purchaseStartError: "Der Kauf konnte nicht gestartet werden.",
     freeDescription:
-      "Werbung, bis zu 3 Spieler. Feste Kategorien: Land, Stadt, Name.",
+      "Bis zu 3 Spieler. Feste Kategorien: Land, Stadt, Name.",
     premiumDescription:
       "Bis zu 5 Spieler. Feste Grundkategorien: Land, Stadt, Name, Tier, Gegenstand, Pflanze.",
     superPremiumDescription:
@@ -472,7 +472,7 @@ const HOME_TEXT = {
     productUnavailable: "Le produit n’est pas disponible.",
     purchaseWindowError: "Impossible d’ouvrir la fenêtre d’achat.",
     purchaseStartError: "Impossible de démarrer l’achat.",
-    freeDescription: "Publicités, jusqu’à 3 joueurs. Catégories fixes : Pays, Ville, Prénom.",
+    freeDescription: "Jusqu’à 3 joueurs. Catégories fixes : Pays, Ville, Prénom.",
     premiumDescription: "Jusqu’à 5 joueurs. Catégories de base fixes : Pays, Ville, Prénom, Animal, Objet, Plante.",
     superPremiumDescription: "Nombre de joueurs illimité, sélection et ordre des catégories, limite de temps facultative par manche, nombre de manches et jusqu’à 5 catégories personnalisées.",
     superPremiumCategories: "Catégories : Pays, Ville, Prénom, Animal, Objet, Plante, Film / Série, Acteur / Actrice, Chanteur / Chanteuse / Groupe, Sport, Marque, Voiture / Moto, Rivière / Montagne, Métier, Couleur.",
@@ -512,7 +512,7 @@ const HOME_TEXT = {
     productUnavailable: "O produto não está disponível.",
     purchaseWindowError: "Não foi possível abrir a janela de compra.",
     purchaseStartError: "Não foi possível iniciar a compra.",
-    freeDescription: "Anúncios, até 3 jogadores. Categorias fixas: País, Cidade, Nome.",
+    freeDescription: "Até 3 jogadores. Categorias fixas: País, Cidade, Nome.",
     premiumDescription: "Até 5 jogadores. Categorias básicas fixas: País, Cidade, Nome, Animal, Objeto, Planta.",
     superPremiumDescription: "Jogadores ilimitados, seleção e ordem das categorias, limite de tempo opcional por rodada, número de rodadas e até 5 categorias personalizadas.",
     superPremiumCategories: "Categorias: País, Cidade, Nome, Animal, Objeto, Planta, Filme / Série, Ator / Atriz, Cantor / Cantora / Banda, Esporte, Marca, Carro / Moto, Rio / Montanha, Profissão, Cor.",
@@ -551,7 +551,7 @@ const HOME_TEXT = {
     productUnavailable: "Produk tidak tersedia.",
     purchaseWindowError: "Jendela pembelian tidak dapat dibuka.",
     purchaseStartError: "Pembelian tidak dapat dimulai.",
-    freeDescription: "Iklan, maksimal 3 pemain. Kategori tetap: Negara, Kota, Nama.",
+    freeDescription: "Maksimal 3 pemain. Kategori tetap: Negara, Kota, Nama.",
     premiumDescription: "Maksimal 5 pemain. Kategori dasar tetap: Negara, Kota, Nama, Hewan, Benda, Tumbuhan.",
     superPremiumDescription: "Jumlah pemain tak terbatas, pilihan dan urutan kategori, batas waktu opsional per ronde, jumlah ronde, dan hingga 5 kategori buatan sendiri.",
     superPremiumCategories: "Kategori: Negara, Kota, Nama, Hewan, Benda, Tumbuhan, Film / Serial, Aktor / Aktris, Penyanyi / Grup Musik, Olahraga, Merek, Mobil / Motor, Sungai / Gunung, Pekerjaan, Warna.",
@@ -590,7 +590,7 @@ const HOME_TEXT = {
     productUnavailable: "Ürün kullanılamıyor.",
     purchaseWindowError: "Satın alma penceresi açılamadı.",
     purchaseStartError: "Satın alma başlatılamadı.",
-    freeDescription: "Reklamlı, en fazla 3 oyuncu. Sabit kategoriler: Ülke, Şehir, İsim.",
+    freeDescription: "En fazla 3 oyuncu. Sabit kategoriler: Ülke, Şehir, İsim.",
     premiumDescription: "En fazla 5 oyuncu. Sabit temel kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya, Bitki.",
     superPremiumDescription: "Sınırsız oyuncu, kategori seçimi ve sıralaması, tur başına isteğe bağlı süre sınırı, tur sayısı ve en fazla 5 özel kategori.",
     superPremiumCategories: "Kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya, Bitki, Film / Dizi, Oyuncu, Şarkıcı / Müzik Grubu, Spor, Marka, Araba / Motosiklet, Nehir / Dağ, Meslek, Renk.",
@@ -629,7 +629,7 @@ const HOME_TEXT = {
     productUnavailable: "Produkt jest niedostępny.",
     purchaseWindowError: "Nie udało się otworzyć okna zakupu.",
     purchaseStartError: "Nie udało się rozpocząć zakupu.",
-    freeDescription: "Reklamy, maks. 3 graczy. Stałe kategorie: Państwo, Miasto, Imię.",
+    freeDescription: "Maks. 3 graczy. Stałe kategorie: Państwo, Miasto, Imię.",
     premiumDescription: "Maks. 5 graczy. Stałe kategorie podstawowe: Państwo, Miasto, Imię, Zwierzę, Rzecz, Roślina.",
     superPremiumDescription: "Nieograniczona liczba graczy, wybór i kolejność kategorii, opcjonalny limit czasu na rundę, liczba rund oraz do 5 własnych kategorii.",
     superPremiumCategories: "Kategorie: Państwo, Miasto, Imię, Zwierzę, Rzecz, Roślina, Film / Serial, Aktor / Aktorka, Piosenkarz / Zespół, Sport, Marka, Samochód / Motocykl, Rzeka / Góra, Zawód, Kolor.",
@@ -669,7 +669,7 @@ const HOME_TEXT = {
     productUnavailable: "Il prodotto non è disponibile.",
     purchaseWindowError: "Impossibile aprire la finestra di acquisto.",
     purchaseStartError: "Impossibile avviare l’acquisto.",
-    freeDescription: "Pubblicità, massimo 3 giocatori. Categorie fisse: Nazione, Città, Nome.",
+    freeDescription: "Massimo 3 giocatori. Categorie fisse: Nazione, Città, Nome.",
     premiumDescription: "Massimo 5 giocatori. Categorie base fisse: Nazione, Città, Nome, Animale, Cosa, Pianta.",
     superPremiumDescription: "Numero illimitato di giocatori, scelta e ordine delle categorie, limite di tempo facoltativo per turno, numero di turni e fino a 5 categorie personalizzate.",
     superPremiumCategories: "Categorie: Nazione, Città, Nome, Animale, Cosa, Pianta, Film / Serie TV, Attore / Attrice, Cantante / Gruppo, Sport, Marca, Auto / Moto, Fiume / Montagna, Professione, Colore.",
@@ -1101,6 +1101,18 @@ export default function Home() {
     router.push(`/room/${cleaned}?ui=${language}`);
   }
 
+  const selectUiLanguage = (selectedLanguage: UiLanguage) => {
+    setLanguage(selectedLanguage);
+    window.localStorage.setItem("zm_uiLanguage", selectedLanguage);
+
+    if (!gameLanguageManuallySelected) {
+      setGameLanguage(selectedLanguage);
+      window.localStorage.setItem("zm_gameLanguage", selectedLanguage);
+    } else if (gameLanguage === selectedLanguage) {
+      setGameLanguageManuallySelected(false);
+    }
+  };
+
   const selectGameLanguage = (selectedGameLanguage: RoomLanguage) => {
     setGameLanguage(selectedGameLanguage);
     setGameLanguageManuallySelected(selectedGameLanguage !== language);
@@ -1119,44 +1131,71 @@ export default function Home() {
 
       <div className={styles.content}>
         <header className={styles.header}>
-          <label className={styles.applicationLanguage} aria-label={h("applicationLanguage")}>
+          <div className={styles.applicationLanguage} aria-label={h("applicationLanguage")}>
             <span>{h("applicationLanguage")}</span>
-            <span className={styles.selectShell}>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
-              <select
-                value={language}
-                onChange={(e) => {
-                  const selectedLanguage = e.target.value as UiLanguage;
-                  setLanguage(selectedLanguage);
-                  window.localStorage.setItem("zm_uiLanguage", selectedLanguage);
-                  if (!gameLanguageManuallySelected) {
-                    setGameLanguage(selectedLanguage);
-                    window.localStorage.setItem("zm_gameLanguage", selectedLanguage);
-                  } else if (gameLanguage === selectedLanguage) {
-                    setGameLanguageManuallySelected(false);
-                  }
-                }}
-              >
-                {ENABLED_UI_LANGUAGES.map((optionLanguage) => (
-                  <option key={optionLanguage} value={optionLanguage}>
-                    {languageOptionLabel(optionLanguage, language)}
-                  </option>
-                ))}
-              </select>
-              <svg className={styles.chevron} viewBox="0 0 24 24" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg>
-            </span>
-          </label>
+
+            <details className={`${styles.gameLanguageDropdown} ${styles.applicationLanguageDropdown}`}>
+              <summary>
+                <span className={styles.gameLanguageCurrent}>
+                  <svg className={styles.globeIcon} viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>
+                  </svg>
+                  <span>{LANGUAGE_FLAGS[language]}</span>
+                  {LANGUAGE_NAMES[language][language]}
+                </span>
+
+                <svg className={styles.dropdownChevron} viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m5 9 7 7 7-7"/>
+                </svg>
+              </summary>
+
+              <div className={styles.gameLanguageMenu}>
+                {ENABLED_UI_LANGUAGES
+                  .filter((optionLanguage) => optionLanguage !== language)
+                  .map((optionLanguage) => (
+                    <button
+                      key={optionLanguage}
+                      type="button"
+                      onClick={(event) => {
+                        selectUiLanguage(optionLanguage);
+                        event.currentTarget.closest("details")?.removeAttribute("open");
+                      }}
+                    >
+                      <span>{LANGUAGE_FLAGS[optionLanguage]}</span>
+                      {LANGUAGE_NAMES[language][optionLanguage]}
+                    </button>
+                  ))}
+              </div>
+            </details>
+          </div>
           <p className={styles.intro}>{h("intro")}</p>
         </header>
 
         <section className={styles.modeCard}>
           <div className={styles.cardShine} aria-hidden="true" />
           <div className={styles.modeHeading}>
-            <div><span>{h("yourMode")}</span><strong>{tierLabel(tier)}</strong></div>
-            <span className={styles.active}>{h("active")}</span>
+            <div className={styles.modeTitleRow}>
+              <span className={styles.modeLabel}>{h("yourMode")}</span>
+              <strong className={tier === "super_premium" ? styles.superTierName : styles.tierName}>
+                {tierLabel(tier)}
+              </strong>
+            </div>
+
+            <div className={styles.modeStatusRow}>
+              <span className={styles.active}>{h("active")}</span>
+
+              {tier === "free" && !freeQuotaExhausted && (
+                <p className={styles.quota}>
+                  <span>✓</span>
+                  <strong>{freeRoundsRemaining}</strong>
+                  <span aria-hidden="true"> / 3</span>
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className={tier === "free" ? styles.description : `${styles.description} ${styles.descriptionFull}`}>
+          <div className={styles.description}>
             {tier === "free" && <p>{h("freeDescription")}</p>}
             {tier === "premium" && <p>{h("premiumDescription")}</p>}
             {tier === "super_premium" && <><p>{h("superPremiumDescription")}</p><p>{h("superPremiumCategories")}</p></>}
@@ -1172,6 +1211,10 @@ export default function Home() {
                   <span>{LANGUAGE_FLAGS[gameLanguage]}</span>
                   {LANGUAGE_NAMES[language][gameLanguage]}
                 </span>
+
+                <svg className={styles.dropdownChevron} viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m5 9 7 7 7-7"/>
+                </svg>
               </summary>
 
               <div className={styles.gameLanguageMenu}>
@@ -1198,9 +1241,6 @@ export default function Home() {
             <small>{h("gameLanguageHelp")}</small>
           </fieldset>
 
-          {tier === "free" && !freeQuotaExhausted && (
-            <p className={styles.quota}><span>✓</span><strong>{freeRoundsRemaining}</strong><span aria-hidden="true"> / 3</span></p>
-          )}
           {freeQuotaExhausted && (
             <section className={styles.rewardPanel}>
               <h3>{getRoomUiText(language, "freeLimitTitle")}</h3>
@@ -1220,7 +1260,13 @@ export default function Home() {
         <button type="button" className={styles.optionsButton} onClick={() => setShowOtherModes((value) => !value)}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5l.8 3a8 8 0 0 1 2 1.2l3-.9 2.5 4.4-2.2 2.1v2.4l2.2 2.1-2.5 4.4-3-.9a8 8 0 0 1-2 1.2l-.8 3h-5l-.8-3a8 8 0 0 1-2-1.2l-3 .9-2.5-4.4 2.2-2.1v-2.4L1.2 10.7l2.5-4.4 3 .9a8 8 0 0 1 2-1.2l.8-3Z"/><circle cx="12" cy="14" r="3"/></svg>
           <span>{showOtherModes ? h("hideOtherModes") : h("showOtherModes")}</span>
-          <span className={`${styles.arrow} ${showOtherModes ? styles.arrowOpen : ""}`}>⌄</span>
+          <svg
+            className={`${styles.dropdownChevron} ${showOtherModes ? styles.dropdownChevronOpen : ""}`}
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="m5 9 7 7 7-7"/>
+          </svg>
         </button>
 
         {showOtherModes && (
@@ -1249,7 +1295,7 @@ export default function Home() {
               window.requestAnimationFrame(() => {
                 event.currentTarget.scrollIntoView({
                   behavior: "smooth",
-                  block: "end",
+                  block: "center",
                 });
               });
             }
