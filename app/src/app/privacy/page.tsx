@@ -9,6 +9,25 @@ export default function PrivacyPolicyPage() {
         lineHeight: 1.55,
       }}
     >
+      <a
+        href="/"
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          marginBottom: 18,
+          padding: "10px 14px",
+          border: "1px solid #999",
+          borderRadius: 10,
+          color: "inherit",
+          textDecoration: "none",
+          fontWeight: 700,
+          background: "#f5f5f5",
+        }}
+      >
+        ← Zpět na hlavní stránku / Back to home
+      </a>
+
       <h1>Zásady ochrany soukromí / Privacy Policy</h1>
 
       <p>
