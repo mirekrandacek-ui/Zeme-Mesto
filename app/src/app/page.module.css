@@ -75,3 +75,112 @@
   stroke:#fff;
   stroke-width:3;
 }
+
+
+/* ACCESSIBILITY: larger homepage text */
+
+/* Nadpisy jazyků */
+.applicationLanguage > span:first-child{
+  font-size:13.5px;
+}
+
+.gameLanguage legend{
+  font-size:14px;
+}
+
+/* Úvodní věta pod Jazykem aplikace */
+.intro{
+  font-size:13.5px;
+  line-height:1.4;
+}
+
+/* Až 3 hráči... / Premium / Super Premium popisy */
+.description{
+  font-size:12.5px;
+  line-height:1.42;
+}
+
+/* V tomto jazyce budeš psát... */
+.gameLanguage small{
+  font-size:12px;
+  line-height:1.38;
+}
+
+/* Aktivní */
+.active{
+  font-size:13px;
+}
+
+/* Jazyk aplikace + Jazyk hry – vybraný jazyk */
+.gameLanguageDropdown summary{
+  font-size:14px;
+}
+
+/* Položky rozbalených jazykových menu */
+.gameLanguageMenu button{
+  font-size:13px;
+}
+
+/* 3 / 3 */
+.quota{
+  font-size:14px;
+}
+
+/* Odměna po vyčerpání Free kol */
+.rewardPanel{
+  font-size:11.5px;
+  line-height:1.35;
+}
+
+.rewardPanel button{
+  font-size:13px;
+}
+
+/* Zobrazit další režimy */
+.optionsButton{
+  font-size:15.5px;
+}
+
+/* Texty v Premium / Super Premium nabídkách */
+.purchaseOptions h3{
+  font-size:14px;
+}
+
+.purchaseOptions p{
+  font-size:11.5px;
+  line-height:1.35;
+}
+
+.purchaseOptions button{
+  font-size:13px;
+}
+
+/* Líbí se vám aplikace? */
+.likeButton{
+  font-size:15.5px;
+}
+
+/* Mám kód místnosti */
+.roomCode summary{
+  font-size:15.5px;
+}
+
+/* Pole ROOM CODE + Připojit se / Join */
+.roomCodeForm input{
+  font-size:13.5px;
+}
+
+.roomCodeForm button{
+  font-size:13px;
+}
+
+/* Stavové hlášky */
+.status{
+  font-size:12px;
+  line-height:1.35;
+}
+
+/* Zásady ochrany soukromí */
+.privacy{
+  font-size:12.5px;
+}
