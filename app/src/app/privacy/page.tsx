@@ -2,7 +2,7 @@ export default function PrivacyPolicyPage() {
   return (
     <main
       style={{
-        padding: 24,
+        padding: "calc(88px + env(safe-area-inset-top)) 24px 24px",
         fontFamily: "system-ui",
         maxWidth: 760,
         margin: "0 auto",
