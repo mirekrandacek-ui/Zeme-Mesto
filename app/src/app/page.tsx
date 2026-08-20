@@ -1128,6 +1128,7 @@ export default function Home() {
         ].map((photo) => <span key={photo} className={`${styles.photo} ${styles[photo]}`} />)}
       </div>
       <div className={styles.blueVeil} aria-hidden="true" />
+      <div className={styles.castleFooter} aria-hidden="true" />
 
       <div className={styles.content}>
         <header className={styles.header}>
