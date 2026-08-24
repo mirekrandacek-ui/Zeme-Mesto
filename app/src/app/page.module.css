@@ -186,8 +186,20 @@
 }
 
 
-/* Směrem dolů odhalíme spodní díly fotomozaiky. */
+/* Také střed za boxy je fotografie, ne samostatný modrý pruh. */
+.photoMosaic::before{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:calc(50vw - 17.225dvh);
+  width:34.45dvh;
+  background:url("../../assets/branding/prague-bottom-clean.webp") center / auto 100% no-repeat;
+  filter:brightness(.68) saturate(1.05) contrast(1.05);
+}
+
 .blueVeil{
+  display:none;
   left:calc(50vw - 17.225dvh);
   right:auto;
   width:34.45dvh;
