@@ -186,52 +186,25 @@
 }
 
 
-/* Footer Prague Castle
-   Druhý výřez stejné schválené statické tapety.
-   Horní castle zůstává beze změny. */
-.castleFooter{
-  position:fixed;
-  z-index:2;
+/* Praha jako spodní díl statické fotomozaiky. */
+.pragueBottom{
+  position:absolute;
+  display:block;
   left:50%;
   bottom:env(safe-area-inset-bottom);
   transform:translateX(-50%);
   width:clamp(270px,68vw,420px);
-  height:clamp(150px,24dvh,205px);
-  pointer-events:none;
-  overflow:hidden;
+  aspect-ratio:341 / 338;
 
   border-left:1px solid rgba(225,248,255,.45);
   border-right:1px solid rgba(225,248,255,.45);
-  background:#00152f;
-}
-
-.castleFooter::before{
-  content:"";
-  position:absolute;
-  inset:0 8%;
 
   background-image:url("../../assets/branding/prague-castle-footer.png");
   background-repeat:no-repeat;
-  background-size:contain;
+  background-size:cover;
   background-position:center bottom;
 
-  /* Stejný lehce boční dojem jako horní fotografie. */
-  clip-path:polygon(6% 0,100% 0,94% 100%,0 100%);
-
   filter:saturate(1.08) contrast(1.05);
-
-  -webkit-mask-image:linear-gradient(
-    to bottom,
-    transparent 0,
-    #000 10%,
-    #000 100%
-  );
-  mask-image:linear-gradient(
-    to bottom,
-    transparent 0,
-    #000 10%,
-    #000 100%
-  );
 }
 
 /* Necháme pod odkazem Zásady místo, aby byl Hrad vidět. */

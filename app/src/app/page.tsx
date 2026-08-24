@@ -1126,9 +1126,9 @@ export default function Home() {
           "mountains", "castle", "eiffel", "colosseum", "woman", "elephant",
           "dog", "plant", "camera", "headphones", "backpack", "sunflower",
         ].map((photo) => <span key={photo} className={`${styles.photo} ${styles[photo]}`} />)}
+        <span className={styles.pragueBottom} />
       </div>
       <div className={styles.blueVeil} aria-hidden="true" />
-      <div className={styles.castleFooter} aria-hidden="true" />
 
       <div className={styles.content}>
         <header className={styles.header}>
