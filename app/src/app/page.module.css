@@ -211,7 +211,7 @@
   position:absolute;
   display:block;
   left:50%;
-  top:72.667dvh;
+  bottom:0;
   transform:translateX(-50%);
   width:34.45dvh;
   height:13.457dvh;
@@ -225,4 +225,151 @@
   background-position:center 22%;
 
   filter:saturate(1.08) contrast(1.05);
+}
+
+
+/* Boxy jsou hlavní obsah: větší typografie a přirozené rozložení níž. */
+.content{
+  margin:clamp(18px,4dvh,38px) auto 0;
+}
+
+.header{
+  margin-bottom:12px;
+}
+
+.applicationLanguage > span:first-child{
+  margin-bottom:6px;
+  font-size:16px;
+}
+
+.intro{
+  margin:12px 2px 10px;
+  font-size:15px;
+  line-height:1.45;
+}
+
+.gameLanguageDropdown summary{
+  height:48px;
+  border-radius:16px;
+  font-size:clamp(15px,3.8vw,17px);
+}
+
+.modeCard{
+  padding:20px 19px 18px;
+}
+
+.modeHeading{
+  gap:9px;
+}
+
+.modeLabel{
+  font-size:18px;
+}
+
+.tierName{
+  font-size:clamp(36px,9.5vw,48px);
+}
+
+.superTierName{
+  font-size:clamp(24px,6.4vw,34px);
+}
+
+.modeStatusRow{
+  min-height:36px;
+}
+
+.active{
+  padding:6px 14px;
+  font-size:15px;
+}
+
+.quota{
+  font-size:16px;
+}
+
+.quota > span:first-child{
+  width:31px;
+  height:31px;
+  font-size:18px;
+}
+
+.quota strong{
+  font-size:22px;
+}
+
+.description{
+  font-size:14px;
+  line-height:1.45;
+}
+
+.description p{
+  margin-top:10px;
+}
+
+.divider{
+  margin:11px 0 12px;
+}
+
+.gameLanguage legend{
+  margin-bottom:7px;
+  font-size:17px;
+}
+
+.gameLanguage small{
+  margin-top:7px;
+  font-size:13.5px;
+  line-height:1.4;
+}
+
+.createButton{
+  margin-top:12px;
+  padding:13px 8px 15px;
+  border-radius:21px;
+  font-size:clamp(19px,5.4vw,25px);
+}
+
+.createButton svg{
+  width:29px;
+}
+
+.optionsButton,
+.likeButton,
+.roomCode{
+  margin-top:11px;
+}
+
+.optionsButton{
+  min-height:58px;
+  padding:9px 17px;
+  font-size:clamp(16.5px,4.1vw,18.5px);
+}
+
+.optionsButton svg{
+  width:28px;
+  margin-right:11px;
+}
+
+.likeButton{
+  min-height:56px;
+  padding:8px 17px;
+  font-size:clamp(17px,4.1vw,18.5px);
+}
+
+.heart{
+  font-size:36px;
+}
+
+.roomCode summary{
+  min-height:56px;
+  padding:8px 17px;
+  font-size:clamp(17px,4.1vw,18.5px);
+}
+
+.roomCode summary svg{
+  width:30px;
+}
+
+.privacy{
+  margin-top:16px;
+  font-size:14.5px;
 }
