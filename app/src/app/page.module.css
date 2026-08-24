@@ -186,6 +186,25 @@
 }
 
 
+/* Směrem dolů odhalíme spodní díly fotomozaiky. */
+.blueVeil{
+  -webkit-mask-image:linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 48%,
+    rgba(0,0,0,.45) 72%,
+    rgba(0,0,0,.12) 100%
+  );
+  mask-image:linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 48%,
+    rgba(0,0,0,.45) 72%,
+    rgba(0,0,0,.12) 100%
+  );
+}
+
+
 /* Praha jako spodní díl statické fotomozaiky. */
 .pragueBottom{
   position:absolute;
