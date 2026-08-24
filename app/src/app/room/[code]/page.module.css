@@ -1,7 +1,7 @@
 .entryPage{
   position:relative;
   isolation:isolate;
-  min-height:100dvh;
+  min-height:100lvh;
   overflow-x:hidden;
   color:#fff;
   background:#00152f;
@@ -22,8 +22,8 @@
   z-index:1;
   top:0;
   bottom:0;
-  left:calc(50vw - 17.225dvh);
-  width:34.45dvh;
+  left:calc(50vw - 17.225lvh);
+  width:34.45lvh;
   background-image:url("../../../../assets/branding/prague-bottom-clean.webp");
   background-repeat:no-repeat;
   background-size:auto 145%;
@@ -35,23 +35,23 @@
   display:block;
   background-image:url("../../../../assets/branding/homepage-final-reference1.png");
   background-repeat:no-repeat;
-  background-size:56.280dvh 100dvh;
+  background-size:56.280lvh 100lvh;
   filter:saturate(1.07) contrast(1.04);
   box-shadow:inset 0 0 18px rgba(0,38,76,.38),0 0 0 1px rgba(225,248,255,.45);
 }
 
-.mountains{left:calc(50vw - 28.140dvh);top:0;width:17.943dvh;height:20.215dvh;background-position:0 0;clip-path:polygon(0 0,100% 0,94% 100%,0 100%)}
-.castle{left:calc(50vw + 7.745dvh);top:0;width:20.395dvh;height:20.215dvh;background-position:-35.885dvh 0;clip-path:polygon(6% 0,100% 0,100% 100%,0 100%)}
-.eiffel{left:calc(50vw - 28.140dvh);top:20.215dvh;width:10.766dvh;height:19.557dvh;background-position:0 -20.215dvh}
-.colosseum{left:calc(50vw + 17.315dvh);top:20.215dvh;width:10.825dvh;height:20.574dvh;background-position:-45.455dvh -20.215dvh}
-.woman{left:calc(50vw - 28.140dvh);top:39.773dvh;width:10.766dvh;height:17.584dvh;background-position:0 -39.773dvh}
-.elephant{left:calc(50vw + 17.315dvh);top:40.789dvh;width:10.825dvh;height:16.627dvh;background-position:-45.455dvh -40.789dvh}
-.dog{left:calc(50vw - 28.140dvh);top:57.297dvh;width:10.885dvh;height:17.703dvh;background-position:0 -57.297dvh}
-.plant{left:calc(50vw + 17.315dvh);top:57.416dvh;width:10.825dvh;height:15.431dvh;background-position:-45.455dvh -57.416dvh}
-.camera{left:calc(50vw - 28.140dvh);top:74.761dvh;width:10.885dvh;height:11.663dvh;background-position:0 -74.761dvh}
-.headphones{left:calc(50vw + 17.195dvh);top:72.667dvh;width:10.945dvh;height:13.457dvh;background-position:-45.335dvh -72.667dvh}
-.backpack{left:calc(50vw - 28.140dvh);top:86.005dvh;width:10.885dvh;height:13.995dvh;background-position:0 -86.005dvh}
-.sunflower{left:calc(50vw + 17.195dvh);top:86.124dvh;width:10.945dvh;height:13.876dvh;background-position:-45.335dvh -86.124dvh}
+.mountains{left:calc(50vw - 28.140lvh);top:0;width:17.943lvh;height:20.215lvh;background-position:0 0;clip-path:polygon(0 0,100% 0,94% 100%,0 100%)}
+.castle{left:calc(50vw + 7.745lvh);top:0;width:20.395lvh;height:20.215lvh;background-position:-35.885lvh 0;clip-path:polygon(6% 0,100% 0,100% 100%,0 100%)}
+.eiffel{left:calc(50vw - 28.140lvh);top:20.215lvh;width:10.766lvh;height:19.557lvh;background-position:0 -20.215lvh}
+.colosseum{left:calc(50vw + 17.315lvh);top:20.215lvh;width:10.825lvh;height:20.574lvh;background-position:-45.455lvh -20.215lvh}
+.woman{left:calc(50vw - 28.140lvh);top:39.773lvh;width:10.766lvh;height:17.584lvh;background-position:0 -39.773lvh}
+.elephant{left:calc(50vw + 17.315lvh);top:40.789lvh;width:10.825lvh;height:16.627lvh;background-position:-45.455lvh -40.789lvh}
+.dog{left:calc(50vw - 28.140lvh);top:57.297lvh;width:10.885lvh;height:17.703lvh;background-position:0 -57.297lvh}
+.plant{left:calc(50vw + 17.315lvh);top:57.416lvh;width:10.825lvh;height:15.431lvh;background-position:-45.455lvh -57.416lvh}
+.camera{left:calc(50vw - 28.140lvh);top:74.761lvh;width:10.885lvh;height:11.663lvh;background-position:0 -74.761lvh}
+.headphones{left:calc(50vw + 17.195lvh);top:72.667lvh;width:10.945lvh;height:13.457lvh;background-position:-45.335lvh -72.667lvh}
+.backpack{left:calc(50vw - 28.140lvh);top:86.005lvh;width:10.885lvh;height:13.995lvh;background-position:0 -86.005lvh}
+.sunflower{left:calc(50vw + 17.195lvh);top:86.124lvh;width:10.945lvh;height:13.876lvh;background-position:-45.335lvh -86.124lvh}
 
 .entryPage > :not(.photoMosaic){
   position:relative;
@@ -59,7 +59,7 @@
 }
 
 .entryHeader{
-  width:min(82vw,34.45dvh,360px);
+  width:min(82vw,34.45lvh,360px);
   margin:0 auto 12px;
   padding:14px 13px 15px;
   border:2px solid #43c8ff;
@@ -173,7 +173,7 @@
 .entryJoin,
 .entryLike,
 .entryPrivacy{
-  width:min(82vw,34.45dvh,360px);
+  width:min(82vw,34.45lvh,360px);
   margin-left:auto;
   margin-right:auto;
 }
