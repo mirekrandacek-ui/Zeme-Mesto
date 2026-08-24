@@ -230,6 +230,7 @@
 
 /* Boxy jsou hlavní obsah: větší typografie a přirozené rozložení níž. */
 .content{
+  width:min(82vw,34.45dvh,360px);
   margin:clamp(18px,4dvh,38px) auto 0;
 }
 
