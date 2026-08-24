@@ -1,7 +1,7 @@
 .entryPage{
   position:relative;
   isolation:isolate;
-  min-height:100lvh;
+  min-height:calc(var(--zm-stable-vh,1lvh) * 100);
   overflow-x:hidden;
   color:#fff;
   background:#00152f;
@@ -14,6 +14,7 @@
   overflow:hidden;
   background:#00152f;
   pointer-events:none;
+  font-size:var(--zm-stable-vh,1lvh);
 }
 
 .photoMosaic::before{
@@ -22,8 +23,8 @@
   z-index:1;
   top:0;
   bottom:0;
-  left:calc(50vw - 17.225lvh);
-  width:34.45lvh;
+  left:calc(50vw - 17.225em);
+  width:34.45em;
   background-image:url("../../../../assets/branding/prague-bottom-clean.webp");
   background-repeat:no-repeat;
   background-size:auto 145%;
@@ -35,23 +36,23 @@
   display:block;
   background-image:url("../../../../assets/branding/homepage-final-reference1.png");
   background-repeat:no-repeat;
-  background-size:56.280lvh 100lvh;
+  background-size:56.280em 100em;
   filter:saturate(1.07) contrast(1.04);
   box-shadow:inset 0 0 18px rgba(0,38,76,.38),0 0 0 1px rgba(225,248,255,.45);
 }
 
-.mountains{left:calc(50vw - 28.140lvh);top:0;width:17.943lvh;height:20.215lvh;background-position:0 0;clip-path:polygon(0 0,100% 0,94% 100%,0 100%)}
-.castle{left:calc(50vw + 7.745lvh);top:0;width:20.395lvh;height:20.215lvh;background-position:-35.885lvh 0;clip-path:polygon(6% 0,100% 0,100% 100%,0 100%)}
-.eiffel{left:calc(50vw - 28.140lvh);top:20.215lvh;width:10.766lvh;height:19.557lvh;background-position:0 -20.215lvh}
-.colosseum{left:calc(50vw + 17.315lvh);top:20.215lvh;width:10.825lvh;height:20.574lvh;background-position:-45.455lvh -20.215lvh}
-.woman{left:calc(50vw - 28.140lvh);top:39.773lvh;width:10.766lvh;height:17.584lvh;background-position:0 -39.773lvh}
-.elephant{left:calc(50vw + 17.315lvh);top:40.789lvh;width:10.825lvh;height:16.627lvh;background-position:-45.455lvh -40.789lvh}
-.dog{left:calc(50vw - 28.140lvh);top:57.297lvh;width:10.885lvh;height:17.703lvh;background-position:0 -57.297lvh}
-.plant{left:calc(50vw + 17.315lvh);top:57.416lvh;width:10.825lvh;height:15.431lvh;background-position:-45.455lvh -57.416lvh}
-.camera{left:calc(50vw - 28.140lvh);top:74.761lvh;width:10.885lvh;height:11.663lvh;background-position:0 -74.761lvh}
-.headphones{left:calc(50vw + 17.195lvh);top:72.667lvh;width:10.945lvh;height:13.457lvh;background-position:-45.335lvh -72.667lvh}
-.backpack{left:calc(50vw - 28.140lvh);top:86.005lvh;width:10.885lvh;height:13.995lvh;background-position:0 -86.005lvh}
-.sunflower{left:calc(50vw + 17.195lvh);top:86.124lvh;width:10.945lvh;height:13.876lvh;background-position:-45.335lvh -86.124lvh}
+.mountains{left:calc(50vw - 28.140em);top:0;width:17.943em;height:20.215em;background-position:0 0;clip-path:polygon(0 0,100% 0,94% 100%,0 100%)}
+.castle{left:calc(50vw + 7.745em);top:0;width:20.395em;height:20.215em;background-position:-35.885em 0;clip-path:polygon(6% 0,100% 0,100% 100%,0 100%)}
+.eiffel{left:calc(50vw - 28.140em);top:20.215em;width:10.766em;height:19.557em;background-position:0 -20.215em}
+.colosseum{left:calc(50vw + 17.315em);top:20.215em;width:10.825em;height:20.574em;background-position:-45.455em -20.215em}
+.woman{left:calc(50vw - 28.140em);top:39.773em;width:10.766em;height:17.584em;background-position:0 -39.773em}
+.elephant{left:calc(50vw + 17.315em);top:40.789em;width:10.825em;height:16.627em;background-position:-45.455em -40.789em}
+.dog{left:calc(50vw - 28.140em);top:57.297em;width:10.885em;height:17.703em;background-position:0 -57.297em}
+.plant{left:calc(50vw + 17.315em);top:57.416em;width:10.825em;height:15.431em;background-position:-45.455em -57.416em}
+.camera{left:calc(50vw - 28.140em);top:74.761em;width:10.885em;height:11.663em;background-position:0 -74.761em}
+.headphones{left:calc(50vw + 17.195em);top:72.667em;width:10.945em;height:13.457em;background-position:-45.335em -72.667em}
+.backpack{left:calc(50vw - 28.140em);top:86.005em;width:10.885em;height:13.995em;background-position:0 -86.005em}
+.sunflower{left:calc(50vw + 17.195em);top:86.124em;width:10.945em;height:13.876em;background-position:-45.335em -86.124em}
 
 .entryPage > :not(.photoMosaic){
   position:relative;
@@ -59,7 +60,7 @@
 }
 
 .entryHeader{
-  width:min(82vw,34.45lvh,360px);
+  width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
   margin:0 auto 12px;
   padding:14px 13px 15px;
   border:2px solid #43c8ff;
@@ -173,7 +174,7 @@
 .entryJoin,
 .entryLike,
 .entryPrivacy{
-  width:min(82vw,34.45lvh,360px);
+  width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
   margin-left:auto;
   margin-right:auto;
 }
