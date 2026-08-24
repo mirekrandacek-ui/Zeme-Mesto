@@ -21,6 +21,7 @@ import {
   unlockFreeRoundBlock,
 } from "@/lib/freeQuota";
 import { getOrCreateLetterDeckOwnerId } from "@/lib/letterDeckOwner";
+import { useStableViewportUnit } from "@/lib/useStableViewportUnit";
 import { getUiText as getRoomUiText } from "@/app/room/[code]/uiText";
 
 type Tier = "free" | "premium" | "super_premium";
@@ -715,6 +716,8 @@ function uniqueNonEmpty(values: unknown[]) {
 }
 
 export default function Home() {
+  useStableViewportUnit();
+
   const router = useRouter();
 
   const [status, setStatus] = useState("");
@@ -730,6 +733,7 @@ export default function Home() {
     useState(false);
   const [nativeFreeBannerShown, setNativeFreeBannerShown] = useState(false);
   const [showOtherModes, setShowOtherModes] = useState(false);
+  const [roomCodeOpen, setRoomCodeOpen] = useState(false);
   const [billingProducts, setBillingProducts] = useState<BillingProduct[]>([]);
   const [billingReady, setBillingReady] = useState(false);
   const [purchaseBusy, setPurchaseBusy] =
@@ -1262,19 +1266,21 @@ export default function Home() {
           </button>
         </section>
 
-        <button type="button" className={styles.optionsButton} onClick={() => setShowOtherModes((value) => !value)}>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5l.8 3a8 8 0 0 1 2 1.2l3-.9 2.5 4.4-2.2 2.1v2.4l2.2 2.1-2.5 4.4-3-.9a8 8 0 0 1-2 1.2l-.8 3h-5l-.8-3a8 8 0 0 1-2-1.2l-3 .9-2.5-4.4 2.2-2.1v-2.4L1.2 10.7l2.5-4.4 3 .9a8 8 0 0 1 2-1.2l.8-3Z"/><circle cx="12" cy="14" r="3"/></svg>
-          <span>{showOtherModes ? h("hideOtherModes") : h("showOtherModes")}</span>
-          <svg
-            className={`${styles.dropdownChevron} ${showOtherModes ? styles.dropdownChevronOpen : ""}`}
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path d="m5 9 7 7 7-7"/>
-          </svg>
-        </button>
+        {!roomCodeOpen && (
+          <button type="button" className={styles.optionsButton} onClick={() => setShowOtherModes((value) => !value)}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5l.8 3a8 8 0 0 1 2 1.2l3-.9 2.5 4.4-2.2 2.1v2.4l2.2 2.1-2.5 4.4-3-.9a8 8 0 0 1-2 1.2l-.8 3h-5l-.8-3a8 8 0 0 1-2-1.2l-3 .9-2.5-4.4 2.2-2.1v-2.4L1.2 10.7l2.5-4.4 3 .9a8 8 0 0 1 2-1.2l.8-3Z"/><circle cx="12" cy="14" r="3"/></svg>
+            <span>{showOtherModes ? h("hideOtherModes") : h("showOtherModes")}</span>
+            <svg
+              className={`${styles.dropdownChevron} ${showOtherModes ? styles.dropdownChevronOpen : ""}`}
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="m5 9 7 7 7-7"/>
+            </svg>
+          </button>
+        )}
 
-        {showOtherModes && (
+        {!roomCodeOpen && showOtherModes && (
           <section className={styles.purchaseOptions}>
             <article><h3>Premium{premiumPrice ? ` – ${premiumPrice}` : ""}</h3><p>{h("premiumDescription")}</p>
               <button type="button" disabled={tier === "premium" || tier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("premium")}>
@@ -1289,14 +1295,20 @@ export default function Home() {
           </section>
         )}
 
-        <button type="button" className={styles.likeButton} onClick={() => window.alert(h("ratingUnavailable"))}>
-          <span>{h("likeApp")}</span><span className={styles.heart}>♥</span>
-        </button>
+        {!roomCodeOpen && (
+          <button type="button" className={styles.likeButton} onClick={() => window.alert(h("ratingUnavailable"))}>
+            <span>{h("likeApp")}</span><span className={styles.heart}>♥</span>
+          </button>
+        )}
 
         <details
           className={styles.roomCode}
           onToggle={(event) => {
-            if (event.currentTarget.open) {
+            const isOpen = event.currentTarget.open;
+            setRoomCodeOpen(isOpen);
+
+            if (isOpen) {
+              setShowOtherModes(false);
               window.requestAnimationFrame(() => {
                 event.currentTarget.scrollIntoView({
                   behavior: "smooth",
