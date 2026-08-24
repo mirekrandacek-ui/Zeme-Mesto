@@ -473,6 +473,7 @@ export default function RoomPage() {
   const { code } = useParams<{ code: string }>();
 
   const [roomId, setRoomId] = useState<string | null>(null);
+  const [roomInitialLoadComplete, setRoomInitialLoadComplete] = useState(false);
   const roomIdRef = useRef<string | null>(null);
   const isOrganizerRef = useRef(false);
   const [roomStatus, setRoomStatus] = useState<RoomStatus>("lobby");
@@ -1454,12 +1455,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   useEffect(() => {
     let cancelled = false;
+    setRoomInitialLoadComplete(false);
 
     (async () => {
-      if (!window.navigator.onLine) return;
+      if (!window.navigator.onLine) {
+        if (!cancelled) setRoomInitialLoadComplete(true);
+        return;
+      }
 
       const rid = await loadRoomByCode();
-      if (cancelled || !rid) return;
+      if (cancelled) return;
+      setRoomInitialLoadComplete(true);
+      if (!rid) return;
       await loadPlayers(rid);
       await loadCurrentRound(rid);
       await loadRoomScores(rid);
@@ -2726,6 +2733,32 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     isAnswering ? "" : myPlayer ? statusMessage : msg;
 
   const isRoomEntry = Boolean(roomId && !myPlayer);
+  const roomEntryMosaic = (
+    <div className={roomStyles.photoMosaic} aria-hidden="true">
+      {[
+        "mountains", "castle", "eiffel", "colosseum", "woman", "elephant",
+        "dog", "plant", "camera", "headphones", "backpack", "sunflower",
+      ].map((photo) => (
+        <span key={photo} className={`${roomStyles.photo} ${roomStyles[photo]}`} />
+      ))}
+    </div>
+  );
+
+  if (!roomInitialLoadComplete) {
+    return (
+      <main
+        className={roomStyles.entryPage}
+        aria-busy="true"
+        style={{
+          padding: 24,
+          paddingTop: "calc(72px + env(safe-area-inset-top))",
+          fontFamily: "system-ui",
+        }}
+      >
+        {roomEntryMosaic}
+      </main>
+    );
+  }
 
   return (
     <main
@@ -2764,16 +2797,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           fontFamily: "system-ui",
         }}
       >
-      {isRoomEntry && (
-        <div className={roomStyles.photoMosaic} aria-hidden="true">
-          {[
-            "mountains", "castle", "eiffel", "colosseum", "woman", "elephant",
-            "dog", "plant", "camera", "headphones", "backpack", "sunflower",
-          ].map((photo) => (
-            <span key={photo} className={`${roomStyles.photo} ${roomStyles[photo]}`} />
-          ))}
-        </div>
-      )}
+      {isRoomEntry && roomEntryMosaic}
       {(!isOnline || isReconnecting) && (
         <section
           role="status"
