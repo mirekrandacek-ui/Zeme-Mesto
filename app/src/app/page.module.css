@@ -194,12 +194,12 @@
   bottom:env(safe-area-inset-bottom);
   transform:translateX(-50%);
   width:clamp(270px,68vw,420px);
-  aspect-ratio:341 / 338;
+  aspect-ratio:1;
 
   border-left:1px solid rgba(225,248,255,.45);
   border-right:1px solid rgba(225,248,255,.45);
 
-  background-image:url("../../assets/branding/prague-castle-footer.png");
+  background-image:url("../../assets/branding/prague-bottom-clean.webp");
   background-repeat:no-repeat;
   background-size:cover;
   background-position:center bottom;
