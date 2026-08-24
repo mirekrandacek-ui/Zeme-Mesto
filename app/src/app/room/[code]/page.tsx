@@ -35,6 +35,7 @@ import {
   type UiLanguage,
   type UiTextKey,
 } from "./uiText";
+import roomStyles from "./page.module.css";
 
 type RoomStatus = "lobby" | "drawing" | "playing" | "scoring" | "finished";
 type PlayerStatus = "active" | "waiting";
@@ -2724,8 +2725,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const visibleStatusMessage =
     isAnswering ? "" : myPlayer ? statusMessage : msg;
 
+  const isRoomEntry = Boolean(roomId && !myPlayer);
+
   return (
     <main
+        className={isRoomEntry ? roomStyles.entryPage : undefined}
         onClickCapture={(event) => {
           if (isOnline) return;
 
@@ -2760,6 +2764,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           fontFamily: "system-ui",
         }}
       >
+      {isRoomEntry && (
+        <div className={roomStyles.photoMosaic} aria-hidden="true">
+          {[
+            "mountains", "castle", "eiffel", "colosseum", "woman", "elephant",
+            "dog", "plant", "camera", "headphones", "backpack", "sunflower",
+          ].map((photo) => (
+            <span key={photo} className={`${roomStyles.photo} ${roomStyles[photo]}`} />
+          ))}
+        </div>
+      )}
       {(!isOnline || isReconnecting) && (
         <section
           role="status"
@@ -2813,6 +2827,40 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )}
 
       {!isAnswering && (
+      isRoomEntry ? (
+      <header className={roomStyles.entryHeader}>
+        <div className={roomStyles.entryTitleRow}>
+          <h1 className={roomStyles.entryTitle}>
+            {t("room")} {code.toUpperCase()}
+          </h1>
+          <span className={roomStyles.entryTier}>
+            {roomTier === "super_premium" ? "Super Premium" : roomTier === "premium" ? "Premium" : "Free"}
+          </span>
+        </div>
+
+        <p className={roomStyles.entryStatus}>{t("notSignedIn")}</p>
+
+        <div className={roomStyles.entryActions}>
+          <a className={`${roomStyles.entryAction} ${roomStyles.entryActionHome}`} href="/">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h11"/></svg>
+            <span>{t("backHome")}</span>
+          </a>
+          <button className={roomStyles.entryAction} type="button" onClick={shareInviteLink}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/></svg>
+            <span>{t("shareRoomCode")}</span>
+          </button>
+          <button className={roomStyles.entryAction} type="button" onClick={copyInviteLink}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg>
+            <span>{t("copyRoomLink")}</span>
+          </button>
+          <button className={roomStyles.entryAction} type="button" onClick={() => setShowRules((value) => !value)}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 1 1 3.6 2.1c-1 .6-1.4 1.1-1.4 2.2M12 17h.01"/></svg>
+            <span>{t("rules")}</span>
+            <svg className={`${roomStyles.entryActionChevron} ${showRules ? roomStyles.entryActionChevronOpen : ""}`} viewBox="0 0 24 24" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg>
+          </button>
+        </div>
+      </header>
+      ) : (
       <header style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
         <div>
           <h1 style={{ margin: 0 }}>
@@ -2890,9 +2938,23 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           )}
         </div>
       </header>
+      )
       )}
 
       {!isAnswering && (
+      isRoomEntry ? (
+      <section className={roomStyles.entryLanguage} data-game-language-banner>
+        <span className={roomStyles.entryLanguageLabel}>{t("gameLanguage")}</span>
+        <div className={roomStyles.entryLanguageCurrent}>
+          <span>{gameLanguageFlag}</span>
+          <span>{gameLanguageName}</span>
+        </div>
+        <p className={roomStyles.entryLanguageInstruction}>{gameLanguageInstruction}</p>
+        {roomStatus === "lobby" && gameLanguageHasDiacritics && (
+          <p className={roomStyles.entryLanguageNote}>{t("diacriticsOptional")}</p>
+        )}
+      </section>
+      ) : (
       <section
         data-game-language-banner
         style={{
@@ -2921,10 +2983,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             </div>
           )}
       </section>
+      )
       )}
 
       {showRules && (
-        <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
+        <section
+          className={isRoomEntry ? roomStyles.entryRules : undefined}
+          style={isRoomEntry ? undefined : { border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
+        >
           <h2 style={{ marginTop: 0 }}>
             {t("rules")}
           </h2>
@@ -2941,10 +3007,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       {visibleStatusMessage && <p>{visibleStatusMessage}</p>}
 
       {roomId && !myPlayer && (
-        <section style={{ border: "1px solid #ddd", padding: 12, margin: "16px 0" }}>
-          <h2 style={{ marginTop: 0 }}>
+        <section className={roomStyles.entryJoin}>
+          <h2 className={roomStyles.entryJoinTitle}>
             {t("joinGame")}
           </h2>
+          <p className={roomStyles.entryJoinHelp}>{t("joinNameHelp")}</p>
 
           {freeJoinBlocked ? (
             <section
@@ -2978,6 +3045,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           ) : (
             <>
               <input
+                className={roomStyles.entryNameInput}
                 placeholder={t("yourName")}
                 value={nameInput}
                 enterKeyHint="go"
@@ -2988,14 +3056,36 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   e.preventDefault();
                   void joinRoom();
                 }}
-                style={{ padding: 12, width: "100%", maxWidth: 320 }}
               />
-              <button onClick={joinRoom} style={{ display: "block", marginTop: 10, padding: 12 }}>
+              <button className={roomStyles.entryJoinButton} onClick={joinRoom}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
                 {t("join")}
               </button>
+              <p className={roomStyles.entryCapacity}>
+                {(maxPlayers >= 999
+                  ? t("roomCapacityUnlimited")
+                  : t("roomCapacity")
+                ).replace("{count}", String(maxPlayers))}
+              </p>
             </>
           )}
         </section>
+      )}
+
+      {isRoomEntry && (
+        <>
+          <button
+            type="button"
+            className={roomStyles.entryLike}
+            onClick={() => window.alert(t("ratingUnavailable"))}
+          >
+            <span>{t("likeApp")}</span>
+            <span className={roomStyles.entryHeart}>♥</span>
+          </button>
+          <p className={roomStyles.entryPrivacy}>
+            <a href="/privacy">{t("privacyPolicy")}</a>
+          </p>
+        </>
       )}
 
       {roomStatus === "lobby" && myPlayer && (
