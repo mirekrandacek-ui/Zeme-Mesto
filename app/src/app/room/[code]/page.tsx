@@ -22,6 +22,7 @@ import {
   getFreeQuotaState,
   unlockFreeRoundBlock,
 } from "@/lib/freeQuota";
+import { useStableViewportUnit } from "@/lib/useStableViewportUnit";
 
 import {
   categoryHelpText,
@@ -470,6 +471,8 @@ function emptyScores(categories: string[] = DEFAULT_ACTIVE_CATEGORIES): Record<C
 }
 
 export default function RoomPage() {
+  useStableViewportUnit();
+
   const { code } = useParams<{ code: string }>();
 
   const [roomId, setRoomId] = useState<string | null>(null);
