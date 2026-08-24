@@ -186,60 +186,212 @@
 }
 
 
-/* Footer Prague Castle
-   Druhý výřez stejné schválené statické tapety.
-   Horní castle zůstává beze změny. */
-.castleFooter{
-  position:fixed;
-  z-index:2;
-  left:50%;
-  bottom:env(safe-area-inset-bottom);
-  transform:translateX(-50%);
-  width:clamp(270px,68vw,420px);
-  height:clamp(150px,24dvh,205px);
-  pointer-events:none;
-  overflow:hidden;
-
-  border-left:1px solid rgba(225,248,255,.45);
-  border-right:1px solid rgba(225,248,255,.45);
-  background:#00152f;
-}
-
-.castleFooter::before{
+/* Také střed za boxy je fotografie, ne samostatný modrý pruh. */
+.photoMosaic::before{
   content:"";
   position:absolute;
-  inset:0 8%;
-
-  background-image:url("../../assets/branding/prague-castle-footer.png");
+  z-index:1;
+  top:0;
+  bottom:0;
+  left:calc(50vw - 17.225dvh);
+  width:34.45dvh;
+  background-image:url("../../assets/branding/prague-bottom-clean.webp");
   background-repeat:no-repeat;
-  background-size:contain;
-  background-position:center bottom;
+  background-size:auto 145%;
+  background-position:center 22%;
+}
 
-  /* Stejný lehce boční dojem jako horní fotografie. */
-  clip-path:polygon(6% 0,100% 0,94% 100%,0 100%);
-
-  filter:saturate(1.08) contrast(1.05);
+.blueVeil{
+  display:none;
+  left:calc(50vw - 17.225dvh);
+  right:auto;
+  width:34.45dvh;
+  background:rgba(0,27,59,.92);
 
   -webkit-mask-image:linear-gradient(
     to bottom,
-    transparent 0,
-    #000 10%,
-    #000 100%
+    #000 0%,
+    #000 48%,
+    rgba(0,0,0,.45) 72%,
+    rgba(0,0,0,.12) 100%
   );
   mask-image:linear-gradient(
     to bottom,
-    transparent 0,
-    #000 10%,
-    #000 100%
+    #000 0%,
+    #000 48%,
+    rgba(0,0,0,.45) 72%,
+    rgba(0,0,0,.12) 100%
   );
 }
 
-/* Necháme pod odkazem Zásady místo, aby byl Hrad vidět. */
-.homepage{
-  padding-bottom:calc(92px + env(safe-area-inset-bottom));
+
+/* Praha jako nízký středový díl mozaiky pod odkazem.
+   Boční fotky si zachovají svou původní velikost i celý výřez. */
+.pragueBottom{
+  position:absolute;
+  z-index:2;
+  display:block;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:34.45dvh;
+  height:13.457dvh;
+
+  border-left:1px solid rgba(225,248,255,.45);
+  border-right:1px solid rgba(225,248,255,.45);
+
+  background-image:url("../../assets/branding/prague-bottom-clean.webp");
+  background-repeat:no-repeat;
+  background-size:100% auto;
+  background-position:center 22%;
+
+  filter:saturate(1.08) contrast(1.05);
+}
+
+
+/* Boxy jsou hlavní obsah: větší typografie a přirozené rozložení níž. */
+.content{
+  width:min(82vw,34.45dvh,360px);
+  margin:clamp(18px,4dvh,38px) auto 0;
+}
+
+.header{
+  margin-bottom:12px;
+}
+
+.applicationLanguage > span:first-child{
+  margin-bottom:6px;
+  font-size:16px;
+}
+
+.intro{
+  margin:12px 2px 10px;
+  font-size:15px;
+  line-height:1.45;
+}
+
+.gameLanguageDropdown summary{
+  height:48px;
+  border-radius:16px;
+  font-size:clamp(15px,3.8vw,17px);
+}
+
+.modeCard{
+  padding:20px 19px 18px;
+}
+
+.modeHeading{
+  gap:9px;
+}
+
+.modeLabel{
+  font-size:18px;
+}
+
+.tierName{
+  font-size:clamp(36px,9.5vw,48px);
+}
+
+.superTierName{
+  font-size:clamp(24px,6.4vw,34px);
+}
+
+.modeStatusRow{
+  min-height:36px;
+}
+
+.active{
+  padding:6px 14px;
+  font-size:15px;
+}
+
+.quota{
+  font-size:16px;
+}
+
+.quota > span:first-child{
+  width:31px;
+  height:31px;
+  font-size:18px;
+}
+
+.quota strong{
+  font-size:22px;
+}
+
+.description{
+  font-size:14px;
+  line-height:1.45;
+}
+
+.description p{
+  margin-top:10px;
+}
+
+.divider{
+  margin:11px 0 12px;
+}
+
+.gameLanguage legend{
+  margin-bottom:7px;
+  font-size:17px;
+}
+
+.gameLanguage small{
+  margin-top:7px;
+  font-size:13.5px;
+  line-height:1.4;
+}
+
+.createButton{
+  margin-top:12px;
+  padding:13px 8px 15px;
+  border-radius:21px;
+  font-size:clamp(19px,5.4vw,25px);
+}
+
+.createButton svg{
+  width:29px;
+}
+
+.optionsButton,
+.likeButton,
+.roomCode{
+  margin-top:11px;
+}
+
+.optionsButton{
+  min-height:58px;
+  padding:9px 17px;
+  font-size:clamp(16.5px,4.1vw,18.5px);
+}
+
+.optionsButton svg{
+  width:28px;
+  margin-right:11px;
+}
+
+.likeButton{
+  min-height:56px;
+  padding:8px 17px;
+  font-size:clamp(17px,4.1vw,18.5px);
+}
+
+.heart{
+  font-size:36px;
+}
+
+.roomCode summary{
+  min-height:56px;
+  padding:8px 17px;
+  font-size:clamp(17px,4.1vw,18.5px);
+}
+
+.roomCode summary svg{
+  width:30px;
 }
 
 .privacy{
-  position:relative;
-  z-index:4;
+  margin-top:16px;
+  font-size:14.5px;
 }
