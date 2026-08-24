@@ -124,6 +124,18 @@
 /* 3 / 3 */
 .quota{
   font-size:14px;
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+.quota > span:first-child svg{
+  width:19px;
+  height:19px;
+  fill:none;
+  stroke:#fff;
+  stroke-width:3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 
 /* Odměna po vyčerpání Free kol */
