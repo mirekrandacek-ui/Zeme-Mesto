@@ -1188,7 +1188,11 @@ export default function Home() {
 
               {tier === "free" && !freeQuotaExhausted && (
                 <p className={styles.quota}>
-                  <span>✓</span>
+                  <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path d="m6 12.5 3.5 3.5L18 7.5" />
+                    </svg>
+                  </span>
                   <strong>{freeRoundsRemaining}</strong>
                   <span aria-hidden="true"> / 3</span>
                 </p>
