@@ -205,33 +205,24 @@
 }
 
 
-/* Praha jako spodní díl statické fotomozaiky. */
+/* Praha jako nízký středový díl mozaiky pod odkazem.
+   Boční fotky si zachovají svou původní velikost i celý výřez. */
 .pragueBottom{
   position:absolute;
   display:block;
   left:50%;
-  bottom:env(safe-area-inset-bottom);
+  top:72.667dvh;
   transform:translateX(-50%);
-  width:clamp(270px,68vw,420px);
-  aspect-ratio:1;
+  width:34.45dvh;
+  height:13.457dvh;
 
   border-left:1px solid rgba(225,248,255,.45);
   border-right:1px solid rgba(225,248,255,.45);
 
   background-image:url("../../assets/branding/prague-bottom-clean.webp");
   background-repeat:no-repeat;
-  background-size:cover;
-  background-position:center bottom;
+  background-size:100% auto;
+  background-position:center 22%;
 
   filter:saturate(1.08) contrast(1.05);
-}
-
-/* Necháme pod odkazem Zásady místo, aby byl Hrad vidět. */
-.homepage{
-  padding-bottom:calc(92px + env(safe-area-inset-bottom));
-}
-
-.privacy{
-  position:relative;
-  z-index:4;
 }
