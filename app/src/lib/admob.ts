@@ -1,6 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import {
   AdMob,
+  BannerAdPluginEvents,
   BannerAdPosition,
   BannerAdSize,
 } from "@capacitor-community/admob";
@@ -11,7 +12,10 @@ export const ADMOB_TEST_REWARDED_ID = "ca-app-pub-9232105399279318/1454400045";
 
 let initializePromise: Promise<boolean> | null = null;
 let bannerRequested = false;
+let bannerExists = false;
 let bannerRecoveryInstalled = false;
+let bannerListenersInstalled = false;
+let bannerRetryTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function isNativeAdMobAvailable() {
   return Capacitor.getPlatform() !== "web";
@@ -32,14 +36,97 @@ export function initializeAdMobForTesting() {
   return initializePromise;
 }
 
-async function restoreFreeBannerIfRequested() {
-  if (!bannerRequested || !isNativeAdMobAvailable()) return;
+function clearBannerRetry() {
+  if (bannerRetryTimer === null) return;
+
+  clearTimeout(bannerRetryTimer);
+  bannerRetryTimer = null;
+}
+
+function scheduleBannerRetry() {
+  if (
+    bannerRetryTimer !== null ||
+    !bannerRequested ||
+    typeof window === "undefined"
+  ) {
+    return;
+  }
+
+  bannerRetryTimer = window.setTimeout(() => {
+    bannerRetryTimer = null;
+    void ensureFreeBannerVisible();
+  }, 30000);
+}
+
+async function installBannerListeners() {
+  if (bannerListenersInstalled) return;
 
   try {
-    await AdMob.resumeBanner();
-  } catch {
-    await showFreeBannerAdForNativeApp();
+    await Promise.all([
+      AdMob.addListener(BannerAdPluginEvents.Loaded, () => {
+        bannerExists = true;
+        clearBannerRetry();
+      }),
+      AdMob.addListener(BannerAdPluginEvents.FailedToLoad, (error) => {
+        console.warn("AdMob banner load failed", error);
+        bannerExists = false;
+        scheduleBannerRetry();
+      }),
+    ]);
+
+    bannerListenersInstalled = true;
+  } catch (error) {
+    console.warn("AdMob banner listeners failed", error);
   }
+}
+
+async function createFreeBanner() {
+  if (!bannerRequested || !isNativeAdMobAvailable()) return false;
+
+  // Označ hned před showBanner, aby přechod na další screen neposlal
+  // druhý showBanner do stejného nativního AdView během načítání reklamy.
+  bannerExists = true;
+
+  try {
+    await AdMob.showBanner({
+      adId: ADMOB_TEST_BANNER_ID,
+      adSize: BannerAdSize.ADAPTIVE_BANNER,
+      position: BannerAdPosition.TOP_CENTER,
+      margin: 0,
+      isTesting: false,
+    });
+
+    return true;
+  } catch (error) {
+    bannerExists = false;
+    console.warn("AdMob banner failed", error);
+    scheduleBannerRetry();
+    return false;
+  }
+}
+
+async function ensureFreeBannerVisible() {
+  if (!bannerRequested || !isNativeAdMobAvailable()) return false;
+
+  if (bannerExists) {
+    try {
+      // Při změně Next.js route banner znovu nenačítej.
+      // Plugin 8.0.0 při druhém showBanner() reloaduje existující AdView
+      // a při neúspěšném reloadu ho zničí.
+      await AdMob.resumeBanner();
+      return true;
+    } catch (error) {
+      console.warn("AdMob banner resume failed", error);
+      bannerExists = false;
+    }
+  }
+
+  return createFreeBanner();
+}
+
+async function restoreFreeBannerIfRequested() {
+  if (!bannerRequested || !isNativeAdMobAvailable()) return;
+  await ensureFreeBannerVisible();
 }
 
 function installBannerRecovery() {
@@ -61,22 +148,11 @@ export async function showFreeBannerAdForNativeApp() {
   const initialized = await initializeAdMobForTesting();
   if (!initialized) return false;
 
-  try {
-    await AdMob.showBanner({
-      adId: ADMOB_TEST_BANNER_ID,
-      adSize: BannerAdSize.ADAPTIVE_BANNER,
-      position: BannerAdPosition.TOP_CENTER,
-      margin: 0,
-      isTesting: false,
-    });
+  bannerRequested = true;
+  await installBannerListeners();
+  installBannerRecovery();
 
-    bannerRequested = true;
-    installBannerRecovery();
-    return true;
-  } catch (error) {
-    console.warn("AdMob banner failed", error);
-    return false;
-  }
+  return ensureFreeBannerVisible();
 }
 
 export async function showFreeRewardedAdForNativeApp() {
@@ -103,6 +179,8 @@ export async function hideFreeBannerAdForNativeApp() {
   if (!isNativeAdMobAvailable()) return false;
 
   bannerRequested = false;
+  bannerExists = false;
+  clearBannerRetry();
 
   try {
     await AdMob.removeBanner();
