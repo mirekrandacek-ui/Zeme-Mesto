@@ -11,9 +11,7 @@ export const ADMOB_TEST_REWARDED_ID = "ca-app-pub-9232105399279318/1454400045";
 
 let initializePromise: Promise<boolean> | null = null;
 let bannerRequested = false;
-let bannerMayExist = false;
 let bannerRecoveryInstalled = false;
-let ensureBannerPromise: Promise<boolean> | null = null;
 
 export function isNativeAdMobAvailable() {
   return Capacitor.getPlatform() !== "web";
@@ -34,14 +32,24 @@ export function initializeAdMobForTesting() {
   return initializePromise;
 }
 
+async function restoreFreeBannerIfRequested() {
+  if (!bannerRequested || !isNativeAdMobAvailable()) return;
+
+  try {
+    await AdMob.resumeBanner();
+  } catch {
+    await showFreeBannerAdForNativeApp();
+  }
+}
+
 function installBannerRecovery() {
   if (bannerRecoveryInstalled || typeof window === "undefined") return;
 
   bannerRecoveryInstalled = true;
 
   const restoreBanner = () => {
-    if (!bannerRequested || document.visibilityState === "hidden") return;
-    void ensureFreeBannerVisibleForNativeApp();
+    if (document.visibilityState === "hidden") return;
+    void restoreFreeBannerIfRequested();
   };
 
   document.addEventListener("visibilitychange", restoreBanner);
@@ -49,53 +57,26 @@ function installBannerRecovery() {
   window.addEventListener("pageshow", restoreBanner);
 }
 
-async function ensureFreeBannerVisibleForNativeApp() {
-  if (!bannerRequested || !isNativeAdMobAvailable()) return false;
-
+export async function showFreeBannerAdForNativeApp() {
   const initialized = await initializeAdMobForTesting();
   if (!initialized) return false;
 
-  if (ensureBannerPromise) return ensureBannerPromise;
+  try {
+    await AdMob.showBanner({
+      adId: ADMOB_TEST_BANNER_ID,
+      adSize: BannerAdSize.ADAPTIVE_BANNER,
+      position: BannerAdPosition.TOP_CENTER,
+      margin: 0,
+      isTesting: false,
+    });
 
-  ensureBannerPromise = (async () => {
-    if (bannerMayExist) {
-      try {
-        await AdMob.resumeBanner();
-        return true;
-      } catch {
-        bannerMayExist = false;
-      }
-    }
-
-    try {
-      await AdMob.showBanner({
-        adId: ADMOB_TEST_BANNER_ID,
-        adSize: BannerAdSize.ADAPTIVE_BANNER,
-        position: BannerAdPosition.TOP_CENTER,
-        margin: 0,
-        isTesting: false,
-      });
-
-      bannerMayExist = true;
-      return true;
-    } catch (error) {
-      console.warn("AdMob banner failed", error);
-      bannerMayExist = false;
-      return false;
-    }
-  })().finally(() => {
-    ensureBannerPromise = null;
-  });
-
-  return ensureBannerPromise;
-}
-
-export async function showFreeBannerAdForNativeApp() {
-  if (!isNativeAdMobAvailable()) return false;
-
-  bannerRequested = true;
-  installBannerRecovery();
-  return ensureFreeBannerVisibleForNativeApp();
+    bannerRequested = true;
+    installBannerRecovery();
+    return true;
+  } catch (error) {
+    console.warn("AdMob banner failed", error);
+    return false;
+  }
 }
 
 export async function showFreeRewardedAdForNativeApp() {
@@ -114,9 +95,7 @@ export async function showFreeRewardedAdForNativeApp() {
     console.warn("AdMob rewarded failed", error);
     return false;
   } finally {
-    if (bannerRequested) {
-      void ensureFreeBannerVisibleForNativeApp();
-    }
+    await restoreFreeBannerIfRequested();
   }
 }
 
@@ -124,7 +103,6 @@ export async function hideFreeBannerAdForNativeApp() {
   if (!isNativeAdMobAvailable()) return false;
 
   bannerRequested = false;
-  bannerMayExist = false;
 
   try {
     await AdMob.removeBanner();
