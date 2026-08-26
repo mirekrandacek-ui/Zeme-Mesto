@@ -15,7 +15,7 @@ let bannerRequested = false;
 let bannerExists = false;
 let bannerRecoveryInstalled = false;
 let bannerListenersInstalled = false;
-let bannerRetryTimer: ReturnType<typeof setTimeout> | null = null;
+let bannerRetryTimer: number | null = null;
 
 export function isNativeAdMobAvailable() {
   return Capacitor.getPlatform() !== "web";
