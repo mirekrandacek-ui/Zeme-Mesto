@@ -1370,7 +1370,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error) {
       console.error("Round loading failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Kolo se nepodařilo načíst.", en: "❌ The round could not be loaded.", es: "❌ No se pudo cargar la ronda." , de: "❌ Die Runde konnte nicht geladen werden.", fr: "❌ Impossible de charger la manche.", "pt-BR": "❌ Não foi possível carregar a rodada.", id: "❌ Ronde tidak dapat dimuat.", tr: "❌ Turlar yüklenemedi.", pl: "❌ Nie udało się wczytać rundy.", it: "❌ Impossibile caricare il turno."})
+        uiMessage({ cs: "❌ Kolo se nepodařilo načíst.", en: "❌ The new round could not be loaded.", es: "❌ No se pudo cargar la ronda." , de: "❌ Die Runde konnte nicht geladen werden.", fr: "❌ Impossible de charger la manche.", "pt-BR": "❌ Não foi possível carregar a rodada.", id: "❌ Ronde tidak dapat dimuat.", tr: "❌ Turlar yüklenemedi.", pl: "❌ Nie udało się wczytać rundy.", it: "❌ Impossibile caricare il turno."})
       );
       return;
     }
@@ -4106,16 +4106,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   </button>
                   <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>
                     {uiMessage({
-                      cs: "Premium: bez reklam, max. 5 hráčů a základní kategorie Země, Město, Jméno, Zvíře, Věc a Rostlina.",
-                      en: "Premium: no ads, up to 5 players and the basic categories Country, City, Name, Animal, Thing and Plant.",
-                      es: "Premium: sin anuncios, hasta 5 jugadores y las categorías básicas País, Ciudad, Nombre, Animal, Cosa y Planta.",
-                      de: "Premium: ohne Werbung, bis zu 5 Spieler und die Grundkategorien Land, Stadt, Name, Tier, Gegenstand und Pflanze.",
-                      fr: "Premium : sans publicité, jusqu’à 5 joueurs et les catégories de base Pays, Ville, Prénom, Animal, Objet et Plante.",
-                      "pt-BR": "Premium: sem anúncios, até 5 jogadores e as categorias básicas País, Cidade, Nome, Animal, Objeto e Planta.",
-                      id: "Premium: tanpa iklan, hingga 5 pemain dan kategori dasar Negara, Kota, Nama, Hewan, Benda, dan Tumbuhan.",
-                      tr: "Premium: reklamsız, en fazla 5 oyuncu ve temel kategoriler Ülke, Şehir, İsim, Hayvan, Eşya ve Bitki.",
-                      pl: "Premium: bez reklam, maks. 5 graczy oraz podstawowe kategorie Państwo, Miasto, Imię, Zwierzę, Rzecz i Roślina.",
-                      it: "Premium: senza pubblicità, fino a 5 giocatori e le categorie base Paese, Città, Nome, Animale, Oggetto e Pianta.",
+                      cs: "Premium: max. 5 hráčů a základní kategorie Země, Město, Jméno, Zvíře, Věc a Rostlina.",
+                      en: "Premium: up to 5 players and the basic categories Country, City, Name, Animal, Thing and Plant.",
+                      es: "Premium: hasta 5 jugadores y las categorías básicas País, Ciudad, Nombre, Animal, Cosa y Planta.",
+                      de: "Premium: bis zu 5 Spieler und die Grundkategorien Land, Stadt, Name, Tier, Gegenstand und Pflanze.",
+                      fr: "Premium : jusqu’à 5 joueurs et les catégories de base Pays, Ville, Prénom, Animal, Objet et Plante.",
+                      "pt-BR": "Premium: até 5 jogadores e as categorias básicas País, Cidade, Nome, Animal, Objeto e Planta.",
+                      id: "Premium: hingga 5 pemain dan kategori dasar Negara, Kota, Nama, Hewan, Benda, dan Tumbuhan.",
+                      tr: "Premium: en fazla 5 oyuncu ve temel kategoriler Ülke, Şehir, İsim, Hayvan, Eşya ve Bitki.",
+                      pl: "Premium: maks. 5 graczy oraz podstawowe kategorie Państwo, Miasto, Imię, Zwierzę, Rzecz i Roślina.",
+                      it: "Premium: fino a 5 giocatori e le categorie base Paese, Città, Nome, Animale, Oggetto e Pianta.",
                     })}
                   </p>
 
@@ -4129,16 +4129,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   </button>
                   <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>
                     {uiMessage({
-                      cs: "Super Premium: bez reklam, neomezený počet hráčů, všechny základní i rozšířené kategorie, až 5 vlastních kategorií, volba počtu a pořadí kategorií, časový limit a nastavení počtu kol.",
-                      en: "Super Premium: no ads, unlimited players, all basic and extended categories, up to 5 custom categories, category count and order selection, a time limit and round count settings.",
-                      es: "Super Premium: sin anuncios, jugadores ilimitados, todas las categorías básicas y ampliadas, hasta 5 categorías propias, elección del número y orden de categorías, límite de tiempo y configuración del número de rondas.",
-                      de: "Super Premium: ohne Werbung, unbegrenzt viele Spieler, alle Grund- und Zusatzkategorien, bis zu 5 eigene Kategorien, Auswahl von Anzahl und Reihenfolge der Kategorien, Zeitlimit und Einstellung der Rundenzahl.",
-                      fr: "Super Premium : sans publicité, nombre de joueurs illimité, toutes les catégories de base et supplémentaires, jusqu’à 5 catégories personnalisées, choix du nombre et de l’ordre des catégories, limite de temps et réglage du nombre de manches.",
-                      "pt-BR": "Super Premium: sem anúncios, jogadores ilimitados, todas as categorias básicas e adicionais, até 5 categorias personalizadas, escolha da quantidade e da ordem das categorias, limite de tempo e configuração do número de rodadas.",
-                      id: "Super Premium: tanpa iklan, pemain tanpa batas, semua kategori dasar dan tambahan, hingga 5 kategori khusus, pilihan jumlah dan urutan kategori, batas waktu, serta pengaturan jumlah ronde.",
-                      tr: "Super Premium: reklamsız, sınırsız oyuncu, tüm temel ve ek kategoriler, 5’e kadar özel kategori, kategori sayısı ve sırası seçimi, süre sınırı ve tur sayısı ayarı.",
-                      pl: "Super Premium: bez reklam, nieograniczona liczba graczy, wszystkie kategorie podstawowe i rozszerzone, do 5 własnych kategorii, wybór liczby i kolejności kategorii, limit czasu oraz ustawienie liczby rund.",
-                      it: "Super Premium: senza pubblicità, giocatori illimitati, tutte le categorie base ed estese, fino a 5 categorie personalizzate, scelta del numero e dell’ordine delle categorie, limite di tempo e impostazione del numero di turni.",
+                      cs: "Super Premium: neomezený počet hráčů, všechny základní i rozšířené kategorie, až 5 vlastních kategorií, volba počtu a pořadí kategorií, časový limit a nastavení počtu kol.",
+                      en: "Super Premium: unlimited players, all basic and extended categories, up to 5 custom categories, category count and order selection, a time limit and round count settings.",
+                      es: "Super Premium: jugadores ilimitados, todas las categorías básicas y ampliadas, hasta 5 categorías propias, elección del número y orden de categorías, límite de tiempo y configuración del número de rondas.",
+                      de: "Super Premium: unbegrenzt viele Spieler, alle Grund- und Zusatzkategorien, bis zu 5 eigene Kategorien, Auswahl von Anzahl und Reihenfolge der Kategorien, Zeitlimit und Einstellung der Rundenzahl.",
+                      fr: "Super Premium : nombre de joueurs illimité, toutes les catégories de base et supplémentaires, jusqu’à 5 catégories personnalisées, choix du nombre et de l’ordre des catégories, limite de temps et réglage du nombre de manches.",
+                      "pt-BR": "Super Premium: jogadores ilimitados, todas as categorias básicas e adicionais, até 5 categorias personalizadas, escolha da quantidade e da ordem das categorias, limite de tempo e configuração do número de rodadas.",
+                      id: "Super Premium: pemain tanpa batas, semua kategori dasar dan tambahan, hingga 5 kategori khusus, pilihan jumlah dan urutan kategori, batas waktu, serta pengaturan jumlah ronde.",
+                      tr: "Super Premium: sınırsız oyuncu, tüm temel ve ek kategoriler, 5’e kadar özel kategori, kategori sayısı ve sırası seçimi, süre sınırı ve tur sayısı ayarı.",
+                      pl: "Super Premium: nieograniczona liczba graczy, wszystkie kategorie podstawowe i rozszerzone, do 5 własnych kategorii, wybór liczby i kolejności kategorii, limit czasu oraz ustawienie liczby rund.",
+                      it: "Super Premium: giocatori illimitati, tutte le categorie base ed estese, fino a 5 categorie personalizzate, scelta del numero e dell’ordine delle categorie, limite di tempo e impostazione del numero di turni.",
                     })}
                   </p>
 
