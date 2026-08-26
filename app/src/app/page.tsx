@@ -269,7 +269,7 @@ const HOME_TEXT = {
       "V tomto jazyce budeš psát odpovědi a zvolí se podle něj typ abecedy.",
     diacriticsHelp:
       "Diakritika se neřeší – odpovědi s háčky a čárkami i bez nich se berou stejně.",
-    likeApp: "Dejte mi like 👍\nDěkuji ze",
+    likeApp: "Dej mi like 👍\nDěkuji ze",
     haveRoomCode: "Mám kód místnosti",
     roomCode: "Kód místnosti",
     join: "Připojit se",
@@ -1254,7 +1254,27 @@ export default function Home() {
             <section className={styles.rewardPanel}>
               <h3>{getRoomUiText(language, "freeLimitTitle")}</h3>
               <p>{getRoomUiText(language, "freeLimitText")}</p>
-              <button type="button" disabled={rewardedBusy} onClick={() => void startHomeFreeRewardedAd()}>
+              <button
+                type="button"
+                disabled={purchaseBusy !== null}
+                onClick={() => void startPlayPurchase("premium")}
+              >
+                {h("buyPremium")}
+              </button>
+              <button
+                type="button"
+                disabled={purchaseBusy !== null}
+                onClick={() => void startPlayPurchase("super_premium")}
+                style={{ marginTop: 10 }}
+              >
+                {h("buySuperPremium")}
+              </button>
+              <button
+                type="button"
+                disabled={rewardedBusy}
+                onClick={() => void startHomeFreeRewardedAd()}
+                style={{ marginTop: 10 }}
+              >
                 {getRoomUiText(language, "freeRewardButton")}
               </button>
             </section>
