@@ -1370,7 +1370,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (error) {
       console.error("Round loading failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Kolo se nepodařilo načíst.", en: "❌ The new round could not be loaded.", es: "❌ No se pudo cargar la ronda." , de: "❌ Die Runde konnte nicht geladen werden.", fr: "❌ Impossible de charger la manche.", "pt-BR": "❌ Não foi possível carregar a rodada.", id: "❌ Ronde tidak dapat dimuat.", tr: "❌ Turlar yüklenemedi.", pl: "❌ Nie udało się wczytać rundy.", it: "❌ Impossibile caricare il turno."})
+        uiMessage({ cs: "❌ Kolo se nepodařilo načíst.", en: "❌ The round could not be loaded.", es: "❌ No se pudo cargar la ronda." , de: "❌ Die Runde konnte nicht geladen werden.", fr: "❌ Impossible de charger la manche.", "pt-BR": "❌ Não foi possível carregar a rodada.", id: "❌ Ronde tidak dapat dimuat.", tr: "❌ Turlar yüklenemedi.", pl: "❌ Nie udało się wczytać rundy.", it: "❌ Impossibile caricare il turno."})
       );
       return;
     }
