@@ -1296,8 +1296,23 @@ export default function Home() {
         )}
 
         {!roomCodeOpen && (
-          <button type="button" className={styles.likeButton} onClick={() => window.alert(h("ratingUnavailable"))}>
-            <span className={styles.likeCopy}>{h("likeApp")}</span><span className={styles.heart}>♥</span>
+          <button
+            type="button"
+            className={styles.likeButton}
+            style={{
+              height: 52,
+              minHeight: 52,
+              justifyContent: "flex-start",
+              paddingTop: 5,
+              paddingBottom: 5,
+              borderColor: "#ffd0dc",
+              background: "linear-gradient(#f7afc4,#e58daa 55%,#cc6f92)",
+              boxShadow:
+                "inset 0 3px 5px #ffe8ef,inset 0 -5px 7px #a85171,0 0 0 2px #9d536d,0 5px 7px #00152d",
+            }}
+            onClick={() => window.alert(h("ratingUnavailable"))}
+          >
+            <span className={styles.likeCopy}>{h("likeApp")} ❤️</span>
           </button>
         )}
 
