@@ -2020,11 +2020,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     }
   }
 
-  async function startSuperPremiumUpgrade() {
+  async function startSuperPremiumPurchase() {
     const superPremiumProduct = billingProducts.find(
       (product) => product.productId === "super_premium"
     );
-
+    const useUpgradeOffer = roomTier === "premium";
     const upgradeOfferAvailable = superPremiumProduct?.offers?.some(
       (offer) => offer.offerId === "premium-upgrade"
     );
@@ -2034,10 +2034,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       !isPlayBillingAvailable() ||
       !billingReady ||
       !superPremiumProduct ||
-      !upgradeOfferAvailable
+      (useUpgradeOffer && !upgradeOfferAvailable)
     ) {
       setMsg(
-        uiMessage({ cs: "Upgrade na Super Premium zatím není dostupný.", en: "The Super Premium upgrade is not available yet.", es: "La mejora a Super Premium todavía no está disponible." , de: "Das Upgrade auf Super Premium ist noch nicht verfügbar.", fr: "La mise à niveau vers Super Premium n’est pas encore disponible.", "pt-BR": "O upgrade para Super Premium ainda não está disponível.", id: "Upgrade ke Super Premium belum tersedia.", tr: "Super Premium'a yükseltme henüz kullanılamıyor.", pl: "Przejście na Super Premium nie jest jeszcze dostępne.", it: "Il passaggio a Super Premium non è ancora disponibile."})
+        uiMessage({ cs: "Nákup Super Premium zatím není dostupný.", en: "The Super Premium purchase is not available yet.", es: "La compra de Super Premium todavía no está disponible.", de: "Der Super-Premium-Kauf ist noch nicht verfügbar.", fr: "L’achat de Super Premium n’est pas encore disponible.", "pt-BR": "A compra do Super Premium ainda não está disponível.", id: "Pembelian Super Premium belum tersedia.", tr: "Super Premium satın alma henüz kullanılamıyor.", pl: "Zakup Super Premium nie jest jeszcze dostępny.", it: "L’acquisto di Super Premium non è ancora disponibile." })
       );
       return;
     }
@@ -2047,7 +2047,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     try {
       const result = await PlayBilling.purchase({
         productId: "super_premium",
-        offerId: "premium-upgrade",
+        ...(useUpgradeOffer ? { offerId: "premium-upgrade" } : {}),
       });
 
       if (result.responseCode !== 0) {
@@ -2058,7 +2058,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         );
       }
     } catch (error) {
-      console.error("Super Premium upgrade failed:", error);
+      console.error("Super Premium purchase failed:", error);
       setCategoryPurchaseBusy(null);
       setMsg(
         uiMessage({ cs: "Nákup se nepodařilo spustit.", en: "The purchase could not be started.", es: "No se pudo iniciar la compra." , de: "Der Kauf konnte nicht gestartet werden.", fr: "Impossible de démarrer l’achat.", "pt-BR": "Não foi possível iniciar a compra.", id: "Pembelian tidak dapat dimulai.", tr: "Satın alma başlatılamadı.", pl: "Nie udało się rozpocząć zakupu.", it: "Impossibile avviare l’acquisto."})
@@ -3419,7 +3419,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       <button
                         type="button"
                         disabled={categoryPurchaseBusy !== null}
-                        onClick={() => void startSuperPremiumUpgrade()}
+                        onClick={() => void startSuperPremiumPurchase()}
                         style={{
                           border: "none",
                           background: "transparent",
@@ -4081,7 +4081,20 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   }}
                 >
                   <h3 style={{ marginTop: 0 }}>{t("freeLimitTitle")}</h3>
-                  <p>{t("freeLimitText")}</p>
+                  <p>
+                    {uiMessage({
+                      cs: "Ve Free verzi máš 3 kola. Pro pokračování zvol Premium, Super Premium, nebo si dobrovolně pusť reklamu a odemkni další 3 kola.",
+                      en: "The Free version includes 3 rounds. To continue, choose Premium, Super Premium, or watch an ad to unlock 3 more rounds.",
+                      es: "La versión Free incluye 3 rondas. Para continuar, elige Premium, Super Premium o mira un anuncio para desbloquear 3 rondas más.",
+                      de: "Die Free-Version enthält 3 Runden. Um weiterzuspielen, wähle Premium, Super Premium oder sieh dir eine Werbung an, um 3 weitere Runden freizuschalten.",
+                      fr: "La version Free comprend 3 manches. Pour continuer, choisis Premium, Super Premium ou regarde une publicité pour débloquer 3 manches supplémentaires.",
+                      "pt-BR": "A versão Free inclui 3 rodadas. Para continuar, escolha Premium, Super Premium ou assista a um anúncio para liberar mais 3 rodadas.",
+                      id: "Versi Free mencakup 3 ronde. Untuk melanjutkan, pilih Premium, Super Premium, atau tonton iklan untuk membuka 3 ronde lagi.",
+                      tr: "Free sürüm 3 tur içerir. Devam etmek için Premium, Super Premium seç veya 3 tur daha açmak için reklam izle.",
+                      pl: "Wersja Free obejmuje 3 rundy. Aby kontynuować, wybierz Premium, Super Premium albo obejrzyj reklamę i odblokuj 3 kolejne rundy.",
+                      it: "La versione Free include 3 turni. Per continuare, scegli Premium, Super Premium oppure guarda un annuncio per sbloccare altri 3 turni.",
+                    })}
+                  </p>
 
                   <button
                     type="button"
@@ -4091,11 +4104,48 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   >
                     {t("freeUpgradeButton")}
                   </button>
+                  <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>
+                    {uiMessage({
+                      cs: "Premium: bez reklam, max. 5 hráčů a základní kategorie Země, Město, Jméno, Zvíře, Věc a Rostlina.",
+                      en: "Premium: no ads, up to 5 players and the basic categories Country, City, Name, Animal, Thing and Plant.",
+                      es: "Premium: sin anuncios, hasta 5 jugadores y las categorías básicas País, Ciudad, Nombre, Animal, Cosa y Planta.",
+                      de: "Premium: ohne Werbung, bis zu 5 Spieler und die Grundkategorien Land, Stadt, Name, Tier, Gegenstand und Pflanze.",
+                      fr: "Premium : sans publicité, jusqu’à 5 joueurs et les catégories de base Pays, Ville, Prénom, Animal, Objet et Plante.",
+                      "pt-BR": "Premium: sem anúncios, até 5 jogadores e as categorias básicas País, Cidade, Nome, Animal, Objeto e Planta.",
+                      id: "Premium: tanpa iklan, hingga 5 pemain dan kategori dasar Negara, Kota, Nama, Hewan, Benda, dan Tumbuhan.",
+                      tr: "Premium: reklamsız, en fazla 5 oyuncu ve temel kategoriler Ülke, Şehir, İsim, Hayvan, Eşya ve Bitki.",
+                      pl: "Premium: bez reklam, maks. 5 graczy oraz podstawowe kategorie Państwo, Miasto, Imię, Zwierzę, Rzecz i Roślina.",
+                      it: "Premium: senza pubblicità, fino a 5 giocatori e le categorie base Paese, Città, Nome, Animale, Oggetto e Pianta.",
+                    })}
+                  </p>
+
+                  <button
+                    type="button"
+                    disabled={!isOrganizer || categoryPurchaseBusy !== null}
+                    onClick={() => void startSuperPremiumPurchase()}
+                    style={{ marginTop: 12, padding: 14, width: "100%", fontWeight: 700 }}
+                  >
+                    {uiMessage({ cs: "Získat Super Premium", en: "Get Super Premium", es: "Obtener Super Premium", de: "Super Premium holen", fr: "Obtenir Super Premium", "pt-BR": "Obter Super Premium", id: "Dapatkan Super Premium", tr: "Super Premium al", pl: "Zdobądź Super Premium", it: "Ottieni Super Premium" })}
+                  </button>
+                  <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>
+                    {uiMessage({
+                      cs: "Super Premium: bez reklam, neomezený počet hráčů, všechny základní i rozšířené kategorie, až 5 vlastních kategorií, volba počtu a pořadí kategorií, časový limit a nastavení počtu kol.",
+                      en: "Super Premium: no ads, unlimited players, all basic and extended categories, up to 5 custom categories, category count and order selection, a time limit and round count settings.",
+                      es: "Super Premium: sin anuncios, jugadores ilimitados, todas las categorías básicas y ampliadas, hasta 5 categorías propias, elección del número y orden de categorías, límite de tiempo y configuración del número de rondas.",
+                      de: "Super Premium: ohne Werbung, unbegrenzt viele Spieler, alle Grund- und Zusatzkategorien, bis zu 5 eigene Kategorien, Auswahl von Anzahl und Reihenfolge der Kategorien, Zeitlimit und Einstellung der Rundenzahl.",
+                      fr: "Super Premium : sans publicité, nombre de joueurs illimité, toutes les catégories de base et supplémentaires, jusqu’à 5 catégories personnalisées, choix du nombre et de l’ordre des catégories, limite de temps et réglage du nombre de manches.",
+                      "pt-BR": "Super Premium: sem anúncios, jogadores ilimitados, todas as categorias básicas e adicionais, até 5 categorias personalizadas, escolha da quantidade e da ordem das categorias, limite de tempo e configuração do número de rodadas.",
+                      id: "Super Premium: tanpa iklan, pemain tanpa batas, semua kategori dasar dan tambahan, hingga 5 kategori khusus, pilihan jumlah dan urutan kategori, batas waktu, serta pengaturan jumlah ronde.",
+                      tr: "Super Premium: reklamsız, sınırsız oyuncu, tüm temel ve ek kategoriler, 5’e kadar özel kategori, kategori sayısı ve sırası seçimi, süre sınırı ve tur sayısı ayarı.",
+                      pl: "Super Premium: bez reklam, nieograniczona liczba graczy, wszystkie kategorie podstawowe i rozszerzone, do 5 własnych kategorii, wybór liczby i kolejności kategorii, limit czasu oraz ustawienie liczby rund.",
+                      it: "Super Premium: senza pubblicità, giocatori illimitati, tutte le categorie base ed estese, fino a 5 categorie personalizzate, scelta del numero e dell’ordine delle categorie, limite di tempo e impostazione del numero di turni.",
+                    })}
+                  </p>
 
                   <button
                     type="button"
                     onClick={startFreeRewardedAd}
-                    style={{ marginTop: 10, padding: 14, width: "100%", fontWeight: 700 }}
+                    style={{ marginTop: 12, padding: 14, width: "100%", fontWeight: 700 }}
                   >
                     {t("freeRewardButton")}
                   </button>
