@@ -8,7 +8,7 @@ export const UI_TEXT = {
     signedIn: "Přihlášen",
     notSignedIn: "Nepřihlášen",
     bossRoom: "Ty platíš, ty jsi šéf této místnosti!",
-    likeApp: "Dejte mi like 👍\nDěkuji ze",
+    likeApp: "Dej mi like 👍\nDěkuji ze",
     ratingUnavailable: "Hodnocení bude dostupné po vydání aplikace na Google Play.",
     newGame: "Nová hra",
     rules: "Pravidla",
