@@ -1052,9 +1052,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     try {
       await navigator.clipboard.writeText(url);
-      setMsg(
-        uiMessage({ cs: "✅ Odkaz zkopírován.", en: "✅ Link copied.", es: "✅ Enlace copiado." , de: "✅ Link kopiert.", fr: "✅ Lien copié.", "pt-BR": "✅ Link copiado.", id: "✅ Tautan disalin.", tr: "✅ Bağlantı kopyalandı.", pl: "✅ Link skopiowany.", it: "✅ Link copiato."})
-      );
     } catch {
       setMsg(
         uiMessage({ cs: "❌ Odkaz se nepodařilo zkopírovat.", en: "❌ The link could not be copied.", es: "❌ No se pudo copiar el enlace." , de: "❌ Der Link konnte nicht kopiert werden.", fr: "❌ Impossible de copier le lien.", "pt-BR": "❌ Não foi possível copiar o link.", id: "❌ Tautan tidak dapat disalin.", tr: "❌ Bağlantı kopyalanamadı.", pl: "❌ Nie udało się skopiować linku.", it: "❌ Impossibile copiare il link."})
@@ -2939,10 +2936,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               borderRadius: 3,
               background: "#fff5bf",
               fontWeight: 700,
+              whiteSpace: "pre-line",
+              lineHeight: 1.1,
               cursor: "pointer",
             }}
           >
-            {t("likeApp")}
+            {t("likeApp")} ♥️
           </button>
           <button onClick={() => setShowRules((v) => !v)}>
             {t("rules")}
@@ -3106,7 +3105,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             className={roomStyles.entryLike}
             onClick={() => window.alert(t("ratingUnavailable"))}
           >
-            <span>{t("likeApp")}</span>
+            <span className={roomStyles.entryLikeCopy}>{t("likeApp")}</span>
             <span className={roomStyles.entryHeart}>♥</span>
           </button>
           <p className={roomStyles.entryPrivacy}>

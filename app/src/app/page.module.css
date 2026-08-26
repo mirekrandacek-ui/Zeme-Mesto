@@ -266,3 +266,19 @@
   width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
   margin:0 auto;
 }
+
+.likeButton{
+  height:44px;
+  padding-top:2px;
+  padding-bottom:2px;
+}
+
+.likeCopy{
+  white-space:pre-line;
+  line-height:1.02;
+  text-align:left;
+}
+
+.heart{
+  flex:0 0 auto;
+}
