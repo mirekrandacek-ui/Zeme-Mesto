@@ -21,69 +21,23 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-
           path = Path('app/src/app/room/[code]/page.tsx')
           text = path.read_text(encoding='utf-8')
-
-          old_submit = '''    setMyScoreSubmitted(true);
-    setMsg("");
-    await loadAllScores(roomId, round.round_no);
-    await loadRoomScores(roomId);
-'''
-          new_submit = '''    setMyScoreSubmitted(true);
-    setMsg("");
-
-    // Nejdřív synchronizuj celkové skóre. Free limit se může zobrazit až potom.
-    await loadRoomScores(roomId);
-    await loadAllScores(roomId, round.round_no);
-'''
+          old_submit = '    setMyScoreSubmitted(true);\n    setMsg("");\n    await loadAllScores(roomId, round.round_no);\n    await loadRoomScores(roomId);\n'
+          new_submit = '    setMyScoreSubmitted(true);\n    setMsg("");\n\n    // Nejdřív synchronizuj celkové skóre. Free limit se může zobrazit až potom.\n    await loadRoomScores(roomId);\n    await loadAllScores(roomId, round.round_no);\n'
           if text.count(old_submit) != 1:
               raise SystemExit('submitScores block not found exactly once')
           text = text.replace(old_submit, new_submit)
-
-          old_poll = '''      await loadPlayers(roomId);
-      await loadCurrentRound(roomId);
-
-      if (round?.round_no) {
-        await loadAllAnswers(roomId, round.round_no);
-        await loadAllScores(roomId, round.round_no);
-    await loadRoomScores(roomId);
-      }
-
-      await loadRoomScores(roomId);
-'''
-          new_poll = '''      await loadPlayers(roomId);
-      await loadCurrentRound(roomId);
-
-      // Celkové skóre načti dřív, než allScores může přepnout UI do Free limitu.
-      await loadRoomScores(roomId);
-
-      if (round?.round_no) {
-        await loadAllAnswers(roomId, round.round_no);
-        await loadAllScores(roomId, round.round_no);
-      }
-'''
+          old_poll = '      await loadPlayers(roomId);\n      await loadCurrentRound(roomId);\n\n      if (round?.round_no) {\n        await loadAllAnswers(roomId, round.round_no);\n        await loadAllScores(roomId, round.round_no);\n    await loadRoomScores(roomId);\n      }\n\n      await loadRoomScores(roomId);\n'
+          new_poll = '      await loadPlayers(roomId);\n      await loadCurrentRound(roomId);\n\n      // Celkové skóre načti dřív, než allScores může přepnout UI do Free limitu.\n      await loadRoomScores(roomId);\n\n      if (round?.round_no) {\n        await loadAllAnswers(roomId, round.round_no);\n        await loadAllScores(roomId, round.round_no);\n      }\n'
           if text.count(old_poll) != 1:
               raise SystemExit('polling score block not found exactly once')
           text = text.replace(old_poll, new_poll)
-
-          old_reward = '''    const nextQuota = unlockFreeRoundBlock();
-    setFreeRoundsRemaining(nextQuota.remainingRounds);
-
-    setShowFreeLimitUpsell(false);
-'''
-          new_reward = '''    const nextQuota = unlockFreeRoundBlock();
-    setFreeRoundsRemaining(nextQuota.remainingRounds);
-
-    // Po návratu z nativní rewarded reklamy znovu potvrď poslední uložené body.
-    await loadRoomScores(roomId);
-
-    setShowFreeLimitUpsell(false);
-'''
+          old_reward = '    const nextQuota = unlockFreeRoundBlock();\n    setFreeRoundsRemaining(nextQuota.remainingRounds);\n\n    setShowFreeLimitUpsell(false);\n'
+          new_reward = '    const nextQuota = unlockFreeRoundBlock();\n    setFreeRoundsRemaining(nextQuota.remainingRounds);\n\n    // Po návratu z nativní rewarded reklamy znovu potvrď poslední uložené body.\n    await loadRoomScores(roomId);\n\n    setShowFreeLimitUpsell(false);\n'
           if text.count(old_reward) != 1:
               raise SystemExit('rewarded unlock block not found exactly once')
           text = text.replace(old_reward, new_reward)
-
           path.write_text(text, encoding='utf-8')
           Path('.github/workflows/temporary-score-sync-fix.yml').unlink()
           PY
