@@ -351,11 +351,24 @@
 }
 
 .entryHeart{
+  flex:0 0 auto;
   color:#ff304e;
   font-size:31px;
   line-height:.8;
   -webkit-text-stroke:1.5px #ff9dac;
   filter:drop-shadow(0 2px 1px #9c0019);
+}
+
+.entryLike{
+  height:50px;
+  padding-top:3px;
+  padding-bottom:3px;
+}
+
+.entryLikeCopy{
+  white-space:pre-line;
+  line-height:1.05;
+  text-align:left;
 }
 
 .entryPrivacy{
