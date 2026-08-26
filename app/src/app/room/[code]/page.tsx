@@ -1502,13 +1502,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       await loadPlayers(roomId);
       await loadCurrentRound(roomId);
 
+      // Celkové skóre načti dřív, než allScores může přepnout UI do Free limitu.
+      await loadRoomScores(roomId);
+
       if (round?.round_no) {
         await loadAllAnswers(roomId, round.round_no);
         await loadAllScores(roomId, round.round_no);
-    await loadRoomScores(roomId);
       }
-
-      await loadRoomScores(roomId);
     }, 1000);
 
     return () => window.clearInterval(poll);
@@ -2458,8 +2458,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     setMyScoreSubmitted(true);
     setMsg("");
-    await loadAllScores(roomId, round.round_no);
+
+    // Nejdřív synchronizuj celkové skóre. Free limit se může zobrazit až potom.
     await loadRoomScores(roomId);
+    await loadAllScores(roomId, round.round_no);
   }
 
   const scoredPlayerIds = new Set(
@@ -2584,6 +2586,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     const nextQuota = unlockFreeRoundBlock();
     setFreeRoundsRemaining(nextQuota.remainingRounds);
+
+    // Po návratu z nativní rewarded reklamy znovu potvrď poslední uložené body.
+    await loadRoomScores(roomId);
 
     setShowFreeLimitUpsell(false);
     setShowRewardedAdPlaceholder(false);
