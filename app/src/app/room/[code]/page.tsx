@@ -2931,17 +2931,20 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               )
             }
             style={{
-              padding: "2px 8px",
-              border: "1px solid #b38b00",
+              minHeight: 34,
+              padding: "4px 8px",
+              border: "1px solid #ff9fc2",
               borderRadius: 3,
-              background: "#fff5bf",
+              color: "#fff",
+              background: "linear-gradient(#f875ad, #dc3e7e 58%, #ac215e)",
               fontWeight: 700,
               whiteSpace: "pre-line",
               lineHeight: 1.1,
+              textShadow: "0 1px 1px #71163e",
               cursor: "pointer",
             }}
           >
-            {t("likeApp")} ♥️
+            {t("likeApp")}
           </button>
           <button onClick={() => setShowRules((v) => !v)}>
             {t("rules")}
@@ -3106,7 +3109,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             onClick={() => window.alert(t("ratingUnavailable"))}
           >
             <span className={roomStyles.entryLikeCopy}>{t("likeApp")}</span>
-            <span className={roomStyles.entryHeart}>♥</span>
           </button>
           <p className={roomStyles.entryPrivacy}>
             <a href="/privacy">{t("privacyPolicy")}</a>

@@ -269,7 +269,7 @@ const HOME_TEXT = {
       "V tomto jazyce budeš psát odpovědi a zvolí se podle něj typ abecedy.",
     diacriticsHelp:
       "Diakritika se neřeší – odpovědi s háčky a čárkami i bez nich se berou stejně.",
-    likeApp: "Dejte mi like 👍\nDěkuji ze",
+    likeApp: "Dejte mi like 👍\nDěkuji ze ❤️",
     haveRoomCode: "Mám kód místnosti",
     roomCode: "Kód místnosti",
     join: "Připojit se",
@@ -317,7 +317,7 @@ const HOME_TEXT = {
       "You will write answers in this language and it will choose the alphabet type.",
     diacriticsHelp:
       "Accents do not matter – accented and non-accented answers count the same.",
-    likeApp: "Give me a like 👍\nThank you from my",
+    likeApp: "Give me a like 👍\nThank you from my ❤️",
     haveRoomCode: "I have a room code",
     roomCode: "Room code",
     join: "Join",
@@ -366,7 +366,7 @@ const HOME_TEXT = {
       "Escribirás las respuestas en este idioma y se elegirá el tipo de alfabeto según él.",
     diacriticsHelp:
       "Los acentos no importan – las respuestas con o sin acento cuentan igual.",
-    likeApp: "Dame un like 👍\nGracias de",
+    likeApp: "Dame un like 👍\nGracias de ❤️",
     haveRoomCode: "Tengo un código de sala",
     roomCode: "Código de sala",
     join: "Unirse",
@@ -416,7 +416,7 @@ const HOME_TEXT = {
       "Du schreibst die Antworten in dieser Sprache. Das passende Alphabet wird automatisch ausgewählt.",
     diacriticsHelp:
       "Sonderzeichen sind optional – Antworten mit und ohne sie werden gleich gewertet.",
-    likeApp: "Gib mir ein Like 👍\nDanke von",
+    likeApp: "Gib mir ein Like 👍\nDanke von ❤️",
     haveRoomCode: "Ich habe einen Raumcode",
     roomCode: "Raumcode",
     join: "Beitreten",
@@ -463,7 +463,7 @@ const HOME_TEXT = {
     gameLanguage: "Langue du jeu",
     gameLanguageHelp: "Tu écriras les réponses dans cette langue et l’alphabet adapté sera choisi automatiquement.",
     diacriticsHelp: "Les accents ne sont pas obligatoires – les réponses avec ou sans accents comptent de la même façon.",
-    likeApp: "Laisse un like 👍\nMerci du fond du",
+    likeApp: "Laisse un like 👍\nMerci du fond du ❤️",
     haveRoomCode: "J’ai un code de salle",
     roomCode: "Code de salle",
     join: "Rejoindre",
@@ -503,7 +503,7 @@ const HOME_TEXT = {
     gameLanguage: "Idioma do jogo",
     gameLanguageHelp: "Você escreverá as respostas neste idioma, e o alfabeto adequado será escolhido automaticamente.",
     diacriticsHelp: "Os acentos não são obrigatórios – respostas com ou sem acentos valem da mesma forma.",
-    likeApp: "Deixe um like 👍\nObrigado de",
+    likeApp: "Deixe um like 👍\nObrigado de ❤️",
     haveRoomCode: "Tenho um código de sala",
     roomCode: "Código da sala",
     join: "Entrar",
@@ -542,7 +542,7 @@ const HOME_TEXT = {
     gameLanguage: "Bahasa permainan",
     gameLanguageHelp: "Jawaban akan ditulis dalam bahasa ini, dan alfabet yang sesuai akan dipilih secara otomatis.",
     diacriticsHelp: "Tanda diakritik tidak wajib – jawaban dengan atau tanpa tanda diakritik dinilai sama.",
-    likeApp: "Beri saya like 👍\nTerima kasih dari",
+    likeApp: "Beri saya like 👍\nTerima kasih dari ❤️",
     haveRoomCode: "Saya punya kode ruang",
     roomCode: "Kode ruang",
     join: "Gabung",
@@ -581,7 +581,7 @@ const HOME_TEXT = {
     gameLanguage: "Oyun dili",
     gameLanguageHelp: "Yanıtlar bu dilde yazılacak ve uygun alfabe otomatik olarak seçilecek.",
     diacriticsHelp: "Türkçe karakterler zorunlu değildir – yanıtlar Türkçe karakterlerle veya bunlar olmadan aynı şekilde değerlendirilir.",
-    likeApp: "Bir beğeni bırak 👍\nKalpten teşekkürler",
+    likeApp: "Bir beğeni bırak 👍\nKalpten teşekkürler ❤️",
     haveRoomCode: "Oda kodum var",
     roomCode: "Oda kodu",
     join: "Katıl",
@@ -620,7 +620,7 @@ const HOME_TEXT = {
     gameLanguage: "Język gry",
     gameLanguageHelp: "W tym języku będziesz wpisywać odpowiedzi; na jego podstawie zostanie wybrany alfabet.",
     diacriticsHelp: "Znaki diakrytyczne nie mają znaczenia – odpowiedzi z polskimi znakami i bez nich są uznawane tak samo.",
-    likeApp: "Daj mi lajka 👍\nDziękuję z",
+    likeApp: "Daj mi lajka 👍\nDziękuję z ❤️",
     haveRoomCode: "Mam kod pokoju",
     roomCode: "Kod pokoju",
     join: "Dołącz",
@@ -660,7 +660,7 @@ const HOME_TEXT = {
     gameLanguage: "Lingua di gioco",
     gameLanguageHelp: "In questa lingua inserirai le risposte; in base ad essa verrà scelto l’alfabeto.",
     diacriticsHelp: "I segni diacritici non contano: le risposte con o senza accenti sono considerate equivalenti.",
-    likeApp: "Lascia un like 👍\nGrazie di",
+    likeApp: "Lascia un like 👍\nGrazie di ❤️",
     haveRoomCode: "Ho un codice stanza",
     roomCode: "Codice stanza",
     join: "Entra",
@@ -1297,7 +1297,7 @@ export default function Home() {
 
         {!roomCodeOpen && (
           <button type="button" className={styles.likeButton} onClick={() => window.alert(h("ratingUnavailable"))}>
-            <span className={styles.likeCopy}>{h("likeApp")}</span><span className={styles.heart}>♥</span>
+            <span className={styles.likeCopy}>{h("likeApp")}</span>
           </button>
         )}
 
