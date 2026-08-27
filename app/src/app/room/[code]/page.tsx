@@ -101,7 +101,7 @@ const ITALIAN_LETTERS = [
   "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
   "Z",
 ];
-const ROLL_MS = 2500;
+const ROLL_MS = 1500;
 const TICK_MS = 35;
 const ROUND_TIME_LIMIT_OPTIONS = [30, 60, 90, 120, 180] as const;
 const ROUND_COUNT_LIMIT_OPTIONS = [5, 10, 15, 20] as const;
