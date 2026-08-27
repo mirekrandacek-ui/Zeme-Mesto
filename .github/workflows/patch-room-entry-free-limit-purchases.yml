@@ -1,0 +1,178 @@
+name: Patch room entry Free limit purchases
+
+on:
+  push:
+    branches:
+      - fix/room-entry-free-limit-purchases
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/room-entry-free-limit-purchases
+          fetch-depth: 0
+
+      - name: Apply exact room entry purchase patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('app/src/app/room/[code]/page.tsx')
+          text = path.read_text(encoding='utf-8')
+
+          def replace_once(old: str, new: str, label: str):
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected exactly 1 match, got {count}')
+              text = text.replace(old, new, 1)
+
+          replace_once(
+              '  const [ownedCategoryProductIds, setOwnedCategoryProductIds] = useState<string[]>([]);\n  const [categoryPurchaseBusy, setCategoryPurchaseBusy] = useState<string | null>(null);',
+              '  const [ownedCategoryProductIds, setOwnedCategoryProductIds] = useState<string[]>([]);\n  const [ownedTier, setOwnedTier] = useState<RoomTier>("free");\n  const [categoryPurchaseBusy, setCategoryPurchaseBusy] = useState<string | null>(null);',
+              'owned tier state',
+          )
+
+          replace_once(
+              '        const ownedCategoryIds: string[] = [];\n        const purchaseTokensToAcknowledge: string[] = [];',
+              '        const ownedCategoryIds: string[] = [];\n        const ownedProducts = new Set<string>();\n        const purchaseTokensToAcknowledge: string[] = [];',
+              'owned products set',
+          )
+
+          replace_once(
+              '          if (verified.some((valid) => !valid)) continue;\n\n          ownedCategoryIds.push(',
+              '          if (verified.some((valid) => !valid)) continue;\n\n          purchase.productIds.forEach((productId) => ownedProducts.add(productId));\n          ownedCategoryIds.push(',
+              'collect owned products',
+          )
+
+          replace_once(
+              '        setOwnedCategoryProductIds([...new Set(ownedCategoryIds)]);\n        for (const purchaseToken of purchaseTokensToAcknowledge) {',
+              '        setOwnedCategoryProductIds([...new Set(ownedCategoryIds)]);\n        if (ownedProducts.has("super_premium")) {\n          setOwnedTier("super_premium");\n        } else if (ownedProducts.has("premium")) {\n          setOwnedTier("premium");\n        }\n        for (const purchaseToken of purchaseTokensToAcknowledge) {',
+              'restore owned tier',
+          )
+
+          replace_once(
+              '          if (!currentRoomId || !isOrganizerRef.current) {\n            setCategoryPurchaseBusy(null);\n            return;\n          }\n\n          const { error } = await supabase\n            .from("rooms")\n            .update({\n              creator_tier: "premium",',
+              '          if (!currentRoomId) {\n            setCategoryPurchaseBusy(null);\n            return;\n          }\n\n          if (!isOrganizerRef.current) {\n            setOwnedTier("premium");\n            setCategoryPurchaseBusy(null);\n            setMsg("");\n            if (!event.acknowledged) {\n              await acknowledgePlayPurchase(event.purchaseToken!);\n            }\n            return;\n          }\n\n          const { error } = await supabase\n            .from("rooms")\n            .update({\n              creator_tier: "premium",',
+              'premium non-organizer purchase',
+          )
+
+          replace_once(
+              '          setRoomTier("premium");\n          setMaxPlayers(5);',
+              '          setOwnedTier("premium");\n          setRoomTier("premium");\n          setMaxPlayers(5);',
+              'premium owned tier after organizer purchase',
+          )
+
+          replace_once(
+              '          if (!currentRoomId || !isOrganizerRef.current) {\n            setCategoryPurchaseBusy(null);\n            return;\n          }\n\n          const { error } = await supabase\n            .from("rooms")\n            .update({\n              creator_tier: "super_premium",',
+              '          if (!currentRoomId) {\n            setCategoryPurchaseBusy(null);\n            return;\n          }\n\n          if (!isOrganizerRef.current) {\n            setOwnedTier("super_premium");\n            setCategoryPurchaseBusy(null);\n            setMsg("");\n            if (!event.acknowledged) {\n              await acknowledgePlayPurchase(event.purchaseToken!);\n            }\n            return;\n          }\n\n          const { error } = await supabase\n            .from("rooms")\n            .update({\n              creator_tier: "super_premium",',
+              'super premium non-organizer purchase',
+          )
+
+          replace_once(
+              '          setRoomTier("super_premium");\n          setMaxPlayers(999);',
+              '          setOwnedTier("super_premium");\n          setRoomTier("super_premium");\n          setMaxPlayers(999);',
+              'super premium owned tier after organizer purchase',
+          )
+
+          replace_once(
+              '    if (\n      !isOrganizer ||\n      !isPlayBillingAvailable() ||\n      !billingReady ||\n      !premiumProduct\n    ) {',
+              '    if (\n      !isPlayBillingAvailable() ||\n      !billingReady ||\n      !premiumProduct\n    ) {',
+              'allow premium purchase from entry',
+          )
+
+          replace_once(
+              '    const useUpgradeOffer = roomTier === "premium";',
+              '    const useUpgradeOffer = (isOrganizer ? roomTier : ownedTier) === "premium";',
+              'super premium upgrade source tier',
+          )
+
+          replace_once(
+              '    if (\n      !isOrganizer ||\n      !isPlayBillingAvailable() ||\n      !billingReady ||\n      !superPremiumProduct ||',
+              '    if (\n      !isPlayBillingAvailable() ||\n      !billingReady ||\n      !superPremiumProduct ||',
+              'allow super premium purchase from entry',
+          )
+
+          replace_once(
+              '    if (roomTier === "free" && currentQuota.remainingRounds <= 0) {',
+              '    if (\n      roomTier === "free" &&\n      ownedTier === "free" &&\n      currentQuota.remainingRounds <= 0\n    ) {',
+              'join guard paid tier bypass',
+          )
+
+          replace_once(
+              '  const freeJoinBlocked =\n    roomTier === "free" && freeRoundsRemaining <= 0;',
+              '  const freeJoinBlocked =\n    roomTier === "free" && ownedTier === "free" && freeRoundsRemaining <= 0;',
+              'entry paid tier bypass',
+          )
+
+          old_buttons = '''              <button
+                type="button"
+                disabled={showRewardedAdPlaceholder}
+                onClick={() => void startFreeRewardedAd()}
+                style={{
+                  padding: 14,
+                  width: "100%",
+                  fontWeight: 700,
+                }}
+              >
+                {t("freeRewardButton")}
+              </button>'''
+
+          new_buttons = '''              <button
+                type="button"
+                disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
+                onClick={() => void startPremiumPurchase()}
+                style={{
+                  padding: 14,
+                  width: "100%",
+                  fontWeight: 700,
+                }}
+              >
+                {t("freeUpgradeButton")}
+              </button>
+
+              <button
+                type="button"
+                disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
+                onClick={() => void startSuperPremiumPurchase()}
+                style={{
+                  marginTop: 10,
+                  padding: 14,
+                  width: "100%",
+                  fontWeight: 700,
+                }}
+              >
+                {uiMessage({ cs: "Získat Super Premium", en: "Get Super Premium", es: "Obtener Super Premium", de: "Super Premium holen", fr: "Obtenir Super Premium", "pt-BR": "Obter Super Premium", id: "Dapatkan Super Premium", tr: "Super Premium al", pl: "Zdobądź Super Premium", it: "Ottieni Super Premium" })}
+              </button>
+
+              <button
+                type="button"
+                disabled={showRewardedAdPlaceholder || categoryPurchaseBusy !== null}
+                onClick={() => void startFreeRewardedAd()}
+                style={{
+                  marginTop: 10,
+                  padding: 14,
+                  width: "100%",
+                  fontWeight: 700,
+                }}
+              >
+                {t("freeRewardButton")}
+              </button>'''
+
+          replace_once(old_buttons, new_buttons, 'room entry buttons')
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+          git rm .github/workflows/patch-room-entry-free-limit-purchases.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 'app/src/app/room/[code]/page.tsx'
+          git commit -m "Add purchases to room entry Free limit"
+          git push origin HEAD:fix/room-entry-free-limit-purchases
