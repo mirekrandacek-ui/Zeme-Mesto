@@ -1081,9 +1081,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         );
       }
     } catch {
-      setMsg(
-        uiMessage({ cs: "ℹ️ Sdílení bylo zrušeno.", en: "ℹ️ Sharing was cancelled.", es: "ℹ️ Se canceló la acción de compartir." , de: "ℹ️ Teilen wurde abgebrochen.", fr: "ℹ️ Partage annulé.", "pt-BR": "ℹ️ Compartilhamento cancelado.", id: "ℹ️ Berbagi dibatalkan.", tr: "ℹ️ Paylaşım iptal edildi.", pl: "ℹ️ Udostępnianie zostało anulowane.", it: "ℹ️ La condivisione è stata annullata."})
-      );
+      setMsg("");
     }
   }
 
@@ -1813,12 +1811,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if ((remainingPlayersCount ?? 0) === 0) {
       await resetRoomData(rid);
       setPlayers([]);
-      setMsg(t("disconnectedRoomCleared"));
+      setMsg("");
       return;
     }
 
     await loadPlayers(rid);
-    setMsg(t("disconnected"));
+    setMsg("");
   }
 
   async function createRound(rid: string, ltr: string) {
