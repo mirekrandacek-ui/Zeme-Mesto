@@ -111,20 +111,31 @@ jobs:
               'entry paid tier bypass',
           )
 
-          old_buttons = '''              <button
-                type="button"
-                disabled={showRewardedAdPlaceholder}
-                onClick={() => void startFreeRewardedAd()}
-                style={{
-                  padding: 14,
-                  width: "100%",
-                  fontWeight: 700,
-                }}
-              >
-                {t("freeRewardButton")}
-              </button>'''
+          entry_anchor = '          {freeJoinBlocked ? ('
+          anchor_pos = text.index(entry_anchor)
+          reward_click = '                onClick={() => void startFreeRewardedAd()}'
+          reward_click_pos = text.index(reward_click, anchor_pos)
+          reward_start = text.rfind('              <button', anchor_pos, reward_click_pos)
+          reward_end_marker = '              </button>'
+          reward_end = text.index(reward_end_marker, reward_click_pos) + len(reward_end_marker)
 
-          new_buttons = '''              <button
+          reward_block = text[reward_start:reward_end]
+          if reward_block.count('disabled={showRewardedAdPlaceholder}') != 1:
+              raise SystemExit('reward button disabled marker mismatch')
+          if reward_block.count('                  padding: 14,') != 1:
+              raise SystemExit('reward button style marker mismatch')
+
+          reward_block = reward_block.replace(
+              'disabled={showRewardedAdPlaceholder}',
+              'disabled={showRewardedAdPlaceholder || categoryPurchaseBusy !== null}',
+              1,
+          ).replace(
+              '                  padding: 14,',
+              '                  marginTop: 10,\n                  padding: 14,',
+              1,
+          )
+
+          purchase_buttons = '''              <button
                 type="button"
                 disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
                 onClick={() => void startPremiumPurchase()}
@@ -151,21 +162,9 @@ jobs:
                 {uiMessage({ cs: "Získat Super Premium", en: "Get Super Premium", es: "Obtener Super Premium", de: "Super Premium holen", fr: "Obtenir Super Premium", "pt-BR": "Obter Super Premium", id: "Dapatkan Super Premium", tr: "Super Premium al", pl: "Zdobądź Super Premium", it: "Ottieni Super Premium" })}
               </button>
 
-              <button
-                type="button"
-                disabled={showRewardedAdPlaceholder || categoryPurchaseBusy !== null}
-                onClick={() => void startFreeRewardedAd()}
-                style={{
-                  marginTop: 10,
-                  padding: 14,
-                  width: "100%",
-                  fontWeight: 700,
-                }}
-              >
-                {t("freeRewardButton")}
-              </button>'''
+'''
 
-          replace_once(old_buttons, new_buttons, 'room entry buttons')
+          text = text[:reward_start] + purchase_buttons + reward_block + text[reward_end:]
 
           path.write_text(text, encoding='utf-8')
           PY
