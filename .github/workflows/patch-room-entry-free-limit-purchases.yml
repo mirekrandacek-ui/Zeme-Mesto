@@ -135,37 +135,35 @@ jobs:
               1,
           )
 
-          purchase_buttons = '''              <button
-                type="button"
-                disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
-                onClick={() => void startPremiumPurchase()}
-                style={{
-                  padding: 14,
-                  width: "100%",
-                  fontWeight: 700,
-                }}
-              >
-                {t("freeUpgradeButton")}
-              </button>
-
-              <button
-                type="button"
-                disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
-                onClick={() => void startSuperPremiumPurchase()}
-                style={{
-                  marginTop: 10,
-                  padding: 14,
-                  width: "100%",
-                  fontWeight: 700,
-                }}
-              >
-                {uiMessage({ cs: "Získat Super Premium", en: "Get Super Premium", es: "Obtener Super Premium", de: "Super Premium holen", fr: "Obtenir Super Premium", "pt-BR": "Obter Super Premium", id: "Dapatkan Super Premium", tr: "Super Premium al", pl: "Zdobądź Super Premium", it: "Ottieni Super Premium" })}
-              </button>
-
-'''
+          purchase_buttons = (
+              '              <button\n'
+              '                type="button"\n'
+              '                disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}\n'
+              '                onClick={() => void startPremiumPurchase()}\n'
+              '                style={{\n'
+              '                  padding: 14,\n'
+              '                  width: "100%",\n'
+              '                  fontWeight: 700,\n'
+              '                }}\n'
+              '              >\n'
+              '                {t("freeUpgradeButton")}\n'
+              '              </button>\n\n'
+              '              <button\n'
+              '                type="button"\n'
+              '                disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}\n'
+              '                onClick={() => void startSuperPremiumPurchase()}\n'
+              '                style={{\n'
+              '                  marginTop: 10,\n'
+              '                  padding: 14,\n'
+              '                  width: "100%",\n'
+              '                  fontWeight: 700,\n'
+              '                }}\n'
+              '              >\n'
+              '                {uiMessage({ cs: "Získat Super Premium", en: "Get Super Premium", es: "Obtener Super Premium", de: "Super Premium holen", fr: "Obtenir Super Premium", "pt-BR": "Obter Super Premium", id: "Dapatkan Super Premium", tr: "Super Premium al", pl: "Zdobądź Super Premium", it: "Ottieni Super Premium" })}\n'
+              '              </button>\n\n'
+          )
 
           text = text[:reward_start] + purchase_buttons + reward_block + text[reward_end:]
-
           path.write_text(text, encoding='utf-8')
           PY
 
