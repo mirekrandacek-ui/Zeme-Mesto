@@ -1645,14 +1645,15 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }, [roomStatus, round?.id]);
 
   async function resetRoomData(rid: string) {
-    await supabase.from("scores").delete().eq("room_id", rid);
-    await supabase.from("answers").delete().eq("room_id", rid);
-    await supabase.from("rounds").delete().eq("room_id", rid);
-
-    await supabase
-      .from("rooms")
-      .update({ status: "lobby", letter: null })
-      .eq("id", rid);
+    await Promise.all([
+      supabase.from("scores").delete().eq("room_id", rid),
+      supabase.from("answers").delete().eq("room_id", rid),
+      supabase.from("rounds").delete().eq("room_id", rid),
+      supabase
+        .from("rooms")
+        .update({ status: "lobby", letter: null })
+        .eq("id", rid),
+    ]);
 
     setRoomStatus("lobby");
     setLetter(null);
