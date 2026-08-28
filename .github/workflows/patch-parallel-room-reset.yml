@@ -16,49 +16,7 @@ jobs:
         with:
           ref: fix/parallel-room-reset
           fetch-depth: 0
-
-      - name: Parallelize resetRoomData Supabase calls
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          path = Path('app/src/app/room/[code]/page.tsx')
-          text = path.read_text(encoding='utf-8')
-
-          old = '''  async function resetRoomData(rid: string) {
-    await supabase.from("scores").delete().eq("room_id", rid);
-    await supabase.from("answers").delete().eq("room_id", rid);
-    await supabase.from("rounds").delete().eq("room_id", rid);
-
-    await supabase
-      .from("rooms")
-      .update({ status: "lobby", letter: null })
-      .eq("id", rid);
-'''
-
-          new = '''  async function resetRoomData(rid: string) {
-    await Promise.all([
-      supabase.from("scores").delete().eq("room_id", rid),
-      supabase.from("answers").delete().eq("room_id", rid),
-      supabase.from("rounds").delete().eq("room_id", rid),
-      supabase
-        .from("rooms")
-        .update({ status: "lobby", letter: null })
-        .eq("id", rid),
-    ]);
-'''
-
-          count = text.count(old)
-          if count != 1:
-              raise SystemExit(f'Expected exactly 1 resetRoomData block, got {count}')
-
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
-          PY
-
-          git rm .github/workflows/patch-parallel-room-reset.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add 'app/src/app/room/[code]/page.tsx'
-          git commit -m "Parallelize room reset before first join"
-          git push origin HEAD:fix/parallel-room-reset
+      - name: Apply patch
+        run: python .github/patch_parallel_room_reset.py
+      - name: Commit patch
+        run: git rm .github/patch_parallel_room_reset.py .github/workflows/patch-parallel-room-reset.yml && git config user.name "github-actions[bot]" && git config user.email "41898282+github-actions[bot]@users.noreply.github.com" && git add 'app/src/app/room/[code]/page.tsx' && git commit -m "Parallelize room reset before first join" && git push origin HEAD:fix/parallel-room-reset
