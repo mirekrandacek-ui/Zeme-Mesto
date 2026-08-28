@@ -488,6 +488,7 @@ export default function RoomPage() {
   const [billingProducts, setBillingProducts] = useState<BillingProduct[]>([]);
   const [billingReady, setBillingReady] = useState(false);
   const [ownedCategoryProductIds, setOwnedCategoryProductIds] = useState<string[]>([]);
+  const [ownedTier, setOwnedTier] = useState<RoomTier>("free");
   const [categoryPurchaseBusy, setCategoryPurchaseBusy] = useState<string | null>(null);
   const [roomLanguage, setRoomLanguage] = useState<GameLanguage>("cs");
   const [roundTimeLimitSeconds, setRoundTimeLimitSeconds] = useState<RoundTimeLimitSeconds>(null);
@@ -725,6 +726,7 @@ export default function RoomPage() {
         setBillingProducts(productsResult.products ?? []);
 
         const ownedCategoryIds: string[] = [];
+        const ownedProducts = new Set<string>();
         const purchaseTokensToAcknowledge: string[] = [];
         for (const purchase of purchasesResult.purchases ?? []) {
           if (purchase.purchaseState !== 1 || !purchase.purchaseToken) continue;
@@ -736,6 +738,7 @@ export default function RoomPage() {
           );
           if (verified.some((valid) => !valid)) continue;
 
+          purchase.productIds.forEach((productId) => ownedProducts.add(productId));
           ownedCategoryIds.push(
             ...purchase.productIds.filter((productId) =>
               CATEGORY_PRODUCT_IDS.has(productId)
@@ -747,6 +750,11 @@ export default function RoomPage() {
         }
 
         setOwnedCategoryProductIds([...new Set(ownedCategoryIds)]);
+        if (ownedProducts.has("super_premium")) {
+          setOwnedTier("super_premium");
+        } else if (ownedProducts.has("premium")) {
+          setOwnedTier("premium");
+        }
         for (const purchaseToken of purchaseTokensToAcknowledge) {
           await acknowledgePlayPurchase(purchaseToken);
         }
@@ -792,8 +800,18 @@ export default function RoomPage() {
         void (async () => {
           const currentRoomId = roomIdRef.current;
 
-          if (!currentRoomId || !isOrganizerRef.current) {
+          if (!currentRoomId) {
             setCategoryPurchaseBusy(null);
+            return;
+          }
+
+          if (!isOrganizerRef.current) {
+            setOwnedTier("premium");
+            setCategoryPurchaseBusy(null);
+            setMsg("");
+            if (!event.acknowledged) {
+              await acknowledgePlayPurchase(event.purchaseToken!);
+            }
             return;
           }
 
@@ -818,6 +836,7 @@ export default function RoomPage() {
             return;
           }
 
+          setOwnedTier("premium");
           setRoomTier("premium");
           setMaxPlayers(5);
           setActiveCategories(PREMIUM_CATEGORIES);
@@ -837,8 +856,18 @@ export default function RoomPage() {
         void (async () => {
           const currentRoomId = roomIdRef.current;
 
-          if (!currentRoomId || !isOrganizerRef.current) {
+          if (!currentRoomId) {
             setCategoryPurchaseBusy(null);
+            return;
+          }
+
+          if (!isOrganizerRef.current) {
+            setOwnedTier("super_premium");
+            setCategoryPurchaseBusy(null);
+            setMsg("");
+            if (!event.acknowledged) {
+              await acknowledgePlayPurchase(event.purchaseToken!);
+            }
             return;
           }
 
@@ -861,6 +890,7 @@ export default function RoomPage() {
             return;
           }
 
+          setOwnedTier("super_premium");
           setRoomTier("super_premium");
           setMaxPlayers(999);
           setPremiumLockedOfferCategory(null);
@@ -1641,7 +1671,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const currentQuota = getFreeQuotaState();
     setFreeRoundsRemaining(currentQuota.remainingRounds);
 
-    if (roomTier === "free" && currentQuota.remainingRounds <= 0) {
+    if (
+      roomTier === "free" &&
+      ownedTier === "free" &&
+      currentQuota.remainingRounds <= 0
+    ) {
       setMsg(t("freeLimitReachedMessage"));
       return;
     }
@@ -1984,7 +2018,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     );
 
     if (
-      !isOrganizer ||
       !isPlayBillingAvailable() ||
       !billingReady ||
       !premiumProduct
@@ -2022,13 +2055,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const superPremiumProduct = billingProducts.find(
       (product) => product.productId === "super_premium"
     );
-    const useUpgradeOffer = roomTier === "premium";
+    const useUpgradeOffer = (isOrganizer ? roomTier : ownedTier) === "premium";
     const upgradeOfferAvailable = superPremiumProduct?.offers?.some(
       (offer) => offer.offerId === "premium-upgrade"
     );
 
     if (
-      !isOrganizer ||
       !isPlayBillingAvailable() ||
       !billingReady ||
       !superPremiumProduct ||
@@ -2711,7 +2743,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const roomIsFull = !myPlayer && players.length + waitingPlayers.length >= maxPlayers;
   const freeJoinBlocked =
-    roomTier === "free" && freeRoundsRemaining <= 0;
+    roomTier === "free" && ownedTier === "free" && freeRoundsRemaining <= 0;
   const activeMyPlayer = Boolean(myPlayer && myPlayer.status !== "waiting");
 
   const filledCustomCategoryCount = roomCustomCategories.filter((value) => value.trim().length > 0).length;
@@ -3056,9 +3088,37 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
               <button
                 type="button"
-                disabled={showRewardedAdPlaceholder}
+                disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
+                onClick={() => void startPremiumPurchase()}
+                style={{
+                  padding: 14,
+                  width: "100%",
+                  fontWeight: 700,
+                }}
+              >
+                {t("freeUpgradeButton")}
+              </button>
+
+              <button
+                type="button"
+                disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
+                onClick={() => void startSuperPremiumPurchase()}
+                style={{
+                  marginTop: 10,
+                  padding: 14,
+                  width: "100%",
+                  fontWeight: 700,
+                }}
+              >
+                {uiMessage({ cs: "Získat Super Premium", en: "Get Super Premium", es: "Obtener Super Premium", de: "Super Premium holen", fr: "Obtenir Super Premium", "pt-BR": "Obter Super Premium", id: "Dapatkan Super Premium", tr: "Super Premium al", pl: "Zdobądź Super Premium", it: "Ottieni Super Premium" })}
+              </button>
+
+              <button
+                type="button"
+                disabled={showRewardedAdPlaceholder || categoryPurchaseBusy !== null}
                 onClick={() => void startFreeRewardedAd()}
                 style={{
+                  marginTop: 10,
                   padding: 14,
                   width: "100%",
                   fontWeight: 700,
