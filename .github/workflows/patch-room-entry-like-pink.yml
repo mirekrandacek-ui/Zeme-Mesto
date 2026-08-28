@@ -1,0 +1,69 @@
+name: Patch room entry Like box
+
+on:
+  push:
+    branches:
+      - fix/room-entry-like-pink
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/room-entry-like-pink
+          fetch-depth: 0
+
+      - name: Apply exact Like box patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('app/src/app/room/[code]/page.tsx')
+          text = path.read_text(encoding='utf-8')
+
+          old = '''          <button
+            type="button"
+            className={roomStyles.entryLike}
+            onClick={() => window.alert(t("ratingUnavailable"))}
+          >
+            <span className={roomStyles.entryLikeCopy}>{t("likeApp")}</span>
+            <span className={roomStyles.entryHeart}>♥</span>
+          </button>'''
+
+          new = '''          <button
+            type="button"
+            className={roomStyles.entryLike}
+            style={{
+              height: 52,
+              minHeight: 52,
+              justifyContent: "flex-start",
+              paddingTop: 5,
+              paddingBottom: 5,
+              borderColor: "#ffd0dc",
+              background: "linear-gradient(#f7afc4,#e58daa 55%,#cc6f92)",
+              boxShadow:
+                "inset 0 3px 5px #ffe8ef,inset 0 -5px 7px #a85171,0 0 0 2px #9d536d,0 5px 7px #00152d",
+            }}
+            onClick={() => window.alert(t("ratingUnavailable"))}
+          >
+            <span className={roomStyles.entryLikeCopy}>{t("likeApp")} ❤️</span>
+          </button>'''
+
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected exactly 1 room-entry Like block, got {count}')
+
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+          git rm .github/workflows/patch-room-entry-like-pink.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 'app/src/app/room/[code]/page.tsx'
+          git commit -m "Match room entry Like box to homepage"
+          git push origin HEAD:fix/room-entry-like-pink
