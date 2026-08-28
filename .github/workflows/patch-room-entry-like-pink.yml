@@ -26,39 +26,35 @@ jobs:
           path = Path('app/src/app/room/[code]/page.tsx')
           text = path.read_text(encoding='utf-8')
 
-          old = '''          <button
-            type="button"
-            className={roomStyles.entryLike}
-            onClick={() => window.alert(t("ratingUnavailable"))}
-          >
-            <span className={roomStyles.entryLikeCopy}>{t("likeApp")}</span>
-            <span className={roomStyles.entryHeart}>♥</span>
-          </button>'''
+          style_anchor = '            className={roomStyles.entryLike}\n            onClick={() => window.alert(t("ratingUnavailable"))}'
+          style_replacement = (
+              '            className={roomStyles.entryLike}\n'
+              '            style={{\n'
+              '              height: 52,\n'
+              '              minHeight: 52,\n'
+              '              justifyContent: "flex-start",\n'
+              '              paddingTop: 5,\n'
+              '              paddingBottom: 5,\n'
+              '              borderColor: "#ffd0dc",\n'
+              '              background: "linear-gradient(#f7afc4,#e58daa 55%,#cc6f92)",\n'
+              '              boxShadow:\n'
+              '                "inset 0 3px 5px #ffe8ef,inset 0 -5px 7px #a85171,0 0 0 2px #9d536d,0 5px 7px #00152d",\n'
+              '            }}\n'
+              '            onClick={() => window.alert(t("ratingUnavailable"))}'
+          )
 
-          new = '''          <button
-            type="button"
-            className={roomStyles.entryLike}
-            style={{
-              height: 52,
-              minHeight: 52,
-              justifyContent: "flex-start",
-              paddingTop: 5,
-              paddingBottom: 5,
-              borderColor: "#ffd0dc",
-              background: "linear-gradient(#f7afc4,#e58daa 55%,#cc6f92)",
-              boxShadow:
-                "inset 0 3px 5px #ffe8ef,inset 0 -5px 7px #a85171,0 0 0 2px #9d536d,0 5px 7px #00152d",
-            }}
-            onClick={() => window.alert(t("ratingUnavailable"))}
-          >
-            <span className={roomStyles.entryLikeCopy}>{t("likeApp")} ❤️</span>
-          </button>'''
+          if text.count(style_anchor) != 1:
+              raise SystemExit(f'Like style anchor count: {text.count(style_anchor)}')
+          text = text.replace(style_anchor, style_replacement, 1)
 
-          count = text.count(old)
-          if count != 1:
-              raise SystemExit(f'Expected exactly 1 room-entry Like block, got {count}')
+          heart_anchor = '            <span className={roomStyles.entryLikeCopy}>{t("likeApp")}</span>\n            <span className={roomStyles.entryHeart}>♥</span>'
+          heart_replacement = '            <span className={roomStyles.entryLikeCopy}>{t("likeApp")} ❤️</span>'
 
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          if text.count(heart_anchor) != 1:
+              raise SystemExit(f'Like heart anchor count: {text.count(heart_anchor)}')
+          text = text.replace(heart_anchor, heart_replacement, 1)
+
+          path.write_text(text, encoding='utf-8')
           PY
 
           git rm .github/workflows/patch-room-entry-like-pink.yml
