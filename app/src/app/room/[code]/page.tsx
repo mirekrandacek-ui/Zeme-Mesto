@@ -3166,10 +3166,20 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           <button
             type="button"
             className={roomStyles.entryLike}
+            style={{
+              height: 52,
+              minHeight: 52,
+              justifyContent: "flex-start",
+              paddingTop: 5,
+              paddingBottom: 5,
+              borderColor: "#ffd0dc",
+              background: "linear-gradient(#f7afc4,#e58daa 55%,#cc6f92)",
+              boxShadow:
+                "inset 0 3px 5px #ffe8ef,inset 0 -5px 7px #a85171,0 0 0 2px #9d536d,0 5px 7px #00152d",
+            }}
             onClick={() => window.alert(t("ratingUnavailable"))}
           >
-            <span className={roomStyles.entryLikeCopy}>{t("likeApp")}</span>
-            <span className={roomStyles.entryHeart}>♥</span>
+            <span className={roomStyles.entryLikeCopy}>{t("likeApp")} ❤️</span>
           </button>
           <p className={roomStyles.entryPrivacy}>
             <a href="/privacy">{t("privacyPolicy")}</a>
