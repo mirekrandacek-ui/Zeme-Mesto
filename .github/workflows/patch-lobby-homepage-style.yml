@@ -1,0 +1,30 @@
+name: Patch lobby homepage style
+
+on:
+  push:
+    branches:
+      - design/lobby-homepage-style
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/lobby-homepage-style
+          fetch-depth: 0
+
+      - name: Apply approved lobby design
+        run: python .github/scripts/patch-lobby-homepage-style.py
+
+      - name: Commit lobby design
+        run: |
+          git rm .github/scripts/patch-lobby-homepage-style.py .github/workflows/patch-lobby-homepage-style.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 'app/src/app/room/[code]/page.tsx' 'app/src/app/room/[code]/page.module.css'
+          git commit -m "Apply approved lobby design"
+          git push origin HEAD:design/lobby-homepage-style
