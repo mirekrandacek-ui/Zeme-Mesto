@@ -1360,7 +1360,9 @@ export default function Home() {
           </div>
         </details>
 
-        {status && <p className={styles.status} role="status">{status}</p>}
+        {status && status !== getRoomUiText(language, "freeLimitReachedMessage") && (
+          <p className={styles.status} role="status">{status}</p>
+        )}
         <p className={styles.privacy}><a href="/privacy">{h("privacyPolicy")}</a></p>
       </div>
     </main>
