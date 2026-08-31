@@ -1,0 +1,33 @@
+name: Patch lobby three actions
+
+on:
+  push:
+    branches:
+      - design/lobby-three-actions
+    paths:
+      - tmp/lobby-three-actions-patch.py
+      - .github/workflows/patch-lobby-three-actions.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/lobby-three-actions
+      - name: Apply patch
+        run: python tmp/lobby-three-actions-patch.py
+      - name: Remove temporary patch files
+        run: |
+          rm tmp/lobby-three-actions-patch.py
+          rm .github/workflows/patch-lobby-three-actions.yml
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/src/app/room/[code]/page.tsx app/src/app/room/[code]/page.module.css tmp/lobby-three-actions-patch.py .github/workflows/patch-lobby-three-actions.yml
+          git commit -m "Simplify lobby actions" || exit 0
+          git push
