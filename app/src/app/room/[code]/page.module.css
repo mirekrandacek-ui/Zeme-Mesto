@@ -605,3 +605,245 @@
   content:"•";
   margin-right:7px;
 }
+
+/* Unified drawing + playing screen. */
+.gameScreen{
+  width:100%;
+}
+
+.gameHeader,
+.gameAnswers,
+.gameInfo{
+  box-sizing:border-box;
+  width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.gameHeader{
+  margin-bottom:6px;
+  padding:9px 12px 10px;
+  border:2px solid #43c8ff;
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(8,115,175,.97),rgba(0,48,91,.985) 38%,rgba(0,28,59,.99));
+  box-shadow:inset 0 0 0 2px #087cbf,inset 0 7px 14px #4cd1ff55,inset 0 -9px 16px #001f43,0 0 13px #04aaff,0 7px 12px #000819cc;
+  color:#fff;
+  text-shadow:0 2px 3px #00152d;
+}
+
+.gameHeaderTop{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 112px;
+  align-items:center;
+  gap:8px;
+  min-height:68px;
+  padding-right:8px;
+}
+
+.gameTitle{
+  margin:0;
+  font-size:clamp(19px,5vw,24px);
+  line-height:1.05;
+  font-weight:800;
+}
+
+.gameLetter{
+  width:112px;
+  min-width:0;
+  text-align:center;
+  font-size:clamp(52px,15.5vw,72px);
+  font-weight:900;
+  line-height:.82;
+  letter-spacing:-.08em;
+  white-space:nowrap;
+  transform:translateX(-8px);
+  color:#fff;
+  text-shadow:0 3px 4px #00152d,0 0 8px #53d7ff;
+}
+
+.gameDrawingText{
+  margin:0 0 6px;
+  color:#dff6ff;
+  text-align:center;
+  font-size:14px;
+  line-height:1.2;
+  font-weight:750;
+}
+
+.gameControls{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:end;
+  gap:14px;
+  margin-top:2px;
+}
+
+.gameLeftControls{
+  min-width:0;
+}
+
+.gameLanguageCompact{
+  color:#e2f7ff;
+  font-size:13px;
+  line-height:1.2;
+  font-weight:800;
+}
+
+.gameDisconnectButton,
+.gameRedrawButton{
+  border-radius:11px;
+  color:#fff;
+  font:inherit;
+  font-weight:800;
+  cursor:pointer;
+  text-shadow:0 1px 2px #00152d;
+}
+
+.gameDisconnectButton{
+  display:block;
+  margin-top:6px;
+  padding:5px 9px;
+  border:1.5px solid #ffb9b9;
+  background:rgba(141,22,22,.72);
+  font-size:12px;
+}
+
+.gameRedrawButton{
+  align-self:end;
+  min-height:38px;
+  padding:7px 10px;
+  border:1.5px solid #bfeaff;
+  background:linear-gradient(#1686ca,#00508b 58%,#003360);
+  box-shadow:inset 0 2px 4px #56c9ff,inset 0 -4px 6px #002746,0 2px 5px #00162c;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.gameTimer{
+  margin-top:5px;
+  text-align:right;
+  font-size:19px;
+  line-height:1;
+  font-weight:900;
+  font-variant-numeric:tabular-nums;
+}
+
+.gameTimerTrack{
+  height:5px;
+  margin-top:5px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#d9e5ed;
+}
+
+.gameTimerProgress{
+  height:100%;
+  border-radius:inherit;
+  background:#57d21f;
+}
+
+.gameAnswers{
+  max-height:calc(100dvh - 225px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  margin-bottom:8px;
+  padding:8px 11px 10px;
+  border:2px solid #55d5ff;
+  border-radius:18px;
+  background:linear-gradient(#1686ca,#00508b 58%,#003360);
+  box-shadow:inset 0 2px 5px #56c9ff,inset 0 -6px 10px #002746,0 0 10px #00aaff,0 5px 9px #00162c;
+  color:#fff;
+  text-shadow:0 2px 2px #001b38;
+  -webkit-overflow-scrolling:touch;
+}
+
+.gameAnswerLabel{
+  display:block;
+  margin-top:7px;
+}
+
+.gameAnswerLabel:first-child{
+  margin-top:0;
+}
+
+.gameAnswerName{
+  margin:0 0 3px;
+  font-size:15px;
+  line-height:1.2;
+  font-weight:800;
+}
+
+.gameAnswerInput{
+  box-sizing:border-box;
+  display:block;
+  width:100%;
+  min-height:44px;
+  padding:10px 12px;
+  border:2px solid #61d7ff;
+  border-radius:13px;
+  outline:0;
+  color:#243b53;
+  background:#f7fbff;
+  box-shadow:inset 0 2px 4px #cdefff,0 0 6px #00aaff;
+  font:inherit;
+  font-size:16px;
+  text-shadow:none;
+}
+
+.gameAnswerInput:focus{
+  border-color:#b9ff89;
+  box-shadow:inset 0 2px 4px #dfffcf,0 0 9px #75ef34;
+}
+
+.gameStopButton{
+  display:block;
+  width:100%;
+  min-height:52px;
+  margin-top:10px;
+  margin-bottom:calc(16px + env(safe-area-inset-bottom));
+  padding:12px;
+  border-radius:17px;
+  color:#fff;
+  font:inherit;
+  font-size:21px;
+  line-height:1;
+  font-weight:900;
+  text-shadow:0 2px 2px #7f1010;
+  scroll-margin-bottom:calc(96px + env(safe-area-inset-bottom));
+}
+
+.gameStopActive{
+  border:2px solid #ffb0b0;
+  background:linear-gradient(#ff5757,#e32626 55%,#bc1111);
+  box-shadow:inset 0 3px 5px #ffc5c5,inset 0 -5px 7px #8f0b0b,0 0 9px #ff3636,0 4px 7px #00152d;
+  cursor:pointer;
+}
+
+.gameStopDisabled{
+  border:2px solid #ffd0d0;
+  background:linear-gradient(#f7b1b1,#ed9292 55%,#de7f7f);
+  box-shadow:inset 0 2px 4px #ffe5e5,inset 0 -4px 6px #c86868,0 3px 6px #00152d88;
+  opacity:1;
+  cursor:not-allowed;
+}
+
+.gameValidation{
+  margin:5px 2px 0;
+  color:#fff1c7;
+  font-size:12px;
+  line-height:1.25;
+}
+
+.gameInfo{
+  margin-top:0;
+  margin-bottom:8px;
+  padding:10px 12px;
+  border:2px solid #55d5ff;
+  border-radius:16px;
+  background:linear-gradient(#1686ca,#00508b 58%,#003360);
+  box-shadow:inset 0 2px 5px #56c9ff,inset 0 -5px 8px #002746,0 4px 7px #00162c;
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  text-shadow:0 2px 2px #001b38;
+}

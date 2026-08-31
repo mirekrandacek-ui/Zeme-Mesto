@@ -2753,7 +2753,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     Math.max(customCategorySlotCount, filledCustomCategoryCount)
   );
 
-  const isAnswering = roomStatus === "playing" && Boolean(letter);
+  const isGameScreen = Boolean(
+    myPlayer && (roomStatus === "drawing" || roomStatus === "playing")
+  );
   const showAdBanner = !nativeFreeBannerShown;
 
   const statusMessage =
@@ -2766,11 +2768,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           : msg;
 
   const visibleStatusMessage =
-    isAnswering ? "" : myPlayer ? statusMessage : msg;
+    isGameScreen ? "" : myPlayer ? statusMessage : msg;
 
   const isRoomEntry = Boolean(roomId && !myPlayer);
   const isStyledLobby = Boolean(roomId && myPlayer && roomStatus === "lobby");
-  const usePhotoRoomChrome = isRoomEntry || isStyledLobby;
+  const usePhotoRoomChrome = isRoomEntry || isStyledLobby || isGameScreen;
   const newRoomLabel = uiMessage({
     cs: "Nová místnost",
     en: "New room",
@@ -2900,7 +2902,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </section>
       )}
 
-      {!isAnswering && (
+      {!isGameScreen && (
       isRoomEntry ? (
       <header className={roomStyles.entryHeader}>
         <div className={roomStyles.entryTitleRow}>
@@ -3043,7 +3045,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )
       )}
 
-      {!isAnswering && (
+      {!isGameScreen && (
       isRoomEntry ? (
       <section className={roomStyles.entryLanguage} data-game-language-banner>
         <span className={roomStyles.entryLanguageLabel}>{t("gameLanguage")}</span>
@@ -3100,7 +3102,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )
       )}
 
-      {showRules && !isStyledLobby && (
+      {showRules && !isStyledLobby && !isGameScreen && (
         <section
           className={usePhotoRoomChrome ? roomStyles.entryRules : undefined}
           style={usePhotoRoomChrome ? undefined : { border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
@@ -3670,133 +3672,116 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )}
 
       {(roomStatus === "drawing" || roomStatus === "playing") && myPlayer && (
-        <>
-            {roomStatus === "playing" && letter ? (
-              <>
-                <section
-                  style={{
-                    background: "#fff",
-                    padding: "8px 0 10px",
-                    borderBottom: "1px solid #ddd",
-                  }}
-                >
-                  <h2 style={{ margin: "0 0 8px" }}>{t("playing")}</h2>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ fontSize: 56, fontWeight: "bold", lineHeight: 1 }}>
-                      {letter}
-                    </div>
-                    {activeMyPlayer && (
-                      <button onClick={redrawLetter} style={{ padding: 12 }}>
-                        {t("drawAgain")}
-                      </button>
-                    )}
-                    {roundTimerRemainingSeconds !== null && (
-                      <div style={{ marginLeft: "auto", fontSize: 24, fontWeight: 800, fontVariantNumeric: "tabular-nums" }}>
-                        {Math.floor(roundTimerRemainingSeconds / 60)}:{String(roundTimerRemainingSeconds % 60).padStart(2, "0")}
-                      </div>
-                    )}
-                  </div>
-                  {roundTimerProgressPercent !== null && (
-                    <div style={{ height: 6, marginTop: 8, borderRadius: 999, background: "#e5e7eb", overflow: "hidden" }}>
-                      <div style={{ width: `${roundTimerProgressPercent}%`, height: "100%", background: "#16a34a" }} />
-                    </div>
-                  )}
-                </section>
-              </>
-            ) : (
-              <div style={{ fontSize: 72, fontWeight: "bold" }}>{letter ?? rollingLetter}</div>
+        <section className={roomStyles.gameScreen}>
+          <section className={roomStyles.gameHeader}>
+            <div className={roomStyles.gameHeaderTop}>
+              <h2 className={roomStyles.gameTitle}>{t("playing")}</h2>
+              <div className={roomStyles.gameLetter} aria-live="polite">
+                {roomStatus === "drawing" ? rollingLetter || "…" : letter}
+              </div>
+            </div>
+
+            {roomStatus === "drawing" && (
+              <p className={roomStyles.gameDrawingText}>{t("drawingLetter")}</p>
             )}
 
-          {roomStatus === "playing" && letter && myPlayer && (
-            <div style={{ textAlign: "right", marginBottom: 8 }}>
-              <button
-                type="button"
-                onClick={() => {
-                  if (window.confirm(`${t("disconnect")}?`)) {
-                    void signOut();
-                  }
-                }}
-                style={{
-                  padding: "8px 12px",
-                  border: "1px solid #dc2626",
-                  borderRadius: 6,
-                  background: "#fff",
-                  color: "#b91c1c",
-                  fontWeight: 700,
-                }}
-              >
-                {t("disconnect")}
-              </button>
+            <div className={roomStyles.gameControls}>
+              <div className={roomStyles.gameLeftControls}>
+                <div className={roomStyles.gameLanguageCompact}>
+                  {gameLanguageName} {gameLanguageFlag}
+                </div>
+                <button
+                  type="button"
+                  className={roomStyles.gameDisconnectButton}
+                  onClick={() => {
+                    if (window.confirm(`${t("disconnect")}?`)) {
+                      void signOut();
+                    }
+                  }}
+                >
+                  {t("disconnect")}
+                </button>
+              </div>
+
+              {roomStatus === "playing" && letter && activeMyPlayer && (
+                <button
+                  type="button"
+                  className={roomStyles.gameRedrawButton}
+                  onClick={redrawLetter}
+                >
+                  ↻ {t("drawAgain")}
+                </button>
+              )}
             </div>
-          )}
+
+            {roomStatus === "playing" && letter && roundTimerRemainingSeconds !== null && (
+              <div className={roomStyles.gameTimer}>
+                {Math.floor(roundTimerRemainingSeconds / 60)}:{String(roundTimerRemainingSeconds % 60).padStart(2, "0")}
+              </div>
+            )}
+            {roomStatus === "playing" && letter && roundTimerProgressPercent !== null && (
+              <div className={roomStyles.gameTimerTrack}>
+                <div
+                  className={roomStyles.gameTimerProgress}
+                  style={{ width: `${roundTimerProgressPercent}%` }}
+                />
+              </div>
+            )}
+          </section>
 
           {roomStatus === "playing" && letter && activeMyPlayer && round && (
-              <div
-                ref={answerScrollBoxRef}
-                style={{
-                  maxHeight: "calc(100dvh - 230px)",
-                  overflowY: "auto",
-                  overscrollBehavior: "contain",
-                  paddingBottom: `calc(${Math.max(96, keyboardInsetPx + 96)}px + env(safe-area-inset-bottom))`,
-                  WebkitOverflowScrolling: "touch",
-                }}
-              >
+            <div
+              ref={answerScrollBoxRef}
+              className={roomStyles.gameAnswers}
+              style={{
+                paddingBottom: `calc(${Math.max(96, keyboardInsetPx + 96)}px + env(safe-area-inset-bottom))`,
+              }}
+            >
               {activeCategories.map((category, index) => (
-                <label key={category} style={{ display: "block", marginTop: 10 }}>
-                  <div style={{ fontWeight: 700, marginBottom: 4 }}>
+                <label key={category} className={roomStyles.gameAnswerLabel}>
+                  <div className={roomStyles.gameAnswerName}>
                     {categoryLabel(category)}
                   </div>
                   <input
                     ref={(element) => {
                       answerInputRefs.current[category] = element;
                     }}
-                    enterKeyHint={
-                      index === activeCategories.length - 1 ? "done" : "next"
-                    }
+                    className={roomStyles.gameAnswerInput}
+                    enterKeyHint={index === activeCategories.length - 1 ? "done" : "next"}
                     value={answers[category] ?? ""}
                     onChange={(e) => saveAnswer(category, e.target.value)}
                     onFocus={(e) => {
                       const input = e.currentTarget;
-                        requestAnimationFrame(() => {
-                          scrollAnswerIntoView(input, "nearest");
-                        });
+                      requestAnimationFrame(() => {
+                        scrollAnswerIntoView(input, "nearest");
+                      });
                     }}
                     onKeyDown={(e) => {
                       if (e.key !== "Enter") return;
 
                       e.preventDefault();
-
                       const nextCategory = activeCategories[index + 1];
 
                       if (nextCategory) {
                         const nextInput = answerInputRefs.current[nextCategory];
-
                         if (nextInput) {
                           nextInput.focus({ preventScroll: true });
-
-                            window.setTimeout(() => {
-                              scrollAnswerIntoView(nextInput, "center");
-                            }, 80);
+                          window.setTimeout(() => {
+                            scrollAnswerIntoView(nextInput, "center");
+                          }, 80);
                         }
                       } else if (canStop) {
                         e.currentTarget.blur();
                         void stopRound();
                       } else {
                         e.currentTarget.blur();
-
-                          window.setTimeout(() => {
-                            scrollAnswerIntoView(
-                              document.getElementById("stop-round-button"),
-                              "center"
-                            );
-                          }, 300);
+                        window.setTimeout(() => {
+                          scrollAnswerIntoView(
+                            document.getElementById("stop-round-button"),
+                            "center"
+                          );
+                        }, 300);
                       }
-                    }}
-                    style={{
-                      display: "block",
-                      marginTop: 10,
-                      padding: 12,
-                      width: "100%",
                     }}
                   />
                 </label>
@@ -3806,49 +3791,27 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 id="stop-round-button"
                 onClick={() => void stopRound()}
                 disabled={!canStop}
-                style={{
-                  marginTop: 16,
-                  marginBottom: "calc(24px + env(safe-area-inset-bottom))",
-                  padding: 16,
-                  width: "100%",
-                  scrollMarginBottom: "calc(96px + env(safe-area-inset-bottom))",
-                }}
+                className={`${roomStyles.gameStopButton} ${
+                  canStop ? roomStyles.gameStopActive : roomStyles.gameStopDisabled
+                }`}
               >
                 STOP
               </button>
 
-              {!allAnswersFilled && (
-                <p>
-                  {t("stopAfterFields")}
-                </p>
-              )}
-
               {allAnswersFilled && !allAnswersAtLeastTwoChars && (
-                <p>
-                  {t("minTwoChars")}
-                </p>
+                <p className={roomStyles.gameValidation}>{t("minTwoChars")}</p>
               )}
 
               {allAnswersFilled && allAnswersAtLeastTwoChars && !allAnswersStartWithLetter && (
-                <p>
-                  {t("mustStartWithLetter")}
-                </p>
+                <p className={roomStyles.gameValidation}>{t("mustStartWithLetter")}</p>
               )}
-              </div>
+            </div>
           )}
 
-          {roomStatus === "playing" && letter && myPlayer?.status === "waiting" && (
-            <p>
-              {t("waitingToJoin")}
-            </p>
+          {roomStatus === "playing" && letter && myPlayer.status === "waiting" && (
+            <p className={roomStyles.gameInfo}>{t("waitingToJoin")}</p>
           )}
-
-          {roomStatus === "playing" && letter && !myPlayer && (
-            <p>
-              {t("enterNameAnswers")}
-            </p>
-          )}
-        </>
+        </section>
       )}
 
         {roomStatus === "finished" && myPlayer && (
