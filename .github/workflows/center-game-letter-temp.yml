@@ -1,0 +1,27 @@
+name: Center game letter
+
+on:
+  push:
+    branches:
+      - design/game-screen-unified
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/game-screen-unified
+      - name: Apply patch
+        run: python scripts/center-game-letter-temp.py
+      - name: Commit source changes and cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 'app/src/app/room/[code]/page.module.css'
+          git rm scripts/center-game-letter-temp.py .github/workflows/center-game-letter-temp.yml
+          git commit -m 'Vycentrovat vylosované písmeno'
+          git push origin HEAD:design/game-screen-unified
