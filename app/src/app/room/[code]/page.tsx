@@ -2947,33 +2947,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </p>
 
         <div className={roomStyles.lobbyActions}>
-          <button
-            className={`${roomStyles.lobbyAction} ${roomStyles.lobbyActionShare}`}
-            type="button"
-            onClick={shareInviteLink}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/></svg>
-            <span>{t("shareRoomCode")}</span>
-          </button>
-
-          <button
-            className={roomStyles.lobbyAction}
-            type="button"
-            onClick={() => setShowRules((value) => !value)}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 1 1 3.6 2.1c-1 .6-1.4 1.1-1.4 2.2M12 17h.01"/></svg>
-            <span>{t("rules")}</span>
-          </button>
-
-          <button className={roomStyles.lobbyAction} type="button" onClick={copyInviteLink}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg>
-            <span>{t("copyRoomLink")}</span>
-          </button>
-
-          <a className={roomStyles.lobbyAction} href="/">
+          <a className={`${roomStyles.lobbyAction} ${roomStyles.lobbyActionPurple}`} href="/">
             <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="11" cy="10" r="5"/><path d="M2 27c0-6 3-9 9-9s9 3 9 9M24 13v12M18 19h12"/></svg>
-            <span>{isOrganizer ? newRoomLabel : t("backHome")}</span>
+            <span>{newRoomLabel}</span>
           </a>
+
+          <button className={roomStyles.lobbyAction} type="button" onClick={signOut}>
+            <span>{t("changePlayerOnDevice")}</span>
+          </button>
 
           <button
             className={`${roomStyles.lobbyAction} ${roomStyles.lobbyActionLike}`}
@@ -2981,10 +2962,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             onClick={() => window.alert(t("ratingUnavailable"))}
           >
             <span className={roomStyles.lobbyLikeCopy}>{t("likeApp")} ❤️</span>
-          </button>
-
-          <button className={roomStyles.lobbyAction} type="button" onClick={signOut}>
-            <span>{t("disconnect")}</span>
           </button>
         </div>
       </header>
@@ -3123,7 +3100,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )
       )}
 
-      {showRules && (
+      {showRules && !isStyledLobby && (
         <section
           className={usePhotoRoomChrome ? roomStyles.entryRules : undefined}
           style={usePhotoRoomChrome ? undefined : { border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}

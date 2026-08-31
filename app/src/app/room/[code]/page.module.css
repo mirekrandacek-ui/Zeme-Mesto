@@ -430,7 +430,7 @@
 
 .lobbyActions{
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-columns:1fr;
   gap:7px;
 }
 
@@ -440,14 +440,14 @@
   align-items:center;
   width:100%;
   min-height:54px;
-  padding:7px 9px;
+  padding:9px 13px;
   border:2px solid #61d7ff;
   border-radius:14px;
   color:#fff;
   background:linear-gradient(#1686ca,#00508b 58%,#003360);
   box-shadow:inset 0 2px 5px #56c9ff,inset 0 -5px 8px #002746,0 3px 7px #00162c;
   font:inherit;
-  font-size:clamp(11px,3vw,14px);
+  font-size:clamp(14px,4vw,18px);
   font-weight:750;
   line-height:1.12;
   text-align:left;
@@ -472,7 +472,7 @@
   stroke-linejoin:round;
 }
 
-.lobbyActionShare{
+.lobbyActionPurple{
   border-color:#b8a9ff;
   background:linear-gradient(#7163c5,#51469d 58%,#38317c);
 }
