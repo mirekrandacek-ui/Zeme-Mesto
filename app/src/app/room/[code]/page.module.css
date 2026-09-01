@@ -1110,6 +1110,45 @@
   margin-bottom:6px;
 }
 
+.scoringFreeLimitPanel{
+  padding:8px;
+  border:1.5px solid #ffd75d;
+  border-radius:10px;
+  color:#fff;
+  background:#513100cf;
+  font-size:16px;
+  line-height:1.3;
+  text-shadow:0 2px 3px #00152d;
+}
+
+.scoringFreeLimitPanel h3,
+.scoringFreeLimitPanel p{
+  margin-top:0;
+  margin-bottom:7px;
+}
+
+.scoringFreeLimitPanel>button:not(:last-child){
+  width:100%;
+  border:1px solid #b8ff8c;
+  border-radius:9px;
+  color:#fff;
+  background:linear-gradient(#67ca35,#21880d);
+  font:inherit;
+  font-size:16px;
+  font-weight:800;
+  text-shadow:0 2px 2px #145c0d;
+}
+
+.scoringFreeLimitPanel>button:not(:last-child):disabled{
+  filter:grayscale(.7);
+  opacity:.65;
+}
+
+.scoringFreeLimitPanel section{
+  color:#111;
+  text-shadow:none;
+}
+
 .scoringNextButton{
   order:4;
   min-height:50px;
