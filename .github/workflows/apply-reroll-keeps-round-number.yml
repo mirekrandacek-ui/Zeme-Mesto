@@ -1,0 +1,206 @@
+name: Apply reroll round-number fix
+
+on:
+  push:
+    branches:
+      - fix/reroll-keeps-round-number
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/reroll-keeps-round-number
+      - name: Apply focused patch
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('app/src/app/room/[code]/page.tsx')
+          text = path.read_text()
+
+          old_effect = '''  useEffect(() => {
+    if (roomStatus === "drawing") {
+      startRollingVisual();
+      return;
+    }
+
+    stopRolling();
+  }, [roomStatus]);
+'''
+          new_effect = '''  useEffect(() => {
+    if (roomStatus === "drawing") {
+      setAnswers(emptyAnswers(activeCategories));
+      setScores(emptyScores(activeCategories));
+      setAllAnswers([]);
+      setAllScores([]);
+      setMyScoreSubmitted(false);
+      startRollingVisual();
+      return;
+    }
+
+    stopRolling();
+  }, [roomStatus, activeCategories]);
+'''
+
+          old_redraw = '''  async function redrawLetter() {
+    if (!roomId || !round?.id || !myPlayer) {
+      setMsg(t("joinNameFirst"));
+      return;
+    }
+
+    const rid = roomId;
+    const currentRoundId = round.id;
+
+    setMsg(t("drawingAgain"));
+    setRoomStatus("drawing");
+    setLetter(null);
+    setAnswers(emptyAnswers(activeCategories));
+    setScores(emptyScores(activeCategories));
+    setAllAnswers([]);
+    setAllScores([]);
+    setMyScoreSubmitted(false);
+
+    const { data: locked, error: lockError } = await supabase
+      .from("rooms")
+      .update({ status: "drawing", letter: null })
+      .eq("id", rid)
+      .eq("status", "playing")
+      .select("id")
+      .maybeSingle();
+
+    if (lockError || !locked) {
+      setMsg(
+        uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." , de: "ℹ️ Ein anderer Spieler hat bereits mit dem Auslosen des Buchstabens begonnen.", fr: "ℹ️ Un autre joueur a déjà commencé à tirer la lettre.", "pt-BR": "ℹ️ Outro jogador já começou a sortear a letra.", id: "ℹ️ Pemain lain sudah mulai mengundi huruf.", tr: "ℹ️ Başka bir oyuncu harf çekmeye başladı.", pl: "ℹ️ Inny gracz rozpoczął już losowanie litery.", it: "ℹ️ Un altro giocatore ha già iniziato l’estrazione della lettera."})
+      );
+      return;
+    }
+
+    await supabase.from("rounds").update({ status: "skipped" }).eq("id", currentRoundId);
+
+    window.setTimeout(async () => {
+      const finalLetter = await pickLetter(rid);
+      if (!finalLetter) return;
+
+      const newRound = await createRound(rid, finalLetter);
+      if (!newRound) return;
+
+      await supabase
+        .from("rooms")
+        .update({ status: "playing", letter: finalLetter })
+        .eq("id", rid)
+        .eq("status", "drawing");
+
+      setMsg(t("letterDrawn"));
+    }, ROLL_MS);
+  }
+'''
+
+          new_redraw = '''  async function redrawLetter() {
+    if (!roomId || !round?.id || !round?.round_no || !myPlayer) {
+      setMsg(t("joinNameFirst"));
+      return;
+    }
+
+    const rid = roomId;
+    const currentRoundId = round.id;
+    const currentRoundNo = round.round_no;
+
+    setMsg(t("drawingAgain"));
+    setRoomStatus("drawing");
+    setLetter(null);
+    setAnswers(emptyAnswers(activeCategories));
+    setScores(emptyScores(activeCategories));
+    setAllAnswers([]);
+    setAllScores([]);
+    setMyScoreSubmitted(false);
+
+    const { data: locked, error: lockError } = await supabase
+      .from("rooms")
+      .update({ status: "drawing", letter: null })
+      .eq("id", rid)
+      .eq("status", "playing")
+      .select("id")
+      .maybeSingle();
+
+    if (lockError || !locked) {
+      setMsg(
+        uiMessage({ cs: "ℹ️ Losování už spustil jiný hráč.", en: "ℹ️ Another player has already started drawing the letter.", es: "ℹ️ Otro jugador ya ha iniciado el sorteo de la letra." , de: "ℹ️ Ein anderer Spieler hat bereits mit dem Auslosen des Buchstabens begonnen.", fr: "ℹ️ Un autre joueur a déjà commencé à tirer la lettre.", "pt-BR": "ℹ️ Outro jogador já começou a sortear a letra.", id: "ℹ️ Pemain lain sudah mulai mengundi huruf.", tr: "ℹ️ Başka bir oyuncu harf çekmeye başladı.", pl: "ℹ️ Inny gracz rozpoczął już losowanie litery.", it: "ℹ️ Un altro giocatore ha già iniziato l’estrazione della lettera."})
+      );
+      return;
+    }
+
+    const { error: resetAnswersError } = await supabase
+      .from("answers")
+      .update({ value: "", updated_at: new Date().toISOString() })
+      .eq("room_id", rid)
+      .eq("round", currentRoundNo);
+
+    if (resetAnswersError) {
+      console.error("Answers reset before redraw failed:", resetAnswersError);
+    }
+
+    await supabase.from("rounds").update({ status: "skipped" }).eq("id", currentRoundId);
+
+    window.setTimeout(async () => {
+      const finalLetter = await pickLetter(rid);
+      if (!finalLetter) return;
+
+      const { data: rerolledRound, error: rerollError } = await supabase
+        .from("rounds")
+        .upsert(
+          {
+            room_id: rid,
+            round_no: currentRoundNo,
+            letter: finalLetter,
+            status: "playing",
+            deadline_at: null,
+          },
+          { onConflict: "room_id,round_no" }
+        )
+        .select("id,round_no,letter,status,deadline_at")
+        .single();
+
+      if (rerollError || !rerolledRound) {
+        console.error("Round redraw failed:", rerollError);
+        return;
+      }
+
+      setRound(rerolledRound as RoundLite);
+
+      await supabase
+        .from("rooms")
+        .update({ status: "playing", letter: finalLetter })
+        .eq("id", rid)
+        .eq("status", "drawing");
+
+      setMsg(t("letterDrawn"));
+    }, ROLL_MS);
+  }
+'''
+
+          if text.count(old_effect) != 1:
+              raise SystemExit(f'Expected one drawing effect, found {text.count(old_effect)}')
+          if text.count(old_redraw) != 1:
+              raise SystemExit(f'Expected one redrawLetter block, found {text.count(old_redraw)}')
+
+          text = text.replace(old_effect, new_effect)
+          text = text.replace(old_redraw, new_redraw)
+          path.write_text(text)
+          PY
+      - name: Validate diff
+        run: |
+          git diff --check
+          git diff -- app/src/app/room/'[code]'/page.tsx
+      - name: Commit focused patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/apply-reroll-keeps-round-number.yml
+          git add app/src/app/room/'[code]'/page.tsx
+          git commit -m "Keep round number when redrawing letter"
+          git push
