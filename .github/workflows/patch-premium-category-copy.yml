@@ -72,7 +72,7 @@ jobs:
 
           s = replace_seq(r'(premiumLockedCategoryOfferIntro:\s*")([^"]*)(",)', intros, s)
           s = replace_seq(r'(superPremiumUpsellAfter:\s*")([^"]*)(",)', upsells, s)
-          s = replace_seq(r'(premiumOrganizer:\s*\n\s*")([^"]*)(",)', premium_organizer, s)
+          s = replace_seq(r'(premiumOrganizer:\s*")([^"]*)(",)', premium_organizer, s)
           ui.write_text(s)
 
           css = Path('app/src/app/room/[code]/page.module.css')
