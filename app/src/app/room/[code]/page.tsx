@@ -2950,7 +2950,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         <h1 className={roomStyles.lobbyRoomTitle}>
           {t("room")}: {code.toUpperCase()}
         </h1>
-        {isOrganizer && (roomTierForCategoryPreview === "premium" || roomTierForCategoryPreview === "super_premium") && (
+        {isOrganizer && (roomTier === "premium" || roomTier === "super_premium") && (
           <p className={roomStyles.lobbyBossRoom}>{t("bossRoom")}</p>
         )}
         <p className={roomStyles.lobbySignedIn}>
@@ -3437,7 +3437,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 ))}
               </div>
 
-              {(roomTier === "premium" || roomTier === "super_premium") && (
+              {(roomTierForCategoryPreview === "premium" || roomTierForCategoryPreview === "super_premium") && (
                 <>
               <h4 style={{ marginTop: 16 }}>
                 {t("extendedCategories")}
