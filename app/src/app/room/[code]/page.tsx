@@ -3167,7 +3167,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   fontWeight: 700,
                 }}
               >
-                {uiMessage({ cs: "Koupit Super Premium", en: "Get Super Premium", es: "Obtener Super Premium", de: "Super Premium holen", fr: "Obtenir Super Premium", "pt-BR": "Obter Super Premium", id: "Dapatkan Super Premium", tr: "Super Premium al", pl: "Zdobądź Super Premium", it: "Ottieni Super Premium" })}
+                {uiMessage({ cs: "Koupit Super Premium", en: "Buy Super Premium", es: "Comprar Super Premium", de: "Super Premium kaufen", fr: "Acheter Super Premium", "pt-BR": "Comprar Super Premium", id: "Beli Super Premium", tr: "Super Premium satın al", pl: "Kup Super Premium", it: "Acquista Super Premium" })}
               </button>
 
               <button
@@ -4160,7 +4160,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     onClick={() => void startSuperPremiumPurchase()}
                     style={{ marginTop: 12, padding: 14, width: "100%", fontWeight: 700 }}
                   >
-                    {uiMessage({ cs: "Získat Super Premium", en: "Get Super Premium", es: "Obtener Super Premium", de: "Super Premium holen", fr: "Obtenir Super Premium", "pt-BR": "Obter Super Premium", id: "Dapatkan Super Premium", tr: "Super Premium al", pl: "Zdobądź Super Premium", it: "Ottieni Super Premium" })}
+                    {uiMessage({ cs: "Koupit Super Premium", en: "Buy Super Premium", es: "Comprar Super Premium", de: "Super Premium kaufen", fr: "Acheter Super Premium", "pt-BR": "Comprar Super Premium", id: "Beli Super Premium", tr: "Super Premium satın al", pl: "Kup Super Premium", it: "Acquista Super Premium" })}
                   </button>
                   <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>
                     {uiMessage({
@@ -4207,6 +4207,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   <a
                     className={`${roomStyles.entryAction} ${roomStyles.entryActionHome}`}
                     href="/"
+                    style={{ marginTop: 14 }}
                   >
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h11"/></svg>
                     <span>{t("backHome")}</span>
