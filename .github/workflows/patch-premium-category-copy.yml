@@ -1,0 +1,99 @@
+name: Patch Premium category copy
+
+on:
+  push:
+    branches:
+      - design/premium-categories-panel
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/premium-categories-panel
+
+      - name: Patch copy and checkbox sizing
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          ui = Path('app/src/app/room/[code]/uiText.ts')
+          s = ui.read_text()
+
+          premium_organizer = [
+            'Premium: základní kategorie jsou pevně dané. Rozšířené kategorie jsou zamčené. Po zakoupení alespoň jedné rozšířené kategorie si můžeš libovolně vybrat základní kategorie a všechny zakoupené rozšířené kategorie.',
+            'Premium: the basic categories are fixed. Extended categories are locked. After purchasing at least one extended category, you can freely choose from the basic categories and all extended categories you own.',
+            'Premium: las categorías básicas son fijas. Las categorías ampliadas están bloqueadas. Tras comprar al menos una categoría ampliada, puedes elegir libremente entre las categorías básicas y todas las categorías ampliadas que hayas comprado.',
+            'Premium: Die Grundkategorien sind fest vorgegeben. Erweiterte Kategorien sind gesperrt. Nach dem Kauf mindestens einer erweiterten Kategorie kannst du die Grundkategorien und alle von dir gekauften erweiterten Kategorien frei auswählen.',
+            'Premium : les catégories de base sont fixes. Les catégories supplémentaires sont verrouillées. Après l’achat d’au moins une catégorie supplémentaire, tu peux choisir librement parmi les catégories de base et toutes les catégories supplémentaires achetées.',
+            'Premium: as categorias básicas são fixas. As categorias adicionais ficam bloqueadas. Depois de comprar pelo menos uma categoria adicional, você pode escolher livremente entre as categorias básicas e todas as categorias adicionais compradas.',
+            'Premium: kategori dasar bersifat tetap. Kategori tambahan terkunci. Setelah membeli setidaknya satu kategori tambahan, kamu dapat bebas memilih kategori dasar dan semua kategori tambahan yang telah dibeli.',
+            'Premium: temel kategoriler sabittir. Ek kategoriler kilitlidir. En az bir ek kategori satın aldıktan sonra temel kategoriler ile satın aldığın tüm ek kategorileri özgürce seçebilirsin.',
+            'Premium: kategorie podstawowe są stałe. Kategorie rozszerzone są zablokowane. Po zakupie co najmniej jednej kategorii rozszerzonej możesz dowolnie wybierać kategorie podstawowe i wszystkie zakupione kategorie rozszerzone.',
+            'Premium: le categorie base sono fisse. Le categorie estese sono bloccate. Dopo aver acquistato almeno una categoria estesa, puoi scegliere liberamente tra le categorie base e tutte le categorie estese acquistate.',
+          ]
+          intros = [
+            'Zakoupením této rozšířené kategorie si zároveň odemkneš možnost libovolně vybírat ze základních a všech zakoupených rozšířených kategorií.',
+            'Buying this extended category also unlocks the option to freely choose from the basic categories and all extended categories you own.',
+            'Al comprar esta categoría ampliada también desbloqueas la posibilidad de elegir libremente entre las categorías básicas y todas las categorías ampliadas que hayas comprado.',
+            'Mit dem Kauf dieser erweiterten Kategorie schaltest du zugleich die freie Auswahl aus den Grundkategorien und allen von dir gekauften erweiterten Kategorien frei.',
+            'L’achat de cette catégorie supplémentaire déverrouille aussi le libre choix parmi les catégories de base et toutes les catégories supplémentaires achetées.',
+            'Ao comprar esta categoria adicional, você também libera a escolha livre entre as categorias básicas e todas as categorias adicionais compradas.',
+            'Dengan membeli kategori tambahan ini, kamu juga membuka pilihan bebas dari kategori dasar dan semua kategori tambahan yang telah dibeli.',
+            'Bu ek kategoriyi satın aldığında temel kategoriler ile satın aldığın tüm ek kategoriler arasından özgürce seçim yapma özelliğini de açarsın.',
+            'Kupując tę kategorię rozszerzoną, odblokujesz także swobodny wybór spośród kategorii podstawowych i wszystkich zakupionych kategorii rozszerzonych.',
+            'Acquistando questa categoria estesa sblocchi anche la possibilità di scegliere liberamente tra le categorie base e tutte le categorie estese acquistate.',
+          ]
+          upsells = [
+            'a získáš neomezený počet hráčů, vybrané rozšířené kategorie a možnost postupně odemykat další kategorie a herní možnosti za coiny.',
+            'and get unlimited players, selected extended categories, and the ability to gradually unlock more categories and game options with coins.',
+            'y obtén jugadores ilimitados, categorías ampliadas seleccionadas y la posibilidad de desbloquear poco a poco más categorías y opciones de juego con monedas.',
+            'und erhalte unbegrenzt viele Spieler, ausgewählte erweiterte Kategorien sowie die Möglichkeit, weitere Kategorien und Spieloptionen nach und nach mit Coins freizuschalten.',
+            'et profite d’un nombre de joueurs illimité, de certaines catégories supplémentaires et de la possibilité de débloquer progressivement d’autres catégories et options de jeu avec des pièces.',
+            'e tenha jogadores ilimitados, categorias adicionais selecionadas e a possibilidade de liberar gradualmente mais categorias e opções de jogo com moedas.',
+            'dan dapatkan pemain tanpa batas, kategori tambahan pilihan, serta kemampuan membuka lebih banyak kategori dan opsi permainan secara bertahap dengan koin.',
+            've sınırsız oyuncu, seçili ek kategoriler ve coinlerle zamanla daha fazla kategori ve oyun seçeneği açma imkânı kazan.',
+            'i zyskaj nieograniczoną liczbę graczy, wybrane kategorie rozszerzone oraz możliwość stopniowego odblokowywania kolejnych kategorii i opcji gry za monety.',
+            'e ottieni giocatori illimitati, categorie estese selezionate e la possibilità di sbloccare gradualmente altre categorie e opzioni di gioco con le monete.',
+          ]
+
+          def replace_seq(pattern, values, text):
+            matches = list(re.finditer(pattern, text, flags=re.M))
+            if len(matches) != len(values):
+              raise SystemExit(f'{pattern}: expected {len(values)} matches, found {len(matches)}')
+            it = iter(values)
+            return re.sub(pattern, lambda m: m.group(1) + next(it) + m.group(3), text, flags=re.M)
+
+          s = replace_seq(r'(premiumLockedCategoryOfferIntro:\s*")([^"]*)(",)', intros, s)
+          s = replace_seq(r'(superPremiumUpsellAfter:\s*")([^"]*)(",)', upsells, s)
+          s = replace_seq(r'(premiumOrganizer:\s*\n\s*")([^"]*)(",)', premium_organizer, s)
+          ui.write_text(s)
+
+          css = Path('app/src/app/room/[code]/page.module.css')
+          c = css.read_text()
+          old_checkbox = '''.roomCategoriesPanel input[type="checkbox"]{\n  flex:0 0 auto;\n  width:20px;\n  height:20px;\n  accent-color:#55d63a!important;\n}'''
+          new_checkbox = '''.roomCategoriesPanel input[type="checkbox"]{\n  flex:0 0 auto;\n  accent-color:#2563eb!important;\n}'''
+          if c.count(old_checkbox) != 1:
+            raise SystemExit(f'checkbox block matches: {c.count(old_checkbox)}')
+          c = c.replace(old_checkbox, new_checkbox)
+          c = c.replace('  width:20px!important;\n  height:20px!important;\n  flex-basis:20px!important;', '  width:14px!important;\n  height:14px!important;\n  flex-basis:14px!important;', 1)
+          css.write_text(c)
+          PY
+
+      - name: Validate
+        run: git diff --check
+
+      - name: Commit patch and remove helper
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/patch-premium-category-copy.yml
+          git add app/src/app/room/'[code]'/uiText.ts app/src/app/room/'[code]'/page.module.css
+          git commit -m "Update Premium category copy and checkbox style"
+          git push
