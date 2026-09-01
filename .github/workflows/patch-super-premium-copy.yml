@@ -1,0 +1,99 @@
+name: Patch Super Premium copy
+
+on:
+  push:
+    branches:
+      - design/premium-categories-panel
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/premium-categories-panel
+
+      - name: Update Super Premium copy
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          langs = ['cs','en','es','de','fr','pt-BR','id','tr','pl','it']
+
+          home_desc = [
+            'Neomezený počet hráčů. V ceně: Film / Seriál, Sport, Značka a Auto / Moto. Další kategorie a herní možnosti si postupně odemykáš za coiny získané pravidelným hraním.',
+            'Unlimited players. Included: Film / Series, Sport, Brand and Car / Motorbike. Gradually unlock more categories and game options with coins earned through regular play.',
+            'Jugadores ilimitados. Incluye: Película / Serie, Deporte, Marca y Coche / Moto. Desbloquea poco a poco más categorías y opciones de juego con monedas ganadas jugando con regularidad.',
+            'Unbegrenzt viele Spieler. Enthalten: Film / Serie, Sportart, Marke und Auto / Motorrad. Weitere Kategorien und Spieloptionen schaltest du nach und nach mit Coins frei, die du durch regelmäßiges Spielen verdienst.',
+            'Nombre de joueurs illimité. Inclus : Film / Série, Sport, Marque et Voiture / Moto. Débloque progressivement d’autres catégories et options de jeu avec des pièces gagnées en jouant régulièrement.',
+            'Jogadores ilimitados. Inclui: Filme / Série, Esporte, Marca e Carro / Moto. Libere gradualmente mais categorias e opções de jogo com moedas ganhas ao jogar regularmente.',
+            'Pemain tanpa batas. Termasuk: Film / Serial, Olahraga, Merek, dan Mobil / Motor. Buka kategori dan opsi permainan lain secara bertahap dengan koin yang diperoleh dari bermain secara rutin.',
+            'Sınırsız oyuncu. Dahil: Film / Dizi, Spor, Marka ve Araba / Motosiklet. Düzenli oynayarak kazandığın coinlerle diğer kategorileri ve oyun seçeneklerini zamanla aç.',
+            'Nieograniczona liczba graczy. W cenie: Film / Serial, Sport, Marka i Samochód / Motocykl. Kolejne kategorie i opcje gry odblokowujesz stopniowo za monety zdobywane dzięki regularnej grze.',
+            'Giocatori illimitati. Inclusi: Film / Serie TV, Sport, Marca e Auto / Moto. Sblocca gradualmente altre categorie e opzioni di gioco con le monete ottenute giocando regolarmente.',
+          ]
+
+          home_categories = [
+            'Rozšířené kategorie v ceně: Film / Seriál, Sport, Značka, Auto / Moto.',
+            'Extended categories included: Film / Series, Sport, Brand, Car / Motorbike.',
+            'Categorías ampliadas incluidas: Película / Serie, Deporte, Marca, Coche / Moto.',
+            'Enthaltene erweiterte Kategorien: Film / Serie, Sportart, Marke, Auto / Motorrad.',
+            'Catégories supplémentaires incluses : Film / Série, Sport, Marque, Voiture / Moto.',
+            'Categorias adicionais incluídas: Filme / Série, Esporte, Marca, Carro / Moto.',
+            'Kategori tambahan yang termasuk: Film / Serial, Olahraga, Merek, Mobil / Motor.',
+            'Dahil olan ek kategoriler: Film / Dizi, Spor, Marka, Araba / Motosiklet.',
+            'Rozszerzone kategorie w cenie: Film / Serial, Sport, Marka, Samochód / Motocykl.',
+            'Categorie estese incluse: Film / Serie TV, Sport, Marca, Auto / Moto.',
+          ]
+
+          room_after = [
+            'a získáš neomezený počet hráčů, Film / Seriál, Sport, Značku a Auto / Moto. Další kategorie a herní možnosti si postupně odemykáš za coiny získané pravidelným hraním.',
+            'and get unlimited players, Film / Series, Sport, Brand and Car / Motorbike. Gradually unlock more categories and game options with coins earned through regular play.',
+            'y obtén jugadores ilimitados, Película / Serie, Deporte, Marca y Coche / Moto. Desbloquea poco a poco más categorías y opciones de juego con monedas ganadas jugando con regularidad.',
+            'und erhalte unbegrenzt viele Spieler sowie Film / Serie, Sportart, Marke und Auto / Motorrad. Weitere Kategorien und Spieloptionen schaltest du nach und nach mit Coins frei, die du durch regelmäßiges Spielen verdienst.',
+            'et profite d’un nombre de joueurs illimité ainsi que de Film / Série, Sport, Marque et Voiture / Moto. Débloque progressivement d’autres catégories et options de jeu avec des pièces gagnées en jouant régulièrement.',
+            'e tenha jogadores ilimitados, Filme / Série, Esporte, Marca e Carro / Moto. Libere gradualmente mais categorias e opções de jogo com moedas ganhas ao jogar regularmente.',
+            'dan dapatkan pemain tanpa batas serta Film / Serial, Olahraga, Merek, dan Mobil / Motor. Buka kategori dan opsi permainan lain secara bertahap dengan koin yang diperoleh dari bermain secara rutin.',
+            've sınırsız oyuncunun yanı sıra Film / Dizi, Spor, Marka ve Araba / Motosiklet kategorilerini kazan. Düzenli oynayarak kazandığın coinlerle diğer kategorileri ve oyun seçeneklerini zamanla aç.',
+            'i zyskaj nieograniczoną liczbę graczy oraz Film / Serial, Sport, Markę i Samochód / Motocykl. Kolejne kategorie i opcje gry odblokowujesz stopniowo za monety zdobywane dzięki regularnej grze.',
+            'e ottieni giocatori illimitati, Film / Serie TV, Sport, Marca e Auto / Moto. Sblocca gradualmente altre categorie e opzioni di gioco con le monete ottenute giocando regolarmente.',
+          ]
+
+          def replace_key_sequence(text, key, values):
+            pattern = rf'({re.escape(key)}:\s*(?:\n\s*)?")([^"]*)(")'
+            matches = list(re.finditer(pattern, text, flags=re.M))
+            if len(matches) != len(values):
+              raise SystemExit(f'{key}: expected {len(values)} matches, found {len(matches)}')
+            it = iter(values)
+            return re.sub(pattern, lambda m: m.group(1) + next(it) + m.group(3), text, flags=re.M)
+
+          home = Path('app/src/app/page.tsx')
+          hs = home.read_text()
+          hs = replace_key_sequence(hs, 'superPremiumDescription', home_desc)
+          hs = replace_key_sequence(hs, 'superPremiumCategories', home_categories)
+          hs = replace_key_sequence(hs, 'superPremiumPurchaseDescription', home_desc)
+          home.write_text(hs)
+
+          ui = Path('app/src/app/room/[code]/uiText.ts')
+          us = ui.read_text()
+          us = replace_key_sequence(us, 'superPremiumUpsellAfter', room_after)
+          us = replace_key_sequence(us, 'superPremiumOrganizer', home_desc)
+          ui.write_text(us)
+          PY
+
+      - name: Validate
+        run: git diff --check
+
+      - name: Commit and remove helper
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/patch-super-premium-copy.yml
+          git add app/src/app/page.tsx app/src/app/room/'[code]'/uiText.ts
+          git commit -m "Update Super Premium descriptions"
+          git push
