@@ -1,4 +1,4 @@
-name: Fix Premium preview category toggle
+name: Apply Premium preview toggle
 
 on:
   push:
@@ -16,46 +16,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: design/premium-categories-panel
-
-      - name: Enable purchased extended categories in Premium preview
+      - name: Patch
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('app/src/app/room/[code]/page.tsx')
-          s = p.read_text()
-          old = '''  const canEditRoomCategories =
-    isOrganizer &&
-    (roomTier === "super_premium" || premiumCategorySelectionUnlocked);
-
-  function canToggleRoomCategory(category: string) {
-    if (!canEditRoomCategories) return false;
-    if (roomTier === "super_premium") return true;
-    if (PREMIUM_CATEGORIES.includes(category)) return true;
-
-    return ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
-  }'''
-          new = '''  const canEditRoomCategories =
-    isOrganizer &&
-    (roomTier === "super_premium" ||
-      premiumCategorySelectionUnlocked ||
-      premiumPreviewLockTest);
-
-  function canToggleRoomCategory(category: string) {
-    if (!canEditRoomCategories) return false;
-    if (roomTier === "super_premium") return true;
-    if (PREMIUM_CATEGORIES.includes(category)) return true;
-
-    return ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
-  }'''
-          if s.count(old) != 1:
-              raise SystemExit(f'Expected one category toggle block, found {s.count(old)}')
-          p.write_text(s.replace(old, new))
-          PY
-
-      - name: Validate
-        run: git diff --check
-
-      - name: Commit preview-only fix
+          python3 -c 'from pathlib import Path; p=Path("app/src/app/room/[code]/page.tsx"); s=p.read_text(); old="(roomTier === \"super_premium\" || premiumCategorySelectionUnlocked);"; new="(roomTier === \"super_premium\" || premiumCategorySelectionUnlocked || premiumPreviewLockTest);"; assert s.count(old)==1, s.count(old); p.write_text(s.replace(old,new))'
+          git diff --check
+      - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
