@@ -4119,6 +4119,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     border: "2px solid #f59e0b",
                     borderRadius: 12,
                     background: "#fff7ed",
+                    color: "#111",
+                    textShadow: "none",
                   }}
                 >
                   <h3 style={{ marginTop: 0 }}>{t("freeLimitTitle")}</h3>
