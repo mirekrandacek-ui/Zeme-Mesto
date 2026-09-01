@@ -1157,3 +1157,10 @@
   color:#172033;
   text-shadow:none;
 }
+
+.scoringTotalPointsText{
+  display:inline-block;
+  max-width:4.8em;
+  white-space:normal;
+  line-height:1.05;
+}

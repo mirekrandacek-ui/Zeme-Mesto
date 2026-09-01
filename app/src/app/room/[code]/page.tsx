@@ -3907,7 +3907,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     </th>
                   ))}
                   <th className={`${roomStyles.scoringTableCell} ${roomStyles.scoringTableHead}`}>
-                    {t("totalPoints")}
+                    <span className={roomStyles.scoringTotalPointsText}>{t("totalPoints")}</span>
                   </th>
                 </tr>
               </thead>
@@ -4000,7 +4000,35 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
               {activeCategories.map((category, index) => (
                 <label key={category} className={roomStyles.scoringCategoryRow}>
-                  <span className={roomStyles.scoringCategoryName}>
+                  <span
+                    className={roomStyles.scoringCategoryName}
+                    onClick={() => {
+                      setSelectedScoringCategory(category);
+
+                      requestAnimationFrame(() => {
+                        const scrollBox = document.getElementById("scoring-table-scroll");
+                        const column = document.getElementById(`score-column-${index}`);
+                        const stickyPlayerColumn =
+                          scrollBox?.querySelector('[data-sticky-player="true"]') as
+                            | HTMLElement
+                            | null;
+
+                        if (!scrollBox || !column) return;
+
+                        const stickyWidth = stickyPlayerColumn?.offsetWidth ?? 0;
+                        const visibleWidth = scrollBox.clientWidth - stickyWidth;
+                        const centredPosition =
+                          column.offsetLeft -
+                          stickyWidth -
+                          Math.max(0, (visibleWidth - column.offsetWidth) / 2);
+
+                        scrollBox.scrollTo({
+                          left: Math.max(0, centredPosition),
+                          behavior: "smooth",
+                        });
+                      });
+                    }}
+                  >
                     {categoryLabel(category)}
                   </span>
                   <select
