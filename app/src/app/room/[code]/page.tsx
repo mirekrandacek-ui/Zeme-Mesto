@@ -3978,7 +3978,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       {scoredRoundNumbers.map((roundNo) => (
                         <tr key={roundNo}>
                           <td style={{ border: "1px solid #ccc", padding: 8 }}>
-                            {roundNo}
+                            {roundNo}.
                           </td>
                           {players.map((p) => (
                             <td key={p.id} style={{ border: "1px solid #ccc", padding: 8 }}>
