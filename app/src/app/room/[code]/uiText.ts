@@ -94,7 +94,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "Zakoupením této rozšířené kategorie si zároveň odemkneš možnost libovolně vybírat ze základních a všech zakoupených rozšířených kategorií.",
     superPremiumUpsellBefore: "Nebo si kup",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "a získáš neomezený počet hráčů, Film / Seriál, Sport, Značku a Auto / Moto. Další kategorie a herní možnosti si postupně odemykáš za coiny získané pravidelným hraním.",
+    superPremiumUpsellAfter: "a získáš neomezený počet hráčů, základní kategorie, rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto. Další kategorie a herní možnosti si postupně odemykáš za coiny získané pravidelným hraním.",
     changePlayerOnDevice: "Změnit hráče na tomto zařízení",
     waitingPlayerNextRound: "připojí se od dalšího kola",
       freeLimitTitle: "Free limit dosažen",
@@ -196,7 +196,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "Buying this extended category also unlocks the option to freely choose from the basic categories and all extended categories you own.",
     superPremiumUpsellBefore: "Or buy",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "and get unlimited players, Film / Series, Sport, Brand and Car / Motorbike. Gradually unlock more categories and game options with coins earned through regular play.",
+    superPremiumUpsellAfter: "and get unlimited players, basic categories, and the extended categories Film / Series, Sport, Brand, and Car / Motorbike. You gradually unlock more categories and game options with coins earned through regular play.",
     changePlayerOnDevice: "Change player on this device",
     waitingPlayerNextRound: "will join from the next round",
       freeLimitTitle: "Free limit reached",
@@ -298,7 +298,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "Al comprar esta categoría ampliada también desbloqueas la posibilidad de elegir libremente entre las categorías básicas y todas las categorías ampliadas que hayas comprado.",
     superPremiumUpsellBefore: "O compra",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "y obtén jugadores ilimitados, Película / Serie, Deporte, Marca y Coche / Moto. Desbloquea poco a poco más categorías y opciones de juego con monedas ganadas jugando con regularidad.",
+    superPremiumUpsellAfter: "y obtén jugadores ilimitados, categorías básicas y las categorías ampliadas Película / Serie, Deporte, Marca y Coche / Moto. Desbloqueas poco a poco más categorías y opciones de juego con monedas obtenidas jugando con regularidad.",
     changePlayerOnDevice: "Cambiar jugador en este dispositivo",
     waitingPlayerNextRound: "se unirá desde la siguiente ronda",
       freeLimitTitle: "Límite Free alcanzado",
@@ -401,7 +401,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "Mit dem Kauf dieser erweiterten Kategorie schaltest du zugleich die freie Auswahl aus den Grundkategorien und allen von dir gekauften erweiterten Kategorien frei.",
     superPremiumUpsellBefore: "Oder kaufe",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "und erhalte unbegrenzt viele Spieler sowie Film / Serie, Sportart, Marke und Auto / Motorrad. Weitere Kategorien und Spieloptionen schaltest du nach und nach mit Coins frei, die du durch regelmäßiges Spielen verdienst.",
+    superPremiumUpsellAfter: "und erhalte unbegrenzt viele Spieler, Grundkategorien sowie die erweiterten Kategorien Film / Serie, Sportart, Marke und Auto / Motorrad. Weitere Kategorien und Spieloptionen schaltest du nach und nach mit Coins frei, die du durch regelmäßiges Spielen verdienst.",
     changePlayerOnDevice: "Spieler auf diesem Gerät wechseln",
     waitingPlayerNextRound: "tritt ab der nächsten Runde bei",
     freeLimitTitle: "Free-Limit erreicht",
@@ -504,7 +504,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "L’achat de cette catégorie supplémentaire déverrouille aussi le libre choix parmi les catégories de base et toutes les catégories supplémentaires achetées.",
     superPremiumUpsellBefore: "Ou achète",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "et profite d’un nombre de joueurs illimité ainsi que de Film / Série, Sport, Marque et Voiture / Moto. Débloque progressivement d’autres catégories et options de jeu avec des pièces gagnées en jouant régulièrement.",
+    superPremiumUpsellAfter: "et profite d’un nombre de joueurs illimité, des catégories de base et des catégories supplémentaires Film / Série, Sport, Marque et Voiture / Moto. Tu débloques progressivement d’autres catégories et options de jeu avec des pièces gagnées en jouant régulièrement.",
     changePlayerOnDevice: "Changer de joueur sur cet appareil",
     waitingPlayerNextRound: "rejoindra à partir de la prochaine manche",
     freeLimitTitle: "Limite Free atteinte",
@@ -607,7 +607,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "Ao comprar esta categoria adicional, você também libera a escolha livre entre as categorias básicas e todas as categorias adicionais compradas.",
     superPremiumUpsellBefore: "Ou compre",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "e tenha jogadores ilimitados, Filme / Série, Esporte, Marca e Carro / Moto. Libere gradualmente mais categorias e opções de jogo com moedas ganhas ao jogar regularmente.",
+    superPremiumUpsellAfter: "e tenha jogadores ilimitados, categorias básicas e as categorias adicionais Filme / Série, Esporte, Marca e Carro / Moto. Você libera gradualmente mais categorias e opções de jogo com moedas ganhas jogando regularmente.",
     changePlayerOnDevice: "Trocar jogador neste aparelho",
     waitingPlayerNextRound: "entrará a partir da próxima rodada",
     freeLimitTitle: "Limite Free atingido",
@@ -709,7 +709,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "Dengan membeli kategori tambahan ini, kamu juga membuka pilihan bebas dari kategori dasar dan semua kategori tambahan yang telah dibeli.",
     superPremiumUpsellBefore: "Atau beli",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "dan dapatkan pemain tanpa batas serta Film / Serial, Olahraga, Merek, dan Mobil / Motor. Buka kategori dan opsi permainan lain secara bertahap dengan koin yang diperoleh dari bermain secara rutin.",
+    superPremiumUpsellAfter: "dan dapatkan pemain tanpa batas, kategori dasar, serta kategori tambahan Film / Serial, Olahraga, Merek, dan Mobil / Motor. Kamu membuka lebih banyak kategori dan opsi permainan secara bertahap dengan koin yang diperoleh dari bermain secara rutin.",
     changePlayerOnDevice: "Ganti pemain di perangkat ini",
     waitingPlayerNextRound: "akan bergabung mulai ronde berikutnya",
     freeLimitTitle: "Batas Free tercapai",
@@ -811,7 +811,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "Bu ek kategoriyi satın aldığında temel kategoriler ile satın aldığın tüm ek kategoriler arasından özgürce seçim yapma özelliğini de açarsın.",
     superPremiumUpsellBefore: "Ya da",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "ve sınırsız oyuncunun yanı sıra Film / Dizi, Spor, Marka ve Araba / Motosiklet kategorilerini kazan. Düzenli oynayarak kazandığın coinlerle diğer kategorileri ve oyun seçeneklerini zamanla aç.",
+    superPremiumUpsellAfter: "ve sınırsız oyuncu, temel kategoriler ile Film / Dizi, Spor, Marka ve Araba / Motosiklet ek kategorilerini kazan. Düzenli oynayarak kazandığın coinlerle zamanla daha fazla kategori ve oyun seçeneğinin kilidini açarsın.",
     changePlayerOnDevice: "Bu cihazdaki oyuncuyu değiştir",
     waitingPlayerNextRound: "bir sonraki turdan itibaren katılacak",
     freeLimitTitle: "Free sınırına ulaşıldı",
@@ -913,7 +913,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "Kupując tę kategorię rozszerzoną, odblokujesz także swobodny wybór spośród kategorii podstawowych i wszystkich zakupionych kategorii rozszerzonych.",
     superPremiumUpsellBefore: "Lub kup",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "i zyskaj nieograniczoną liczbę graczy oraz Film / Serial, Sport, Markę i Samochód / Motocykl. Kolejne kategorie i opcje gry odblokowujesz stopniowo za monety zdobywane dzięki regularnej grze.",
+    superPremiumUpsellAfter: "i zyskaj nieograniczoną liczbę graczy, kategorie podstawowe oraz kategorie rozszerzone Film / Serial, Sport, Marka i Samochód / Motocykl. Kolejne kategorie i opcje gry odblokowujesz stopniowo za monety zdobywane podczas regularnej gry.",
     changePlayerOnDevice: "Zmień gracza na tym urządzeniu",
     waitingPlayerNextRound: "dołączy od następnej rundy",
     freeLimitTitle: "Osiągnięto limit wersji Free",
@@ -1015,7 +1015,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "Acquistando questa categoria estesa sblocchi anche la possibilità di scegliere liberamente tra le categorie base e tutte le categorie estese acquistate.",
     superPremiumUpsellBefore: "Oppure acquista",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "e ottieni giocatori illimitati, Film / Serie TV, Sport, Marca e Auto / Moto. Sblocca gradualmente altre categorie e opzioni di gioco con le monete ottenute giocando regolarmente.",
+    superPremiumUpsellAfter: "e ottieni giocatori illimitati, categorie base e le categorie estese Film / Serie TV, Sport, Marca e Auto / Moto. Sblocchi gradualmente altre categorie e opzioni di gioco con le monete guadagnate giocando regolarmente.",
     changePlayerOnDevice: "Cambia giocatore su questo dispositivo",
     waitingPlayerNextRound: "entrerà dal turno successivo",
     freeLimitTitle: "Limite della versione Free raggiunto",
@@ -1178,7 +1178,7 @@ const CATEGORY_HELP_TEXT = {
     premiumOrganizer:
       "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie jsou zamčené. Po zakoupení alespoň jedné rozšířené kategorie si můžeš libovolně vybrat základní kategorie a všechny zakoupené rozšířené kategorie.",
     superPremiumOrganizer:
-      "Neomezený počet hráčů. V ceně: Film / Seriál, Sport, Značka a Auto / Moto. Další kategorie a herní možnosti si postupně odemykáš za coiny získané pravidelným hraním.",
+      "Super Premium: neomezený počet hráčů, základní kategorie, rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto. Další kategorie a herní možnosti si postupně odemykáš za coiny získané pravidelným hraním.",
   },
   en: {
     player:
@@ -1186,7 +1186,7 @@ const CATEGORY_HELP_TEXT = {
     premiumOrganizer:
       "Premium: the basic categories are fixed. Extended categories are locked. After purchasing at least one extended category, you can freely choose from the basic categories and all extended categories you own.",
     superPremiumOrganizer:
-      "Unlimited players. Included: Film / Series, Sport, Brand and Car / Motorbike. Gradually unlock more categories and game options with coins earned through regular play.",
+      "Super Premium: unlimited players, basic categories, and the extended categories Film / Series, Sport, Brand, and Car / Motorbike. You gradually unlock more categories and game options with coins earned through regular play.",
   },
   es: {
     player:
@@ -1194,7 +1194,7 @@ const CATEGORY_HELP_TEXT = {
     premiumOrganizer:
       "Premium: las categorías básicas son fijas. Las categorías ampliadas están bloqueadas. Tras comprar al menos una categoría ampliada, puedes elegir libremente entre las categorías básicas y todas las categorías ampliadas que hayas comprado.",
     superPremiumOrganizer:
-      "Jugadores ilimitados. Incluye: Película / Serie, Deporte, Marca y Coche / Moto. Desbloquea poco a poco más categorías y opciones de juego con monedas ganadas jugando con regularidad.",
+      "Super Premium: jugadores ilimitados, categorías básicas y las categorías ampliadas Película / Serie, Deporte, Marca y Coche / Moto. Desbloqueas poco a poco más categorías y opciones de juego con monedas obtenidas jugando con regularidad.",
   },
 
   de: {
@@ -1203,7 +1203,7 @@ const CATEGORY_HELP_TEXT = {
     premiumOrganizer:
       "Premium: Die Grundkategorien sind fest vorgegeben. Erweiterte Kategorien sind gesperrt. Nach dem Kauf mindestens einer erweiterten Kategorie kannst du die Grundkategorien und alle von dir gekauften erweiterten Kategorien frei auswählen.",
     superPremiumOrganizer:
-      "Unbegrenzt viele Spieler. Enthalten: Film / Serie, Sportart, Marke und Auto / Motorrad. Weitere Kategorien und Spieloptionen schaltest du nach und nach mit Coins frei, die du durch regelmäßiges Spielen verdienst.",
+      "Super Premium: unbegrenzt viele Spieler, Grundkategorien sowie die erweiterten Kategorien Film / Serie, Sportart, Marke und Auto / Motorrad. Weitere Kategorien und Spieloptionen schaltest du nach und nach mit Coins frei, die du durch regelmäßiges Spielen verdienst.",
   },
 
   fr: {
@@ -1212,7 +1212,7 @@ const CATEGORY_HELP_TEXT = {
     premiumOrganizer:
       "Premium : les catégories de base sont fixes. Les catégories supplémentaires sont verrouillées. Après l’achat d’au moins une catégorie supplémentaire, tu peux choisir librement parmi les catégories de base et toutes les catégories supplémentaires achetées.",
     superPremiumOrganizer:
-      "Nombre de joueurs illimité. Inclus : Film / Série, Sport, Marque et Voiture / Moto. Débloque progressivement d’autres catégories et options de jeu avec des pièces gagnées en jouant régulièrement.",
+      "Super Premium : nombre de joueurs illimité, catégories de base et catégories supplémentaires Film / Série, Sport, Marque et Voiture / Moto. Tu débloques progressivement d’autres catégories et options de jeu avec des pièces gagnées en jouant régulièrement.",
   },
 
   "pt-BR": {
@@ -1221,17 +1221,17 @@ const CATEGORY_HELP_TEXT = {
     premiumOrganizer:
       "Premium: as categorias básicas são fixas. As categorias adicionais ficam bloqueadas. Depois de comprar pelo menos uma categoria adicional, você pode escolher livremente entre as categorias básicas e todas as categorias adicionais compradas.",
     superPremiumOrganizer:
-      "Jogadores ilimitados. Inclui: Filme / Série, Esporte, Marca e Carro / Moto. Libere gradualmente mais categorias e opções de jogo com moedas ganhas ao jogar regularmente.",
+      "Super Premium: jogadores ilimitados, categorias básicas e as categorias adicionais Filme / Série, Esporte, Marca e Carro / Moto. Você libera gradualmente mais categorias e opções de jogo com moedas ganhas jogando regularmente.",
   },
   id: {
     player: "Penyelenggara memilih kategori ruang. Kamu dapat melihat pilihan saat ini dan menyarankan perubahan.",
     premiumOrganizer: "Premium: kategori dasar bersifat tetap. Kategori tambahan terkunci. Setelah membeli setidaknya satu kategori tambahan, kamu dapat bebas memilih kategori dasar dan semua kategori tambahan yang telah dibeli.",
-    superPremiumOrganizer: "Pemain tanpa batas. Termasuk: Film / Serial, Olahraga, Merek, dan Mobil / Motor. Buka kategori dan opsi permainan lain secara bertahap dengan koin yang diperoleh dari bermain secara rutin.",
+    superPremiumOrganizer: "Super Premium: pemain tanpa batas, kategori dasar, serta kategori tambahan Film / Serial, Olahraga, Merek, dan Mobil / Motor. Kamu membuka lebih banyak kategori dan opsi permainan secara bertahap dengan koin yang diperoleh dari bermain secara rutin.",
   },
   tr: {
     player: "Oda sahibi oda kategorilerini seçer. Geçerli seçimi görebilir ve değişiklik önerebilirsin.",
     premiumOrganizer: "Premium: temel kategoriler sabittir. Ek kategoriler kilitlidir. En az bir ek kategori satın aldıktan sonra temel kategoriler ile satın aldığın tüm ek kategorileri özgürce seçebilirsin.",
-    superPremiumOrganizer: "Sınırsız oyuncu. Dahil: Film / Dizi, Spor, Marka ve Araba / Motosiklet. Düzenli oynayarak kazandığın coinlerle diğer kategorileri ve oyun seçeneklerini zamanla aç.",
+    superPremiumOrganizer: "Super Premium: sınırsız oyuncu, temel kategoriler ve Film / Dizi, Spor, Marka ile Araba / Motosiklet ek kategorileri. Düzenli oynayarak kazandığın coinlerle zamanla daha fazla kategori ve oyun seçeneğinin kilidini açarsın.",
   },
   pl: {
     player:
@@ -1239,7 +1239,7 @@ const CATEGORY_HELP_TEXT = {
     premiumOrganizer:
       "Premium: kategorie podstawowe są stałe. Kategorie rozszerzone są zablokowane. Po zakupie co najmniej jednej kategorii rozszerzonej możesz dowolnie wybierać kategorie podstawowe i wszystkie zakupione kategorie rozszerzone.",
     superPremiumOrganizer:
-      "Nieograniczona liczba graczy. W cenie: Film / Serial, Sport, Marka i Samochód / Motocykl. Kolejne kategorie i opcje gry odblokowujesz stopniowo za monety zdobywane dzięki regularnej grze.",
+      "Super Premium: nieograniczona liczba graczy, kategorie podstawowe oraz kategorie rozszerzone Film / Serial, Sport, Marka i Samochód / Motocykl. Kolejne kategorie i opcje gry odblokowujesz stopniowo za monety zdobywane podczas regularnej gry.",
   },
   it: {
     player:
@@ -1247,7 +1247,7 @@ const CATEGORY_HELP_TEXT = {
     premiumOrganizer:
       "Premium: le categorie base sono fisse. Le categorie estese sono bloccate. Dopo aver acquistato almeno una categoria estesa, puoi scegliere liberamente tra le categorie base e tutte le categorie estese acquistate.",
     superPremiumOrganizer:
-      "Giocatori illimitati. Inclusi: Film / Serie TV, Sport, Marca e Auto / Moto. Sblocca gradualmente altre categorie e opzioni di gioco con le monete ottenute giocando regolarmente.",
+      "Super Premium: giocatori illimitati, categorie base e le categorie estese Film / Serie TV, Sport, Marca e Auto / Moto. Sblocchi gradualmente altre categorie e opzioni di gioco con le monete guadagnate giocando regolarmente.",
   },
 };
 
