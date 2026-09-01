@@ -1207,3 +1207,168 @@
   white-space:normal;
   line-height:1.05;
 }
+
+/* Premium / Super Premium room categories panel. */
+.roomCategoriesPanel{
+  box-sizing:border-box;
+  width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
+  margin:0 auto 14px!important;
+  padding:13px!important;
+  border:2px solid #43c8ff!important;
+  border-radius:22px!important;
+  color:#fff;
+  background:linear-gradient(145deg,rgba(8,115,175,.97),rgba(0,48,91,.985) 38%,rgba(0,28,59,.99));
+  box-shadow:inset 0 0 0 2px #087cbf,inset 0 7px 14px #4cd1ff55,inset 0 -9px 16px #001f43,0 0 13px #04aaff,0 9px 16px #000819cc;
+  text-shadow:0 2px 3px #00152d;
+}
+
+.roomCategoriesPanel h3{
+  margin:0 0 8px!important;
+  font-size:clamp(21px,5.4vw,27px);
+  line-height:1.1;
+}
+
+.roomCategoriesPanel h4{
+  margin:13px 0 8px!important;
+  padding-top:9px;
+  border-top:1px solid rgba(97,215,255,.45);
+  color:#fff;
+  font-size:clamp(16px,4.4vw,20px);
+  line-height:1.15;
+}
+
+.roomCategoriesPanel h4:first-of-type{
+  margin-top:10px!important;
+}
+
+.roomCategoriesPanel>p{
+  margin:0 0 9px!important;
+  color:#d9f4ff;
+  font-size:13px;
+  line-height:1.35;
+  opacity:1!important;
+}
+
+.roomCategoriesPanel label{
+  box-sizing:border-box;
+  min-width:0;
+  min-height:44px;
+  padding:7px 8px;
+  border:1px solid rgba(105,216,255,.72);
+  border-radius:11px;
+  background:rgba(0,38,76,.68);
+  color:#fff;
+  font-size:14px;
+  line-height:1.2;
+  text-shadow:0 1px 2px #00152d;
+}
+
+.roomCategoriesPanel label button{
+  min-width:0;
+  color:#fff!important;
+  text-decoration:none!important;
+  overflow-wrap:anywhere;
+  line-height:1.2!important;
+  text-shadow:0 1px 2px #00152d;
+}
+
+.roomCategoriesPanel input[type="checkbox"]{
+  flex:0 0 auto;
+  width:20px;
+  height:20px;
+  accent-color:#55d63a!important;
+}
+
+.roomCategoriesPanel label>span[aria-hidden="true"]{
+  width:20px!important;
+  height:20px!important;
+  flex-basis:20px!important;
+  border:1.5px solid #84dfff!important;
+  background:rgba(0,25,55,.78)!important;
+  color:#fff!important;
+  box-shadow:inset 0 0 4px rgba(85,213,255,.35);
+}
+
+.roomCategoriesPanel section{
+  margin-top:10px!important;
+  padding:10px!important;
+  border:1.5px solid #ffd75d!important;
+  border-radius:12px!important;
+  color:#fff!important;
+  background:rgba(81,49,0,.82)!important;
+  text-shadow:0 2px 2px #00152d;
+}
+
+.roomCategoriesPanel section p{
+  margin:7px 0;
+  color:#fff;
+  line-height:1.35;
+}
+
+.roomCategoriesPanel section button{
+  color:#fff!important;
+  text-shadow:0 1px 2px #00152d;
+}
+
+.roomCategoriesPanel input:not([type="checkbox"]){
+  box-sizing:border-box;
+  min-width:0;
+  border:2px solid #61d7ff;
+  border-radius:11px;
+  outline:0;
+  color:#243b53;
+  background:#f7fbff;
+  box-shadow:inset 0 2px 4px #cdefff,0 0 6px #00aaff;
+  font:inherit;
+  text-shadow:none;
+}
+
+.roomCategoriesPanel>button{
+  border:1.5px solid #bfeaff;
+  border-radius:11px;
+  color:#fff;
+  background:linear-gradient(#1686ca,#00508b 58%,#003360);
+  box-shadow:inset 0 2px 4px #56c9ff,inset 0 -4px 6px #002746,0 2px 5px #00162c;
+  font:inherit;
+  font-weight:800;
+  text-shadow:0 1px 2px #00152d;
+}
+
+.roomCategoriesPanel ol{
+  display:grid;
+  gap:6px;
+  margin:0;
+  padding:0!important;
+  list-style:none;
+}
+
+.roomCategoriesPanel ol li{
+  min-height:40px;
+  margin:0!important;
+  padding:6px 8px;
+  border:1px solid rgba(105,216,255,.62);
+  border-radius:10px;
+  background:rgba(0,38,76,.6);
+  font-size:14px;
+  line-height:1.2;
+}
+
+.roomCategoriesPanel ol li>span:first-child{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+.roomCategoriesPanel ol button{
+  min-width:34px;
+  min-height:32px;
+  border:1px solid #bfeaff;
+  border-radius:8px;
+  color:#fff;
+  background:linear-gradient(#1686ca,#00508b 58%,#003360);
+  font-size:17px;
+  font-weight:800;
+}
+
+.roomCategoriesPanel ol button:disabled{
+  opacity:.38;
+}

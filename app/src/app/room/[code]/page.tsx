@@ -3371,7 +3371,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           )}
 
           {(roomTier === "premium" || roomTier === "super_premium") && myPlayer && (
-            <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
+            <section
+    className={roomStyles.roomCategoriesPanel}
+    style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
+  >
               <h3 style={{ marginTop: 0 }}>
                 {t("roomCategories")}
               </h3>
