@@ -4113,15 +4113,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             {everyoneScored && (
               shouldShowFreeLimitUpsell ? (
                 <section
-                  className={roomStyles.scoringNextArea}
-                  style={{
-                    padding: 16,
-                    border: "2px solid #f59e0b",
-                    borderRadius: 12,
-                    background: "#fff7ed",
-                    color: "#111",
-                    textShadow: "none",
-                  }}
+                  className={`${roomStyles.scoringNextArea} ${roomStyles.scoringFreeLimitPanel}`}
                 >
                   <h3 style={{ marginTop: 0 }}>{t("freeLimitTitle")}</h3>
                   <p>
