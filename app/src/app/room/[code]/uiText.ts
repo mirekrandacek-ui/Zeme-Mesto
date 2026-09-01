@@ -99,7 +99,7 @@ export const UI_TEXT = {
     waitingPlayerNextRound: "připojí se od dalšího kola",
       freeLimitTitle: "Free limit dosažen",
       freeLimitText: "Ve Free verzi máš 3 kola. Pro pokračování přejdi na Premium nebo Super Premium, případně si dobrovolně pusť reklamu a odemkni další 3 kola.",
-      freeUpgradeButton: "Získat Premium",
+      freeUpgradeButton: "Koupit Premium",
       freeRewardButton: "Sledovat reklamu a odemknout další 3 kola",
       backHome: "Zpět na hlavní stránku",
       freeRewardUnlocked: "✅ Další 3 kola jsou odemčená.",

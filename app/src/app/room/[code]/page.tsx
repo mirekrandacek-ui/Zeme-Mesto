@@ -3167,7 +3167,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   fontWeight: 700,
                 }}
               >
-                {uiMessage({ cs: "Získat Super Premium", en: "Get Super Premium", es: "Obtener Super Premium", de: "Super Premium holen", fr: "Obtenir Super Premium", "pt-BR": "Obter Super Premium", id: "Dapatkan Super Premium", tr: "Super Premium al", pl: "Zdobądź Super Premium", it: "Ottieni Super Premium" })}
+                {uiMessage({ cs: "Koupit Super Premium", en: "Get Super Premium", es: "Obtener Super Premium", de: "Super Premium holen", fr: "Obtenir Super Premium", "pt-BR": "Obter Super Premium", id: "Dapatkan Super Premium", tr: "Super Premium al", pl: "Zdobądź Super Premium", it: "Ottieni Super Premium" })}
               </button>
 
               <button
@@ -4204,20 +4204,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       </section>
                     )}
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      window.location.href = "/";
-                    }}
-                    style={{
-                      marginTop: 10,
-                      padding: 12,
-                      width: "100%",
-                      background: "transparent",
-                    }}
+                  <a
+                    className={`${roomStyles.entryAction} ${roomStyles.entryActionHome}`}
+                    href="/"
                   >
-                    {t("backHome")}
-                  </button>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h11"/></svg>
+                    <span>{t("backHome")}</span>
+                  </a>
                 </section>
               ) : isFinalScoringRound ? (
                 <button onClick={finishGame} className={roomStyles.scoringNextButton}>
