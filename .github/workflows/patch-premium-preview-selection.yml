@@ -1,0 +1,39 @@
+name: Patch Premium preview selection lock
+
+on:
+  push:
+    branches:
+      - design/premium-categories-panel
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/premium-categories-panel
+      - name: Patch preview selection condition
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('app/src/app/room/[code]/page.tsx')
+          s = p.read_text()
+          old = '(roomTier === "super_premium" || premiumCategorySelectionUnlocked || premiumPreviewLockTest);'
+          new = '(roomTier === "super_premium" || premiumCategorySelectionUnlocked || (premiumPreviewLockTest && ownedExtendedCategories.length > 0));'
+          if s.count(old) != 1:
+            raise SystemExit(f'target matches: {s.count(old)}')
+          p.write_text(s.replace(old, new, 1))
+          PY
+          git diff --check
+      - name: Commit patch and remove helper
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/patch-premium-preview-selection.yml
+          git add app/src/app/room/'[code]'/page.tsx
+          git commit -m "Lock Premium category selection until first purchase"
+          git push
