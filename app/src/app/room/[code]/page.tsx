@@ -1900,6 +1900,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const premiumCategorySelectionUnlocked =
     roomTier === "premium" && ownedExtendedCategories.length > 0;
 
+  const premiumPreviewLockTest =
+    typeof window !== "undefined" &&
+    window.location.hostname.endsWith("vercel.app") &&
+    new URLSearchParams(window.location.search).get("premiumLockTest") === "1";
+
+  const roomTierForCategoryPreview = premiumPreviewLockTest ? "premium" : roomTier;
+
   const canEditRoomCategories =
     isOrganizer &&
     (roomTier === "super_premium" || premiumCategorySelectionUnlocked);
@@ -2943,7 +2950,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         <h1 className={roomStyles.lobbyRoomTitle}>
           {t("room")}: {code.toUpperCase()}
         </h1>
-        {isOrganizer && (roomTier === "premium" || roomTier === "super_premium") && (
+        {isOrganizer && (roomTierForCategoryPreview === "premium" || roomTierForCategoryPreview === "super_premium") && (
           <p className={roomStyles.lobbyBossRoom}>{t("bossRoom")}</p>
         )}
         <p className={roomStyles.lobbySignedIn}>
@@ -3370,7 +3377,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             </>
           )}
 
-          {(roomTier === "premium" || roomTier === "super_premium") && myPlayer && (
+          {(roomTierForCategoryPreview === "premium" || roomTierForCategoryPreview === "super_premium") && myPlayer && (
             <section
     className={roomStyles.roomCategoriesPanel}
     style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
@@ -3380,7 +3387,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               </h3>
 
               <p style={{ opacity: 0.75 }}>
-                {categoryHelpText(uiLanguage, isOrganizer, roomTier)}
+                {categoryHelpText(uiLanguage, isOrganizer, roomTierForCategoryPreview)}
               </p>
 
               <h4>
@@ -3475,7 +3482,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     </span>
                   )}
 
-                    {roomTier === "premium" &&
+                    {roomTierForCategoryPreview === "premium" &&
                     isOrganizer &&
                     !ownedCategoryProductIds.includes(
                       CATEGORY_PRODUCT_ID[category]
@@ -3506,7 +3513,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 ))}
               </div>
 
-                {roomTier === "premium" &&
+                {roomTierForCategoryPreview === "premium" &&
                 isOrganizer &&
                 premiumLockedOfferCategory && (
                   <section
