@@ -1,0 +1,65 @@
+name: Fix Premium preview category toggle
+
+on:
+  push:
+    branches:
+      - design/premium-categories-panel
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/premium-categories-panel
+
+      - name: Enable purchased extended categories in Premium preview
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('app/src/app/room/[code]/page.tsx')
+          s = p.read_text()
+          old = '''  const canEditRoomCategories =
+    isOrganizer &&
+    (roomTier === "super_premium" || premiumCategorySelectionUnlocked);
+
+  function canToggleRoomCategory(category: string) {
+    if (!canEditRoomCategories) return false;
+    if (roomTier === "super_premium") return true;
+    if (PREMIUM_CATEGORIES.includes(category)) return true;
+
+    return ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
+  }'''
+          new = '''  const canEditRoomCategories =
+    isOrganizer &&
+    (roomTier === "super_premium" ||
+      premiumCategorySelectionUnlocked ||
+      premiumPreviewLockTest);
+
+  function canToggleRoomCategory(category: string) {
+    if (!canEditRoomCategories) return false;
+    if (roomTier === "super_premium") return true;
+    if (PREMIUM_CATEGORIES.includes(category)) return true;
+
+    return ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
+  }'''
+          if s.count(old) != 1:
+              raise SystemExit(f'Expected one category toggle block, found {s.count(old)}')
+          p.write_text(s.replace(old, new))
+          PY
+
+      - name: Validate
+        run: git diff --check
+
+      - name: Commit preview-only fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/fix-premium-preview-category-toggle.yml
+          git add app/src/app/room/'[code]'/page.tsx
+          git commit -m "Enable purchased categories in Premium preview"
+          git push
