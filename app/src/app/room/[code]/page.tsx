@@ -2756,6 +2756,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   const isGameScreen = Boolean(
     myPlayer && (roomStatus === "drawing" || roomStatus === "playing")
   );
+  const isScoringScreen = Boolean(myPlayer && roomStatus === "scoring");
+  const isActiveGamePhase = isGameScreen || isScoringScreen;
   const showAdBanner = !nativeFreeBannerShown;
 
   const statusMessage =
@@ -2768,11 +2770,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           : msg;
 
   const visibleStatusMessage =
-    isGameScreen ? "" : myPlayer ? statusMessage : msg;
+    isActiveGamePhase ? "" : myPlayer ? statusMessage : msg;
 
   const isRoomEntry = Boolean(roomId && !myPlayer);
   const isStyledLobby = Boolean(roomId && myPlayer && roomStatus === "lobby");
-  const usePhotoRoomChrome = isRoomEntry || isStyledLobby || isGameScreen;
+  const usePhotoRoomChrome = isRoomEntry || isStyledLobby || isActiveGamePhase;
   const newRoomLabel = uiMessage({
     cs: "Nová místnost",
     en: "New room",
@@ -2902,7 +2904,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </section>
       )}
 
-      {!isGameScreen && (
+      {!isActiveGamePhase && (
       isRoomEntry ? (
       <header className={roomStyles.entryHeader}>
         <div className={roomStyles.entryTitleRow}>
@@ -3045,7 +3047,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )
       )}
 
-      {!isGameScreen && (
+      {!isActiveGamePhase && (
       isRoomEntry ? (
       <section className={roomStyles.entryLanguage} data-game-language-banner>
         <span className={roomStyles.entryLanguageLabel}>{t("gameLanguage")}</span>
@@ -3102,7 +3104,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )
       )}
 
-      {showRules && !isStyledLobby && !isGameScreen && (
+      {showRules && !isStyledLobby && !isActiveGamePhase && (
         <section
           className={usePhotoRoomChrome ? roomStyles.entryRules : undefined}
           style={usePhotoRoomChrome ? undefined : { border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
@@ -3841,77 +3843,55 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         )}
 
       {roomStatus === "scoring" && myPlayer && (
-        <>
-          <h2>{t("scoring")}</h2>
+        <section className={roomStyles.scoringScreen}>
+          <section className={roomStyles.scoringHeader}>
+            <div className={roomStyles.scoringHeaderTop}>
+              <h2>{t("scoring")}</h2>
+              <div className={roomStyles.scoringLetter} aria-label={`${t("round")} ${letter || ""}`}>
+                {letter || "–"}
+              </div>
+            </div>
+            <p className={roomStyles.scoringSignedIn}>
+              <strong>{t("signedIn")}:</strong> {myPlayer.name}
+            </p>
+            <p className={roomStyles.scoringStoppedBy}>
+              {stoppedByTime
+                ? `⏱️ ${statusMessage}`
+                : stoppedByName
+                  ? `🛑 ${stopPressedMessage(uiLanguage, stoppedByName).replace(/^✅\s*/, "")}`
+                  : ""}
+            </p>
+          </section>
 
-          <p>
-            {t("submitted")}:{" "}
-            {scoredPlayerIds.size}/{players.length}
-          </p>
+          <section className={roomStyles.scoringStatus}>
+            <p className={roomStyles.scoringSubmittedCount}>
+              <strong>{t("submitted")}:</strong>{" "}
+              {scoredPlayerIds.size}/{players.length}
+            </p>
+            <ul className={roomStyles.scoringPlayerStatus}>
+              {players.map((p) => (
+                <li key={p.id}>
+                  {scoredPlayerIds.has(p.id) ? "✅" : "⏳"} {p.name}
+                  {scoredPlayerIds.has(p.id)
+                    ? t("statusSubmitted")
+                    : t("statusWaiting")}
+                </li>
+              ))}
+            </ul>
+          </section>
 
-          <ul style={{ paddingLeft: 20 }}>
-            {players.map((p) => (
-              <li key={p.id}>
-                {scoredPlayerIds.has(p.id) ? "✅" : "⏳"} {p.name}
-                {scoredPlayerIds.has(p.id)
-                  ? t("statusSubmitted")
-                  : t("statusWaiting")}
-              </li>
-            ))}
-          </ul>
-
-          <section
-            style={{
-              position: "sticky",
-              top: 0,
-              zIndex: 20,
-              background: "#fff",
-              paddingTop: 4,
-              paddingBottom: 8,
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.12)",
-              pointerEvents: "none",
-            }}
-          >
-            <h3 style={{ marginTop: 0, marginBottom: 8 }}>
-              {t("playersAnswers")}
-            </h3>
+          <section className={roomStyles.scoringAnswers}>
+            <h3>{t("playersAnswers")}</h3>
             <div
               id="scoring-table-scroll"
-              style={{
-                overflowX: "auto",
-                overflowY: "auto",
-                maxHeight: "42dvh",
-                overscrollBehavior: "contain",
-                pointerEvents: "auto",
-                touchAction: "pan-x pan-y",
-                scrollPaddingLeft: "104px",
-              }}
+              className={roomStyles.scoringTableScroll}
             >
-            <table
-              style={{
-                borderCollapse: "separate",
-                borderSpacing: 0,
-                width: "max-content",
-                textAlign: "center",
-                whiteSpace: "nowrap",
-              }}
-            >
+            <table className={roomStyles.scoringTable}>
               <thead>
                 <tr>
                   <th
                     data-sticky-player="true"
-                    style={{
-                      position: "sticky",
-                      top: 0,
-                      left: 0,
-                      zIndex: 5,
-                      border: "1px solid #ccc",
-                      padding: 8,
-                      minWidth: 96,
-                      width: 96,
-                      background: "#fff",
-                      boxShadow: "3px 0 5px rgba(0, 0, 0, 0.12)",
-                    }}
+                    className={`${roomStyles.scoringTableCell} ${roomStyles.scoringTableHead} ${roomStyles.scoringStickyPlayer}`}
                   >
                     {t("player")}
                   </th>
@@ -3919,24 +3899,15 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     <th
                       id={`score-column-${index}`}
                       key={c}
-                      style={{
-                        position: "sticky",
-                        top: 0,
-                        zIndex: 3,
-                        border: "1px solid #ccc",
-                        padding: 8,
-                        whiteSpace: "nowrap",
-                        background: selectedScoringCategory === c ? "#fff3bf" : "#fff",
-                        transition: "background 0.25s ease",
-                        scrollMarginLeft: "104px",
-                        scrollMarginRight: "40vw",
-                      }}
+                      className={`${roomStyles.scoringTableCell} ${roomStyles.scoringTableHead} ${
+                        selectedScoringCategory === c ? roomStyles.scoringSelectedColumn : ""
+                      }`}
                     >
                       {categoryLabel(c)}
                     </th>
                   ))}
-                  <th style={{ border: "1px solid #ccc", padding: 8 }}>
-                    {t("totalPoints")}
+                  <th className={`${roomStyles.scoringTableCell} ${roomStyles.scoringTableHead}`}>
+                    <span className={roomStyles.scoringTotalPointsText}>{t("totalPoints")}</span>
                   </th>
                 </tr>
               </thead>
@@ -3944,34 +3915,21 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 {players.map((p) => (
                   <tr key={p.id}>
                     <td
-                      style={{
-                        position: "sticky",
-                        left: 0,
-                        zIndex: 2,
-                        border: "1px solid #ccc",
-                        padding: 8,
-                        background: "#fff",
-                        whiteSpace: "nowrap",
-                        boxShadow: "3px 0 5px rgba(0, 0, 0, 0.12)",
-                      }}
+                      className={`${roomStyles.scoringTableCell} ${roomStyles.scoringStickyPlayer}`}
                     >
                       {p.name}
                     </td>
                     {activeCategories.map((c) => (
                       <td
                         key={c}
-                        style={{
-                          border: "1px solid #ccc",
-                          padding: 8,
-                          whiteSpace: "nowrap",
-                          background: selectedScoringCategory === c ? "#fff3bf" : "#fff",
-                          transition: "background 0.25s ease",
-                        }}
+                        className={`${roomStyles.scoringTableCell} ${
+                          selectedScoringCategory === c ? roomStyles.scoringSelectedColumn : ""
+                        }`}
                       >
                         {answerFor(p.id, c)}
                       </td>
                     ))}
-                    <td style={{ border: "1px solid #ccc", padding: 8 }}>
+                    <td className={roomStyles.scoringTableCell}>
                       <b>{playerTotalPoints(p.id)}</b>
                     </td>
                   </tr>
@@ -3981,13 +3939,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             </div>
           </section>
 
-          <div style={{ marginTop: 16 }}>
-            <button onClick={() => setShowRoundHistory((v) => !v)} style={{ padding: 12 }}>
+          <div className={roomStyles.scoringHistory}>
+            <button
+              className={roomStyles.scoringHistoryButton}
+              onClick={() => setShowRoundHistory((v) => !v)}
+            >
               {showRoundHistory ? t("hideRoundHistory") : t("showRoundHistory")}
             </button>
 
             {showRoundHistory && (
-              <div style={{ overflowX: "auto", marginTop: 12 }}>
+              <div className={roomStyles.scoringHistoryContent}>
                 {scoredRoundNumbers.length === 0 ? (
                   <p>
                     {t("noRoundScores")}
@@ -4034,34 +3995,38 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           </div>
 
           {activeMyPlayer ? (
-            <section
-              style={{
-                maxHeight: "46dvh",
-                overflowY: "auto",
-                overscrollBehavior: "auto",
-                WebkitOverflowScrolling: "touch",
-                marginTop: 16,
-                padding: 12,
-                border: "1px solid #ccc",
-                borderRadius: 8,
-                background: "#fff",
-              }}
-            >
-              <h3 style={{ marginTop: 0 }}>
-                {t("myScoring")}
-              </h3>
+            <section className={roomStyles.scoringMine}>
+              <h3>{t("myScoring")}</h3>
 
               {activeCategories.map((category, index) => (
-                <label key={category} style={{ display: "block", marginTop: 12 }}>
+                <label key={category} className={roomStyles.scoringCategoryRow}>
                   <span
-                    style={{
-                      display: "inline-block",
-                      color: "#0969da",
-                      fontWeight: 700,
-                      textDecoration: "underline",
-                      textUnderlineOffset: 3,
-                      cursor: "pointer",
-                      marginBottom: 4,
+                    className={roomStyles.scoringCategoryName}
+                    onClick={() => {
+                      setSelectedScoringCategory(category);
+
+                      requestAnimationFrame(() => {
+                        const scrollBox = document.getElementById("scoring-table-scroll");
+                        const column = document.getElementById(`score-column-${index}`);
+                        const stickyPlayerColumn =
+                          scrollBox?.querySelector('[data-sticky-player="true"]') as
+                            | HTMLElement
+                            | null;
+
+                        if (!scrollBox || !column) return;
+
+                        const stickyWidth = stickyPlayerColumn?.offsetWidth ?? 0;
+                        const visibleWidth = scrollBox.clientWidth - stickyWidth;
+                        const centredPosition =
+                          column.offsetLeft -
+                          stickyWidth -
+                          Math.max(0, (visibleWidth - column.offsetWidth) / 2);
+
+                        scrollBox.scrollTo({
+                          left: Math.max(0, centredPosition),
+                          behavior: "smooth",
+                        });
+                      });
                     }}
                   >
                     {categoryLabel(category)}
@@ -4101,7 +4066,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         [category]: Number(e.target.value) as -10 | -5 | 0 | 5 | 10,
                       }))
                     }
-                    style={{ display: "block", padding: 10, marginTop: 4, width: "100%" }}
+                    className={roomStyles.scoringPointsSelect}
                   >
                     <option value={0}>
                       {t("zeroPoints")}
@@ -4125,44 +4090,31 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               {!myScoreSubmitted ? (
                 <button
                   onClick={submitScores}
-                  style={{
-                    position: "sticky",
-                    bottom: 0,
-                    marginTop: 16,
-                    padding: 16,
-                    width: "100%",
-                    background: "#fff",
-                  }}
+                  className={roomStyles.scoringSubmitButton}
                 >
                   {t("submitScoring")}
                 </button>
               ) : (
-                <p style={{ marginTop: 16 }}>
+                <p className={roomStyles.scoringSubmittedMessage}>
                   {t("scoringSubmitted")}
                 </p>
               )}
             </section>
           ) : myPlayer?.status === "waiting" ? (
-            <p>
-              {t("waitingToJoin")}
-            </p>
+            <p className={roomStyles.scoringMineInfo}>{t("waitingToJoin")}</p>
           ) : (
-            <p>
-              {t("enterNameScoring")}
-            </p>
+            <p className={roomStyles.scoringMineInfo}>{t("enterNameScoring")}</p>
           )}
 
           {!everyoneScored && (
-            <p>
-              {t("waitingForAllPlayers")}
-            </p>
+            <p className={roomStyles.scoringWaiting}>{t("waitingForAllPlayers")}</p>
           )}
 
             {everyoneScored && (
               shouldShowFreeLimitUpsell ? (
                 <section
+                  className={roomStyles.scoringNextArea}
                   style={{
-                    marginTop: 16,
                     padding: 16,
                     border: "2px solid #f59e0b",
                     borderRadius: 12,
@@ -4274,16 +4226,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   </button>
                 </section>
               ) : isFinalScoringRound ? (
-                <button onClick={finishGame} style={{ marginTop: 16, padding: 16, fontWeight: 700 }}>
+                <button onClick={finishGame} className={roomStyles.scoringNextButton}>
                   {t("finishGame")}
                 </button>
               ) : (
-                <button onClick={nextRound} style={{ marginTop: 16, padding: 16 }}>
+                <button onClick={nextRound} className={roomStyles.scoringNextButton}>
                   {t("newRound")}
                 </button>
               )
             )}
-        </>
+        </section>
       )}
     </main>
   );

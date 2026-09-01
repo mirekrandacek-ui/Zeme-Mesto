@@ -841,3 +841,326 @@
   font-weight:700;
   text-shadow:0 2px 2px #001b38;
 }
+
+/* Compact scoring screen: keeps existing scoring logic, reduces vertical waste. */
+.scoringScreen{
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  color:#fff;
+}
+
+.scoringHeader,
+.scoringStatus,
+.scoringAnswers,
+.scoringMine,
+.scoringMineInfo,
+.scoringWaiting,
+.scoringNextArea,
+.scoringNextButton,
+.scoringHistory{
+  box-sizing:border-box;
+  width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.scoringHeader{
+  order:1;
+  margin-bottom:6px;
+  padding:9px 12px 10px;
+  border:2px solid #43c8ff;
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(8,115,175,.97),rgba(0,48,91,.985) 38%,rgba(0,28,59,.99));
+  box-shadow:inset 0 0 0 2px #087cbf,inset 0 7px 14px #4cd1ff55,inset 0 -9px 16px #001f43,0 0 13px #04aaff,0 7px 12px #000819cc;
+  text-shadow:0 2px 3px #00152d;
+}
+
+.scoringHeaderTop{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+}
+
+.scoringHeaderTop h2{
+  margin:0;
+  font-size:clamp(20px,5vw,25px);
+  line-height:1.05;
+}
+
+.scoringLetter{
+  min-width:72px;
+  text-align:center;
+  font-size:clamp(46px,13vw,64px);
+  font-weight:900;
+  line-height:.9;
+  letter-spacing:-.06em;
+  white-space:nowrap;
+  text-shadow:0 3px 4px #00152d,0 0 8px #53d7ff;
+}
+
+.scoringSignedIn,
+.scoringStoppedBy{
+  margin:4px 0 0;
+  font-size:16px;
+  line-height:1.25;
+}
+
+.scoringStatus{
+  order:2;
+  margin-bottom:6px;
+  padding:8px 11px;
+  border:2px solid #55d5ff;
+  border-radius:16px;
+  background:linear-gradient(#1686ca,#00508b 58%,#003360);
+  box-shadow:inset 0 2px 5px #56c9ff,inset 0 -5px 8px #002746,0 4px 7px #00162c;
+  text-shadow:0 2px 2px #001b38;
+}
+
+.scoringSubmittedCount{
+  margin:0;
+  font-size:16px;
+  line-height:1.25;
+}
+
+.scoringPlayerStatus{
+  display:grid;
+  gap:2px;
+  margin:5px 0 0;
+  padding:0;
+  list-style:none;
+  font-size:16px;
+  line-height:1.25;
+}
+
+.scoringAnswers{
+  order:3;
+  margin-bottom:6px;
+  padding:8px;
+  border:2px solid #55d5ff;
+  border-radius:18px;
+  background:linear-gradient(#1686ca,#00508b 58%,#003360);
+  box-shadow:inset 0 2px 5px #56c9ff,inset 0 -6px 10px #002746,0 0 10px #00aaff,0 5px 9px #00162c;
+  text-shadow:0 2px 2px #001b38;
+}
+
+.scoringAnswers h3{
+  margin:0 0 7px;
+  font-size:18px;
+}
+
+.scoringTableScroll{
+  max-height:42dvh;
+  overflow:auto;
+  overscroll-behavior:contain;
+  border-radius:10px;
+  background:#fff;
+  color:#172033;
+  text-shadow:none;
+  pointer-events:auto;
+  touch-action:pan-x pan-y;
+  -webkit-overflow-scrolling:touch;
+}
+
+.scoringTable{
+  border-collapse:separate;
+  border-spacing:0;
+  width:max-content;
+  table-layout:auto;
+  text-align:center;
+  white-space:nowrap;
+  font-size:16px;
+}
+
+.scoringTableCell{
+  width:auto;
+  max-width:none;
+  padding:6px 8px;
+  border:1px solid #c8d6e2;
+  background:#fff;
+  white-space:nowrap;
+}
+
+.scoringTableHead{
+  position:sticky;
+  top:0;
+  z-index:3;
+  font-weight:800;
+}
+
+.scoringStickyPlayer{
+  position:sticky;
+  left:0;
+  z-index:2;
+  box-shadow:3px 0 5px rgba(0,0,0,.12);
+}
+
+.scoringTableHead.scoringStickyPlayer{
+  z-index:5;
+}
+
+.scoringSelectedColumn{
+  background:#fff3bf;
+  transition:background .25s ease;
+}
+
+.scoringMine{
+  order:4;
+  max-height:46dvh;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  margin-bottom:6px;
+  padding:9px 11px 10px;
+  border:2px solid #55d5ff;
+  border-radius:18px;
+  background:linear-gradient(#1686ca,#00508b 58%,#003360);
+  box-shadow:inset 0 2px 5px #56c9ff,inset 0 -6px 10px #002746,0 0 10px #00aaff,0 5px 9px #00162c;
+  text-shadow:0 2px 2px #001b38;
+  -webkit-overflow-scrolling:touch;
+}
+
+.scoringMine h3{
+  margin:0 0 5px;
+  font-size:18px;
+}
+
+.scoringCategoryRow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  padding:3px 0;
+}
+
+.scoringCategoryName{
+  min-width:0;
+  color:#fff;
+  font-size:16px;
+  line-height:1.2;
+  font-weight:800;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  cursor:pointer;
+}
+
+.scoringPointsSelect{
+  box-sizing:border-box;
+  width:min(39vw,142px);
+  min-width:118px;
+  min-height:40px;
+  padding:7px 8px;
+  border:2px solid #61d7ff;
+  border-radius:11px;
+  color:#243b53;
+  background:#f7fbff;
+  font:inherit;
+  font-size:16px;
+  text-shadow:none;
+}
+
+.scoringSubmitButton{
+  position:sticky;
+  bottom:0;
+  display:block;
+  width:100%;
+  min-height:50px;
+  margin-top:8px;
+  padding:10px;
+  border:2px solid #dcffa4;
+  border-radius:16px;
+  color:#fff;
+  background:linear-gradient(#84e43d,#4ebe12 48%,#189000 77%,#35ae0a);
+  box-shadow:inset 0 3px 5px #ffffffbf,inset 0 -5px 7px #147700,0 0 8px #77f335,0 4px 4px #001d25;
+  font:inherit;
+  font-size:17px;
+  font-weight:900;
+  text-shadow:0 2px 2px #145c0d;
+  cursor:pointer;
+}
+
+.scoringSubmittedMessage{
+  margin:8px 0 0;
+  padding:8px 9px;
+  border-radius:11px;
+  background:rgba(0,29,57,.62);
+  font-size:16px;
+  line-height:1.3;
+}
+
+.scoringMineInfo,
+.scoringWaiting{
+  order:5;
+  margin-top:0;
+  margin-bottom:6px;
+  padding:9px 11px;
+  border:2px solid #55d5ff;
+  border-radius:14px;
+  background:linear-gradient(#1686ca,#00508b 58%,#003360);
+  box-shadow:inset 0 2px 5px #56c9ff,inset 0 -5px 8px #002746,0 4px 7px #00162c;
+  font-size:16px;
+  line-height:1.3;
+  text-shadow:0 2px 2px #001b38;
+}
+
+.scoringNextArea,
+.scoringNextButton{
+  order:6;
+  margin-top:0;
+  margin-bottom:6px;
+}
+
+.scoringNextButton{
+  min-height:50px;
+  padding:10px 12px;
+  border:2px solid #dcffa4;
+  border-radius:16px;
+  color:#fff;
+  background:linear-gradient(#84e43d,#4ebe12 48%,#189000 77%,#35ae0a);
+  box-shadow:inset 0 3px 5px #ffffffbf,inset 0 -5px 7px #147700,0 0 8px #77f335,0 4px 4px #001d25;
+  font:inherit;
+  font-size:17px;
+  font-weight:900;
+  text-shadow:0 2px 2px #145c0d;
+  cursor:pointer;
+}
+
+.scoringHistory{
+  order:7;
+  margin-top:0;
+  margin-bottom:calc(16px + env(safe-area-inset-bottom));
+}
+
+.scoringHistoryButton{
+  display:block;
+  width:100%;
+  min-height:42px;
+  padding:8px 10px;
+  border:2px solid #61d7ff;
+  border-radius:14px;
+  color:#fff;
+  background:linear-gradient(#1686ca,#00508b 58%,#003360);
+  box-shadow:inset 0 2px 5px #56c9ff,inset 0 -5px 8px #002746,0 3px 7px #00162c;
+  font:inherit;
+  font-size:16px;
+  font-weight:800;
+  text-shadow:0 2px 2px #001b38;
+  cursor:pointer;
+}
+
+.scoringHistoryContent{
+  margin-top:7px;
+  overflow-x:auto;
+  border-radius:10px;
+  background:#fff;
+  color:#172033;
+  text-shadow:none;
+}
+
+.scoringTotalPointsText{
+  display:inline-block;
+  max-width:4.8em;
+  white-space:normal;
+  line-height:1.05;
+}
