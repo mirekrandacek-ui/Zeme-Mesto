@@ -1907,6 +1907,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const roomTierForCategoryPreview = premiumPreviewLockTest ? "premium" : roomTier;
 
+  useEffect(() => {
+    if (!premiumPreviewLockTest) return;
+    setActiveCategories((current) => uniqueNonEmpty([...PREMIUM_CATEGORIES, ...current]));
+  }, [premiumPreviewLockTest]);
+
   const canEditRoomCategories =
     isOrganizer &&
     (roomTier === "super_premium" || premiumCategorySelectionUnlocked);
@@ -1986,6 +1991,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   async function startCategoryPurchase(category: string) {
     const productId = CATEGORY_PRODUCT_ID[category];
+
+    if (premiumPreviewLockTest && productId) {
+      setOwnedCategoryProductIds((current) => [...new Set([...current, productId])]);
+      setActiveCategories((current) => uniqueNonEmpty([...PREMIUM_CATEGORIES, ...current, category]));
+      setPremiumLockedOfferCategory(null);
+      setMsg(`✅ TEST: ${categoryLabel(category)} odemčeno.`);
+      return;
+    }
 
     if (
       !productId ||
