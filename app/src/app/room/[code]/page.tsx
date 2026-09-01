@@ -3649,6 +3649,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 </>
               )}
 
+              {roomTierForCategoryPreview === "super_premium" && (
+                <>
               <h4 style={{ marginTop: 16 }}>
                 {t("categoryOrder")}
               </h4>
@@ -3690,6 +3692,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   </li>
                 ))}
               </ol>
+                </>
+              )}
             </section>
           )}
 
