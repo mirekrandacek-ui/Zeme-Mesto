@@ -3978,7 +3978,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       {scoredRoundNumbers.map((roundNo) => (
                         <tr key={roundNo}>
                           <td style={{ border: "1px solid #ccc", padding: 8 }}>
-                            {roundNo}
+                            {roundNo}.
                           </td>
                           {players.map((p) => (
                             <td key={p.id} style={{ border: "1px solid #ccc", padding: 8 }}>
@@ -4119,6 +4119,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     border: "2px solid #f59e0b",
                     borderRadius: 12,
                     background: "#fff7ed",
+                    color: "#111",
+                    textShadow: "none",
                   }}
                 >
                   <h3 style={{ marginTop: 0 }}>{t("freeLimitTitle")}</h3>

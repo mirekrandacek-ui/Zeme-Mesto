@@ -1006,10 +1006,9 @@
 }
 
 .scoringMine{
-  order:4;
+  order:5;
   max-height:46dvh;
   overflow-y:auto;
-  overscroll-behavior:contain;
   margin-bottom:6px;
   padding:9px 11px 10px;
   border:2px solid #55d5ff;
@@ -1112,6 +1111,7 @@
 }
 
 .scoringNextButton{
+  order:4;
   min-height:50px;
   padding:10px 12px;
   border:2px solid #dcffa4;
@@ -1151,7 +1151,10 @@
 
 .scoringHistoryContent{
   margin-top:7px;
+  max-width:100%;
   overflow-x:auto;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
   border-radius:10px;
   background:#fff;
   color:#172033;
