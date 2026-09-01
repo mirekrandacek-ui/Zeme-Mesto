@@ -91,10 +91,10 @@ export const UI_TEXT = {
     removeCustomCategory: "Odebrat vlastní kategorii",
     addCustomCategory: "+ Přidat vlastní kategorii",
     maxCustomCategories: "Maximum je 5 vlastních kategorií.",
-    premiumLockedCategoryOfferIntro: "Při zakoupení rozšířené kategorie se ti automaticky odemkne možnost volby počtu a pořadí kategorií, se kterými chceš hrát.",
+    premiumLockedCategoryOfferIntro: "Zakoupením této rozšířené kategorie si zároveň odemkneš možnost libovolně vybírat ze základních a všech zakoupených rozšířených kategorií.",
     superPremiumUpsellBefore: "Nebo si kup",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "a budeš mít k dispozici možnost volby počtu a pořadí kategorií, všechny rozšířené kategorie plus 5 vlastních.",
+    superPremiumUpsellAfter: "a získáš neomezený počet hráčů, vybrané rozšířené kategorie a možnost postupně odemykat další kategorie a herní možnosti za coiny.",
     changePlayerOnDevice: "Změnit hráče na tomto zařízení",
     waitingPlayerNextRound: "připojí se od dalšího kola",
       freeLimitTitle: "Free limit dosažen",
@@ -193,10 +193,10 @@ export const UI_TEXT = {
     removeCustomCategory: "Remove custom category",
     addCustomCategory: "+ Add custom category",
     maxCustomCategories: "The maximum is 5 custom categories.",
-    premiumLockedCategoryOfferIntro: "Buying an extended category automatically unlocks the option to choose the number and order of categories you want to play with.",
+    premiumLockedCategoryOfferIntro: "Buying this extended category also unlocks the option to freely choose from the basic categories and all extended categories you own.",
     superPremiumUpsellBefore: "Or buy",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "and you will get category count and order selection, all extended categories, plus 5 custom categories.",
+    superPremiumUpsellAfter: "and get unlimited players, selected extended categories, and the ability to gradually unlock more categories and game options with coins.",
     changePlayerOnDevice: "Change player on this device",
     waitingPlayerNextRound: "will join from the next round",
       freeLimitTitle: "Free limit reached",
@@ -295,10 +295,10 @@ export const UI_TEXT = {
     removeCustomCategory: "Eliminar categoría propia",
     addCustomCategory: "+ Añadir categoría propia",
     maxCustomCategories: "El máximo es de 5 categorías propias.",
-    premiumLockedCategoryOfferIntro: "Al comprar una categoría ampliada, se desbloquea automáticamente la opción de elegir el número y el orden de las categorías con las que quieres jugar.",
+    premiumLockedCategoryOfferIntro: "Al comprar esta categoría ampliada también desbloqueas la posibilidad de elegir libremente entre las categorías básicas y todas las categorías ampliadas que hayas comprado.",
     superPremiumUpsellBefore: "O compra",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "y tendrás la opción de elegir el número y el orden de las categorías, todas las categorías ampliadas y 5 categorías propias.",
+    superPremiumUpsellAfter: "y obtén jugadores ilimitados, categorías ampliadas seleccionadas y la posibilidad de desbloquear poco a poco más categorías y opciones de juego con monedas.",
     changePlayerOnDevice: "Cambiar jugador en este dispositivo",
     waitingPlayerNextRound: "se unirá desde la siguiente ronda",
       freeLimitTitle: "Límite Free alcanzado",
@@ -398,10 +398,10 @@ export const UI_TEXT = {
     removeCustomCategory: "Eigene Kategorie entfernen",
     addCustomCategory: "+ Eigene Kategorie hinzufügen",
     maxCustomCategories: "Maximal 5 eigene Kategorien.",
-    premiumLockedCategoryOfferIntro: "Beim Kauf einer Zusatzkategorie wird automatisch die Auswahl der Anzahl und Reihenfolge der Kategorien freigeschaltet.",
+    premiumLockedCategoryOfferIntro: "Mit dem Kauf dieser erweiterten Kategorie schaltest du zugleich die freie Auswahl aus den Grundkategorien und allen von dir gekauften erweiterten Kategorien frei.",
     superPremiumUpsellBefore: "Oder kaufe",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "und erhalte die Auswahl von Anzahl und Reihenfolge der Kategorien, alle Zusatzkategorien sowie 5 eigene Kategorien.",
+    superPremiumUpsellAfter: "und erhalte unbegrenzt viele Spieler, ausgewählte erweiterte Kategorien sowie die Möglichkeit, weitere Kategorien und Spieloptionen nach und nach mit Coins freizuschalten.",
     changePlayerOnDevice: "Spieler auf diesem Gerät wechseln",
     waitingPlayerNextRound: "tritt ab der nächsten Runde bei",
     freeLimitTitle: "Free-Limit erreicht",
@@ -501,10 +501,10 @@ export const UI_TEXT = {
     removeCustomCategory: "Supprimer la catégorie personnalisée",
     addCustomCategory: "+ Ajouter une catégorie personnalisée",
     maxCustomCategories: "Le maximum est de 5 catégories personnalisées.",
-    premiumLockedCategoryOfferIntro: "L’achat d’une catégorie supplémentaire déverrouille automatiquement le choix du nombre de catégories et de leur ordre.",
+    premiumLockedCategoryOfferIntro: "L’achat de cette catégorie supplémentaire déverrouille aussi le libre choix parmi les catégories de base et toutes les catégories supplémentaires achetées.",
     superPremiumUpsellBefore: "Ou achète",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "et tu obtiendras le choix du nombre et de l’ordre des catégories, toutes les catégories supplémentaires, ainsi que 5 catégories personnalisées.",
+    superPremiumUpsellAfter: "et profite d’un nombre de joueurs illimité, de certaines catégories supplémentaires et de la possibilité de débloquer progressivement d’autres catégories et options de jeu avec des pièces.",
     changePlayerOnDevice: "Changer de joueur sur cet appareil",
     waitingPlayerNextRound: "rejoindra à partir de la prochaine manche",
     freeLimitTitle: "Limite Free atteinte",
@@ -604,10 +604,10 @@ export const UI_TEXT = {
     removeCustomCategory: "Remover categoria personalizada",
     addCustomCategory: "+ Adicionar categoria personalizada",
     maxCustomCategories: "O máximo é de 5 categorias personalizadas.",
-    premiumLockedCategoryOfferIntro: "A compra de uma categoria adicional libera automaticamente a escolha da quantidade e da ordem das categorias.",
+    premiumLockedCategoryOfferIntro: "Ao comprar esta categoria adicional, você também libera a escolha livre entre as categorias básicas e todas as categorias adicionais compradas.",
     superPremiumUpsellBefore: "Ou compre",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "e tenha acesso à escolha da quantidade e da ordem das categorias, a todas as categorias adicionais e a 5 categorias personalizadas.",
+    superPremiumUpsellAfter: "e tenha jogadores ilimitados, categorias adicionais selecionadas e a possibilidade de liberar gradualmente mais categorias e opções de jogo com moedas.",
     changePlayerOnDevice: "Trocar jogador neste aparelho",
     waitingPlayerNextRound: "entrará a partir da próxima rodada",
     freeLimitTitle: "Limite Free atingido",
@@ -706,10 +706,10 @@ export const UI_TEXT = {
     removeCustomCategory: "Hapus kategori buatan sendiri",
     addCustomCategory: "+ Tambahkan kategori buatan sendiri",
     maxCustomCategories: "Maksimal 5 kategori buatan sendiri.",
-    premiumLockedCategoryOfferIntro: "Membeli satu kategori tambahan akan otomatis membuka pilihan jumlah dan urutan kategori.",
+    premiumLockedCategoryOfferIntro: "Dengan membeli kategori tambahan ini, kamu juga membuka pilihan bebas dari kategori dasar dan semua kategori tambahan yang telah dibeli.",
     superPremiumUpsellBefore: "Atau beli",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "untuk mendapatkan pilihan jumlah dan urutan kategori, semua kategori tambahan, serta 5 kategori buatan sendiri.",
+    superPremiumUpsellAfter: "dan dapatkan pemain tanpa batas, kategori tambahan pilihan, serta kemampuan membuka lebih banyak kategori dan opsi permainan secara bertahap dengan koin.",
     changePlayerOnDevice: "Ganti pemain di perangkat ini",
     waitingPlayerNextRound: "akan bergabung mulai ronde berikutnya",
     freeLimitTitle: "Batas Free tercapai",
@@ -808,10 +808,10 @@ export const UI_TEXT = {
     removeCustomCategory: "Özel kategoriyi kaldır",
     addCustomCategory: "+ Özel kategori ekle",
     maxCustomCategories: "En fazla 5 özel kategori.",
-    premiumLockedCategoryOfferIntro: "Bir ek kategori satın almak, kategori sayısı ve sıralaması seçimini otomatik olarak açar.",
+    premiumLockedCategoryOfferIntro: "Bu ek kategoriyi satın aldığında temel kategoriler ile satın aldığın tüm ek kategoriler arasından özgürce seçim yapma özelliğini de açarsın.",
     superPremiumUpsellBefore: "Ya da",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "satın alarak kategori sayısını ve sırasını seçebilir, tüm ek kategorileri ve 5 özel kategoriyi açabilirsin.",
+    superPremiumUpsellAfter: "ve sınırsız oyuncu, seçili ek kategoriler ve coinlerle zamanla daha fazla kategori ve oyun seçeneği açma imkânı kazan.",
     changePlayerOnDevice: "Bu cihazdaki oyuncuyu değiştir",
     waitingPlayerNextRound: "bir sonraki turdan itibaren katılacak",
     freeLimitTitle: "Free sınırına ulaşıldı",
@@ -910,10 +910,10 @@ export const UI_TEXT = {
     removeCustomCategory: "Usuń własną kategorię",
     addCustomCategory: "+ Dodaj własną kategorię",
     maxCustomCategories: "Maksymalnie można dodać 5 własnych kategorii.",
-    premiumLockedCategoryOfferIntro: "Zakup rozszerzonej kategorii automatycznie odblokuje możliwość wyboru liczby i kolejności kategorii, którymi chcesz grać.",
+    premiumLockedCategoryOfferIntro: "Kupując tę kategorię rozszerzoną, odblokujesz także swobodny wybór spośród kategorii podstawowych i wszystkich zakupionych kategorii rozszerzonych.",
     superPremiumUpsellBefore: "Lub kup",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "i zyskasz wybór liczby i kolejności kategorii, wszystkie kategorie rozszerzone oraz 5 własnych kategorii.",
+    superPremiumUpsellAfter: "i zyskaj nieograniczoną liczbę graczy, wybrane kategorie rozszerzone oraz możliwość stopniowego odblokowywania kolejnych kategorii i opcji gry za monety.",
     changePlayerOnDevice: "Zmień gracza na tym urządzeniu",
     waitingPlayerNextRound: "dołączy od następnej rundy",
     freeLimitTitle: "Osiągnięto limit wersji Free",
@@ -1012,10 +1012,10 @@ export const UI_TEXT = {
     removeCustomCategory: "Rimuovi categoria personalizzata",
     addCustomCategory: "+ Aggiungi categoria personalizzata",
     maxCustomCategories: "È possibile aggiungere al massimo 5 categorie personalizzate.",
-    premiumLockedCategoryOfferIntro: "L’acquisto di una categoria estesa sblocca automaticamente la possibilità di scegliere il numero e l’ordine delle categorie con cui vuoi giocare.",
+    premiumLockedCategoryOfferIntro: "Acquistando questa categoria estesa sblocchi anche la possibilità di scegliere liberamente tra le categorie base e tutte le categorie estese acquistate.",
     superPremiumUpsellBefore: "Oppure acquista",
     superPremiumLinkText: "Super Premium",
-    superPremiumUpsellAfter: "e otterrai la scelta del numero e dell’ordine delle categorie, tutte le categorie estese e 5 categorie personalizzate.",
+    superPremiumUpsellAfter: "e ottieni giocatori illimitati, categorie estese selezionate e la possibilità di sbloccare gradualmente altre categorie e opzioni di gioco con le monete.",
     changePlayerOnDevice: "Cambia giocatore su questo dispositivo",
     waitingPlayerNextRound: "entrerà dal turno successivo",
     freeLimitTitle: "Limite della versione Free raggiunto",
@@ -1176,7 +1176,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit.",
     premiumOrganizer:
-      "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie jsou zamčené. Po dokoupení alespoň jedné rozšířené kategorie se odemkne volba počtu kategorií a jejich pořadí.",
+      "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie jsou zamčené. Po zakoupení alespoň jedné rozšířené kategorie si můžeš libovolně vybrat základní kategorie a všechny zakoupené rozšířené kategorie.",
     superPremiumOrganizer:
       "Super Premium: vyber základní i rozšířené kategorie. Můžeš měnit pořadí a používat vlastní kategorie.",
   },
@@ -1184,7 +1184,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "The organiser chooses the room categories. You can see the current selection and suggest changes.",
     premiumOrganizer:
-      "Premium: the basic categories are fixed. Extended categories are locked. Buying at least one extended category unlocks category selection and ordering.",
+      "Premium: the basic categories are fixed. Extended categories are locked. After purchasing at least one extended category, you can freely choose from the basic categories and all extended categories you own.",
     superPremiumOrganizer:
       "Super Premium: choose basic and extended categories, change their order and add custom categories.",
   },
@@ -1192,7 +1192,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "El organizador elige las categorías de la sala. Tú ves la selección actual y puedes sugerir cambios.",
     premiumOrganizer:
-      "Premium: las categorías básicas son fijas. Las categorías ampliadas están bloqueadas. Al comprar al menos una categoría ampliada se desbloquea la selección y el orden de categorías.",
+      "Premium: las categorías básicas son fijas. Las categorías ampliadas están bloqueadas. Tras comprar al menos una categoría ampliada, puedes elegir libremente entre las categorías básicas y todas las categorías ampliadas que hayas comprado.",
     superPremiumOrganizer:
       "Super Premium: elige categorías básicas y ampliadas, cambia su orden y añade categorías propias.",
   },
@@ -1201,7 +1201,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "Der Organisator wählt die Kategorien des Raums aus. Du kannst die aktuelle Auswahl sehen und Änderungen vorschlagen.",
     premiumOrganizer:
-      "Premium: Die Grundkategorien sind festgelegt. Zusatzkategorien sind gesperrt. Der Kauf mindestens einer Zusatzkategorie schaltet die Auswahl und Reihenfolge der Kategorien frei.",
+      "Premium: Die Grundkategorien sind fest vorgegeben. Erweiterte Kategorien sind gesperrt. Nach dem Kauf mindestens einer erweiterten Kategorie kannst du die Grundkategorien und alle von dir gekauften erweiterten Kategorien frei auswählen.",
     superPremiumOrganizer:
       "Super Premium: Wähle Grund- und Zusatzkategorien aus, ändere ihre Reihenfolge und füge eigene Kategorien hinzu.",
   },
@@ -1210,7 +1210,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "L’organisateur choisit les catégories de la salle. Tu peux voir la sélection actuelle et lui suggérer des modifications.",
     premiumOrganizer:
-      "Premium : les catégories de base sont fixes. Les catégories supplémentaires sont verrouillées. L’achat d’au moins une catégorie supplémentaire déverrouille la sélection et l’ordre des catégories.",
+      "Premium : les catégories de base sont fixes. Les catégories supplémentaires sont verrouillées. Après l’achat d’au moins une catégorie supplémentaire, tu peux choisir librement parmi les catégories de base et toutes les catégories supplémentaires achetées.",
     superPremiumOrganizer:
       "Super Premium : choisis les catégories de base et supplémentaires, modifie leur ordre et ajoute des catégories personnalisées.",
   },
@@ -1219,25 +1219,25 @@ const CATEGORY_HELP_TEXT = {
     player:
       "O organizador escolhe as categorias da sala. Você pode ver a seleção atual e sugerir alterações.",
     premiumOrganizer:
-      "Premium: as categorias básicas são fixas. As categorias adicionais ficam bloqueadas. A compra de pelo menos uma categoria adicional libera a seleção e a ordem das categorias.",
+      "Premium: as categorias básicas são fixas. As categorias adicionais ficam bloqueadas. Depois de comprar pelo menos uma categoria adicional, você pode escolher livremente entre as categorias básicas e todas as categorias adicionais compradas.",
     superPremiumOrganizer:
       "Super Premium: escolha categorias básicas e adicionais, altere a ordem e adicione categorias personalizadas.",
   },
   id: {
     player: "Penyelenggara memilih kategori ruang. Kamu dapat melihat pilihan saat ini dan menyarankan perubahan.",
-    premiumOrganizer: "Premium: kategori dasar bersifat tetap. Kategori tambahan terkunci. Membeli setidaknya satu kategori tambahan akan membuka pilihan dan urutan kategori.",
+    premiumOrganizer: "Premium: kategori dasar bersifat tetap. Kategori tambahan terkunci. Setelah membeli setidaknya satu kategori tambahan, kamu dapat bebas memilih kategori dasar dan semua kategori tambahan yang telah dibeli.",
     superPremiumOrganizer: "Super Premium: pilih kategori dasar dan tambahan, ubah urutannya, dan tambahkan kategori buatan sendiri.",
   },
   tr: {
     player: "Oda sahibi oda kategorilerini seçer. Geçerli seçimi görebilir ve değişiklik önerebilirsin.",
-    premiumOrganizer: "Premium: temel kategoriler sabittir. Ek kategoriler kilitlidir. En az bir ek kategori satın alındığında kategori seçimi ve sıralaması açılır.",
+    premiumOrganizer: "Premium: temel kategoriler sabittir. Ek kategoriler kilitlidir. En az bir ek kategori satın aldıktan sonra temel kategoriler ile satın aldığın tüm ek kategorileri özgürce seçebilirsin.",
     superPremiumOrganizer: "Super Premium: temel ve ek kategorileri seç, sıralarını değiştir ve özel kategoriler ekle.",
   },
   pl: {
     player:
       "Organizator wybiera kategorie pokoju. Możesz zobaczyć aktualny wybór i zaproponować zmiany.",
     premiumOrganizer:
-      "Premium: podstawowe kategorie są stałe. Kategorie rozszerzone są zablokowane. Zakup co najmniej jednej kategorii rozszerzonej odblokowuje wybór i kolejność kategorii.",
+      "Premium: kategorie podstawowe są stałe. Kategorie rozszerzone są zablokowane. Po zakupie co najmniej jednej kategorii rozszerzonej możesz dowolnie wybierać kategorie podstawowe i wszystkie zakupione kategorie rozszerzone.",
     superPremiumOrganizer:
       "Super Premium: wybierz kategorie podstawowe i rozszerzone, zmień ich kolejność i dodaj własne kategorie.",
   },
@@ -1245,7 +1245,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "L’organizzatore sceglie le categorie della stanza. Puoi vedere la selezione attuale e suggerire modifiche.",
     premiumOrganizer:
-      "Premium: le categorie base sono fisse. Le categorie estese sono bloccate. L’acquisto di almeno una categoria estesa sblocca la scelta e l’ordine delle categorie.",
+      "Premium: le categorie base sono fisse. Le categorie estese sono bloccate. Dopo aver acquistato almeno una categoria estesa, puoi scegliere liberamente tra le categorie base e tutte le categorie estese acquistate.",
     superPremiumOrganizer:
       "Super Premium: scegli le categorie base ed estese, modificane l’ordine e aggiungi categorie personalizzate.",
   },

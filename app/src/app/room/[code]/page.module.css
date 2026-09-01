@@ -1274,15 +1274,13 @@
 
 .roomCategoriesPanel input[type="checkbox"]{
   flex:0 0 auto;
-  width:20px;
-  height:20px;
-  accent-color:#55d63a!important;
+  accent-color:#2563eb!important;
 }
 
 .roomCategoriesPanel label>span[aria-hidden="true"]{
-  width:20px!important;
-  height:20px!important;
-  flex-basis:20px!important;
+  width:14px!important;
+  height:14px!important;
+  flex-basis:14px!important;
   border:1.5px solid #84dfff!important;
   background:rgba(0,25,55,.78)!important;
   color:#fff!important;
