@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/reroll-keeps-round-number
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
