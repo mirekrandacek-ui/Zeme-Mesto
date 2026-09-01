@@ -1,0 +1,31 @@
+name: Apply scoring scroll and Free limit color
+
+on:
+  push:
+    branches:
+      - design/scoring-next-round-history
+    paths:
+      - .github/workflows/apply-scoring-scroll-free-limit.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/scoring-next-round-history
+      - name: Apply focused patch
+        run: python3 .github/tmp/apply-scoring-scroll-free-limit.py
+      - name: Validate diff
+        run: git diff --check
+      - name: Commit focused patch
+        run: |
+          git rm .github/workflows/apply-scoring-scroll-free-limit.yml .github/tmp/apply-scoring-scroll-free-limit.py
+          git add app/src/app/room/'[code]'/page.tsx app/src/app/room/'[code]'/page.module.css
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Doladit scroll bodování a barvu Free limitu'
+          git push origin HEAD:design/scoring-next-round-history
