@@ -1,0 +1,64 @@
+name: Apply Premium lock preview test
+
+on:
+  push:
+    branches:
+      - design/premium-categories-panel
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/premium-categories-panel
+
+      - name: Apply temporary Premium preview override
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('app/src/app/room/[code]/page.tsx')
+          text = p.read_text()
+
+          anchor = '  const canEditRoomCategories =\n    isOrganizer &&\n    (roomTier === "super_premium" || premiumCategorySelectionUnlocked);\n'
+          insert = '''  const premiumPreviewLockTest =\n    typeof window !== "undefined" &&\n    window.location.hostname.endsWith("vercel.app") &&\n    new URLSearchParams(window.location.search).get("premiumLockTest") === "1";\n\n  const roomTierForCategoryPreview = premiumPreviewLockTest ? "premium" : roomTier;\n\n'''
+          if insert not in text:
+            if anchor not in text:
+              raise SystemExit('canEditRoomCategories anchor not found')
+            text = text.replace(anchor, insert + anchor, 1)
+
+          replacements = {
+            '(roomTier === "premium" || roomTier === "super_premium") && myPlayer && (': '(roomTierForCategoryPreview === "premium" || roomTierForCategoryPreview === "super_premium") && myPlayer && (',
+            'categoryHelpText(uiLanguage, isOrganizer, roomTier)': 'categoryHelpText(uiLanguage, isOrganizer, roomTierForCategoryPreview)',
+            '(roomTier === "premium" || roomTier === "super_premium") && (': '(roomTierForCategoryPreview === "premium" || roomTierForCategoryPreview === "super_premium") && (',
+            '{roomTier === "premium" &&\n                    isOrganizer &&': '{roomTierForCategoryPreview === "premium" &&\n                    isOrganizer &&',
+            '{roomTier === "premium" &&\n                isOrganizer &&\n                premiumLockedOfferCategory && (': '{roomTierForCategoryPreview === "premium" &&\n                isOrganizer &&\n                premiumLockedOfferCategory && (',
+          }
+
+          for old, new in replacements.items():
+            count = text.count(old)
+            if count == 0:
+              raise SystemExit(f'Expected preview target not found: {old[:80]}')
+            text = text.replace(old, new, 1)
+
+          p.write_text(text)
+          PY
+
+      - name: Validate diff
+        run: |
+          git diff --check
+          git diff -- app/src/app/room/'[code]'/page.tsx
+
+      - name: Commit temporary preview test
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/apply-premium-lock-preview-test.yml
+          git add app/src/app/room/'[code]'/page.tsx
+          git commit -m "Add temporary Premium lock preview test"
+          git push
