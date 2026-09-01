@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   patch:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,196 +20,27 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import base64
 
           page = Path('app/src/app/room/[code]/page.tsx')
           css = Path('app/src/app/room/[code]/page.module.css')
 
           text = page.read_text()
-          old = '''            <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>'''
+          old = '            <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>'
           new = '''            <section
               className={roomStyles.roomCategoriesPanel}
               style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
             >'''
-
           if text.count(old) != 1:
               raise SystemExit(f'Expected one room categories section, found {text.count(old)}')
-
-          text = text.replace(old, new)
-          page.write_text(text)
+          page.write_text(text.replace(old, new))
 
           css_text = css.read_text()
           marker = '/* Premium / Super Premium room categories panel. */'
           if marker in css_text:
               raise SystemExit('Categories panel CSS already present')
-
-          css_text += r'''
-
-/* Premium / Super Premium room categories panel. */
-.roomCategoriesPanel{
-  box-sizing:border-box;
-  width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
-  margin:0 auto 14px!important;
-  padding:13px!important;
-  border:2px solid #43c8ff!important;
-  border-radius:22px!important;
-  color:#fff;
-  background:linear-gradient(145deg,rgba(8,115,175,.97),rgba(0,48,91,.985) 38%,rgba(0,28,59,.99));
-  box-shadow:inset 0 0 0 2px #087cbf,inset 0 7px 14px #4cd1ff55,inset 0 -9px 16px #001f43,0 0 13px #04aaff,0 9px 16px #000819cc;
-  text-shadow:0 2px 3px #00152d;
-}
-
-.roomCategoriesPanel h3{
-  margin:0 0 8px!important;
-  font-size:clamp(21px,5.4vw,27px);
-  line-height:1.1;
-}
-
-.roomCategoriesPanel h4{
-  margin:13px 0 8px!important;
-  padding-top:9px;
-  border-top:1px solid rgba(97,215,255,.45);
-  color:#fff;
-  font-size:clamp(16px,4.4vw,20px);
-  line-height:1.15;
-}
-
-.roomCategoriesPanel h4:first-of-type{
-  margin-top:10px!important;
-}
-
-.roomCategoriesPanel>p{
-  margin:0 0 9px!important;
-  color:#d9f4ff;
-  font-size:13px;
-  line-height:1.35;
-  opacity:1!important;
-}
-
-.roomCategoriesPanel label{
-  box-sizing:border-box;
-  min-width:0;
-  min-height:44px;
-  padding:7px 8px;
-  border:1px solid rgba(105,216,255,.72);
-  border-radius:11px;
-  background:rgba(0,38,76,.68);
-  color:#fff;
-  font-size:14px;
-  line-height:1.2;
-  text-shadow:0 1px 2px #00152d;
-}
-
-.roomCategoriesPanel label button{
-  min-width:0;
-  color:#fff!important;
-  text-decoration:none!important;
-  overflow-wrap:anywhere;
-  line-height:1.2!important;
-  text-shadow:0 1px 2px #00152d;
-}
-
-.roomCategoriesPanel input[type="checkbox"]{
-  flex:0 0 auto;
-  width:20px;
-  height:20px;
-  accent-color:#55d63a!important;
-}
-
-.roomCategoriesPanel label>span[aria-hidden="true"]{
-  width:20px!important;
-  height:20px!important;
-  flex-basis:20px!important;
-  border:1.5px solid #84dfff!important;
-  background:rgba(0,25,55,.78)!important;
-  color:#fff!important;
-  box-shadow:inset 0 0 4px rgba(85,213,255,.35);
-}
-
-.roomCategoriesPanel section{
-  margin-top:10px!important;
-  padding:10px!important;
-  border:1.5px solid #ffd75d!important;
-  border-radius:12px!important;
-  color:#fff!important;
-  background:rgba(81,49,0,.82)!important;
-  text-shadow:0 2px 2px #00152d;
-}
-
-.roomCategoriesPanel section p{
-  margin:7px 0;
-  color:#fff;
-  line-height:1.35;
-}
-
-.roomCategoriesPanel section button{
-  color:#fff!important;
-  text-shadow:0 1px 2px #00152d;
-}
-
-.roomCategoriesPanel input:not([type="checkbox"]){
-  box-sizing:border-box;
-  min-width:0;
-  border:2px solid #61d7ff;
-  border-radius:11px;
-  outline:0;
-  color:#243b53;
-  background:#f7fbff;
-  box-shadow:inset 0 2px 4px #cdefff,0 0 6px #00aaff;
-  font:inherit;
-  text-shadow:none;
-}
-
-.roomCategoriesPanel>button{
-  border:1.5px solid #bfeaff;
-  border-radius:11px;
-  color:#fff;
-  background:linear-gradient(#1686ca,#00508b 58%,#003360);
-  box-shadow:inset 0 2px 4px #56c9ff,inset 0 -4px 6px #002746,0 2px 5px #00162c;
-  font:inherit;
-  font-weight:800;
-  text-shadow:0 1px 2px #00152d;
-}
-
-.roomCategoriesPanel ol{
-  display:grid;
-  gap:6px;
-  margin:0;
-  padding:0!important;
-  list-style:none;
-}
-
-.roomCategoriesPanel ol li{
-  min-height:40px;
-  margin:0!important;
-  padding:6px 8px;
-  border:1px solid rgba(105,216,255,.62);
-  border-radius:10px;
-  background:rgba(0,38,76,.6);
-  font-size:14px;
-  line-height:1.2;
-}
-
-.roomCategoriesPanel ol li>span:first-child{
-  min-width:0;
-  overflow-wrap:anywhere;
-}
-
-.roomCategoriesPanel ol button{
-  min-width:34px;
-  min-height:32px;
-  border:1px solid #bfeaff;
-  border-radius:8px;
-  color:#fff;
-  background:linear-gradient(#1686ca,#00508b 58%,#003360);
-  font-size:17px;
-  font-weight:800;
-}
-
-.roomCategoriesPanel ol button:disabled{
-  opacity:.38;
-}
-'''
-          css.write_text(css_text)
+          css_b64 = 'LyogUHJlbWl1bSAvIFN1cGVyIFByZW1pdW0gcm9vbSBjYXRlZ29yaWVzIHBhbmVsLiAqLwoucm9vbUNhdGVnb3JpZXNQYW5lbHsKICBib3gtc2l6aW5nOmJvcmRlci1ib3g7CiAgd2lkdGg6bWluKDgydncsY2FsYyh2YXIoLS16bS1zdGFibGUtdmgsMWx2aCkgKiAzNC40NSksMzYwcHgpOwogIG1hcmdpbjowIGF1dG8gMTRweCFpbXBvcnRhbnQ7CiAgcGFkZGluZzoxM3B4IWltcG9ydGFudDsKICBib3JkZXI6MnB4IHNvbGlkICM0M2M4ZmYhaW1wb3J0YW50OwogIGJvcmRlci1yYWRpdXM6MjJweCFpbXBvcnRhbnQ7CiAgY29sb3I6I2ZmZjsKICBiYWNrZ3JvdW5kOmxpbmVhci1ncmFkaWVudCgxNDVkZWcscmdiYSg4LDExNSwxNzUsLjk3KSxyZ2JhKDAsNDgsOTEsLjk4NSkgMzglLHJnYmEoMCwyOCw1OSwuOTkpKTsKICBib3gtc2hhZG93Omluc2V0IDAgMCAwIDJweCAjMDg3Y2JmLGluc2V0IDAgN3B4IDE0cHggIzRjZDFmZjU1LGluc2V0IDAgLTlweCAxNnB4ICMwMDFmNDMsMCAwIDEzcHggIzA0YWFmZiwwIDlweCAxNnB4ICMwMDA4MTljYzsKICB0ZXh0LXNoYWRvdzowIDJweCAzcHggIzAwMTUyZDsKfQoKLnJvb21DYXRlZ29yaWVzUGFuZWwgaDN7CiAgbWFyZ2luOjAgMCA4cHghaW1wb3J0YW50OwogIGZvbnQtc2l6ZTpjbGFtcCgyMXB4LDUuNHZ3LDI3cHgpOwogIGxpbmUtaGVpZ2h0OjEuMTsKfQoKLnJvb21DYXRlZ29yaWVzUGFuZWwgaDR7CiAgbWFyZ2luOjEzcHggMCA4cHghaW1wb3J0YW50OwogIHBhZGRpbmctdG9wOjlweDsKICBib3JkZXItdG9wOjFweCBzb2xpZCByZ2JhKDk3LDIxNSwyNTUsLjQ1KTsKICBjb2xvcjojZmZmOwogIGZvbnQtc2l6ZTpjbGFtcCgxNnB4LDQuNHZ3LDIwcHgpOwogIGxpbmUtaGVpZ2h0OjEuMTU7Cn0KCi5yb29tQ2F0ZWdvcmllc1BhbmVsIGg0OmZpcnN0LW9mLXR5cGV7CiAgbWFyZ2luLXRvcDoxMHB4IWltcG9ydGFudDsKfQoKLnJvb21DYXRlZ29yaWVzUGFuZWw+cHsKICBtYXJnaW46MCAwIDlweCFpbXBvcnRhbnQ7CiAgY29sb3I6I2Q5ZjRmZjsKICBmb250LXNpemU6MTNweDsKICBsaW5lLWhlaWdodDoxLjM1OwogIG9wYWNpdHk6MSFpbXBvcnRhbnQ7Cn0KCi5yb29tQ2F0ZWdvcmllc1BhbmVsIGxhYmVsewogIGJveC1zaXppbmc6Ym9yZGVyLWJveDsKICBtaW4td2lkdGg6MDsKICBtaW4taGVpZ2h0OjQ0cHg7CiAgcGFkZGluZzo3cHggOHB4OwogIGJvcmRlcjoxcHggc29saWQgcmdiYSgxMDUsMjE2LDI1NSwuNzIpOwogIGJvcmRlci1yYWRpdXM6MTFweDsKICBiYWNrZ3JvdW5kOnJnYmEoMCwzOCw3NiwuNjgpOwogIGNvbG9yOiNmZmY7CiAgZm9udC1zaXplOjE0cHg7CiAgbGluZS1oZWlnaHQ6MS4yOwogIHRleHQtc2hhZG93OjAgMXB4IDJweCAjMDAxNTJkOwp9Cgoucm9vbUNhdGVnb3JpZXNQYW5lbCBsYWJlbCBidXR0b257CiAgbWluLXdpZHRoOjA7CiAgY29sb3I6I2ZmZiFpbXBvcnRhbnQ7CiAgdGV4dC1kZWNvcmF0aW9uOm5vbmUhaW1wb3J0YW50OwogIG92ZXJmbG93LXdyYXA6YW55d2hlcmU7CiAgbGluZS1oZWlnaHQ6MS4yIWltcG9ydGFudDsKICB0ZXh0LXNoYWRvdzowIDFweCAycHggIzAwMTUyZDsKfQoKLnJvb21DYXRlZ29yaWVzUGFuZWwgaW5wdXRbdHlwZT0iY2hlY2tib3giXXsKICBmbGV4OjAgMCBhdXRvOwogIHdpZHRoOjIwcHg7CiAgaGVpZ2h0OjIwcHg7CiAgYWNjZW50LWNvbG9yOiM1NWQ2M2EhaW1wb3J0YW50Owp9Cgoucm9vbUNhdGVnb3JpZXNQYW5lbCBsYWJlbD5zcGFuW2FyaWEtaGlkZGVuPSJ0cnVlIl17CiAgd2lkdGg6MjBweCFpbXBvcnRhbnQ7CiAgaGVpZ2h0OjIwcHghaW1wb3J0YW50OwogIGZsZXgtYmFzaXM6MjBweCFpbXBvcnRhbnQ7CiAgYm9yZGVyOjEuNXB4IHNvbGlkICM4NGRmZmYhaW1wb3J0YW50OwogIGJhY2tncm91bmQ6cmdiYSgwLDI1LDU1LC43OCkhaW1wb3J0YW50OwogIGNvbG9yOiNmZmYhaW1wb3J0YW50OwogIGJveC1zaGFkb3c6aW5zZXQgMCAwIDRweCByZ2JhKDg1LDIxMywyNTUsLjM1KTsKfQoKLnJvb21DYXRlZ29yaWVzUGFuZWwgc2VjdGlvbnsKICBtYXJnaW4tdG9wOjEwcHghaW1wb3J0YW50OwogIHBhZGRpbmc6MTBweCFpbXBvcnRhbnQ7CiAgYm9yZGVyOjEuNXB4IHNvbGlkICNmZmQ3NWQhaW1wb3J0YW50OwogIGJvcmRlci1yYWRpdXM6MTJweCFpbXBvcnRhbnQ7CiAgY29sb3I6I2ZmZiFpbXBvcnRhbnQ7CiAgYmFja2dyb3VuZDpyZ2JhKDgxLDQ5LDAsLjgyKSFpbXBvcnRhbnQ7CiAgdGV4dC1zaGFkb3c6MCAycHggMnB4ICMwMDE1MmQ7Cn0KCi5yb29tQ2F0ZWdvcmllc1BhbmVsIHNlY3Rpb24gcHsKICBtYXJnaW46N3B4IDA7CiAgY29sb3I6I2ZmZjsKICBsaW5lLWhlaWdodDoxLjM1Owp9Cgoucm9vbUNhdGVnb3JpZXNQYW5lbCBzZWN0aW9uIGJ1dHRvbnsKICBjb2xvcjojZmZmIWltcG9ydGFudDsKICB0ZXh0LXNoYWRvdzowIDFweCAycHggIzAwMTUyZDsKfQoKLnJvb21DYXRlZ29yaWVzUGFuZWwgaW5wdXQ6bm90KFt0eXBlPSJjaGVja2JveCJdKXsKICBib3gtc2l6aW5nOmJvcmRlci1ib3g7CiAgbWluLXdpZHRoOjA7CiAgYm9yZGVyOjJweCBzb2xpZCAjNjFkN2ZmOwogIGJvcmRlci1yYWRpdXM6MTFweDsKICBvdXRsaW5lOjA7CiAgY29sb3I6IzI0M2I1MzsKICBiYWNrZ3JvdW5kOiNmN2ZiZmY7CiAgYm94LXNoYWRvdzppbnNldCAwIDJweCA0cHggI2NkZWZmZiwwIDAgNnB4ICMwMGFhZmY7CiAgZm9udDppbmhlcml0OwogIHRleHQtc2hhZG93Om5vbmU7Cn0KCi5yb29tQ2F0ZWdvcmllc1BhbmVsPmJ1dHRvbnsKICBib3JkZXI6MS41cHggc29saWQgI2JmZWFmZjsKICBib3JkZXItcmFkaXVzOjExcHg7CiAgY29sb3I6I2ZmZjsKICBiYWNrZ3JvdW5kOmxpbmVhci1ncmFkaWVudCgjMTY4NmNhLCMwMDUwOGIgNTglLCMwMDMzNjApOwogIGJveC1zaGFkb3c6aW5zZXQgMCAycHggNHB4ICM1NmM5ZmYsaW5zZXQgMCAtNHB4IDZweCAjMDAyNzQ2LDAgMnB4IDVweCAjMDAxNjJjOwogIGZvbnQ6aW5oZXJpdDsKICBmb250LXdlaWdodDo4MDA7CiAgdGV4dC1zaGFkb3c6MCAxcHggMnB4ICMwMDE1MmQ7Cn0KCi5yb29tQ2F0ZWdvcmllc1BhbmVsIG9sewogIGRpc3BsYXk6Z3JpZDsKICBnYXA6NnB4OwogIG1hcmdpbjowOwogIHBhZGRpbmc6MCFpbXBvcnRhbnQ7CiAgbGlzdC1zdHlsZTpub25lOwp9Cgoucm9vbUNhdGVnb3JpZXNQYW5lbCBvbCBsaXsKICBtaW4taGVpZ2h0OjQwcHg7CiAgbWFyZ2luOjAhaW1wb3J0YW50OwogIHBhZGRpbmc6NnB4IDhweDsKICBib3JkZXI6MXB4IHNvbGlkIHJnYmEoMTA1LDIxNiwyNTUsLjYyKTsKICBib3JkZXItcmFkaXVzOjEwcHg7CiAgYmFja2dyb3VuZDpyZ2JhKDAsMzgsNzYsLjYpOwogIGZvbnQtc2l6ZToxNHB4OwogIGxpbmUtaGVpZ2h0OjEuMjsKfQoKLnJvb21DYXRlZ29yaWVzUGFuZWwgb2wgbGk+c3BhbjpmaXJzdC1jaGlsZHsKICBtaW4td2lkdGg6MDsKICBvdmVyZmxvdy13cmFwOmFueXdoZXJlOwp9Cgoucm9vbUNhdGVnb3JpZXNQYW5lbCBvbCBidXR0b257CiAgbWluLXdpZHRoOjM0cHg7CiAgbWluLWhlaWdodDozMnB4OwogIGJvcmRlcjoxcHggc29saWQgI2JmZWFmZjsKICBib3JkZXItcmFkaXVzOjhweDsKICBjb2xvcjojZmZmOwogIGJhY2tncm91bmQ6bGluZWFyLWdyYWRpZW50KCMxNjg2Y2EsIzAwNTA4YiA1OCUsIzAwMzM2MCk7CiAgZm9udC1zaXplOjE3cHg7CiAgZm9udC13ZWlnaHQ6ODAwOwp9Cgoucm9vbUNhdGVnb3JpZXNQYW5lbCBvbCBidXR0b246ZGlzYWJsZWR7CiAgb3BhY2l0eTouMzg7Cn0K'
+          css.write_text(css_text + '\n' + base64.b64decode(css_b64).decode())
           PY
 
       - name: Validate diff
