@@ -1914,7 +1914,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const canEditRoomCategories =
     isOrganizer &&
-    (roomTier === "super_premium" || premiumCategorySelectionUnlocked || premiumPreviewLockTest);
+    (roomTier === "super_premium" || premiumCategorySelectionUnlocked || (premiumPreviewLockTest && ownedExtendedCategories.length > 0));
 
   function canToggleRoomCategory(category: string) {
     if (!canEditRoomCategories) return false;
