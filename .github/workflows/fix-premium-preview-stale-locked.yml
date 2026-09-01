@@ -1,0 +1,56 @@
+name: Fix stale Premium preview categories
+
+on:
+  push:
+    branches:
+      - design/premium-categories-panel
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/premium-categories-panel
+
+      - name: Remove stale locked categories from Premium preview
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('app/src/app/room/[code]/page.tsx')
+          s = p.read_text()
+          old = '''  useEffect(() => {
+    if (!premiumPreviewLockTest) return;
+    setActiveCategories((current) => uniqueNonEmpty([...PREMIUM_CATEGORIES, ...current]));
+  }, [premiumPreviewLockTest]);'''
+          new = '''  useEffect(() => {
+    if (!premiumPreviewLockTest) return;
+    setActiveCategories((current) =>
+      uniqueNonEmpty([
+        ...PREMIUM_CATEGORIES,
+        ...current.filter((category) =>
+          ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category])
+        ),
+      ])
+    );
+  }, [premiumPreviewLockTest, ownedCategoryProductIds]);'''
+          if s.count(old) != 1:
+              raise SystemExit(f'Expected one preview category normalization block, found {s.count(old)}')
+          p.write_text(s.replace(old, new))
+          PY
+
+      - name: Validate
+        run: git diff --check
+
+      - name: Commit fix and remove helper
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/fix-premium-preview-stale-locked.yml
+          git add app/src/app/room/'[code]'/page.tsx
+          git commit -m "Normalize locked categories in Premium preview"
+          git push
