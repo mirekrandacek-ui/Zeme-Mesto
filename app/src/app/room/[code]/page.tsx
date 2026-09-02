@@ -3560,7 +3560,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         textAlign: "left",
                       }}
                     >
-                      {categoryLabel(premiumLockedOfferCategory)}
+                      {t("categoryPurchaseAction")} {categoryLabel(premiumLockedOfferCategory)}
                       {categoryPlayPrice(premiumLockedOfferCategory)
                         ? ` – ${categoryPlayPrice(premiumLockedOfferCategory)}`
                         : ""}
@@ -3594,6 +3594,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         : ""}{" "}
                       {t("superPremiumUpsellAfter")}
                     </p>
+                    <p>{t("superPremiumBenefitsIntro")}</p>
+                    <ul>
+                      {t("superPremiumBenefits").split("|").map((benefit) => (
+                        <li key={benefit}>{benefit}</li>
+                      ))}
+                    </ul>
                   </section>
                 )}
 
