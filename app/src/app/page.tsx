@@ -294,7 +294,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Součást Super Premium",
     buyPremium: "Koupit Premium",
     superPremiumPurchaseDescription:
-      "Super Premium: neomezený počet hráčů, základní kategorie, rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto. Další kategorie a herní možnosti si postupně odemykáš za coiny získané pravidelným hraním.",
+      "Super Premium: neomezený počet hráčů, základní kategorie a hned navíc Film / Seriál, Sport, Značka a Auto / Moto. Pravidelným hraním získáváš coiny, za které můžeš odemknout další kategorie: Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Řeka / Hora, Povolání a Barva. Za coiny odemkneš také pořadí kategorií, časový limit, vlastní počet kol a vlastní kategorie.",
     upgradeToSuperPremium: "Upgradovat na Super Premium",
     upgradeToSuperPremiumFor: "Upgradovat na Super Premium za",
     buySuperPremium: "Koupit Super Premium",
@@ -342,7 +342,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Included in Super Premium",
     buyPremium: "Buy Premium",
     superPremiumPurchaseDescription:
-      "Super Premium: unlimited players, basic categories, and the extended categories Film / Series, Sport, Brand, and Car / Motorbike. You gradually unlock more categories and game options with coins earned through regular play.",
+      "Super Premium: unlimited players, all basic categories, plus Film / Series, Sport, Brand and Car / Motorbike right away. Regular play earns you coins that can unlock more categories: Actor / Actress, Singer / Band, River / Mountain, Job and Colour. Coins can also unlock category ordering, a time limit, custom round count and custom categories.",
     upgradeToSuperPremium: "Upgrade to Super Premium",
     upgradeToSuperPremiumFor: "Upgrade to Super Premium for",
     buySuperPremium: "Buy Super Premium",
@@ -391,7 +391,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Incluido en Super Premium",
     buyPremium: "Comprar Premium",
     superPremiumPurchaseDescription:
-      "Super Premium: jugadores ilimitados, categorías básicas y las categorías ampliadas Película / Serie, Deporte, Marca y Coche / Moto. Desbloqueas poco a poco más categorías y opciones de juego con monedas obtenidas jugando con regularidad.",
+      "Super Premium: jugadores ilimitados, todas las categorías básicas y, desde el principio, Película / Serie, Deporte, Marca y Coche / Moto. Jugando con regularidad ganas monedas para desbloquear más categorías: Actor / Actriz, Cantante / Grupo, Río / Montaña, Profesión y Color. Con monedas también puedes desbloquear el orden de categorías, límite de tiempo, número personalizado de rondas y categorías propias.",
     upgradeToSuperPremium: "Pasar a Super Premium",
     upgradeToSuperPremiumFor: "Pasar a Super Premium por",
     buySuperPremium: "Comprar Super Premium",
@@ -442,7 +442,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "In Super Premium enthalten",
     buyPremium: "Premium kaufen",
     superPremiumPurchaseDescription:
-      "Super Premium: unbegrenzt viele Spieler, Grundkategorien sowie die erweiterten Kategorien Film / Serie, Sportart, Marke und Auto / Motorrad. Weitere Kategorien und Spieloptionen schaltest du nach und nach mit Coins frei, die du durch regelmäßiges Spielen verdienst.",
+      "Super Premium: unbegrenzt viele Spieler, alle Grundkategorien und sofort zusätzlich Film / Serie, Sportart, Marke und Auto / Motorrad. Durch regelmäßiges Spielen verdienst du Coins, mit denen du weitere Kategorien freischalten kannst: Schauspieler / Schauspielerin, Sänger / Sängerin / Band, Fluss / Berg, Beruf und Farbe. Mit Coins lassen sich außerdem Kategorienreihenfolge, Zeitlimit, eigene Rundenzahl und eigene Kategorien freischalten.",
     upgradeToSuperPremium: "Auf Super Premium upgraden",
     upgradeToSuperPremiumFor: "Auf Super Premium upgraden für",
     buySuperPremium: "Super Premium kaufen",
@@ -483,7 +483,7 @@ const HOME_TEXT = {
     showOtherModes: "Afficher les autres modes",
     includedInSuperPremium: "Inclus dans Super Premium",
     buyPremium: "Acheter Premium",
-    superPremiumPurchaseDescription: "Super Premium : nombre de joueurs illimité, catégories de base et catégories supplémentaires Film / Série, Sport, Marque et Voiture / Moto. Tu débloques progressivement d’autres catégories et options de jeu avec des pièces gagnées en jouant régulièrement.",
+    superPremiumPurchaseDescription: "Super Premium : joueurs illimités, toutes les catégories de base, plus dès le départ Film / Série, Sport, Marque et Voiture / Moto. En jouant régulièrement, tu gagnes des pièces pour débloquer d’autres catégories : Acteur / Actrice, Chanteur / Groupe, Fleuve / Montagne, Métier et Couleur. Les pièces permettent aussi de débloquer l’ordre des catégories, une limite de temps, un nombre de manches personnalisé et des catégories personnalisées.",
     upgradeToSuperPremium: "Passer à Super Premium",
     upgradeToSuperPremiumFor: "Passer à Super Premium pour",
     buySuperPremium: "Acheter Super Premium",
@@ -523,7 +523,7 @@ const HOME_TEXT = {
     showOtherModes: "Mostrar outros modos",
     includedInSuperPremium: "Incluído no Super Premium",
     buyPremium: "Comprar Premium",
-    superPremiumPurchaseDescription: "Super Premium: jogadores ilimitados, categorias básicas e as categorias adicionais Filme / Série, Esporte, Marca e Carro / Moto. Você libera gradualmente mais categorias e opções de jogo com moedas ganhas jogando regularmente.",
+    superPremiumPurchaseDescription: "Super Premium: jogadores ilimitados, todas as categorias básicas e, desde o início, Filme / Série, Esporte, Marca e Carro / Moto. Jogando regularmente, você ganha moedas para desbloquear mais categorias: Ator / Atriz, Cantor / Banda, Rio / Montanha, Profissão e Cor. As moedas também desbloqueiam a ordem das categorias, limite de tempo, número personalizado de rodadas e categorias próprias.",
     upgradeToSuperPremium: "Fazer upgrade para Super Premium",
     upgradeToSuperPremiumFor: "Fazer upgrade para Super Premium por",
     buySuperPremium: "Comprar Super Premium",
@@ -562,7 +562,7 @@ const HOME_TEXT = {
     showOtherModes: "Tampilkan mode lain",
     includedInSuperPremium: "Termasuk dalam Super Premium",
     buyPremium: "Beli Premium",
-    superPremiumPurchaseDescription: "Super Premium: pemain tanpa batas, kategori dasar, serta kategori tambahan Film / Serial, Olahraga, Merek, dan Mobil / Motor. Kamu membuka lebih banyak kategori dan opsi permainan secara bertahap dengan koin yang diperoleh dari bermain secara rutin.",
+    superPremiumPurchaseDescription: "Super Premium: pemain tanpa batas, semua kategori dasar, ditambah langsung Film / Serial, Olahraga, Merek, dan Mobil / Motor. Dengan bermain rutin, kamu mendapatkan koin untuk membuka kategori lain: Aktor / Aktris, Penyanyi / Band, Sungai / Gunung, Pekerjaan, dan Warna. Koin juga dapat membuka urutan kategori, batas waktu, jumlah ronde khusus, dan kategori buatan sendiri.",
     upgradeToSuperPremium: "Tingkatkan ke Super Premium",
     upgradeToSuperPremiumFor: "Tingkatkan ke Super Premium seharga",
     buySuperPremium: "Beli Super Premium",
@@ -601,7 +601,7 @@ const HOME_TEXT = {
     showOtherModes: "Diğer modları göster",
     includedInSuperPremium: "Super Premium'a dahil",
     buyPremium: "Premium satın al",
-    superPremiumPurchaseDescription: "Super Premium: sınırsız oyuncu, temel kategoriler ve Film / Dizi, Spor, Marka ile Araba / Motosiklet ek kategorileri. Düzenli oynayarak kazandığın coinlerle zamanla daha fazla kategori ve oyun seçeneğinin kilidini açarsın.",
+    superPremiumPurchaseDescription: "Super Premium: sınırsız oyuncu, tüm temel kategoriler ve hemen Film / Dizi, Spor, Marka ve Araba / Motosiklet. Düzenli oynayarak kazanılan coinlerle Aktör / Aktris, Şarkıcı / Grup, Nehir / Dağ, Meslek ve Renk gibi diğer kategorilerin kilidini açabilirsin. Coinlerle kategori sıralaması, süre sınırı, özel tur sayısı ve özel kategoriler de açılabilir.",
     upgradeToSuperPremium: "Super Premium'a yükselt",
     upgradeToSuperPremiumFor: "Şu fiyata Super Premium'a yükselt",
     buySuperPremium: "Super Premium satın al",
@@ -640,7 +640,7 @@ const HOME_TEXT = {
     showOtherModes: "Pokaż pozostałe tryby",
     includedInSuperPremium: "Wliczone w Super Premium",
     buyPremium: "Kup Premium",
-    superPremiumPurchaseDescription: "Super Premium: nieograniczona liczba graczy, kategorie podstawowe oraz kategorie rozszerzone Film / Serial, Sport, Marka i Samochód / Motocykl. Kolejne kategorie i opcje gry odblokowujesz stopniowo za monety zdobywane podczas regularnej gry.",
+    superPremiumPurchaseDescription: "Super Premium: nieograniczona liczba graczy, wszystkie kategorie podstawowe oraz od razu Film / Serial, Sport, Marka i Samochód / Motocykl. Za regularną grę zdobywasz monety, którymi odblokujesz kolejne kategorie: Aktor / Aktorka, Piosenkarz / Zespół, Rzeka / Góra, Zawód i Kolor. Monety pozwalają też odblokować kolejność kategorii, limit czasu, własną liczbę rund i własne kategorie.",
     upgradeToSuperPremium: "Przejdź na Super Premium",
     upgradeToSuperPremiumFor: "Przejdź na Super Premium za",
     buySuperPremium: "Kup Super Premium",
@@ -680,7 +680,7 @@ const HOME_TEXT = {
     showOtherModes: "Mostra le altre modalità",
     includedInSuperPremium: "Incluso in Super Premium",
     buyPremium: "Acquista Premium",
-    superPremiumPurchaseDescription: "Super Premium: giocatori illimitati, categorie base e le categorie estese Film / Serie TV, Sport, Marca e Auto / Moto. Sblocchi gradualmente altre categorie e opzioni di gioco con le monete guadagnate giocando regolarmente.",
+    superPremiumPurchaseDescription: "Super Premium: giocatori illimitati, tutte le categorie base e subito anche Film / Serie TV, Sport, Marca e Auto / Moto. Giocando regolarmente guadagni monete con cui sbloccare altre categorie: Attore / Attrice, Cantante / Gruppo, Fiume / Montagna, Professione e Colore. Con le monete puoi anche sbloccare l’ordine delle categorie, il limite di tempo, un numero personalizzato di turni e categorie personalizzate.",
     upgradeToSuperPremium: "Passa a Super Premium",
     upgradeToSuperPremiumFor: "Passa a Super Premium per",
     buySuperPremium: "Acquista Super Premium",
@@ -951,11 +951,17 @@ export default function Home() {
     billingProducts.find((product) => product.productId === "premium")
       ?.formattedPrice;
 
+  const isVercelPreview =
+    typeof window !== "undefined" && window.location.hostname.endsWith("vercel.app");
+  const premiumDisplayPrice = premiumPrice ?? (isVercelPreview ? "69 Kč" : undefined);
+
   const superPremiumProduct =
     billingProducts.find((product) => product.productId === "super_premium");
 
   const superPremiumPrice =
     superPremiumProduct?.formattedPrice;
+  const superPremiumDisplayPrice =
+    superPremiumPrice ?? (isVercelPreview ? "129 Kč" : undefined);
 
   const superPremiumUpgradePrice =
     superPremiumProduct?.offers?.find(
@@ -1302,12 +1308,12 @@ export default function Home() {
 
         {!roomCodeOpen && showOtherModes && (
           <section className={styles.purchaseOptions}>
-            <article><h3>Premium{premiumPrice ? ` – ${premiumPrice}` : ""}</h3><p>{h("premiumDescription")}</p>
+            <article><h3>Premium{premiumDisplayPrice ? ` – ${premiumDisplayPrice}` : ""}</h3><p>{h("premiumDescription")}</p>
               <button type="button" disabled={tier === "premium" || tier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("premium")}>
                 {tier === "premium" ? h("active") : tier === "super_premium" ? h("includedInSuperPremium") : h("buyPremium")}
               </button>
             </article>
-            <article><h3>Super Premium{superPremiumPrice ? ` – ${superPremiumPrice}` : ""}</h3><p>{h("superPremiumPurchaseDescription")}</p><p>{h("superPremiumCategories")}</p>
+            <article><h3>Super Premium{superPremiumDisplayPrice ? ` – ${superPremiumDisplayPrice}` : ""}</h3><p>{h("superPremiumPurchaseDescription")}</p>
               <button type="button" disabled={tier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("super_premium")}>
                 {tier === "super_premium" ? h("active") : tier === "premium" ? superPremiumUpgradePrice ? `${h("upgradeToSuperPremiumFor")} ${superPremiumUpgradePrice}` : h("upgradeToSuperPremium") : h("buySuperPremium")}
               </button>
