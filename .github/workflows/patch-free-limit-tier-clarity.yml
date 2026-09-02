@@ -1,0 +1,145 @@
+name: Patch Free limit tier clarity
+on:
+  push:
+    branches: [fix/free-limit-tier-clarity]
+    paths: [.github/workflows/patch-free-limit-tier-clarity.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/free-limit-tier-clarity
+      - name: Clarify Free limit tiers on homepage and scoring
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          translations = [
+            "Pravidelným hraním v režimu Super Premium získáváš coiny, za které dostáváš další herní výhody:",
+            "By playing regularly in Super Premium, you earn coins that give you more game advantages:",
+            "Jugando con regularidad en el modo Super Premium ganas monedas con las que obtienes más ventajas de juego:",
+            "Durch regelmäßiges Spielen im Super-Premium-Modus erhältst du Münzen, mit denen du weitere Spielvorteile bekommst:",
+            "En jouant régulièrement en mode Super Premium, tu gagnes des pièces qui te donnent accès à davantage d’avantages de jeu :",
+            "Jogando regularmente no modo Super Premium, você ganha moedas que dão acesso a mais vantagens no jogo:",
+            "Dengan bermain rutin dalam mode Super Premium, kamu mendapatkan koin untuk membuka lebih banyak keuntungan dalam permainan:",
+            "Super Premium modunda düzenli oynayarak daha fazla oyun avantajı sağlayan coinler kazanırsın:",
+            "Regularnie grając w trybie Super Premium, zdobywasz monety, za które otrzymujesz kolejne korzyści w grze:",
+            "Giocando regolarmente in modalità Super Premium ottieni monete con cui sblocchi altri vantaggi di gioco:",
+          ]
+
+          def replace_intro_values(path):
+            p = Path(path)
+            s = p.read_text()
+            matches = list(re.finditer(r'superPremiumBenefitsIntro:\s*"[^"]*"', s))
+            if len(matches) != 10:
+              raise SystemExit(f'{path}: expected 10 intro strings, found {len(matches)}')
+            for match, text in reversed(list(zip(matches, translations))):
+              replacement = f'superPremiumBenefitsIntro: "{text}"'
+              s = s[:match.start()] + replacement + s[match.end():]
+            p.write_text(s)
+
+          replace_intro_values('app/src/app/page.tsx')
+          replace_intro_values('app/src/app/room/[code]/uiText.ts')
+
+          # Homepage Free-limit box
+          p = Path('app/src/app/page.tsx')
+          s = p.read_text()
+          old = '''              <p>{getRoomUiText(language, "freeLimitText")}</p>
+              <button
+                type="button"
+                disabled={purchaseBusy !== null}
+                onClick={() => void startPlayPurchase("premium")}
+              >
+                {h("buyPremium")}
+              </button>
+    <p style={{ marginTop: 8 }}>{h("premiumDescription")}</p>
+              <button
+                type="button"
+                disabled={purchaseBusy !== null}
+                onClick={() => void startPlayPurchase("super_premium")}
+                style={{ marginTop: 10 }}
+              >
+                {h("buySuperPremium")}
+              </button>
+    <p style={{ marginTop: 8 }}>{h("superPremiumPurchaseDescription")}</p>
+    <p>{h("superPremiumBenefitsIntro")}</p>
+    <ul>
+      {h("superPremiumBenefits").split("|").map((benefit) => (
+        <li key={benefit}>{benefit}</li>
+      ))}
+    </ul>
+              <button
+                type="button"
+                disabled={rewardedBusy}
+                onClick={() => void startHomeFreeRewardedAd()}
+                style={{ marginTop: 10 }}
+              >'''
+          new = '''              <p>{getRoomUiText(language, "freeLimitText")}</p>
+              <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
+              <button
+                type="button"
+                disabled={purchaseBusy !== null}
+                onClick={() => void startPlayPurchase("premium")}
+              >
+                {h("buyPremium")}
+              </button>
+              <p style={{ marginTop: 8, fontSize: 14, lineHeight: 1.35 }}>{h("premiumDescription")}</p>
+              <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
+              <button
+                type="button"
+                disabled={purchaseBusy !== null}
+                onClick={() => void startPlayPurchase("super_premium")}
+              >
+                {h("buySuperPremium")}
+              </button>
+              <p style={{ marginTop: 8, fontSize: 14, lineHeight: 1.35 }}>{h("superPremiumPurchaseDescription")}</p>
+              <p style={{ fontSize: 14, lineHeight: 1.35 }}>{h("superPremiumBenefitsIntro")}</p>
+              <ul style={{ fontSize: 14, lineHeight: 1.35 }}>
+                {h("superPremiumBenefits").split("|").map((benefit) => (
+                  <li key={benefit}>{benefit}</li>
+                ))}
+              </ul>
+              <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
+              <button
+                type="button"
+                disabled={rewardedBusy}
+                onClick={() => void startHomeFreeRewardedAd()}
+              >'''
+          if old not in s:
+            raise SystemExit('Homepage Free limit block not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+
+          # Scoring Free-limit box
+          p = Path('app/src/app/room/[code]/page.tsx')
+          s = p.read_text()
+          s = s.replace(
+            '''                  </p>\n\n                  <button\n                    type="button"\n                    disabled={!isOrganizer || categoryPurchaseBusy !== null}\n                    onClick={() => void startPremiumPurchase()}''',
+            '''                  </p>\n\n                  <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />\n                  <button\n                    type="button"\n                    disabled={!isOrganizer || categoryPurchaseBusy !== null}\n                    onClick={() => void startPremiumPurchase()}''',
+            1,
+          )
+          s = s.replace('''                  <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>''', '''                  <p style={{ margin: "8px 2px 0", fontSize: 14, lineHeight: 1.35 }}>''', 1)
+          marker = '''                  </p>\n\n                  <button\n                    type="button"\n                    disabled={!isOrganizer || categoryPurchaseBusy !== null}\n                    onClick={() => void startSuperPremiumPurchase()}'''
+          replacement = '''                  </p>\n\n                  <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />\n                  <button\n                    type="button"\n                    disabled={!isOrganizer || categoryPurchaseBusy !== null}\n                    onClick={() => void startSuperPremiumPurchase()}'''
+          if marker not in s:
+            raise SystemExit('Scoring Premium/Super divider marker not found')
+          s = s.replace(marker, replacement, 1)
+          s = s.replace('''                  <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>''', '''                  <p style={{ margin: "8px 2px 0", fontSize: 14, lineHeight: 1.35 }}>''', 1)
+          s = s.replace('''                  <p style={{ margin: "8px 2px 4px", fontSize: 13, lineHeight: 1.35 }}>''', '''                  <p style={{ margin: "8px 2px 4px", fontSize: 14, lineHeight: 1.35 }}>''', 1)
+          s = s.replace('''        <ul style={{ margin: "0 2px 8px 20px", padding: 0, fontSize: 13, lineHeight: 1.35 }}>''', '''        <ul style={{ margin: "0 2px 8px 20px", padding: 0, fontSize: 14, lineHeight: 1.35 }}>''', 1)
+          reward_marker = '''        </ul>\n\n        <button\n                    type="button"\n                    onClick={startFreeRewardedAd}'''
+          reward_replacement = '''        </ul>\n\n        <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />\n        <button\n                    type="button"\n                    onClick={startFreeRewardedAd}'''
+          if reward_marker not in s:
+            raise SystemExit('Scoring Super/reward divider marker not found')
+          s = s.replace(reward_marker, reward_replacement, 1)
+          p.write_text(s)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add app/src/app/page.tsx app/src/app/room/[code]/page.tsx app/src/app/room/[code]/uiText.ts
+          git commit -m 'Clarify tiers in Free limit panels' || exit 0
+          git push
