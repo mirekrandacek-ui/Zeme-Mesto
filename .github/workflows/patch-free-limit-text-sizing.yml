@@ -1,0 +1,101 @@
+name: Patch Free limit text sizing and reward button
+on:
+  push:
+    branches: [fix/free-limit-tier-clarity]
+    paths: [.github/workflows/patch-free-limit-text-sizing.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/free-limit-tier-clarity
+      - name: Align Free limit text and reward button
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          line1 = [
+              "Sledovat reklamu",
+              "Watch an ad",
+              "Ver un anuncio",
+              "Werbung ansehen",
+              "Regarder une publicité",
+              "Assistir a um anúncio",
+              "Tonton iklan",
+              "Reklam izle",
+              "Obejrzyj reklamę",
+              "Guarda un annuncio",
+          ]
+          line2 = [
+              "a odemknout další 3 kola",
+              "and unlock 3 more rounds",
+              "y desbloquear 3 rondas más",
+              "und 3 weitere Runden freischalten",
+              "et débloquer 3 manches supplémentaires",
+              "e liberar mais 3 rodadas",
+              "dan buka 3 ronde lagi",
+              "ve 3 tur daha aç",
+              "i odblokuj 3 kolejne rundy",
+              "e sblocca altri 3 turni",
+          ]
+
+          # Add explicit two-line reward labels in all supported UI languages.
+          p = Path('app/src/app/room/[code]/uiText.ts')
+          s = p.read_text()
+          matches = list(re.finditer(r'^(\s*)freeRewardButton: "[^"]*",$', s, re.M))
+          if len(matches) != 10:
+              raise SystemExit(f'Expected 10 freeRewardButton entries, found {len(matches)}')
+          for m, first, second in reversed(list(zip(matches, line1, line2))):
+              indent = m.group(1)
+              original = m.group(0)
+              replacement = (
+                  original + '\n' +
+                  f'{indent}freeRewardButtonLine1: "{first}",' + '\n' +
+                  f'{indent}freeRewardButtonLine2: "{second}",'
+              )
+              s = s[:m.start()] + replacement + s[m.end():]
+          p.write_text(s)
+
+          # Homepage Free-limit box: Premium/Super text inherits the same size as Free text.
+          p = Path('app/src/app/page.tsx')
+          s = p.read_text()
+          start = s.index('{freeQuotaExhausted && (')
+          end = s.index('<button className={styles.createButton}', start)
+          block = s[start:end]
+          if block.count('fontSize: 14') != 4:
+              raise SystemExit(f'Homepage: expected 4 explicit 14px sizes, found {block.count("fontSize: 14")}')
+          block = block.replace('fontSize: 14', 'fontSize: "inherit"')
+          old = '''                onClick={() => void startHomeFreeRewardedAd()}\n              >\n                {getRoomUiText(language, "freeRewardButton")}'''
+          new = '''                onClick={() => void startHomeFreeRewardedAd()}\n                style={{ textAlign: "center" }}\n              >\n                <span style={{ display: "block" }}>{getRoomUiText(language, "freeRewardButtonLine1")}</span>\n                <span style={{ display: "block" }}>{getRoomUiText(language, "freeRewardButtonLine2")}</span>'''
+          if old not in block:
+              raise SystemExit('Homepage rewarded button marker not found')
+          block = block.replace(old, new, 1)
+          s = s[:start] + block + s[end:]
+          p.write_text(s)
+
+          # Scoring Free-limit box: Premium/Super text inherits the 16px Free panel size.
+          p = Path('app/src/app/room/[code]/page.tsx')
+          s = p.read_text()
+          start = s.index('shouldShowFreeLimitUpsell ? (')
+          end = s.index(') : isFinalScoringRound', start)
+          block = s[start:end]
+          if block.count('fontSize: 14') != 4:
+              raise SystemExit(f'Scoring: expected 4 explicit 14px sizes, found {block.count("fontSize: 14")}')
+          block = block.replace('fontSize: 14', 'fontSize: "inherit"')
+          old = '''                    onClick={startFreeRewardedAd}\n                    style={{ marginTop: 12, padding: 14, width: "100%", fontWeight: 700 }}\n                  >\n                    {t("freeRewardButton")}'''
+          new = '''                    onClick={startFreeRewardedAd}\n                    style={{ marginTop: 12, padding: 14, width: "100%", fontWeight: 700, textAlign: "center" }}\n                  >\n                    <span style={{ display: "block" }}>{t("freeRewardButtonLine1")}</span>\n                    <span style={{ display: "block" }}>{t("freeRewardButtonLine2")}</span>'''
+          if old not in block:
+              raise SystemExit('Scoring rewarded button marker not found')
+          block = block.replace(old, new, 1)
+          s = s[:start] + block + s[end:]
+          p.write_text(s)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add app/src/app/page.tsx app/src/app/room/[code]/page.tsx app/src/app/room/[code]/uiText.ts
+          git commit -m 'Match Free limit text sizes and center reward button'
+          git push
