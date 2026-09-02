@@ -1287,7 +1287,7 @@ export default function Home() {
               >
                 {h("buyPremium")}
               </button>
-    <p>{h("premiumDescription")}</p>
+    <p style={{ marginTop: 8 }}>{h("premiumDescription")}</p>
               <button
                 type="button"
                 disabled={purchaseBusy !== null}
