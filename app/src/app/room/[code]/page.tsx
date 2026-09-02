@@ -1897,28 +1897,31 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category])
   );
 
-  const premiumCategorySelectionUnlocked =
-    roomTier === "premium" && ownedExtendedCategories.length > 0;
-
   const premiumPreviewLockTest =
     typeof window !== "undefined" &&
     window.location.hostname.endsWith("vercel.app") &&
     new URLSearchParams(window.location.search).get("premiumLockTest") === "1";
 
-  const roomTierForCategoryPreview = premiumPreviewLockTest ? "premium" : roomTier;
+  // Preview simulates only the room tier. Category behavior below uses the same
+  // rules as production Premium instead of separate preview-only permissions.
+  const roomTierForCategoryPreview: RoomTier = premiumPreviewLockTest ? "premium" : roomTier;
+
+  const premiumCategorySelectionUnlocked =
+    roomTierForCategoryPreview === "premium" && ownedExtendedCategories.length > 0;
 
   useEffect(() => {
-    if (!premiumPreviewLockTest) return;
-    setActiveCategories((current) => uniqueNonEmpty([...PREMIUM_CATEGORIES, ...current]));
-  }, [premiumPreviewLockTest]);
+    if (!premiumPreviewLockTest || !roomId) return;
+    if (ownedExtendedCategories.length > 0) return;
+    setActiveCategories(PREMIUM_CATEGORIES);
+  }, [premiumPreviewLockTest, roomId, ownedExtendedCategories.length]);
 
   const canEditRoomCategories =
     isOrganizer &&
-    (roomTier === "super_premium" || premiumCategorySelectionUnlocked || (premiumPreviewLockTest && ownedExtendedCategories.length > 0));
+    (roomTierForCategoryPreview === "super_premium" || premiumCategorySelectionUnlocked);
 
   function canToggleRoomCategory(category: string) {
     if (!canEditRoomCategories) return false;
-    if (roomTier === "super_premium") return true;
+    if (roomTierForCategoryPreview === "super_premium") return true;
     if (PREMIUM_CATEGORIES.includes(category)) return true;
 
     return ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
@@ -1927,14 +1930,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function updateRoomCategories(predefinedCategories: string[], customCategories: string[]) {
     if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
 
-    if (roomTier === "premium" && !premiumCategorySelectionUnlocked) {
+    if (roomTierForCategoryPreview === "premium" && !premiumCategorySelectionUnlocked) {
       setMsg(
         uiMessage({ cs: "Premium má základní kategorie pevně dané. Výběr se odemkne po koupi alespoň jedné rozšířené kategorie.", en: "Premium has fixed basic categories. Category selection unlocks after purchasing at least one extended category.", es: "Premium tiene categorías básicas fijas. La selección se desbloquea al comprar al menos una categoría ampliada." , de: "Premium hat feste Grundkategorien. Die Kategorieauswahl wird nach dem Kauf mindestens einer Zusatzkategorie freigeschaltet.", fr: "Premium propose des catégories de base fixes. La sélection des catégories se déverrouille après l’achat d’au moins une catégorie supplémentaire.", "pt-BR": "O Premium tem categorias básicas fixas. A seleção de categorias é liberada após a compra de pelo menos uma categoria adicional.", id: "Premium memiliki kategori dasar tetap. Pemilihan kategori akan terbuka setelah membeli setidaknya satu kategori tambahan.", tr: "Premium'da temel kategoriler sabittir. En az bir ek kategori satın alındığında kategori seçimi açılır.", pl: "Premium ma stałe kategorie podstawowe. Wybór kategorii zostanie odblokowany po zakupie co najmniej jednej kategorii rozszerzonej.", it: "Premium ha categorie base fisse. La selezione delle categorie si sblocca dopo l’acquisto di almeno una categoria estesa."})
       );
       return;
     }
 
-    if (roomTier === "premium") {
+    if (roomTierForCategoryPreview === "premium") {
       const unownedExtendedCategories = predefinedCategories.filter(
         (category) =>
           SUPER_PREMIUM_EXTRA_CATEGORIES.includes(category) &&
@@ -1950,7 +1953,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     }
 
     const cleanedCustomCategories =
-      roomTier === "super_premium"
+      roomTierForCategoryPreview === "super_premium"
         ? uniqueNonEmpty(customCategories).slice(0, 5)
         : [];
     const finalCategories = uniqueNonEmpty([...predefinedCategories, ...cleanedCustomCategories]);
