@@ -657,7 +657,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Wliczone w Super Premium",
     buyPremium: "Kup Premium",
     superPremiumPurchaseDescription: "Nieograniczona liczba graczy, dowolnie wybierane kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
-    superPremiumBenefitsIntro: "Regularnie grając w trybie Super Premium, zdobywasz monety, za které otrzymujesz kolejne korzyści w grze:",
+    superPremiumBenefitsIntro: "Regularnie grając w trybie Super Premium, zdobywasz monety, za które otrzymujesz kolejne korzyści w grze:",
     superPremiumBenefits: "kategorie Aktor / Aktorka, Piosenkarz / Zespół, Rzeka / Góra, Zawód i Kolor|możliwość tworzenia własnych kategorii|wybór kolejności kategorii podczas wpisywania odpowiedzi|limit czasu na rundę|możliwość ustawienia liczby rund",
     upgradeToSuperPremium: "Przejdź na Super Premium",
     upgradeToSuperPremiumFor: "Przejdź na Super Premium za",

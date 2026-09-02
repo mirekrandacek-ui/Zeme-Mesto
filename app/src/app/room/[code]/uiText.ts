@@ -938,7 +938,7 @@ export const UI_TEXT = {
     premiumLockedCategoryOfferIntro: "Kupując tę kategorię rozszerzoną, odblokujesz także swobodny wybór spośród kategorii podstawowych i wszystkich zakupionych kategorii rozszerzonych.",
     superPremiumUpsellBefore: "Albo dokup",
     superPremiumLinkText: "Super Premium",
-    superPremiumBenefitsIntro: "Regularnie grając w trybie Super Premium, zdobywasz monety, za které otrzymujesz kolejne korzyści w grze:",
+    superPremiumBenefitsIntro: "Regularnie grając w trybie Super Premium, zdobywasz monety, za które otrzymujesz kolejne korzyści w grze:",
     superPremiumBenefits: "kategorie Aktor / Aktorka, Piosenkarz / Zespół, Rzeka / Góra, Zawód i Kolor|możliwość tworzenia własnych kategorii|wybór kolejności kategorii podczas wpisywania odpowiedzi|limit czasu na rundę|możliwość ustawienia liczby rund",
     superPremiumUpsellAfter: "i zyskaj nieograniczoną liczbę graczy, dowolnie wybierane kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
     changePlayerOnDevice: "Zmień gracza na tym urządzeniu",
