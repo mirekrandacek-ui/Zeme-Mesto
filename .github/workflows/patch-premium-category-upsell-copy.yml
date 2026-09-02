@@ -1,0 +1,99 @@
+name: Patch Premium category upsell copy
+on:
+  push:
+    branches: [design/premium-categories-panel]
+    paths: [.github/workflows/patch-premium-category-upsell-copy.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/premium-categories-panel
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Patch Premium category purchase CTA and Super Premium upsell
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          ui=Path('app/src/app/room/[code]/uiText.ts')
+          s=ui.read_text()
+
+          purchase_actions=['Koupit','Buy','Comprar','Kaufen','Acheter','Comprar','Beli','Satın al','Kup','Acquista']
+          upsell_before=['A nebo si dokup','Or upgrade to','O mejora a','Oder hol dir','Ou passe à','Ou faça upgrade para','Atau upgrade ke','Ya da yükselt','Albo dokup','Oppure passa a']
+          upsell_after=[
+            'a získáš neomezený počet hráčů, základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.',
+            'and get unlimited players, all basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.',
+            'y obtén jugadores ilimitados, todas las categorías básicas y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto.',
+            'und erhalte unbegrenzt viele Spieler, alle Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad.',
+            'et profite d’un nombre de joueurs illimité, de toutes les catégories de base et de 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto.',
+            'e tenha jogadores ilimitados, todas as categorias básicas e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto.',
+            'dan dapatkan pemain tanpa batas, semua kategori dasar, serta 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor.',
+            've sınırsız oyuncu, tüm temel kategoriler ve 4 ek kategori elde et: Film / Dizi, Spor, Marka ve Araba / Motosiklet.',
+            'i zyskaj nieograniczoną liczbę graczy, wszystkie kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.',
+            'e ottieni giocatori illimitati, tutte le categorie base e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto.'
+          ]
+          intros=[
+            'Pravidelným hraním získáváš coiny, za které dostáváš další herní výhody:',
+            'Regular play earns you coins that give you more game advantages:',
+            'Jugando con regularidad ganas monedas con las que obtienes más ventajas de juego:',
+            'Durch regelmäßiges Spielen verdienst du Coins, mit denen du weitere Spielvorteile erhältst:',
+            'En jouant régulièrement, tu gagnes des pièces qui te donnent d’autres avantages de jeu :',
+            'Jogando regularmente, você ganha moedas que dão acesso a mais vantagens no jogo:',
+            'Dengan bermain rutin, kamu mendapatkan koin untuk memperoleh lebih banyak keuntungan dalam permainan:',
+            'Düzenli oynayarak daha fazla oyun avantajı sağlayan coinler kazanırsın:',
+            'Za regularną grę zdobywasz monety, które dają kolejne korzyści w grze:',
+            'Giocando regolarmente guadagni monete con cui ottieni altri vantaggi di gioco:'
+          ]
+          benefits=[
+            'kategorie Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Řeka / Hora, Povolání a Barva|možnost vytvořit si vlastní kategorie|zvolit si, v jakém pořadí budou kategorie při zapisování odpovědí|časový limit na kolo|možnost nastavení počtu kol',
+            'categories Actor / Actress, Singer / Band, River / Mountain, Job and Colour|the option to create custom categories|choose the order in which categories appear when entering answers|a time limit for each round|the option to set the number of rounds',
+            'categorías Actor / Actriz, Cantante / Grupo, Río / Montaña, Profesión y Color|la posibilidad de crear categorías propias|elegir el orden de las categorías al escribir las respuestas|límite de tiempo por ronda|la posibilidad de ajustar el número de rondas',
+            'Kategorien Schauspieler / Schauspielerin, Sänger / Sängerin / Band, Fluss / Berg, Beruf und Farbe|eigene Kategorien erstellen|die Reihenfolge der Kategorien beim Eingeben der Antworten wählen|Zeitlimit pro Runde|die Rundenzahl einstellen',
+            'catégories Acteur / Actrice, Chanteur / Groupe, Fleuve / Montagne, Métier et Couleur|possibilité de créer tes propres catégories|choisir l’ordre des catégories lors de la saisie des réponses|limite de temps par manche|possibilité de régler le nombre de manches',
+            'categorias Ator / Atriz, Cantor / Banda, Rio / Montanha, Profissão e Cor|possibilidade de criar categorias próprias|escolher a ordem das categorias ao preencher as respostas|limite de tempo por rodada|possibilidade de definir o número de rodadas',
+            'kategori Aktor / Aktris, Penyanyi / Band, Sungai / Gunung, Pekerjaan, dan Warna|opsi membuat kategori sendiri|memilih urutan kategori saat mengisi jawaban|batas waktu per ronde|opsi mengatur jumlah ronde',
+            'Aktör / Aktris, Şarkıcı / Grup, Nehir / Dağ, Meslek ve Renk kategorileri|kendi kategorilerini oluşturma|cevapları yazarken kategori sırasını seçme|tur başına süre sınırı|tur sayısını ayarlama',
+            'kategorie Aktor / Aktorka, Piosenkarz / Zespół, Rzeka / Góra, Zawód i Kolor|możliwość tworzenia własnych kategorii|wybór kolejności kategorii podczas wpisywania odpowiedzi|limit czasu na rundę|możliwość ustawienia liczby rund',
+            'categorie Attore / Attrice, Cantante / Gruppo, Fiume / Montagna, Professione e Colore|possibilità di creare categorie personalizzate|scegliere l’ordine delle categorie durante l’inserimento delle risposte|limite di tempo per turno|possibilità di impostare il numero di turni'
+          ]
+
+          locales=['cs','en','es','de','fr','pt-BR','id','tr','pl','it']
+          for i,loc in enumerate(locales):
+              start=s.index(f'  {loc}: {{')
+              end=s.find('\n  },', start)
+              block=s[start:end]
+              block=re.sub(r'superPremiumUpsellBefore: "[^"]*"', f'superPremiumUpsellBefore: "{upsell_before[i]}"', block)
+              block=re.sub(r'superPremiumUpsellAfter: "[^"]*"', f'superPremiumUpsellAfter: "{upsell_after[i]}"', block)
+              if 'categoryPurchaseAction:' not in block:
+                  block=block.replace('premiumLockedCategoryOfferIntro:', f'categoryPurchaseAction: "{purchase_actions[i]}",\n    premiumLockedCategoryOfferIntro:', 1)
+              if 'superPremiumBenefitsIntro:' not in block:
+                  block=block.replace('superPremiumUpsellAfter:', f'superPremiumBenefitsIntro: "{intros[i]}",\n    superPremiumBenefits: "{benefits[i]}",\n    superPremiumUpsellAfter:', 1)
+              s=s[:start]+block+s[end:]
+          ui.write_text(s)
+
+          p=Path('app/src/app/room/[code]/page.tsx')
+          s=p.read_text()
+          old='''                      {categoryLabel(premiumLockedOfferCategory)}\n                      {categoryPlayPrice(premiumLockedOfferCategory)'''
+          new='''                      {t("categoryPurchaseAction")} {categoryLabel(premiumLockedOfferCategory)}\n                      {categoryPlayPrice(premiumLockedOfferCategory)'''
+          if old not in s:
+              raise SystemExit('category purchase button label not found')
+          s=s.replace(old,new,1)
+
+          old2='''                      {t("superPremiumUpsellAfter")}\n                    </p>'''
+          new2='''                      {t("superPremiumUpsellAfter")}\n                    </p>\n                    <p>{t("superPremiumBenefitsIntro")}</p>\n                    <ul>\n                      {t("superPremiumBenefits").split("|").map((benefit) => (\n                        <li key={benefit}>{benefit}</li>\n                      ))}\n                    </ul>'''
+          if old2 not in s:
+              raise SystemExit('Super Premium upsell tail not found')
+          s=s.replace(old2,new2,1)
+          p.write_text(s)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add app/src/app/room/[code]/uiText.ts app/src/app/room/[code]/page.tsx
+          git commit -m 'Clarify Premium category purchase upsell' || exit 0
+          git push
