@@ -1232,7 +1232,7 @@ export default function Home() {
 
           <div className={styles.description}>
             {tier === "free" && <p>{h("freeDescription")}</p>}
-            {tier === "premium" && <p>{h("premiumDescription")}</p>}
+            {tier === "premium" && <p style={{ marginTop: 8 }}>{h("premiumDescription")}</p>}
             {tier === "super_premium" && <><p>{h("superPremiumDescription")}</p><p>{h("superPremiumCategories")}</p></>}
           </div>
 
@@ -1296,7 +1296,7 @@ export default function Home() {
               >
                 {h("buySuperPremium")}
               </button>
-    <p>{h("superPremiumPurchaseDescription")}</p>
+    <p style={{ marginTop: 8 }}>{h("superPremiumPurchaseDescription")}</p>
     <p>{h("superPremiumBenefitsIntro")}</p>
     <ul>
       {h("superPremiumBenefits").split("|").map((benefit) => (
