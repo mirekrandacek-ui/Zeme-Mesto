@@ -1287,6 +1287,7 @@ export default function Home() {
               >
                 {h("buyPremium")}
               </button>
+    <p>{h("premiumDescription")}</p>
               <button
                 type="button"
                 disabled={purchaseBusy !== null}
@@ -1295,6 +1296,13 @@ export default function Home() {
               >
                 {h("buySuperPremium")}
               </button>
+    <p>{h("superPremiumPurchaseDescription")}</p>
+    <p>{h("superPremiumBenefitsIntro")}</p>
+    <ul>
+      {h("superPremiumBenefits").split("|").map((benefit) => (
+        <li key={benefit}>{benefit}</li>
+      ))}
+    </ul>
               <button
                 type="button"
                 disabled={rewardedBusy}
