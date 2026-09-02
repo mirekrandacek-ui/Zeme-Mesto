@@ -4200,16 +4200,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   </button>
                   <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>
                     {uiMessage({
-            cs: "Neomezený počet hráčů, základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.",
-            en: "Unlimited players, all basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.",
-            es: "Jugadores ilimitados, todas las categorías básicas y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto.",
-            de: "Unbegrenzt viele Spieler, alle Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad.",
-            fr: "Nombre de joueurs illimité, toutes les catégories de base et 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto.",
-            "pt-BR": "Jogadores ilimitados, todas as categorias básicas e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto.",
-            id: "Pemain tanpa batas, semua kategori dasar, serta 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor.",
-            tr: "Sınırsız oyuncu, tüm temel kategoriler ve 4 ek kategori: Film / Dizi, Spor, Marka ve Araba / Motosiklet.",
-            pl: "Nieograniczona liczba graczy, wszystkie kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
-            it: "Giocatori illimitati, tutte le categorie base e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto.",
+            cs: "Neomezený počet hráčů, volitelné základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.",
+            en: "Unlimited players, optional basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.",
+            es: "Jugadores ilimitados, categorías básicas opcionales y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto.",
+            de: "Unbegrenzt viele Spieler, frei wählbare Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad.",
+            fr: "Nombre de joueurs illimité, catégories de base au choix et 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto.",
+            "pt-BR": "Jogadores ilimitados, categorias básicas opcionais e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto.",
+            id: "Pemain tanpa batas, kategori dasar yang dapat dipilih, serta 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor.",
+            tr: "Sınırsız oyuncu, seçilebilir temel kategoriler ve 4 ek kategori: Film / Dizi, Spor, Marka ve Araba / Motosiklet.",
+            pl: "Nieograniczona liczba graczy, dowolnie wybierane kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
+            it: "Giocatori illimitati, categorie base selezionabili e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto.",
           })}
                   </p>
 
