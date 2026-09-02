@@ -1,0 +1,71 @@
+name: Patch Super Premium optional basic copy
+on:
+  push:
+    branches: [design/premium-categories-panel]
+    paths: [.github/workflows/patch-super-premium-optional-basic-copy.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/premium-categories-panel
+      - name: Clarify optional basic categories in Super Premium copy
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          files=[
+            Path('app/src/app/page.tsx'),
+            Path('app/src/app/room/[code]/page.tsx'),
+            Path('app/src/app/room/[code]/uiText.ts'),
+          ]
+
+          replacements={
+            'základní kategorie a 4 rozšířené kategorie':'volitelné základní kategorie a 4 rozšířené kategorie',
+            'základní kategorie, rozšířené kategorie Film / Seriál':'volitelné základní kategorie, rozšířené kategorie Film / Seriál',
+            'all basic categories and 4 extended categories':'optional basic categories and 4 extended categories',
+            'all basic categories, extended categories Film / Series':'optional basic categories, extended categories Film / Series',
+            'todas las categorías básicas y 4 categorías ampliadas':'categorías básicas opcionales y 4 categorías ampliadas',
+            'todas las categorías básicas, categorías ampliadas Película / Serie':'categorías básicas opcionales, categorías ampliadas Película / Serie',
+            'alle Grundkategorien und 4 erweiterte Kategorien':'frei wählbare Grundkategorien und 4 erweiterte Kategorien',
+            'alle Grundkategorien, erweiterte Kategorien Film / Serie':'frei wählbare Grundkategorien, erweiterte Kategorien Film / Serie',
+            'toutes les catégories de base et 4 catégories supplémentaires':'catégories de base au choix et 4 catégories supplémentaires',
+            'toutes les catégories de base, catégories supplémentaires Film / Série':'catégories de base au choix, catégories supplémentaires Film / Série',
+            'todas as categorias básicas e 4 categorias adicionais':'categorias básicas opcionais e 4 categorias adicionais',
+            'todas as categorias básicas, categorias adicionais Filme / Série':'categorias básicas opcionais, categorias adicionais Filme / Série',
+            'semua kategori dasar, serta 4 kategori tambahan':'kategori dasar yang dapat dipilih, serta 4 kategori tambahan',
+            'semua kategori dasar, kategori tambahan Film / Serial':'kategori dasar yang dapat dipilih, kategori tambahan Film / Serial',
+            'tüm temel kategoriler ve 4 ek kategori':'seçilebilir temel kategoriler ve 4 ek kategori',
+            'tüm temel kategoriler, ek kategoriler Film / Dizi':'seçilebilir temel kategoriler, ek kategoriler Film / Dizi',
+            'wszystkie kategorie podstawowe oraz 4 kategorie rozszerzone':'dowolnie wybierane kategorie podstawowe oraz 4 kategorie rozszerzone',
+            'wszystkie kategorie podstawowe, kategorie rozszerzone Film / Serial':'dowolnie wybierane kategorie podstawowe, kategorie rozszerzone Film / Serial',
+            'tutte le categorie base e 4 categorie estese':'categorie base selezionabili e 4 categorie estese',
+            'tutte le categorie base, categorie estese Film / Serie TV':'categorie base selezionabili, categorie estese Film / Serie TV',
+          }
+
+          changed=[]
+          total=0
+          for path in files:
+              s=path.read_text()
+              before=s
+              for old,new in replacements.items():
+                  count=s.count(old)
+                  if count:
+                      s=s.replace(old,new)
+                      total += count
+              if s != before:
+                  path.write_text(s)
+                  changed.append(str(path))
+
+          if total == 0:
+              raise SystemExit('No Super Premium basic-category copy matched')
+          print('Updated', total, 'occurrences in', ', '.join(changed))
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add app/src/app/page.tsx app/src/app/room/[code]/page.tsx app/src/app/room/[code]/uiText.ts
+          git commit -m 'Clarify optional basic categories in Super Premium' || exit 0
+          git push
