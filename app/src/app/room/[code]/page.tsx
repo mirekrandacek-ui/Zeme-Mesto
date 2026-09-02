@@ -1897,16 +1897,31 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category])
   );
 
+  const premiumPreviewLockTest =
+    typeof window !== "undefined" &&
+    window.location.hostname.endsWith("vercel.app") &&
+    new URLSearchParams(window.location.search).get("premiumLockTest") === "1";
+
+  // Preview simulates only the room tier. Category behavior below uses the same
+  // rules as production Premium instead of separate preview-only permissions.
+  const roomTierForCategoryPreview: RoomTier = premiumPreviewLockTest ? "premium" : roomTier;
+
   const premiumCategorySelectionUnlocked =
-    roomTier === "premium" && ownedExtendedCategories.length > 0;
+    roomTierForCategoryPreview === "premium" && ownedExtendedCategories.length > 0;
+
+  useEffect(() => {
+    if (!premiumPreviewLockTest || !roomId) return;
+    if (ownedExtendedCategories.length > 0) return;
+    setActiveCategories(PREMIUM_CATEGORIES);
+  }, [premiumPreviewLockTest, roomId, ownedExtendedCategories.length]);
 
   const canEditRoomCategories =
     isOrganizer &&
-    (roomTier === "super_premium" || premiumCategorySelectionUnlocked);
+    (roomTierForCategoryPreview === "super_premium" || premiumCategorySelectionUnlocked);
 
   function canToggleRoomCategory(category: string) {
     if (!canEditRoomCategories) return false;
-    if (roomTier === "super_premium") return true;
+    if (roomTierForCategoryPreview === "super_premium") return true;
     if (PREMIUM_CATEGORIES.includes(category)) return true;
 
     return ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
@@ -1915,14 +1930,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function updateRoomCategories(predefinedCategories: string[], customCategories: string[]) {
     if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
 
-    if (roomTier === "premium" && !premiumCategorySelectionUnlocked) {
+    if (roomTierForCategoryPreview === "premium" && !premiumCategorySelectionUnlocked) {
       setMsg(
         uiMessage({ cs: "Premium má základní kategorie pevně dané. Výběr se odemkne po koupi alespoň jedné rozšířené kategorie.", en: "Premium has fixed basic categories. Category selection unlocks after purchasing at least one extended category.", es: "Premium tiene categorías básicas fijas. La selección se desbloquea al comprar al menos una categoría ampliada." , de: "Premium hat feste Grundkategorien. Die Kategorieauswahl wird nach dem Kauf mindestens einer Zusatzkategorie freigeschaltet.", fr: "Premium propose des catégories de base fixes. La sélection des catégories se déverrouille après l’achat d’au moins une catégorie supplémentaire.", "pt-BR": "O Premium tem categorias básicas fixas. A seleção de categorias é liberada após a compra de pelo menos uma categoria adicional.", id: "Premium memiliki kategori dasar tetap. Pemilihan kategori akan terbuka setelah membeli setidaknya satu kategori tambahan.", tr: "Premium'da temel kategoriler sabittir. En az bir ek kategori satın alındığında kategori seçimi açılır.", pl: "Premium ma stałe kategorie podstawowe. Wybór kategorii zostanie odblokowany po zakupie co najmniej jednej kategorii rozszerzonej.", it: "Premium ha categorie base fisse. La selezione delle categorie si sblocca dopo l’acquisto di almeno una categoria estesa."})
       );
       return;
     }
 
-    if (roomTier === "premium") {
+    if (roomTierForCategoryPreview === "premium") {
       const unownedExtendedCategories = predefinedCategories.filter(
         (category) =>
           SUPER_PREMIUM_EXTRA_CATEGORIES.includes(category) &&
@@ -1938,7 +1953,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     }
 
     const cleanedCustomCategories =
-      roomTier === "super_premium"
+      roomTierForCategoryPreview === "super_premium"
         ? uniqueNonEmpty(customCategories).slice(0, 5)
         : [];
     const finalCategories = uniqueNonEmpty([...predefinedCategories, ...cleanedCustomCategories]);
@@ -1979,6 +1994,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   async function startCategoryPurchase(category: string) {
     const productId = CATEGORY_PRODUCT_ID[category];
+
+    if (premiumPreviewLockTest && productId) {
+      setOwnedCategoryProductIds((current) => [...new Set([...current, productId])]);
+      setActiveCategories((current) => uniqueNonEmpty([...PREMIUM_CATEGORIES, ...current, category]));
+      setPremiumLockedOfferCategory(null);
+      setMsg(`✅ TEST: ${categoryLabel(category)} odemčeno.`);
+      return;
+    }
 
     if (
       !productId ||
@@ -3370,14 +3393,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             </>
           )}
 
-          {(roomTier === "premium" || roomTier === "super_premium") && myPlayer && (
-            <section style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}>
+          {(roomTierForCategoryPreview === "premium" || roomTierForCategoryPreview === "super_premium") && myPlayer && (
+            <section
+    className={roomStyles.roomCategoriesPanel}
+    style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
+  >
               <h3 style={{ marginTop: 0 }}>
                 {t("roomCategories")}
               </h3>
 
               <p style={{ opacity: 0.75 }}>
-                {categoryHelpText(uiLanguage, isOrganizer, roomTier)}
+                {categoryHelpText(uiLanguage, isOrganizer, roomTierForCategoryPreview)}
               </p>
 
               <h4>
@@ -3427,7 +3453,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 ))}
               </div>
 
-              {(roomTier === "premium" || roomTier === "super_premium") && (
+              {(roomTierForCategoryPreview === "premium" || roomTierForCategoryPreview === "super_premium") && (
                 <>
               <h4 style={{ marginTop: 16 }}>
                 {t("extendedCategories")}
@@ -3472,7 +3498,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     </span>
                   )}
 
-                    {roomTier === "premium" &&
+                    {roomTierForCategoryPreview === "premium" &&
                     isOrganizer &&
                     !ownedCategoryProductIds.includes(
                       CATEGORY_PRODUCT_ID[category]
@@ -3503,7 +3529,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 ))}
               </div>
 
-                {roomTier === "premium" &&
+                {roomTierForCategoryPreview === "premium" &&
                 isOrganizer &&
                 premiumLockedOfferCategory && (
                   <section
@@ -3534,7 +3560,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         textAlign: "left",
                       }}
                     >
-                      {categoryLabel(premiumLockedOfferCategory)}
+                      {t("categoryPurchaseAction")} {categoryLabel(premiumLockedOfferCategory)}
                       {categoryPlayPrice(premiumLockedOfferCategory)
                         ? ` – ${categoryPlayPrice(premiumLockedOfferCategory)}`
                         : ""}
@@ -3568,6 +3594,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         : ""}{" "}
                       {t("superPremiumUpsellAfter")}
                     </p>
+                    <p>{t("superPremiumBenefitsIntro")}</p>
+                    <ul>
+                      {t("superPremiumBenefits").split("|").map((benefit) => (
+                        <li key={benefit}>{benefit}</li>
+                      ))}
+                    </ul>
                   </section>
                 )}
 
@@ -3626,6 +3658,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 </>
               )}
 
+              {roomTierForCategoryPreview === "super_premium" && (
+                <>
               <h4 style={{ marginTop: 16 }}>
                 {t("categoryOrder")}
               </h4>
@@ -3667,6 +3701,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   </li>
                 ))}
               </ol>
+                </>
+              )}
             </section>
           )}
 
@@ -4141,17 +4177,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   </button>
                   <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>
                     {uiMessage({
-                      cs: "Premium: max. 5 hráčů a základní kategorie Země, Město, Jméno, Zvíře, Věc a Rostlina.",
-                      en: "Premium: up to 5 players and the basic categories Country, City, Name, Animal, Thing and Plant.",
-                      es: "Premium: hasta 5 jugadores y las categorías básicas País, Ciudad, Nombre, Animal, Cosa y Planta.",
-                      de: "Premium: bis zu 5 Spieler und die Grundkategorien Land, Stadt, Name, Tier, Gegenstand und Pflanze.",
-                      fr: "Premium : jusqu’à 5 joueurs et les catégories de base Pays, Ville, Prénom, Animal, Objet et Plante.",
-                      "pt-BR": "Premium: até 5 jogadores e as categorias básicas País, Cidade, Nome, Animal, Objeto e Planta.",
-                      id: "Premium: hingga 5 pemain dan kategori dasar Negara, Kota, Nama, Hewan, Benda, dan Tumbuhan.",
-                      tr: "Premium: en fazla 5 oyuncu ve temel kategoriler Ülke, Şehir, İsim, Hayvan, Eşya ve Bitki.",
-                      pl: "Premium: maks. 5 graczy oraz podstawowe kategorie Państwo, Miasto, Imię, Zwierzę, Rzecz i Roślina.",
-                      it: "Premium: fino a 5 giocatori e le categorie base Paese, Città, Nome, Animale, Oggetto e Pianta.",
-                    })}
+            cs: "Až 5 hráčů a pevné základní kategorie: Země, Město, Jméno, Zvíře, Věc a Rostlina.",
+            en: "Up to 5 players and fixed basic categories: Country, City, Name, Animal, Thing and Plant.",
+            es: "Hasta 5 jugadores y categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa y Planta.",
+            de: "Bis zu 5 Spieler und feste Grundkategorien: Land, Stadt, Name, Tier, Gegenstand und Pflanze.",
+            fr: "Jusqu’à 5 joueurs et catégories de base fixes : Pays, Ville, Prénom, Animal, Objet et Plante.",
+            "pt-BR": "Até 5 jogadores e categorias básicas fixas: País, Cidade, Nome, Animal, Objeto e Planta.",
+            id: "Hingga 5 pemain dan kategori dasar tetap: Negara, Kota, Nama, Hewan, Benda, dan Tumbuhan.",
+            tr: "En fazla 5 oyuncu ve sabit temel kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya ve Bitki.",
+            pl: "Do 5 graczy i stałe kategorie podstawowe: Państwo, Miasto, Imię, Zwierzę, Rzecz i Roślina.",
+            it: "Fino a 5 giocatori e categorie base fisse: Paese, Città, Nome, Animale, Oggetto e Pianta.",
+          })}
                   </p>
 
                   <button
@@ -4164,20 +4200,29 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   </button>
                   <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>
                     {uiMessage({
-                      cs: "Super Premium: neomezený počet hráčů, všechny základní i rozšířené kategorie, až 5 vlastních kategorií, volba počtu a pořadí kategorií, časový limit a nastavení počtu kol.",
-                      en: "Super Premium: unlimited players, all basic and extended categories, up to 5 custom categories, category count and order selection, a time limit and round count settings.",
-                      es: "Super Premium: jugadores ilimitados, todas las categorías básicas y ampliadas, hasta 5 categorías propias, elección del número y orden de categorías, límite de tiempo y configuración del número de rondas.",
-                      de: "Super Premium: unbegrenzt viele Spieler, alle Grund- und Zusatzkategorien, bis zu 5 eigene Kategorien, Auswahl von Anzahl und Reihenfolge der Kategorien, Zeitlimit und Einstellung der Rundenzahl.",
-                      fr: "Super Premium : nombre de joueurs illimité, toutes les catégories de base et supplémentaires, jusqu’à 5 catégories personnalisées, choix du nombre et de l’ordre des catégories, limite de temps et réglage du nombre de manches.",
-                      "pt-BR": "Super Premium: jogadores ilimitados, todas as categorias básicas e adicionais, até 5 categorias personalizadas, escolha da quantidade e da ordem das categorias, limite de tempo e configuração do número de rodadas.",
-                      id: "Super Premium: pemain tanpa batas, semua kategori dasar dan tambahan, hingga 5 kategori khusus, pilihan jumlah dan urutan kategori, batas waktu, serta pengaturan jumlah ronde.",
-                      tr: "Super Premium: sınırsız oyuncu, tüm temel ve ek kategoriler, 5’e kadar özel kategori, kategori sayısı ve sırası seçimi, süre sınırı ve tur sayısı ayarı.",
-                      pl: "Super Premium: nieograniczona liczba graczy, wszystkie kategorie podstawowe i rozszerzone, do 5 własnych kategorii, wybór liczby i kolejności kategorii, limit czasu oraz ustawienie liczby rund.",
-                      it: "Super Premium: giocatori illimitati, tutte le categorie base ed estese, fino a 5 categorie personalizzate, scelta del numero e dell’ordine delle categorie, limite di tempo e impostazione del numero di turni.",
-                    })}
+            cs: "Neomezený počet hráčů, volitelné základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.",
+            en: "Unlimited players, optional basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.",
+            es: "Jugadores ilimitados, categorías básicas opcionales y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto.",
+            de: "Unbegrenzt viele Spieler, frei wählbare Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad.",
+            fr: "Nombre de joueurs illimité, catégories de base au choix et 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto.",
+            "pt-BR": "Jogadores ilimitados, categorias básicas opcionais e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto.",
+            id: "Pemain tanpa batas, kategori dasar yang dapat dipilih, serta 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor.",
+            tr: "Sınırsız oyuncu, seçilebilir temel kategoriler ve 4 ek kategori: Film / Dizi, Spor, Marka ve Araba / Motosiklet.",
+            pl: "Nieograniczona liczba graczy, dowolnie wybierane kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
+            it: "Giocatori illimitati, categorie base selezionabili e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto.",
+          })}
                   </p>
 
-                  <button
+                  <p style={{ margin: "8px 2px 4px", fontSize: 13, lineHeight: 1.35 }}>
+          {t("superPremiumBenefitsIntro")}
+        </p>
+        <ul style={{ margin: "0 2px 8px 20px", padding: 0, fontSize: 13, lineHeight: 1.35 }}>
+          {t("superPremiumBenefits").split("|").map((benefit) => (
+            <li key={benefit}>{benefit}</li>
+          ))}
+        </ul>
+
+        <button
                     type="button"
                     onClick={startFreeRewardedAd}
                     style={{ marginTop: 12, padding: 14, width: "100%", fontWeight: 700 }}
