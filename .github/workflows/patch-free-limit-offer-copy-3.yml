@@ -1,0 +1,76 @@
+name: Patch Free limit offer copy v3
+on:
+  push:
+    branches: [design/premium-categories-panel]
+    paths: [.github/workflows/patch-free-limit-offer-copy-3.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/premium-categories-panel
+      - name: Update Free limit Premium and Super Premium copy
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('app/src/app/room/[code]/page.tsx')
+          s=p.read_text()
+
+          premium_pattern=re.compile(r'\{uiMessage\(\{\s*cs: "Premium: max\. 5 hráčů.*?\}\)\}', re.S)
+          premium_new='''{uiMessage({
+                      cs: "Až 5 hráčů a pevné základní kategorie: Země, Město, Jméno, Zvíře, Věc a Rostlina.",
+                      en: "Up to 5 players and fixed basic categories: Country, City, Name, Animal, Thing and Plant.",
+                      es: "Hasta 5 jugadores y categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa y Planta.",
+                      de: "Bis zu 5 Spieler und feste Grundkategorien: Land, Stadt, Name, Tier, Gegenstand und Pflanze.",
+                      fr: "Jusqu’à 5 joueurs et catégories de base fixes : Pays, Ville, Prénom, Animal, Objet et Plante.",
+                      "pt-BR": "Até 5 jogadores e categorias básicas fixas: País, Cidade, Nome, Animal, Objeto e Planta.",
+                      id: "Hingga 5 pemain dan kategori dasar tetap: Negara, Kota, Nama, Hewan, Benda, dan Tumbuhan.",
+                      tr: "En fazla 5 oyuncu ve sabit temel kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya ve Bitki.",
+                      pl: "Do 5 graczy i stałe kategorie podstawowe: Państwo, Miasto, Imię, Zwierzę, Rzecz i Roślina.",
+                      it: "Fino a 5 giocatori e categorie base fisse: Paese, Città, Nome, Animale, Oggetto e Pianta.",
+                    })}'''
+          s,n=premium_pattern.subn(premium_new,s,count=1)
+          if n!=1: raise SystemExit(f'Premium block replacements: {n}')
+
+          super_pattern=re.compile(r'\{uiMessage\(\{\s*cs: "Super Premium: neomezený počet hráčů.*?\}\)\}', re.S)
+          super_new='''{uiMessage({
+                      cs: "Neomezený počet hráčů, základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.",
+                      en: "Unlimited players, all basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.",
+                      es: "Jugadores ilimitados, todas las categorías básicas y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto.",
+                      de: "Unbegrenzt viele Spieler, alle Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad.",
+                      fr: "Nombre de joueurs illimité, toutes les catégories de base et 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto.",
+                      "pt-BR": "Jogadores ilimitados, todas as categorias básicas e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto.",
+                      id: "Pemain tanpa batas, semua kategori dasar, serta 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor.",
+                      tr: "Sınırsız oyuncu, tüm temel kategoriler ve 4 ek kategori: Film / Dizi, Spor, Marka ve Araba / Motosiklet.",
+                      pl: "Nieograniczona liczba graczy, wszystkie kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
+                      it: "Giocatori illimitati, tutte le categorie base e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto.",
+                    })}'''
+          s,n=super_pattern.subn(super_new,s,count=1)
+          if n!=1: raise SystemExit(f'Super block replacements: {n}')
+
+          super_pos=s.index('cs: "Neomezený počet hráčů, základní kategorie a 4 rozšířené kategorie')
+          reward_match=re.search(r'\n\s*<button[\s\S]{0,900}?\{t\("freeRewardButton"\)\}[\s\S]{0,120}?</button>',s[super_pos:])
+          if not reward_match: raise SystemExit('Free reward button after Super copy not found')
+          insert_pos=super_pos+reward_match.start()
+          benefits='''
+                  <p style={{ margin: "8px 2px 4px", fontSize: 13, lineHeight: 1.35 }}>
+                    {t("superPremiumBenefitsIntro")}
+                  </p>
+                  <ul style={{ margin: "0 2px 8px 20px", padding: 0, fontSize: 13, lineHeight: 1.35 }}>
+                    {t("superPremiumBenefits").split("|").map((benefit) => (
+                      <li key={benefit}>{benefit}</li>
+                    ))}
+                  </ul>
+'''
+          s=s[:insert_pos]+benefits+s[insert_pos:]
+          p.write_text(s)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add app/src/app/room/[code]/page.tsx
+          git commit -m 'Update Free limit purchase copy' || exit 0
+          git push
