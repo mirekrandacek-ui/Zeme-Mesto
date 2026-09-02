@@ -1,0 +1,68 @@
+name: Patch homepage Free limit product copy
+on:
+  push:
+    branches: [design/premium-categories-panel]
+    paths: [.github/workflows/patch-home-free-limit-product-copy.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/premium-categories-panel
+      - name: Add Premium and Super Premium descriptions to homepage Free limit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('app/src/app/page.tsx')
+          s = p.read_text()
+          old = '''              <button
+                type="button"
+                disabled={purchaseBusy !== null}
+                onClick={() => void startPlayPurchase("premium")}
+              >
+                {h("buyPremium")}
+              </button>
+              <button
+                type="button"
+                disabled={purchaseBusy !== null}
+                onClick={() => void startPlayPurchase("super_premium")}
+                style={{ marginTop: 10 }}
+              >
+                {h("buySuperPremium")}
+              </button>'''
+          new = '''              <button
+                type="button"
+                disabled={purchaseBusy !== null}
+                onClick={() => void startPlayPurchase("premium")}
+              >
+                {h("buyPremium")}
+              </button>
+              <p>{h("premiumDescription")}</p>
+              <button
+                type="button"
+                disabled={purchaseBusy !== null}
+                onClick={() => void startPlayPurchase("super_premium")}
+                style={{ marginTop: 10 }}
+              >
+                {h("buySuperPremium")}
+              </button>
+              <p>{h("superPremiumPurchaseDescription")}</p>
+              <p>{h("superPremiumBenefitsIntro")}</p>
+              <ul>
+                {h("superPremiumBenefits").split("|").map((benefit) => (
+                  <li key={benefit}>{benefit}</li>
+                ))}
+              </ul>'''
+          if old not in s:
+              raise SystemExit('Homepage Free limit purchase block not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add app/src/app/page.tsx
+          git commit -m 'Show product details in homepage Free limit' || exit 0
+          git push
