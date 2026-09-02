@@ -16,39 +16,18 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p = Path('app/src/app/page.tsx')
           s = p.read_text()
-          old = '''              <button
-                type="button"
-                disabled={purchaseBusy !== null}
-                onClick={() => void startPlayPurchase("premium")}
-              >
-                {h("buyPremium")}
-              </button>
-              <button
-                type="button"
-                disabled={purchaseBusy !== null}
-                onClick={() => void startPlayPurchase("super_premium")}
-                style={{ marginTop: 10 }}
-              >
-                {h("buySuperPremium")}
-              </button>'''
-          new = '''              <button
-                type="button"
-                disabled={purchaseBusy !== null}
-                onClick={() => void startPlayPurchase("premium")}
-              >
-                {h("buyPremium")}
-              </button>
-              <p>{h("premiumDescription")}</p>
-              <button
-                type="button"
-                disabled={purchaseBusy !== null}
-                onClick={() => void startPlayPurchase("super_premium")}
-                style={{ marginTop: 10 }}
-              >
-                {h("buySuperPremium")}
-              </button>
+
+          premium_pattern = re.compile(r'(<button\s+type="button"\s+disabled=\{purchaseBusy !== null\}\s+onClick=\{\(\) => void startPlayPurchase\("premium"\)\}\s*>\s*\{h\("buyPremium"\)\}\s*</button>)')
+          s, n = premium_pattern.subn(r'''\1
+              <p>{h("premiumDescription")}</p>''', s, count=1)
+          if n != 1:
+              raise SystemExit(f'Premium homepage Free-limit button replacements: {n}')
+
+          super_pattern = re.compile(r'(<button\s+type="button"\s+disabled=\{purchaseBusy !== null\}\s+onClick=\{\(\) => void startPlayPurchase\("super_premium"\)\}\s+style=\{\{ marginTop: 10 \}\}\s*>\s*\{h\("buySuperPremium"\)\}\s*</button>)')
+          super_copy = r'''\1
               <p>{h("superPremiumPurchaseDescription")}</p>
               <p>{h("superPremiumBenefitsIntro")}</p>
               <ul>
@@ -56,9 +35,10 @@ jobs:
                   <li key={benefit}>{benefit}</li>
                 ))}
               </ul>'''
-          if old not in s:
-              raise SystemExit('Homepage Free limit purchase block not found')
-          s = s.replace(old, new, 1)
+          s, n = super_pattern.subn(super_copy, s, count=1)
+          if n != 1:
+              raise SystemExit(f'Super Premium homepage Free-limit button replacements: {n}')
+
           p.write_text(s)
           PY
           git config user.name github-actions[bot]
