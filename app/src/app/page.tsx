@@ -756,6 +756,7 @@ export default function Home() {
   const [roomCodeOpen, setRoomCodeOpen] = useState(false);
   const [billingProducts, setBillingProducts] = useState<BillingProduct[]>([]);
   const [billingReady, setBillingReady] = useState(false);
+  const [tierResolved, setTierResolved] = useState(false);
   const [purchaseBusy, setPurchaseBusy] =
     useState<"premium" | "super_premium" | null>(null);
 
@@ -833,12 +834,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!isPlayBillingAvailable()) return;
+    if (!isPlayBillingAvailable()) {
+      setTierResolved(true);
+      return;
+    }
 
     async function loadPlayBilling() {
       try {
         const connection = await PlayBilling.connect();
-        if (!connection.ready) return;
+        if (!connection.ready) {
+          setTierResolved(true);
+          return;
+        }
 
         setBillingReady(true);
 
@@ -873,11 +880,14 @@ export default function Home() {
           setTier("premium");
         }
 
+        setTierResolved(true);
+
         for (const purchaseToken of purchaseTokensToAcknowledge) {
           await acknowledgePlayPurchase(purchaseToken);
         }
       } catch (error) {
         console.error("Google Play Billing init failed:", error);
+        setTierResolved(true);
       }
     }
 
@@ -1151,6 +1161,18 @@ export default function Home() {
 
   return (
     <main className={styles.homepage}>
+      {!tierResolved && (
+        <div
+          aria-busy="true"
+          aria-label="Loading"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 10000,
+            background: "#001a33",
+          }}
+        />
+      )}
       <div className={styles.photoMosaic} aria-hidden="true">
         {[
           "mountains", "castle", "eiffel", "colosseum", "woman", "elephant",
