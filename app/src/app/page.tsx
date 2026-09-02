@@ -294,7 +294,9 @@ const HOME_TEXT = {
     includedInSuperPremium: "Součást Super Premium",
     buyPremium: "Koupit Premium",
     superPremiumPurchaseDescription:
-      "Neomezený počet hráčů, základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto. Pravidelným hraním získáváš coiny, za které můžeš odemknout další kategorie: Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Řeka / Hora, Povolání a Barva. Za coiny také odemkneš možnost vlastního pořadí kategorií, časový limit, nastavení počtu kol a možnost vytvořit si vlastní kategorie.",
+      "Neomezený počet hráčů, základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.",
+    superPremiumBenefitsIntro: "Pravidelným hraním získáváš coiny, za které dostáváš další herní výhody:",
+    superPremiumBenefits: "kategorie Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Řeka / Hora, Povolání a Barva|možnost vytvořit si vlastní kategorie|zvolit si, v jakém pořadí budou kategorie při zapisování odpovědí|časový limit na kolo|možnost nastavení počtu kol",
     upgradeToSuperPremium: "Upgradovat na Super Premium",
     upgradeToSuperPremiumFor: "Upgradovat na Super Premium za",
     buySuperPremium: "Koupit Super Premium",
@@ -342,7 +344,9 @@ const HOME_TEXT = {
     includedInSuperPremium: "Included in Super Premium",
     buyPremium: "Buy Premium",
     superPremiumPurchaseDescription:
-      "Unlimited players, all basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike. Regular play earns you coins that can unlock more categories: Actor / Actress, Singer / Band, River / Mountain, Job and Colour. Coins also unlock custom category ordering, a time limit, round-count settings and the option to create custom categories.",
+      "Unlimited players, all basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.",
+    superPremiumBenefitsIntro: "Regular play earns you coins that give you more game advantages:",
+    superPremiumBenefits: "categories Actor / Actress, Singer / Band, River / Mountain, Job and Colour|the option to create custom categories|choose the order in which categories appear when entering answers|a time limit for each round|the option to set the number of rounds",
     upgradeToSuperPremium: "Upgrade to Super Premium",
     upgradeToSuperPremiumFor: "Upgrade to Super Premium for",
     buySuperPremium: "Buy Super Premium",
@@ -391,7 +395,9 @@ const HOME_TEXT = {
     includedInSuperPremium: "Incluido en Super Premium",
     buyPremium: "Comprar Premium",
     superPremiumPurchaseDescription:
-      "Jugadores ilimitados, todas las categorías básicas y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto. Jugando con regularidad ganas monedas para desbloquear más categorías: Actor / Actriz, Cantante / Grupo, Río / Montaña, Profesión y Color. Con monedas también desbloqueas el orden personalizado de categorías, límite de tiempo, ajuste del número de rondas y la posibilidad de crear categorías propias.",
+      "Jugadores ilimitados, todas las categorías básicas y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto.",
+    superPremiumBenefitsIntro: "Jugando con regularidad ganas monedas con las que obtienes más ventajas de juego:",
+    superPremiumBenefits: "categorías Actor / Actriz, Cantante / Grupo, Río / Montaña, Profesión y Color|la posibilidad de crear categorías propias|elegir el orden de las categorías al escribir las respuestas|límite de tiempo por ronda|la posibilidad de ajustar el número de rondas",
     upgradeToSuperPremium: "Pasar a Super Premium",
     upgradeToSuperPremiumFor: "Pasar a Super Premium por",
     buySuperPremium: "Comprar Super Premium",
@@ -442,7 +448,9 @@ const HOME_TEXT = {
     includedInSuperPremium: "In Super Premium enthalten",
     buyPremium: "Premium kaufen",
     superPremiumPurchaseDescription:
-      "Unbegrenzt viele Spieler, alle Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad. Durch regelmäßiges Spielen verdienst du Coins, mit denen du weitere Kategorien freischalten kannst: Schauspieler / Schauspielerin, Sänger / Sängerin / Band, Fluss / Berg, Beruf und Farbe. Mit Coins schaltest du außerdem eine eigene Kategorienreihenfolge, Zeitlimit, Rundenzahl-Einstellung und eigene Kategorien frei.",
+      "Unbegrenzt viele Spieler, alle Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad.",
+    superPremiumBenefitsIntro: "Durch regelmäßiges Spielen verdienst du Coins, mit denen du weitere Spielvorteile erhältst:",
+    superPremiumBenefits: "Kategorien Schauspieler / Schauspielerin, Sänger / Sängerin / Band, Fluss / Berg, Beruf und Farbe|eigene Kategorien erstellen|die Reihenfolge der Kategorien beim Eingeben der Antworten wählen|Zeitlimit pro Runde|die Rundenzahl einstellen",
     upgradeToSuperPremium: "Auf Super Premium upgraden",
     upgradeToSuperPremiumFor: "Auf Super Premium upgraden für",
     buySuperPremium: "Super Premium kaufen",
@@ -483,7 +491,9 @@ const HOME_TEXT = {
     showOtherModes: "Afficher les autres modes",
     includedInSuperPremium: "Inclus dans Super Premium",
     buyPremium: "Acheter Premium",
-    superPremiumPurchaseDescription: "Nombre de joueurs illimité, toutes les catégories de base et 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto. En jouant régulièrement, tu gagnes des pièces pour débloquer d’autres catégories : Acteur / Actrice, Chanteur / Groupe, Fleuve / Montagne, Métier et Couleur. Les pièces permettent aussi de débloquer un ordre personnalisé des catégories, une limite de temps, le réglage du nombre de manches et la création de catégories personnalisées.",
+    superPremiumPurchaseDescription: "Nombre de joueurs illimité, toutes les catégories de base et 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto.",
+    superPremiumBenefitsIntro: "En jouant régulièrement, tu gagnes des pièces qui te donnent d’autres avantages de jeu :",
+    superPremiumBenefits: "catégories Acteur / Actrice, Chanteur / Groupe, Fleuve / Montagne, Métier et Couleur|possibilité de créer tes propres catégories|choisir l’ordre des catégories lors de la saisie des réponses|limite de temps par manche|possibilité de régler le nombre de manches",
     upgradeToSuperPremium: "Passer à Super Premium",
     upgradeToSuperPremiumFor: "Passer à Super Premium pour",
     buySuperPremium: "Acheter Super Premium",
@@ -523,7 +533,9 @@ const HOME_TEXT = {
     showOtherModes: "Mostrar outros modos",
     includedInSuperPremium: "Incluído no Super Premium",
     buyPremium: "Comprar Premium",
-    superPremiumPurchaseDescription: "Jogadores ilimitados, todas as categorias básicas e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto. Jogando regularmente, você ganha moedas para desbloquear mais categorias: Ator / Atriz, Cantor / Banda, Rio / Montanha, Profissão e Cor. As moedas também desbloqueiam ordem personalizada das categorias, limite de tempo, configuração do número de rodadas e a opção de criar categorias próprias.",
+    superPremiumPurchaseDescription: "Jogadores ilimitados, todas as categorias básicas e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto.",
+    superPremiumBenefitsIntro: "Jogando regularmente, você ganha moedas que dão acesso a mais vantagens no jogo:",
+    superPremiumBenefits: "categorias Ator / Atriz, Cantor / Banda, Rio / Montanha, Profissão e Cor|possibilidade de criar categorias próprias|escolher a ordem das categorias ao preencher as respostas|limite de tempo por rodada|possibilidade de definir o número de rodadas",
     upgradeToSuperPremium: "Fazer upgrade para Super Premium",
     upgradeToSuperPremiumFor: "Fazer upgrade para Super Premium por",
     buySuperPremium: "Comprar Super Premium",
@@ -562,7 +574,9 @@ const HOME_TEXT = {
     showOtherModes: "Tampilkan mode lain",
     includedInSuperPremium: "Termasuk dalam Super Premium",
     buyPremium: "Beli Premium",
-    superPremiumPurchaseDescription: "Pemain tanpa batas, semua kategori dasar dan 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor. Dengan bermain rutin, kamu mendapatkan koin untuk membuka kategori lain: Aktor / Aktris, Penyanyi / Band, Sungai / Gunung, Pekerjaan, dan Warna. Koin juga membuka urutan kategori khusus, batas waktu, pengaturan jumlah ronde, dan opsi membuat kategori sendiri.",
+    superPremiumPurchaseDescription: "Pemain tanpa batas, semua kategori dasar dan 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor.",
+    superPremiumBenefitsIntro: "Dengan bermain rutin, kamu mendapatkan koin untuk memperoleh lebih banyak keuntungan dalam permainan:",
+    superPremiumBenefits: "kategori Aktor / Aktris, Penyanyi / Band, Sungai / Gunung, Pekerjaan, dan Warna|opsi membuat kategori sendiri|memilih urutan kategori saat mengisi jawaban|batas waktu per ronde|opsi mengatur jumlah ronde",
     upgradeToSuperPremium: "Tingkatkan ke Super Premium",
     upgradeToSuperPremiumFor: "Tingkatkan ke Super Premium seharga",
     buySuperPremium: "Beli Super Premium",
@@ -601,7 +615,9 @@ const HOME_TEXT = {
     showOtherModes: "Diğer modları göster",
     includedInSuperPremium: "Super Premium'a dahil",
     buyPremium: "Premium satın al",
-    superPremiumPurchaseDescription: "Sınırsız oyuncu, tüm temel kategoriler ve 4 ek kategori: Film / Dizi, Spor, Marka ve Araba / Motosiklet. Düzenli oynayarak kazanılan coinlerle Aktör / Aktris, Şarkıcı / Grup, Nehir / Dağ, Meslek ve Renk gibi diğer kategorilerin kilidini açabilirsin. Coinlerle ayrıca özel kategori sıralaması, süre sınırı, tur sayısı ayarı ve özel kategori oluşturma özelliği açılır.",
+    superPremiumPurchaseDescription: "Sınırsız oyuncu, tüm temel kategoriler ve 4 ek kategori: Film / Dizi, Spor, Marka ve Araba / Motosiklet.",
+    superPremiumBenefitsIntro: "Düzenli oynayarak daha fazla oyun avantajı sağlayan coinler kazanırsın:",
+    superPremiumBenefits: "Aktör / Aktris, Şarkıcı / Grup, Nehir / Dağ, Meslek ve Renk kategorileri|kendi kategorilerini oluşturma|cevapları yazarken kategori sırasını seçme|tur başına süre sınırı|tur sayısını ayarlama",
     upgradeToSuperPremium: "Super Premium'a yükselt",
     upgradeToSuperPremiumFor: "Şu fiyata Super Premium'a yükselt",
     buySuperPremium: "Super Premium satın al",
@@ -640,7 +656,9 @@ const HOME_TEXT = {
     showOtherModes: "Pokaż pozostałe tryby",
     includedInSuperPremium: "Wliczone w Super Premium",
     buyPremium: "Kup Premium",
-    superPremiumPurchaseDescription: "Nieograniczona liczba graczy, wszystkie kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl. Za regularną grę zdobywasz monety, którymi odblokujesz kolejne kategorie: Aktor / Aktorka, Piosenkarz / Zespół, Rzeka / Góra, Zawód i Kolor. Monety pozwalają też odblokować własną kolejność kategorii, limit czasu, ustawienie liczby rund i możliwość tworzenia własnych kategorii.",
+    superPremiumPurchaseDescription: "Nieograniczona liczba graczy, wszystkie kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
+    superPremiumBenefitsIntro: "Za regularną grę zdobywasz monety, które dają kolejne korzyści w grze:",
+    superPremiumBenefits: "kategorie Aktor / Aktorka, Piosenkarz / Zespół, Rzeka / Góra, Zawód i Kolor|możliwość tworzenia własnych kategorii|wybór kolejności kategorii podczas wpisywania odpowiedzi|limit czasu na rundę|możliwość ustawienia liczby rund",
     upgradeToSuperPremium: "Przejdź na Super Premium",
     upgradeToSuperPremiumFor: "Przejdź na Super Premium za",
     buySuperPremium: "Kup Super Premium",
@@ -680,7 +698,9 @@ const HOME_TEXT = {
     showOtherModes: "Mostra le altre modalità",
     includedInSuperPremium: "Incluso in Super Premium",
     buyPremium: "Acquista Premium",
-    superPremiumPurchaseDescription: "Giocatori illimitati, tutte le categorie base e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto. Giocando regolarmente guadagni monete con cui sbloccare altre categorie: Attore / Attrice, Cantante / Gruppo, Fiume / Montagna, Professione e Colore. Con le monete puoi anche sbloccare un ordine personalizzato delle categorie, il limite di tempo, l’impostazione del numero di turni e la possibilità di creare categorie personalizzate.",
+    superPremiumPurchaseDescription: "Giocatori illimitati, tutte le categorie base e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto.",
+    superPremiumBenefitsIntro: "Giocando regolarmente guadagni monete con cui ottieni altri vantaggi di gioco:",
+    superPremiumBenefits: "categorie Attore / Attrice, Cantante / Gruppo, Fiume / Montagna, Professione e Colore|possibilità di creare categorie personalizzate|scegliere l’ordine delle categorie durante l’inserimento delle risposte|limite di tempo per turno|possibilità di impostare il numero di turni",
     upgradeToSuperPremium: "Passa a Super Premium",
     upgradeToSuperPremiumFor: "Passa a Super Premium per",
     buySuperPremium: "Acquista Super Premium",
@@ -1313,7 +1333,7 @@ export default function Home() {
                 {tier === "premium" ? h("active") : tier === "super_premium" ? h("includedInSuperPremium") : h("buyPremium")}
               </button>
             </article>
-            <article><h3>Super Premium{superPremiumDisplayPrice ? ` – ${superPremiumDisplayPrice}` : ""}</h3><p>{h("superPremiumPurchaseDescription")}</p>
+            <article><h3>Super Premium{superPremiumDisplayPrice ? ` – ${superPremiumDisplayPrice}` : ""}</h3><p>{h("superPremiumPurchaseDescription")}</p><p>{h("superPremiumBenefitsIntro")}</p><ul>{h("superPremiumBenefits").split("|").map((benefit) => <li key={benefit}>{benefit}</li>)}</ul>
               <button type="button" disabled={tier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("super_premium")}>
                 {tier === "super_premium" ? h("active") : tier === "premium" ? superPremiumUpgradePrice ? `${h("upgradeToSuperPremiumFor")} ${superPremiumUpgradePrice}` : h("upgradeToSuperPremium") : h("buySuperPremium")}
               </button>
