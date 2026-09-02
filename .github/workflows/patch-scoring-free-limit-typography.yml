@@ -1,0 +1,37 @@
+name: Match scoring Free limit typography
+on:
+  push:
+    branches: [fix/free-limit-tier-clarity]
+    paths: [.github/workflows/patch-scoring-free-limit-typography.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/free-limit-tier-clarity
+      - name: Match scoring Free limit typography to homepage
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('app/src/app/room/[code]/page.module.css')
+          s = p.read_text()
+          old_panel = '''.scoringFreeLimitPanel{\n  padding:8px;\n  border:1.5px solid #ffd75d;\n  border-radius:10px;\n  color:#fff;\n  background:#513100cf;\n  font-size:16px;\n  line-height:1.3;\n  text-shadow:0 2px 3px #00152d;\n}'''
+          new_panel = old_panel.replace('font-size:16px;', 'font-size:10px;')
+          if old_panel not in s:
+              raise SystemExit('scoringFreeLimitPanel block not found')
+          s = s.replace(old_panel, new_panel, 1)
+          old_button = '''.scoringFreeLimitPanel>button:not(:last-child){\n  width:100%;\n  border:1px solid #b8ff8c;\n  border-radius:9px;\n  color:#fff;\n  background:linear-gradient(#67ca35,#21880d);\n  font:inherit;\n  font-size:16px;\n  font-weight:800;\n  text-shadow:0 2px 2px #145c0d;\n}'''
+          new_button = old_button.replace('font-size:16px;', 'font-size:11px;')
+          if old_button not in s:
+              raise SystemExit('scoring Free limit button block not found')
+          s = s.replace(old_button, new_button, 1)
+          p.write_text(s)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add app/src/app/room/[code]/page.module.css
+          git commit -m 'Match scoring Free limit typography to homepage'
+          git push
