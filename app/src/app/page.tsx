@@ -1310,7 +1310,7 @@ export default function Home() {
               >
                 {h("buyPremium")}
               </button>
-              <p style={{ marginTop: 8, fontSize: 14, lineHeight: 1.35 }}>{h("premiumDescription")}</p>
+              <p style={{ marginTop: 8, fontSize: "inherit", lineHeight: 1.35 }}>{h("premiumDescription")}</p>
               <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
               <button
                 type="button"
@@ -1319,9 +1319,9 @@ export default function Home() {
               >
                 {h("buySuperPremium")}
               </button>
-              <p style={{ marginTop: 8, fontSize: 14, lineHeight: 1.35 }}>{h("superPremiumPurchaseDescription")}</p>
-              <p style={{ fontSize: 14, lineHeight: 1.35 }}>{h("superPremiumBenefitsIntro")}</p>
-              <ul style={{ fontSize: 14, lineHeight: 1.35 }}>
+              <p style={{ marginTop: 8, fontSize: "inherit", lineHeight: 1.35 }}>{h("superPremiumPurchaseDescription")}</p>
+              <p style={{ fontSize: "inherit", lineHeight: 1.35 }}>{h("superPremiumBenefitsIntro")}</p>
+              <ul style={{ fontSize: "inherit", lineHeight: 1.35 }}>
                 {h("superPremiumBenefits").split("|").map((benefit) => (
                   <li key={benefit}>{benefit}</li>
                 ))}
@@ -1331,8 +1331,10 @@ export default function Home() {
                 type="button"
                 disabled={rewardedBusy}
                 onClick={() => void startHomeFreeRewardedAd()}
+                style={{ textAlign: "center" }}
               >
-                {getRoomUiText(language, "freeRewardButton")}
+                <span style={{ display: "block" }}>{getRoomUiText(language, "freeRewardButtonLine1")}</span>
+                <span style={{ display: "block" }}>{getRoomUiText(language, "freeRewardButtonLine2")}</span>
               </button>
             </section>
           )}
