@@ -51,3 +51,21 @@ body {
   }
 
 }
+
+/* Bodovací tabulka: každý sloupec se přizpůsobí nejdelšímu obsahu. */
+#scoring-table-scroll table {
+  width: max-content;
+  table-layout: auto;
+}
+
+#scoring-table-scroll th,
+#scoring-table-scroll td {
+  width: auto;
+  max-width: none;
+  white-space: nowrap;
+}
+
+#scoring-table-scroll thead th:last-child span {
+  max-width: none;
+  white-space: nowrap;
+}
