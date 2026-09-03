@@ -4167,6 +4167,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     })}
                   </p>
 
+                  <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
                   <button
                     type="button"
                     disabled={!isOrganizer || categoryPurchaseBusy !== null}
@@ -4175,7 +4176,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   >
                     {t("freeUpgradeButton")}
                   </button>
-                  <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>
+                  <p style={{ margin: "8px 2px 0", fontSize: "inherit", lineHeight: 1.35 }}>
                     {uiMessage({
             cs: "Až 5 hráčů a pevné základní kategorie: Země, Město, Jméno, Zvíře, Věc a Rostlina.",
             en: "Up to 5 players and fixed basic categories: Country, City, Name, Animal, Thing and Plant.",
@@ -4190,6 +4191,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           })}
                   </p>
 
+                  <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
                   <button
                     type="button"
                     disabled={!isOrganizer || categoryPurchaseBusy !== null}
@@ -4198,7 +4200,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   >
                     {uiMessage({ cs: "Koupit Super Premium", en: "Buy Super Premium", es: "Comprar Super Premium", de: "Super Premium kaufen", fr: "Acheter Super Premium", "pt-BR": "Comprar Super Premium", id: "Beli Super Premium", tr: "Super Premium satın al", pl: "Kup Super Premium", it: "Acquista Super Premium" })}
                   </button>
-                  <p style={{ margin: "6px 2px 0", fontSize: 13, lineHeight: 1.35 }}>
+                  <p style={{ margin: "8px 2px 0", fontSize: "inherit", lineHeight: 1.35 }}>
                     {uiMessage({
             cs: "Neomezený počet hráčů, volitelné základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.",
             en: "Unlimited players, optional basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.",
@@ -4213,21 +4215,23 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           })}
                   </p>
 
-                  <p style={{ margin: "8px 2px 4px", fontSize: 13, lineHeight: 1.35 }}>
+                  <p style={{ margin: "8px 2px 4px", fontSize: "inherit", lineHeight: 1.35 }}>
           {t("superPremiumBenefitsIntro")}
         </p>
-        <ul style={{ margin: "0 2px 8px 20px", padding: 0, fontSize: 13, lineHeight: 1.35 }}>
+        <ul style={{ margin: "0 2px 8px 20px", padding: 0, fontSize: "inherit", lineHeight: 1.35 }}>
           {t("superPremiumBenefits").split("|").map((benefit) => (
             <li key={benefit}>{benefit}</li>
           ))}
         </ul>
 
+        <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
         <button
                     type="button"
                     onClick={startFreeRewardedAd}
-                    style={{ marginTop: 12, padding: 14, width: "100%", fontWeight: 700 }}
+                    style={{ marginTop: 12, padding: 14, width: "100%", fontWeight: 700, textAlign: "center" }}
                   >
-                    {t("freeRewardButton")}
+                    <span style={{ display: "block" }}>{t("freeRewardButtonLine1")}</span>
+                    <span style={{ display: "block" }}>{t("freeRewardButtonLine2")}</span>
                   </button>
 
                     {showRewardedAdPlaceholder && (

@@ -295,7 +295,7 @@ const HOME_TEXT = {
     buyPremium: "Koupit Premium",
     superPremiumPurchaseDescription:
       "Neomezený počet hráčů, volitelné základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.",
-    superPremiumBenefitsIntro: "Pravidelným hraním získáváš coiny, za které dostáváš další herní výhody:",
+    superPremiumBenefitsIntro: "Pravidelným hraním v režimu Super Premium získáváš coiny, za které dostáváš další herní výhody:",
     superPremiumBenefits: "kategorie Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Řeka / Hora, Povolání a Barva|možnost vytvořit si vlastní kategorie|zvolit si, v jakém pořadí budou kategorie při zapisování odpovědí|časový limit na kolo|možnost nastavení počtu kol",
     upgradeToSuperPremium: "Upgradovat na Super Premium",
     upgradeToSuperPremiumFor: "Upgradovat na Super Premium za",
@@ -345,7 +345,7 @@ const HOME_TEXT = {
     buyPremium: "Buy Premium",
     superPremiumPurchaseDescription:
       "Unlimited players, optional basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.",
-    superPremiumBenefitsIntro: "Regular play earns you coins that give you more game advantages:",
+    superPremiumBenefitsIntro: "By playing regularly in Super Premium, you earn coins that give you more game advantages:",
     superPremiumBenefits: "categories Actor / Actress, Singer / Band, River / Mountain, Job and Colour|the option to create custom categories|choose the order in which categories appear when entering answers|a time limit for each round|the option to set the number of rounds",
     upgradeToSuperPremium: "Upgrade to Super Premium",
     upgradeToSuperPremiumFor: "Upgrade to Super Premium for",
@@ -396,7 +396,7 @@ const HOME_TEXT = {
     buyPremium: "Comprar Premium",
     superPremiumPurchaseDescription:
       "Jugadores ilimitados, categorías básicas opcionales y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto.",
-    superPremiumBenefitsIntro: "Jugando con regularidad ganas monedas con las que obtienes más ventajas de juego:",
+    superPremiumBenefitsIntro: "Jugando con regularidad en el modo Super Premium ganas monedas con las que obtienes más ventajas de juego:",
     superPremiumBenefits: "categorías Actor / Actriz, Cantante / Grupo, Río / Montaña, Profesión y Color|la posibilidad de crear categorías propias|elegir el orden de las categorías al escribir las respuestas|límite de tiempo por ronda|la posibilidad de ajustar el número de rondas",
     upgradeToSuperPremium: "Pasar a Super Premium",
     upgradeToSuperPremiumFor: "Pasar a Super Premium por",
@@ -449,7 +449,7 @@ const HOME_TEXT = {
     buyPremium: "Premium kaufen",
     superPremiumPurchaseDescription:
       "Unbegrenzt viele Spieler, frei wählbare Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad.",
-    superPremiumBenefitsIntro: "Durch regelmäßiges Spielen verdienst du Coins, mit denen du weitere Spielvorteile erhältst:",
+    superPremiumBenefitsIntro: "Durch regelmäßiges Spielen im Super-Premium-Modus erhältst du Münzen, mit denen du weitere Spielvorteile bekommst:",
     superPremiumBenefits: "Kategorien Schauspieler / Schauspielerin, Sänger / Sängerin / Band, Fluss / Berg, Beruf und Farbe|eigene Kategorien erstellen|die Reihenfolge der Kategorien beim Eingeben der Antworten wählen|Zeitlimit pro Runde|die Rundenzahl einstellen",
     upgradeToSuperPremium: "Auf Super Premium upgraden",
     upgradeToSuperPremiumFor: "Auf Super Premium upgraden für",
@@ -492,7 +492,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Inclus dans Super Premium",
     buyPremium: "Acheter Premium",
     superPremiumPurchaseDescription: "Nombre de joueurs illimité, catégories de base au choix et 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto.",
-    superPremiumBenefitsIntro: "En jouant régulièrement, tu gagnes des pièces qui te donnent d’autres avantages de jeu :",
+    superPremiumBenefitsIntro: "En jouant régulièrement en mode Super Premium, tu gagnes des pièces qui te donnent accès à davantage d’avantages de jeu :",
     superPremiumBenefits: "catégories Acteur / Actrice, Chanteur / Groupe, Fleuve / Montagne, Métier et Couleur|possibilité de créer tes propres catégories|choisir l’ordre des catégories lors de la saisie des réponses|limite de temps par manche|possibilité de régler le nombre de manches",
     upgradeToSuperPremium: "Passer à Super Premium",
     upgradeToSuperPremiumFor: "Passer à Super Premium pour",
@@ -534,7 +534,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Incluído no Super Premium",
     buyPremium: "Comprar Premium",
     superPremiumPurchaseDescription: "Jogadores ilimitados, categorias básicas opcionais e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto.",
-    superPremiumBenefitsIntro: "Jogando regularmente, você ganha moedas que dão acesso a mais vantagens no jogo:",
+    superPremiumBenefitsIntro: "Jogando regularmente no modo Super Premium, você ganha moedas que dão acesso a mais vantagens no jogo:",
     superPremiumBenefits: "categorias Ator / Atriz, Cantor / Banda, Rio / Montanha, Profissão e Cor|possibilidade de criar categorias próprias|escolher a ordem das categorias ao preencher as respostas|limite de tempo por rodada|possibilidade de definir o número de rodadas",
     upgradeToSuperPremium: "Fazer upgrade para Super Premium",
     upgradeToSuperPremiumFor: "Fazer upgrade para Super Premium por",
@@ -575,7 +575,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Termasuk dalam Super Premium",
     buyPremium: "Beli Premium",
     superPremiumPurchaseDescription: "Pemain tanpa batas, semua kategori dasar dan 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor.",
-    superPremiumBenefitsIntro: "Dengan bermain rutin, kamu mendapatkan koin untuk memperoleh lebih banyak keuntungan dalam permainan:",
+    superPremiumBenefitsIntro: "Dengan bermain rutin dalam mode Super Premium, kamu mendapatkan koin untuk membuka lebih banyak keuntungan dalam permainan:",
     superPremiumBenefits: "kategori Aktor / Aktris, Penyanyi / Band, Sungai / Gunung, Pekerjaan, dan Warna|opsi membuat kategori sendiri|memilih urutan kategori saat mengisi jawaban|batas waktu per ronde|opsi mengatur jumlah ronde",
     upgradeToSuperPremium: "Tingkatkan ke Super Premium",
     upgradeToSuperPremiumFor: "Tingkatkan ke Super Premium seharga",
@@ -616,7 +616,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Super Premium'a dahil",
     buyPremium: "Premium satın al",
     superPremiumPurchaseDescription: "Sınırsız oyuncu, seçilebilir temel kategoriler ve 4 ek kategori: Film / Dizi, Spor, Marka ve Araba / Motosiklet.",
-    superPremiumBenefitsIntro: "Düzenli oynayarak daha fazla oyun avantajı sağlayan coinler kazanırsın:",
+    superPremiumBenefitsIntro: "Super Premium modunda düzenli oynayarak daha fazla oyun avantajı sağlayan coinler kazanırsın:",
     superPremiumBenefits: "Aktör / Aktris, Şarkıcı / Grup, Nehir / Dağ, Meslek ve Renk kategorileri|kendi kategorilerini oluşturma|cevapları yazarken kategori sırasını seçme|tur başına süre sınırı|tur sayısını ayarlama",
     upgradeToSuperPremium: "Super Premium'a yükselt",
     upgradeToSuperPremiumFor: "Şu fiyata Super Premium'a yükselt",
@@ -657,7 +657,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Wliczone w Super Premium",
     buyPremium: "Kup Premium",
     superPremiumPurchaseDescription: "Nieograniczona liczba graczy, dowolnie wybierane kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
-    superPremiumBenefitsIntro: "Za regularną grę zdobywasz monety, które dają kolejne korzyści w grze:",
+    superPremiumBenefitsIntro: "Regularnie grając w trybie Super Premium, zdobywasz monety, za które otrzymujesz kolejne korzyści w grze:",
     superPremiumBenefits: "kategorie Aktor / Aktorka, Piosenkarz / Zespół, Rzeka / Góra, Zawód i Kolor|możliwość tworzenia własnych kategorii|wybór kolejności kategorii podczas wpisywania odpowiedzi|limit czasu na rundę|możliwość ustawienia liczby rund",
     upgradeToSuperPremium: "Przejdź na Super Premium",
     upgradeToSuperPremiumFor: "Przejdź na Super Premium za",
@@ -699,7 +699,7 @@ const HOME_TEXT = {
     includedInSuperPremium: "Incluso in Super Premium",
     buyPremium: "Acquista Premium",
     superPremiumPurchaseDescription: "Giocatori illimitati, categorie base selezionabili e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto.",
-    superPremiumBenefitsIntro: "Giocando regolarmente guadagni monete con cui ottieni altri vantaggi di gioco:",
+    superPremiumBenefitsIntro: "Giocando regolarmente in modalità Super Premium ottieni monete con cui sblocchi altri vantaggi di gioco:",
     superPremiumBenefits: "categorie Attore / Attrice, Cantante / Gruppo, Fiume / Montagna, Professione e Colore|possibilità di creare categorie personalizzate|scegliere l’ordine delle categorie durante l’inserimento delle risposte|limite di tempo per turno|possibilità di impostare il numero di turni",
     upgradeToSuperPremium: "Passa a Super Premium",
     upgradeToSuperPremiumFor: "Passa a Super Premium per",
@@ -1302,6 +1302,7 @@ export default function Home() {
             <section className={styles.rewardPanel}>
               <h3>{getRoomUiText(language, "freeLimitTitle")}</h3>
               <p>{getRoomUiText(language, "freeLimitText")}</p>
+              <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
               <button
                 type="button"
                 disabled={purchaseBusy !== null}
@@ -1309,29 +1310,31 @@ export default function Home() {
               >
                 {h("buyPremium")}
               </button>
-    <p style={{ marginTop: 8 }}>{h("premiumDescription")}</p>
+              <p style={{ marginTop: 8, fontSize: "inherit", lineHeight: 1.35 }}>{h("premiumDescription")}</p>
+              <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
               <button
                 type="button"
                 disabled={purchaseBusy !== null}
                 onClick={() => void startPlayPurchase("super_premium")}
-                style={{ marginTop: 10 }}
               >
                 {h("buySuperPremium")}
               </button>
-    <p style={{ marginTop: 8 }}>{h("superPremiumPurchaseDescription")}</p>
-    <p>{h("superPremiumBenefitsIntro")}</p>
-    <ul>
-      {h("superPremiumBenefits").split("|").map((benefit) => (
-        <li key={benefit}>{benefit}</li>
-      ))}
-    </ul>
+              <p style={{ marginTop: 8, fontSize: "inherit", lineHeight: 1.35 }}>{h("superPremiumPurchaseDescription")}</p>
+              <p style={{ fontSize: "inherit", lineHeight: 1.35 }}>{h("superPremiumBenefitsIntro")}</p>
+              <ul style={{ fontSize: "inherit", lineHeight: 1.35 }}>
+                {h("superPremiumBenefits").split("|").map((benefit) => (
+                  <li key={benefit}>{benefit}</li>
+                ))}
+              </ul>
+              <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
               <button
                 type="button"
                 disabled={rewardedBusy}
                 onClick={() => void startHomeFreeRewardedAd()}
-                style={{ marginTop: 10 }}
+                style={{ textAlign: "center" }}
               >
-                {getRoomUiText(language, "freeRewardButton")}
+                <span style={{ display: "block" }}>{getRoomUiText(language, "freeRewardButtonLine1")}</span>
+                <span style={{ display: "block" }}>{getRoomUiText(language, "freeRewardButtonLine2")}</span>
               </button>
             </section>
           )}
