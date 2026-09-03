@@ -16,22 +16,9 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
 
           p = Path('app/src/app/room/[code]/page.tsx')
           s = p.read_text()
-
-          pattern = re.compile(
-              r'<section\s+style=\{\{\s*'
-              r'padding:\s*14,\s*'
-              r'border:\s*"2px solid #f59e0b",\s*'
-              r'borderRadius:\s*10,\s*'
-              r'background:\s*"#fff7ed",\s*'
-              r'\}\}\s*>\s*'
-              r'<h3[^>]*>\{t\("freeLimitTitle"\)\}</h3>\s*'
-              r'<p>\{t\("freeLimitText"\)\}</p>.*?</section>',
-              re.S,
-          )
 
           replacement = '''<FreeLimitPanel
               language={uiLanguage}
@@ -42,10 +29,29 @@ jobs:
               onWatchRewarded={() => void startFreeRewardedAd()}
             />'''
 
-          s, count = pattern.subn(replacement, s)
-          if count != 2:
-            raise SystemExit(f'Expected 2 legacy entry Free limit boxes, replaced {count}')
+          count = 0
+          search_from = 0
+          while True:
+            pos = s.find('background: "#fff7ed"', search_from)
+            if pos < 0:
+              break
+            start = s.rfind('<section', 0, pos)
+            end = s.find('</section>', pos)
+            if start < 0 or end < 0:
+              raise SystemExit('Could not locate legacy Free limit section bounds')
+            end += len('</section>')
+            segment = s[start:end]
+            if 'freeLimitTitle' in segment and 'freeLimitText' in segment:
+              s = s[:start] + replacement + s[end:]
+              count += 1
+              search_from = start + len(replacement)
+            else:
+              search_from = pos + 1
 
+          if count < 1:
+            raise SystemExit('No legacy entry Free limit box found')
+
+          print(f'Replaced {count} legacy entry Free limit box(es)')
           p.write_text(s)
           PY
 
