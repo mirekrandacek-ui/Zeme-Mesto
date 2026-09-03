@@ -23,6 +23,7 @@ import {
 import { getOrCreateLetterDeckOwnerId } from "@/lib/letterDeckOwner";
 import { useStableViewportUnit } from "@/lib/useStableViewportUnit";
 import { getUiText as getRoomUiText } from "@/app/room/[code]/uiText";
+import FreeLimitPanel from "@/app/components/FreeLimitPanel";
 
 type Tier = "free" | "premium" | "super_premium";
 type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
@@ -281,8 +282,6 @@ const HOME_TEXT = {
     purchaseStartError: "Nákup se nepodařilo spustit.",
     freeDescription:
       "Až 3 hráči. Pevné kategorie: Země, Město, Jméno.",
-    premiumDescription:
-      "Až 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina.",
     superPremiumDescription:
       "Super Premium: neomezený počet hráčů, volitelné základní kategorie, rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto. Další kategorie a herní možnosti si postupně odemykáš za coiny získané pravidelným hraním.",
     superPremiumCategories:
@@ -292,14 +291,8 @@ const HOME_TEXT = {
     hideOtherModes: "Skrýt další režimy",
     showOtherModes: "Zobrazit další režimy",
     includedInSuperPremium: "Součást Super Premium",
-    buyPremium: "Koupit Premium",
-    superPremiumPurchaseDescription:
-      "Neomezený počet hráčů, volitelné základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.",
-    superPremiumBenefitsIntro: "Pravidelným hraním v režimu Super Premium získáváš coiny, za které dostáváš další herní výhody:",
-    superPremiumBenefits: "kategorie Herec / Herečka, Zpěvák / Zpěvačka / Kapela, Řeka / Hora, Povolání a Barva|možnost vytvořit si vlastní kategorie|zvolit si, v jakém pořadí budou kategorie při zapisování odpovědí|časový limit na kolo|možnost nastavení počtu kol",
     upgradeToSuperPremium: "Upgradovat na Super Premium",
     upgradeToSuperPremiumFor: "Upgradovat na Super Premium za",
-    buySuperPremium: "Koupit Super Premium",
     ratingUnavailable:
       "Hodnocení bude dostupné po vydání aplikace na Google Play.",
   },
@@ -331,8 +324,6 @@ const HOME_TEXT = {
     purchaseStartError: "The purchase could not be started.",
     freeDescription:
       "Up to 3 players. Fixed categories: Country, City, Name.",
-    premiumDescription:
-      "Up to 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant.",
     superPremiumDescription:
       "Super Premium: unlimited players, basic categories, and the extended categories Film / Series, Sport, Brand, and Car / Motorbike. You gradually unlock more categories and game options with coins earned through regular play.",
     superPremiumCategories:
@@ -342,14 +333,8 @@ const HOME_TEXT = {
     hideOtherModes: "Hide other modes",
     showOtherModes: "Show other modes",
     includedInSuperPremium: "Included in Super Premium",
-    buyPremium: "Buy Premium",
-    superPremiumPurchaseDescription:
-      "Unlimited players, optional basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.",
-    superPremiumBenefitsIntro: "By playing regularly in Super Premium, you earn coins that give you more game advantages:",
-    superPremiumBenefits: "categories Actor / Actress, Singer / Band, River / Mountain, Job and Colour|the option to create custom categories|choose the order in which categories appear when entering answers|a time limit for each round|the option to set the number of rounds",
     upgradeToSuperPremium: "Upgrade to Super Premium",
     upgradeToSuperPremiumFor: "Upgrade to Super Premium for",
-    buySuperPremium: "Buy Super Premium",
     ratingUnavailable:
       "Rating will be available after the app is released on Google Play.",
   },
@@ -382,8 +367,6 @@ const HOME_TEXT = {
     purchaseStartError: "No se pudo iniciar la compra.",
     freeDescription:
       "Hasta 3 jugadores. Categorías fijas: País, Ciudad, Nombre.",
-    premiumDescription:
-      "Hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta.",
     superPremiumDescription:
       "Super Premium: jugadores ilimitados, categorías básicas y las categorías ampliadas Película / Serie, Deporte, Marca y Coche / Moto. Desbloqueas poco a poco más categorías y opciones de juego con monedas obtenidas jugando con regularidad.",
     superPremiumCategories:
@@ -393,14 +376,8 @@ const HOME_TEXT = {
     hideOtherModes: "Ocultar otros modos",
     showOtherModes: "Mostrar otros modos",
     includedInSuperPremium: "Incluido en Super Premium",
-    buyPremium: "Comprar Premium",
-    superPremiumPurchaseDescription:
-      "Jugadores ilimitados, categorías básicas opcionales y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto.",
-    superPremiumBenefitsIntro: "Jugando con regularidad en el modo Super Premium ganas monedas con las que obtienes más ventajas de juego:",
-    superPremiumBenefits: "categorías Actor / Actriz, Cantante / Grupo, Río / Montaña, Profesión y Color|la posibilidad de crear categorías propias|elegir el orden de las categorías al escribir las respuestas|límite de tiempo por ronda|la posibilidad de ajustar el número de rondas",
     upgradeToSuperPremium: "Pasar a Super Premium",
     upgradeToSuperPremiumFor: "Pasar a Super Premium por",
-    buySuperPremium: "Comprar Super Premium",
     ratingUnavailable:
       "La valoración estará disponible después del lanzamiento en Google Play.",
   },
@@ -435,8 +412,6 @@ const HOME_TEXT = {
     purchaseStartError: "Der Kauf konnte nicht gestartet werden.",
     freeDescription:
       "Bis zu 3 Spieler. Feste Kategorien: Land, Stadt, Name.",
-    premiumDescription:
-      "Bis zu 5 Spieler. Feste Grundkategorien: Land, Stadt, Name, Tier, Gegenstand, Pflanze.",
     superPremiumDescription:
       "Super Premium: unbegrenzt viele Spieler, Grundkategorien sowie die erweiterten Kategorien Film / Serie, Sportart, Marke und Auto / Motorrad. Weitere Kategorien und Spieloptionen schaltest du nach und nach mit Coins frei, die du durch regelmäßiges Spielen verdienst.",
     superPremiumCategories:
@@ -446,14 +421,8 @@ const HOME_TEXT = {
     hideOtherModes: "Weitere Modi ausblenden",
     showOtherModes: "Weitere Modi anzeigen",
     includedInSuperPremium: "In Super Premium enthalten",
-    buyPremium: "Premium kaufen",
-    superPremiumPurchaseDescription:
-      "Unbegrenzt viele Spieler, frei wählbare Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad.",
-    superPremiumBenefitsIntro: "Durch regelmäßiges Spielen im Super-Premium-Modus erhältst du Münzen, mit denen du weitere Spielvorteile bekommst:",
-    superPremiumBenefits: "Kategorien Schauspieler / Schauspielerin, Sänger / Sängerin / Band, Fluss / Berg, Beruf und Farbe|eigene Kategorien erstellen|die Reihenfolge der Kategorien beim Eingeben der Antworten wählen|Zeitlimit pro Runde|die Rundenzahl einstellen",
     upgradeToSuperPremium: "Auf Super Premium upgraden",
     upgradeToSuperPremiumFor: "Auf Super Premium upgraden für",
-    buySuperPremium: "Super Premium kaufen",
     ratingUnavailable:
       "Die Bewertung ist verfügbar, sobald die App bei Google Play veröffentlicht wurde.",
   },
@@ -482,7 +451,6 @@ const HOME_TEXT = {
     purchaseWindowError: "Impossible d’ouvrir la fenêtre d’achat.",
     purchaseStartError: "Impossible de démarrer l’achat.",
     freeDescription: "Jusqu’à 3 joueurs. Catégories fixes : Pays, Ville, Prénom.",
-    premiumDescription: "Jusqu’à 5 joueurs. Catégories de base fixes : Pays, Ville, Prénom, Animal, Objet, Plante.",
     superPremiumDescription: "Super Premium : nombre de joueurs illimité, catégories de base et catégories supplémentaires Film / Série, Sport, Marque et Voiture / Moto. Tu débloques progressivement d’autres catégories et options de jeu avec des pièces gagnées en jouant régulièrement.",
     superPremiumCategories: "Catégories dans Super Premium : catégories de base + Film / Série, Sport, Marque, Voiture / Moto.",
     creating: "Création…",
@@ -490,13 +458,8 @@ const HOME_TEXT = {
     hideOtherModes: "Masquer les autres modes",
     showOtherModes: "Afficher les autres modes",
     includedInSuperPremium: "Inclus dans Super Premium",
-    buyPremium: "Acheter Premium",
-    superPremiumPurchaseDescription: "Nombre de joueurs illimité, catégories de base au choix et 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto.",
-    superPremiumBenefitsIntro: "En jouant régulièrement en mode Super Premium, tu gagnes des pièces qui te donnent accès à davantage d’avantages de jeu :",
-    superPremiumBenefits: "catégories Acteur / Actrice, Chanteur / Groupe, Fleuve / Montagne, Métier et Couleur|possibilité de créer tes propres catégories|choisir l’ordre des catégories lors de la saisie des réponses|limite de temps par manche|possibilité de régler le nombre de manches",
     upgradeToSuperPremium: "Passer à Super Premium",
     upgradeToSuperPremiumFor: "Passer à Super Premium pour",
-    buySuperPremium: "Acheter Super Premium",
     ratingUnavailable: "L’évaluation sera disponible après la publication de l’application sur Google Play.",
   },
 
@@ -524,7 +487,6 @@ const HOME_TEXT = {
     purchaseWindowError: "Não foi possível abrir a janela de compra.",
     purchaseStartError: "Não foi possível iniciar a compra.",
     freeDescription: "Até 3 jogadores. Categorias fixas: País, Cidade, Nome.",
-    premiumDescription: "Até 5 jogadores. Categorias básicas fixas: País, Cidade, Nome, Animal, Objeto, Planta.",
     superPremiumDescription: "Super Premium: jogadores ilimitados, categorias básicas e as categorias adicionais Filme / Série, Esporte, Marca e Carro / Moto. Você libera gradualmente mais categorias e opções de jogo com moedas ganhas jogando regularmente.",
     superPremiumCategories: "Categorias no Super Premium: categorias básicas + Filme / Série, Esporte, Marca, Carro / Moto.",
     creating: "Criando…",
@@ -532,13 +494,8 @@ const HOME_TEXT = {
     hideOtherModes: "Ocultar outros modos",
     showOtherModes: "Mostrar outros modos",
     includedInSuperPremium: "Incluído no Super Premium",
-    buyPremium: "Comprar Premium",
-    superPremiumPurchaseDescription: "Jogadores ilimitados, categorias básicas opcionais e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto.",
-    superPremiumBenefitsIntro: "Jogando regularmente no modo Super Premium, você ganha moedas que dão acesso a mais vantagens no jogo:",
-    superPremiumBenefits: "categorias Ator / Atriz, Cantor / Banda, Rio / Montanha, Profissão e Cor|possibilidade de criar categorias próprias|escolher a ordem das categorias ao preencher as respostas|limite de tempo por rodada|possibilidade de definir o número de rodadas",
     upgradeToSuperPremium: "Fazer upgrade para Super Premium",
     upgradeToSuperPremiumFor: "Fazer upgrade para Super Premium por",
-    buySuperPremium: "Comprar Super Premium",
     ratingUnavailable: "A avaliação estará disponível depois que o aplicativo for publicado no Google Play.",
   },
   id: {
@@ -565,7 +522,6 @@ const HOME_TEXT = {
     purchaseWindowError: "Jendela pembelian tidak dapat dibuka.",
     purchaseStartError: "Pembelian tidak dapat dimulai.",
     freeDescription: "Maksimal 3 pemain. Kategori tetap: Negara, Kota, Nama.",
-    premiumDescription: "Hingga 5 pemain. Kategori dasar tetap: Negara, Kota, Nama, Hewan, Benda, Tanaman.",
     superPremiumDescription: "Super Premium: pemain tanpa batas, kategori dasar, serta kategori tambahan Film / Serial, Olahraga, Merek, dan Mobil / Motor. Kamu membuka lebih banyak kategori dan opsi permainan secara bertahap dengan koin yang diperoleh dari bermain secara rutin.",
     superPremiumCategories: "Kategori di Super Premium: kategori dasar + Film / Serial, Olahraga, Merek, Mobil / Motor.",
     creating: "Membuat…",
@@ -573,13 +529,8 @@ const HOME_TEXT = {
     hideOtherModes: "Sembunyikan mode lain",
     showOtherModes: "Tampilkan mode lain",
     includedInSuperPremium: "Termasuk dalam Super Premium",
-    buyPremium: "Beli Premium",
-    superPremiumPurchaseDescription: "Pemain tanpa batas, semua kategori dasar dan 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor.",
-    superPremiumBenefitsIntro: "Dengan bermain rutin dalam mode Super Premium, kamu mendapatkan koin untuk membuka lebih banyak keuntungan dalam permainan:",
-    superPremiumBenefits: "kategori Aktor / Aktris, Penyanyi / Band, Sungai / Gunung, Pekerjaan, dan Warna|opsi membuat kategori sendiri|memilih urutan kategori saat mengisi jawaban|batas waktu per ronde|opsi mengatur jumlah ronde",
     upgradeToSuperPremium: "Tingkatkan ke Super Premium",
     upgradeToSuperPremiumFor: "Tingkatkan ke Super Premium seharga",
-    buySuperPremium: "Beli Super Premium",
     ratingUnavailable: "Penilaian akan tersedia setelah aplikasi dirilis di Google Play.",
   },
   tr: {
@@ -606,7 +557,6 @@ const HOME_TEXT = {
     purchaseWindowError: "Satın alma penceresi açılamadı.",
     purchaseStartError: "Satın alma başlatılamadı.",
     freeDescription: "En fazla 3 oyuncu. Sabit kategoriler: Ülke, Şehir, İsim.",
-    premiumDescription: "5 oyuncuya kadar. Sabit temel kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya, Bitki.",
     superPremiumDescription: "Super Premium: sınırsız oyuncu, temel kategoriler ve Film / Dizi, Spor, Marka ile Araba / Motosiklet ek kategorileri. Düzenli oynayarak kazandığın coinlerle zamanla daha fazla kategori ve oyun seçeneğinin kilidini açarsın.",
     superPremiumCategories: "Super Premium kategorileri: temel kategoriler + Film / Dizi, Spor, Marka, Araba / Motosiklet.",
     creating: "Oluşturuluyor…",
@@ -614,13 +564,8 @@ const HOME_TEXT = {
     hideOtherModes: "Diğer modları gizle",
     showOtherModes: "Diğer modları göster",
     includedInSuperPremium: "Super Premium'a dahil",
-    buyPremium: "Premium satın al",
-    superPremiumPurchaseDescription: "Sınırsız oyuncu, seçilebilir temel kategoriler ve 4 ek kategori: Film / Dizi, Spor, Marka ve Araba / Motosiklet.",
-    superPremiumBenefitsIntro: "Super Premium modunda düzenli oynayarak daha fazla oyun avantajı sağlayan coinler kazanırsın:",
-    superPremiumBenefits: "Aktör / Aktris, Şarkıcı / Grup, Nehir / Dağ, Meslek ve Renk kategorileri|kendi kategorilerini oluşturma|cevapları yazarken kategori sırasını seçme|tur başına süre sınırı|tur sayısını ayarlama",
     upgradeToSuperPremium: "Super Premium'a yükselt",
     upgradeToSuperPremiumFor: "Şu fiyata Super Premium'a yükselt",
-    buySuperPremium: "Super Premium satın al",
     ratingUnavailable: "Uygulama Google Play'de yayınlandıktan sonra puanlama kullanılabilir olacak.",
   },
   pl: {
@@ -647,7 +592,6 @@ const HOME_TEXT = {
     purchaseWindowError: "Nie udało się otworzyć okna zakupu.",
     purchaseStartError: "Nie udało się rozpocząć zakupu.",
     freeDescription: "Maks. 3 graczy. Stałe kategorie: Państwo, Miasto, Imię.",
-    premiumDescription: "Do 5 graczy. Stałe kategorie podstawowe: Kraj, Miasto, Imię, Zwierzę, Rzecz, Roślina.",
     superPremiumDescription: "Super Premium: nieograniczona liczba graczy, kategorie podstawowe oraz kategorie rozszerzone Film / Serial, Sport, Marka i Samochód / Motocykl. Kolejne kategorie i opcje gry odblokowujesz stopniowo za monety zdobywane podczas regularnej gry.",
     superPremiumCategories: "Kategorie w Super Premium: kategorie podstawowe + Film / Serial, Sport, Marka, Samochód / Motocykl.",
     creating: "Tworzenie…",
@@ -655,13 +599,8 @@ const HOME_TEXT = {
     hideOtherModes: "Ukryj pozostałe tryby",
     showOtherModes: "Pokaż pozostałe tryby",
     includedInSuperPremium: "Wliczone w Super Premium",
-    buyPremium: "Kup Premium",
-    superPremiumPurchaseDescription: "Nieograniczona liczba graczy, dowolnie wybierane kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
-    superPremiumBenefitsIntro: "Regularnie grając w trybie Super Premium, zdobywasz monety, za które otrzymujesz kolejne korzyści w grze:",
-    superPremiumBenefits: "kategorie Aktor / Aktorka, Piosenkarz / Zespół, Rzeka / Góra, Zawód i Kolor|możliwość tworzenia własnych kategorii|wybór kolejności kategorii podczas wpisywania odpowiedzi|limit czasu na rundę|możliwość ustawienia liczby rund",
     upgradeToSuperPremium: "Przejdź na Super Premium",
     upgradeToSuperPremiumFor: "Przejdź na Super Premium za",
-    buySuperPremium: "Kup Super Premium",
     ratingUnavailable: "Ocena będzie dostępna po wydaniu aplikacji w Google Play.",
   },
 
@@ -689,7 +628,6 @@ const HOME_TEXT = {
     purchaseWindowError: "Impossibile aprire la finestra di acquisto.",
     purchaseStartError: "Impossibile avviare l’acquisto.",
     freeDescription: "Massimo 3 giocatori. Categorie fisse: Nazione, Città, Nome.",
-    premiumDescription: "Fino a 5 giocatori. Categorie base fisse: Paese, Città, Nome, Animale, Oggetto, Pianta.",
     superPremiumDescription: "Super Premium: giocatori illimitati, categorie base e le categorie estese Film / Serie TV, Sport, Marca e Auto / Moto. Sblocchi gradualmente altre categorie e opzioni di gioco con le monete guadagnate giocando regolarmente.",
     superPremiumCategories: "Categorie in Super Premium: categorie base + Film / Serie TV, Sport, Marca, Auto / Moto.",
     creating: "Creazione…",
@@ -697,13 +635,8 @@ const HOME_TEXT = {
     hideOtherModes: "Nascondi le altre modalità",
     showOtherModes: "Mostra le altre modalità",
     includedInSuperPremium: "Incluso in Super Premium",
-    buyPremium: "Acquista Premium",
-    superPremiumPurchaseDescription: "Giocatori illimitati, categorie base selezionabili e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto.",
-    superPremiumBenefitsIntro: "Giocando regolarmente in modalità Super Premium ottieni monete con cui sblocchi altri vantaggi di gioco:",
-    superPremiumBenefits: "categorie Attore / Attrice, Cantante / Gruppo, Fiume / Montagna, Professione e Colore|possibilità di creare categorie personalizzate|scegliere l’ordine delle categorie durante l’inserimento delle risposte|limite di tempo per turno|possibilità di impostare il numero di turni",
     upgradeToSuperPremium: "Passa a Super Premium",
     upgradeToSuperPremiumFor: "Passa a Super Premium per",
-    buySuperPremium: "Acquista Super Premium",
     ratingUnavailable: "La valutazione sarà disponibile dopo la pubblicazione dell’app su Google Play.",
   },
 
@@ -1254,7 +1187,7 @@ export default function Home() {
 
           <div className={styles.description}>
             {tier === "free" && <p>{h("freeDescription")}</p>}
-            {tier === "premium" && <p style={{ marginTop: 8 }}>{h("premiumDescription")}</p>}
+            {tier === "premium" && <p style={{ marginTop: 8 }}>{getRoomUiText(language, "premiumPurchaseDescription")}</p>}
             {tier === "super_premium" && <><p>{h("superPremiumDescription")}</p><p>{h("superPremiumCategories")}</p></>}
           </div>
 
@@ -1299,44 +1232,14 @@ export default function Home() {
           </fieldset>
 
           {freeQuotaExhausted && (
-            <section className={styles.rewardPanel}>
-              <h3>{getRoomUiText(language, "freeLimitTitle")}</h3>
-              <p>{getRoomUiText(language, "freeLimitText")}</p>
-              <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
-              <button
-                type="button"
-                disabled={purchaseBusy !== null}
-                onClick={() => void startPlayPurchase("premium")}
-              >
-                {h("buyPremium")}
-              </button>
-              <p style={{ marginTop: 8, fontSize: "inherit", lineHeight: 1.35 }}>{h("premiumDescription")}</p>
-              <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
-              <button
-                type="button"
-                disabled={purchaseBusy !== null}
-                onClick={() => void startPlayPurchase("super_premium")}
-              >
-                {h("buySuperPremium")}
-              </button>
-              <p style={{ marginTop: 8, fontSize: "inherit", lineHeight: 1.35 }}>{h("superPremiumPurchaseDescription")}</p>
-              <p style={{ fontSize: "inherit", lineHeight: 1.35 }}>{h("superPremiumBenefitsIntro")}</p>
-              <ul style={{ fontSize: "inherit", lineHeight: 1.35 }}>
-                {h("superPremiumBenefits").split("|").map((benefit) => (
-                  <li key={benefit}>{benefit}</li>
-                ))}
-              </ul>
-              <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
-              <button
-                type="button"
-                disabled={rewardedBusy}
-                onClick={() => void startHomeFreeRewardedAd()}
-                style={{ textAlign: "center" }}
-              >
-                <span style={{ display: "block" }}>{getRoomUiText(language, "freeRewardButtonLine1")}</span>
-                <span style={{ display: "block" }}>{getRoomUiText(language, "freeRewardButtonLine2")}</span>
-              </button>
-            </section>
+            <FreeLimitPanel
+              language={language}
+              purchaseDisabled={purchaseBusy !== null}
+              rewardDisabled={rewardedBusy}
+              onBuyPremium={() => void startPlayPurchase("premium")}
+              onBuySuperPremium={() => void startPlayPurchase("super_premium")}
+              onWatchRewarded={() => void startHomeFreeRewardedAd()}
+            />
           )}
 
           <button className={styles.createButton} onClick={createRoom} disabled={creating || freeQuotaExhausted}>
@@ -1361,14 +1264,14 @@ export default function Home() {
 
         {!roomCodeOpen && showOtherModes && (
           <section className={styles.purchaseOptions}>
-            <article><h3>Premium{premiumDisplayPrice ? ` – ${premiumDisplayPrice}` : ""}</h3><p>{h("premiumDescription")}</p>
+            <article><h3>Premium{premiumDisplayPrice ? ` – ${premiumDisplayPrice}` : ""}</h3><p>{getRoomUiText(language, "premiumPurchaseDescription")}</p>
               <button type="button" disabled={tier === "premium" || tier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("premium")}>
-                {tier === "premium" ? h("active") : tier === "super_premium" ? h("includedInSuperPremium") : h("buyPremium")}
+                {tier === "premium" ? h("active") : tier === "super_premium" ? h("includedInSuperPremium") : getRoomUiText(language, "freeUpgradeButton")}
               </button>
             </article>
-            <article><h3>Super Premium{superPremiumDisplayPrice ? ` – ${superPremiumDisplayPrice}` : ""}</h3><p>{h("superPremiumPurchaseDescription")}</p><p>{h("superPremiumBenefitsIntro")}</p><ul>{h("superPremiumBenefits").split("|").map((benefit) => <li key={benefit}>{benefit}</li>)}</ul>
+            <article><h3>Super Premium{superPremiumDisplayPrice ? ` – ${superPremiumDisplayPrice}` : ""}</h3><p>{getRoomUiText(language, "superPremiumPurchaseDescription")}</p><p>{getRoomUiText(language, "superPremiumBenefitsIntro")}</p><ul>{getRoomUiText(language, "superPremiumBenefits").split("|").map((benefit) => <li key={benefit}>{benefit}</li>)}</ul>
               <button type="button" disabled={tier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("super_premium")}>
-                {tier === "super_premium" ? h("active") : tier === "premium" ? superPremiumUpgradePrice ? `${h("upgradeToSuperPremiumFor")} ${superPremiumUpgradePrice}` : h("upgradeToSuperPremium") : h("buySuperPremium")}
+                {tier === "super_premium" ? h("active") : tier === "premium" ? superPremiumUpgradePrice ? `${h("upgradeToSuperPremiumFor")} ${superPremiumUpgradePrice}` : h("upgradeToSuperPremium") : getRoomUiText(language, "buySuperPremium")}
               </button>
             </article>
           </section>

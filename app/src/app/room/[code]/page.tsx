@@ -36,6 +36,7 @@ import {
   type UiLanguage,
   type UiTextKey,
 } from "./uiText";
+import FreeLimitPanel from "@/app/components/FreeLimitPanel";
 import roomStyles from "./page.module.css";
 
 type RoomStatus = "lobby" | "drawing" | "playing" | "scoring" | "finished";
@@ -4148,120 +4149,44 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
             {everyoneScored && (
               shouldShowFreeLimitUpsell ? (
-                <section
-                  className={`${roomStyles.scoringNextArea} ${roomStyles.scoringFreeLimitPanel}`}
-                >
-                  <h3 style={{ marginTop: 0 }}>{t("freeLimitTitle")}</h3>
-                  <p>
-                    {uiMessage({
-                      cs: "Ve Free verzi máš 3 kola. Pro pokračování zvol Premium, Super Premium, nebo si dobrovolně pusť reklamu a odemkni další 3 kola.",
-                      en: "The Free version includes 3 rounds. To continue, choose Premium, Super Premium, or watch an ad to unlock 3 more rounds.",
-                      es: "La versión Free incluye 3 rondas. Para continuar, elige Premium, Super Premium o mira un anuncio para desbloquear 3 rondas más.",
-                      de: "Die Free-Version enthält 3 Runden. Um weiterzuspielen, wähle Premium, Super Premium oder sieh dir eine Werbung an, um 3 weitere Runden freizuschalten.",
-                      fr: "La version Free comprend 3 manches. Pour continuer, choisis Premium, Super Premium ou regarde une publicité pour débloquer 3 manches supplémentaires.",
-                      "pt-BR": "A versão Free inclui 3 rodadas. Para continuar, escolha Premium, Super Premium ou assista a um anúncio para liberar mais 3 rodadas.",
-                      id: "Versi Free mencakup 3 ronde. Untuk melanjutkan, pilih Premium, Super Premium, atau tonton iklan untuk membuka 3 ronde lagi.",
-                      tr: "Free sürüm 3 tur içerir. Devam etmek için Premium, Super Premium seç veya 3 tur daha açmak için reklam izle.",
-                      pl: "Wersja Free obejmuje 3 rundy. Aby kontynuować, wybierz Premium, Super Premium albo obejrzyj reklamę i odblokuj 3 kolejne rundy.",
-                      it: "La versione Free include 3 turni. Per continuare, scegli Premium, Super Premium oppure guarda un annuncio per sbloccare altri 3 turni.",
-                    })}
-                  </p>
-
-                  <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
-                  <button
-                    type="button"
-                    disabled={!isOrganizer || categoryPurchaseBusy !== null}
-                    onClick={() => void startPremiumPurchase()}
-                    style={{ padding: 14, width: "100%", fontWeight: 700 }}
-                  >
-                    {t("freeUpgradeButton")}
-                  </button>
-                  <p style={{ margin: "8px 2px 0", fontSize: "inherit", lineHeight: 1.35 }}>
-                    {uiMessage({
-            cs: "Až 5 hráčů a pevné základní kategorie: Země, Město, Jméno, Zvíře, Věc a Rostlina.",
-            en: "Up to 5 players and fixed basic categories: Country, City, Name, Animal, Thing and Plant.",
-            es: "Hasta 5 jugadores y categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa y Planta.",
-            de: "Bis zu 5 Spieler und feste Grundkategorien: Land, Stadt, Name, Tier, Gegenstand und Pflanze.",
-            fr: "Jusqu’à 5 joueurs et catégories de base fixes : Pays, Ville, Prénom, Animal, Objet et Plante.",
-            "pt-BR": "Até 5 jogadores e categorias básicas fixas: País, Cidade, Nome, Animal, Objeto e Planta.",
-            id: "Hingga 5 pemain dan kategori dasar tetap: Negara, Kota, Nama, Hewan, Benda, dan Tumbuhan.",
-            tr: "En fazla 5 oyuncu ve sabit temel kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya ve Bitki.",
-            pl: "Do 5 graczy i stałe kategorie podstawowe: Państwo, Miasto, Imię, Zwierzę, Rzecz i Roślina.",
-            it: "Fino a 5 giocatori e categorie base fisse: Paese, Città, Nome, Animale, Oggetto e Pianta.",
-          })}
-                  </p>
-
-                  <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
-                  <button
-                    type="button"
-                    disabled={!isOrganizer || categoryPurchaseBusy !== null}
-                    onClick={() => void startSuperPremiumPurchase()}
-                    style={{ marginTop: 12, padding: 14, width: "100%", fontWeight: 700 }}
-                  >
-                    {uiMessage({ cs: "Koupit Super Premium", en: "Buy Super Premium", es: "Comprar Super Premium", de: "Super Premium kaufen", fr: "Acheter Super Premium", "pt-BR": "Comprar Super Premium", id: "Beli Super Premium", tr: "Super Premium satın al", pl: "Kup Super Premium", it: "Acquista Super Premium" })}
-                  </button>
-                  <p style={{ margin: "8px 2px 0", fontSize: "inherit", lineHeight: 1.35 }}>
-                    {uiMessage({
-            cs: "Neomezený počet hráčů, volitelné základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.",
-            en: "Unlimited players, optional basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.",
-            es: "Jugadores ilimitados, categorías básicas opcionales y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto.",
-            de: "Unbegrenzt viele Spieler, frei wählbare Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad.",
-            fr: "Nombre de joueurs illimité, catégories de base au choix et 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto.",
-            "pt-BR": "Jogadores ilimitados, categorias básicas opcionais e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto.",
-            id: "Pemain tanpa batas, kategori dasar yang dapat dipilih, serta 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor.",
-            tr: "Sınırsız oyuncu, seçilebilir temel kategoriler ve 4 ek kategori: Film / Dizi, Spor, Marka ve Araba / Motosiklet.",
-            pl: "Nieograniczona liczba graczy, dowolnie wybierane kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
-            it: "Giocatori illimitati, categorie base selezionabili e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto.",
-          })}
-                  </p>
-
-                  <p style={{ margin: "8px 2px 4px", fontSize: "inherit", lineHeight: 1.35 }}>
-          {t("superPremiumBenefitsIntro")}
-        </p>
-        <ul style={{ margin: "0 2px 8px 20px", padding: 0, fontSize: "inherit", lineHeight: 1.35 }}>
-          {t("superPremiumBenefits").split("|").map((benefit) => (
-            <li key={benefit}>{benefit}</li>
-          ))}
-        </ul>
-
-        <div style={{ height: 1, background: "rgba(160, 220, 255, 0.65)", margin: "12px 0" }} />
-        <button
-                    type="button"
-                    onClick={startFreeRewardedAd}
-                    style={{ marginTop: 12, padding: 14, width: "100%", fontWeight: 700, textAlign: "center" }}
-                  >
-                    <span style={{ display: "block" }}>{t("freeRewardButtonLine1")}</span>
-                    <span style={{ display: "block" }}>{t("freeRewardButtonLine2")}</span>
-                  </button>
-
-                    {showRewardedAdPlaceholder && (
-                      <section
-                        style={{
-                          marginTop: 10,
-                          padding: 12,
-                          border: "1px dashed #999",
-                          borderRadius: 8,
-                          background: "#fff",
-                        }}
+                <FreeLimitPanel
+                  language={uiLanguage}
+                  purchaseDisabled={!isOrganizer || categoryPurchaseBusy !== null}
+                  onBuyPremium={() => void startPremiumPurchase()}
+                  onBuySuperPremium={() => void startSuperPremiumPurchase()}
+                  onWatchRewarded={() => void startFreeRewardedAd()}
+                  footer={
+                    <>
+                      {showRewardedAdPlaceholder && (
+                        <section
+                          style={{
+                            marginTop: 10,
+                            padding: 12,
+                            border: "1px dashed #999",
+                            borderRadius: 8,
+                            background: "#fff",
+                            color: "#172033",
+                            textShadow: "none",
+                          }}
+                        >
+                          <p style={{ marginTop: 0, marginBottom: 6, fontWeight: 700 }}>
+                            {uiMessage({ cs: "Rewarded reklama běží…", en: "Rewarded ad is playing…", es: "El anuncio recompensado se está reproduciendo…", de: "Werbung mit Belohnung wird abgespielt…", fr: "Lecture de la publicité récompensée…", "pt-BR": "Reproduzindo anúncio com recompensa…", id: "Iklan berhadiah sedang diputar…", tr: "Ödüllü reklam oynatılıyor…", pl: "Trwa reklama z nagrodą…", it: "Riproduzione dell’annuncio con premio…" })}
+                          </p>
+                          <p style={{ margin: 0 }}>
+                            {uiMessage({ cs: "Po doběhnutí reklamy se automaticky odemknou další 3 kola.", en: "After the ad finishes, 3 more rounds will unlock automatically.", es: "Cuando termine el anuncio, se desbloquearán automáticamente 3 rondas más.", de: "Nach Ende der Werbung werden automatisch 3 weitere Runden freigeschaltet.", fr: "À la fin de la publicité, 3 manches supplémentaires seront automatiquement débloquées.", "pt-BR": "Quando o anúncio terminar, mais 3 rodadas serão liberadas automaticamente.", id: "Setelah iklan selesai, 3 ronde tambahan akan terbuka secara otomatis.", tr: "Reklam tamamlandığında 3 ek turun kilidi otomatik olarak açılacak.", pl: "Po zakończeniu reklamy automatycznie odblokują się 3 kolejne rundy.", it: "Al termine dell’annuncio, verranno sbloccati automaticamente altri 3 turni." })}
+                          </p>
+                        </section>
+                      )}
+                      <a
+                        className={`${roomStyles.entryAction} ${roomStyles.entryActionHome}`}
+                        href="/"
                       >
-                        <p style={{ marginTop: 0, marginBottom: 6, fontWeight: 700 }}>
-                          {uiMessage({ cs: "Rewarded reklama běží…", en: "Rewarded ad is playing…", es: "El anuncio recompensado se está reproduciendo…" , de: "Werbung mit Belohnung wird abgespielt…", fr: "Lecture de la publicité récompensée…", "pt-BR": "Reproduzindo anúncio com recompensa…", id: "Iklan berhadiah sedang diputar…", tr: "Ödüllü reklam oynatılıyor…", pl: "Trwa reklama z nagrodą…", it: "Riproduzione dell’annuncio con premio…"})}
-                        </p>
-                        <p style={{ margin: 0 }}>
-                          {uiMessage({ cs: "Po doběhnutí reklamy se automaticky odemknou další 3 kola.", en: "After the ad finishes, 3 more rounds will unlock automatically.", es: "Cuando termine el anuncio, se desbloquearán automáticamente 3 rondas más." , de: "Nach Ende der Werbung werden automatisch 3 weitere Runden freigeschaltet.", fr: "À la fin de la publicité, 3 manches supplémentaires seront automatiquement débloquées.", "pt-BR": "Quando o anúncio terminar, mais 3 rodadas serão liberadas automaticamente.", id: "Setelah iklan selesai, 3 ronde tambahan akan terbuka secara otomatis.", tr: "Reklam tamamlandığında 3 ek turun kilidi otomatik olarak açılacak.", pl: "Po zakończeniu reklamy automatycznie odblokują się 3 kolejne rundy.", it: "Al termine dell’annuncio, verranno sbloccati automaticamente altri 3 turni."})}
-                        </p>
-                      </section>
-                    )}
-
-                  <a
-                    className={`${roomStyles.entryAction} ${roomStyles.entryActionHome}`}
-                    href="/"
-                    style={{ marginTop: 14 }}
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h11"/></svg>
-                    <span>{t("backHome")}</span>
-                  </a>
-                </section>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h11"/></svg>
+                        <span>{t("backHome")}</span>
+                      </a>
+                    </>
+                  }
+                />
               ) : isFinalScoringRound ? (
                 <button onClick={finishGame} className={roomStyles.scoringNextButton}>
                   {t("finishGame")}

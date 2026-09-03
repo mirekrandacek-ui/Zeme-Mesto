@@ -981,8 +981,6 @@
   border:1px solid #c8d6e2;
   background:#fff;
   white-space:nowrap;
-  overflow-wrap:normal;
-  word-break:normal;
 }
 
 .scoringTableHead{
@@ -1119,8 +1117,8 @@
   border-radius:10px;
   color:#fff;
   background:#513100cf;
-  font-size:11.5px;
-  line-height:1.35;
+  font-size:10px;
+  line-height:1.3;
   text-shadow:0 2px 3px #00152d;
 }
 
@@ -1137,7 +1135,7 @@
   color:#fff;
   background:linear-gradient(#67ca35,#21880d);
   font:inherit;
-  font-size:13px;
+  font-size:11px;
   font-weight:800;
   text-shadow:0 2px 2px #145c0d;
 }
@@ -1204,10 +1202,10 @@
 }
 
 .scoringTotalPointsText{
-  display:inline;
-  max-width:none;
-  white-space:nowrap;
-  line-height:inherit;
+  display:inline-block;
+  max-width:4.8em;
+  white-space:normal;
+  line-height:1.05;
 }
 
 /* Premium / Super Premium room categories panel. */
