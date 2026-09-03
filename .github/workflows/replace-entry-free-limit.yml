@@ -16,22 +16,24 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           p = Path('app/src/app/room/[code]/page.tsx')
           s = p.read_text()
 
-          marker = '''            <section
-              style={{
-                padding: 14,
-                border: "2px solid #f59e0b",
-                borderRadius: 10,
-                background: "#fff7ed",
-              }}
-            >
-              <h3 style={{ marginTop: 0 }}>{t("freeLimitTitle")}</h3>
-              <p>{t("freeLimitText")}</p>'''
+          pattern = re.compile(
+              r'<section\s+style=\{\{\s*'
+              r'padding:\s*14,\s*'
+              r'border:\s*"2px solid #f59e0b",\s*'
+              r'borderRadius:\s*10,\s*'
+              r'background:\s*"#fff7ed",\s*'
+              r'\}\}\s*>\s*'
+              r'<h3[^>]*>\{t\("freeLimitTitle"\)\}</h3>\s*'
+              r'<p>\{t\("freeLimitText"\)\}</p>.*?</section>',
+              re.S,
+          )
 
-          replacement = '''            <FreeLimitPanel
+          replacement = '''<FreeLimitPanel
               language={uiLanguage}
               purchaseDisabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
               rewardDisabled={showRewardedAdPlaceholder || categoryPurchaseBusy !== null}
@@ -40,19 +42,7 @@ jobs:
               onWatchRewarded={() => void startFreeRewardedAd()}
             />'''
 
-          count = 0
-          while True:
-            start = s.find(marker)
-            if start < 0:
-              break
-            end_marker = '\n            </section>'
-            end = s.find(end_marker, start)
-            if end < 0:
-              raise SystemExit('Legacy Free limit section end not found')
-            end += len(end_marker)
-            s = s[:start] + replacement + s[end:]
-            count += 1
-
+          s, count = pattern.subn(replacement, s)
           if count != 2:
             raise SystemExit(f'Expected 2 legacy entry Free limit boxes, replaced {count}')
 
