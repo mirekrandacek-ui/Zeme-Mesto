@@ -69,3 +69,20 @@ body {
   max-width: none;
   white-space: nowrap;
 }
+
+/* Free-limit na bodování: stejná šířka a modrý obal jako ostatní scoring boxy. */
+section:has(#scoring-table-scroll) > section:has(a[href="/"]) {
+  order: 6;
+  width: min(82vw, calc(var(--zm-stable-vh, 1lvh) * 34.45), 360px);
+  margin: 10px auto 6px;
+  border: 10px solid transparent !important;
+  border-radius: 22px !important;
+  background:
+    linear-gradient(#513100cf, #513100cf) padding-box,
+    linear-gradient(145deg, rgba(8,115,175,.97), rgba(0,48,91,.985) 38%, rgba(0,28,59,.99)) border-box !important;
+  box-shadow:
+    inset 0 0 0 1.5px #ffd75d,
+    inset 0 7px 14px #4cd1ff33,
+    0 0 13px #04aaff,
+    0 7px 12px #000819cc;
+}

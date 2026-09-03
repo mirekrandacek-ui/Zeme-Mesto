@@ -46,8 +46,8 @@ section:has(> h2 + p + .panel) > p{
 }
 
 .button:disabled{
-  filter:grayscale(.7);
-  opacity:.7;
+  filter:none;
+  opacity:1;
   cursor:default;
 }
 
