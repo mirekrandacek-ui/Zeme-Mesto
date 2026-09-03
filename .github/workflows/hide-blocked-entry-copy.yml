@@ -1,0 +1,51 @@
+name: Hide blocked join copy
+on:
+  push:
+    branches: [fix/scoring-free-limit-and-table-fit]
+    paths: [.github/workflows/hide-blocked-entry-copy.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/scoring-free-limit-and-table-fit
+      - name: Hide join copy when Free limit blocks entry
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('app/src/app/room/[code]/page.tsx')
+          s = p.read_text()
+
+          old = '''          <h2 className={roomStyles.entryJoinTitle}>
+            {t("joinGame")}
+          </h2>
+          <p className={roomStyles.entryJoinHelp}>{t("joinNameHelp")}</p>
+
+          {freeJoinBlocked ? ('''
+
+          new = '''          {!freeJoinBlocked && (
+            <>
+              <h2 className={roomStyles.entryJoinTitle}>
+                {t("joinGame")}
+              </h2>
+              <p className={roomStyles.entryJoinHelp}>{t("joinNameHelp")}</p>
+            </>
+          )}
+
+          {freeJoinBlocked ? ('''
+
+          if old not in s:
+            raise SystemExit('Target join copy block not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          PY
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add 'app/src/app/room/[code]/page.tsx'
+          git commit -m 'Hide join copy when Free limit blocks entry'
+          git push
