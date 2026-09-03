@@ -1,0 +1,156 @@
+name: Fix scoring Free limit shell
+on:
+  push:
+    branches: [fix/scoring-free-limit-shell]
+    paths: [.github/workflows/fix-scoring-free-limit-shell.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/scoring-free-limit-shell
+      - name: Put scoring Free limit inside blue shell
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          page = Path('app/src/app/room/[code]/page.tsx')
+          s = page.read_text()
+          old = '''              shouldShowFreeLimitUpsell ? (
+                <FreeLimitPanel
+                  language={uiLanguage}
+                  purchaseDisabled={!isOrganizer || categoryPurchaseBusy !== null}
+                  onBuyPremium={() => void startPremiumPurchase()}
+                  onBuySuperPremium={() => void startSuperPremiumPurchase()}
+                  onWatchRewarded={() => void startFreeRewardedAd()}
+                  footer={
+                    <>
+                      {showRewardedAdPlaceholder && (
+                        <section
+                          style={{
+                            marginTop: 10,
+                            padding: 12,
+                            border: "1px dashed #999",
+                            borderRadius: 8,
+                            background: "#fff",
+                            color: "#172033",
+                            textShadow: "none",
+                          }}
+                        >
+                          <p style={{ marginTop: 0, marginBottom: 6, fontWeight: 700 }}>
+                            {uiMessage({ cs: "Rewarded reklama běží…", en: "Rewarded ad is playing…", es: "El anuncio recompensado se está reproduciendo…", de: "Werbung mit Belohnung wird abgespielt…", fr: "Lecture de la publicité récompensée…", "pt-BR": "Reproduzindo anúncio com recompensa…", id: "Iklan berhadiah sedang diputar…", tr: "Ödüllü reklam oynatılıyor…", pl: "Trwa reklama z nagrodą…", it: "Riproduzione dell’annuncio con premio…" })}
+                          </p>
+                          <p style={{ margin: 0 }}>
+                            {uiMessage({ cs: "Po doběhnutí reklamy se automaticky odemknou další 3 kola.", en: "After the ad finishes, 3 more rounds will unlock automatically.", es: "Cuando termine el anuncio, se desbloquearán automáticamente 3 rondas más.", de: "Nach Ende der Werbung werden automatisch 3 weitere Runden freigeschaltet.", fr: "À la fin de la publicité, 3 manches supplémentaires seront automatiquement débloquées.", "pt-BR": "Quando o anúncio terminar, mais 3 rodadas serão liberadas automaticamente.", id: "Setelah iklan selesai, 3 ronde tambahan akan terbuka secara otomatis.", tr: "Reklam tamamlandığında 3 ek turun kilidi otomatik olarak açılacak.", pl: "Po zakończeniu reklamy automatycznie odblokują się 3 kolejne rundy.", it: "Al termine dell’annuncio, verranno sbloccati automaticamente altri 3 turni." })}
+                          </p>
+                        </section>
+                      )}
+                      <a
+                        className={`${roomStyles.entryAction} ${roomStyles.entryActionHome}`}
+                        href="/"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h11"/></svg>
+                        <span>{t("backHome")}</span>
+                      </a>
+                    </>
+                  }
+                />
+              ) : isFinalScoringRound ? ('''
+          new = '''              shouldShowFreeLimitUpsell ? (
+                <section className={roomStyles.scoringFreeLimitShell}>
+                  <FreeLimitPanel
+                    language={uiLanguage}
+                    purchaseDisabled={!isOrganizer || categoryPurchaseBusy !== null}
+                    onBuyPremium={() => void startPremiumPurchase()}
+                    onBuySuperPremium={() => void startSuperPremiumPurchase()}
+                    onWatchRewarded={() => void startFreeRewardedAd()}
+                    footer={
+                      <>
+                        {showRewardedAdPlaceholder && (
+                          <section
+                            style={{
+                              marginTop: 10,
+                              padding: 12,
+                              border: "1px dashed #999",
+                              borderRadius: 8,
+                              background: "#fff",
+                              color: "#172033",
+                              textShadow: "none",
+                            }}
+                          >
+                            <p style={{ marginTop: 0, marginBottom: 6, fontWeight: 700 }}>
+                              {uiMessage({ cs: "Rewarded reklama běží…", en: "Rewarded ad is playing…", es: "El anuncio recompensado se está reproduciendo…", de: "Werbung mit Belohnung wird abgespielt…", fr: "Lecture de la publicité récompensée…", "pt-BR": "Reproduzindo anúncio com recompensa…", id: "Iklan berhadiah sedang diputar…", tr: "Ödüllü reklam oynatılıyor…", pl: "Trwa reklama z nagrodą…", it: "Riproduzione dell’annuncio con premio…" })}
+                            </p>
+                            <p style={{ margin: 0 }}>
+                              {uiMessage({ cs: "Po doběhnutí reklamy se automaticky odemknou další 3 kola.", en: "After the ad finishes, 3 more rounds will unlock automatically.", es: "Cuando termine el anuncio, se desbloquearán automáticamente 3 rondas más.", de: "Nach Ende der Werbung werden automatisch 3 weitere Runden freigeschaltet.", fr: "À la fin de la publicité, 3 manches supplémentaires seront automatiquement débloquées.", "pt-BR": "Quando o anúncio terminar, mais 3 rodadas serão liberadas automaticamente.", id: "Setelah iklan selesai, 3 ronde tambahan akan terbuka secara otomatis.", tr: "Reklam tamamlandığında 3 ek turun kilidi otomatik olarak açılacak.", pl: "Po zakończeniu reklamy automatycznie odblokują się 3 kolejne rundy.", it: "Al termine dell’annuncio, verranno sbloccati automaticamente altri 3 turni." })}
+                            </p>
+                          </section>
+                        )}
+                        <a
+                          className={`${roomStyles.entryAction} ${roomStyles.entryActionHome}`}
+                          href="/"
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h11"/></svg>
+                          <span>{t("backHome")}</span>
+                        </a>
+                      </>
+                    }
+                  />
+                </section>
+              ) : isFinalScoringRound ? ('''
+          if old not in s:
+            raise SystemExit('Scoring Free limit JSX target not found')
+          page.write_text(s.replace(old, new, 1))
+
+          css = Path('app/src/app/room/[code]/page.module.css')
+          c = css.read_text()
+          old_group = '''.scoringWaiting,
+.scoringNextArea,
+.scoringNextButton,
+.scoringHistory{'''
+          new_group = '''.scoringWaiting,
+.scoringNextArea,
+.scoringNextButton,
+.scoringHistory,
+.scoringFreeLimitShell{'''
+          if old_group not in c:
+            raise SystemExit('Scoring width group target not found')
+          c = c.replace(old_group, new_group, 1)
+
+          marker = '''.scoringNextArea,
+.scoringNextButton{
+  order:6;
+  margin-top:0;
+  margin-bottom:6px;
+}
+'''
+          shell = marker + '''
+.scoringFreeLimitShell{
+  order:6;
+  margin-top:0;
+  margin-bottom:6px;
+  padding:10px;
+  border:2px solid #43c8ff;
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(8,115,175,.97),rgba(0,48,91,.985) 38%,rgba(0,28,59,.99));
+  box-shadow:inset 0 0 0 2px #087cbf,inset 0 7px 14px #4cd1ff55,inset 0 -9px 16px #001f43,0 0 13px #04aaff,0 7px 12px #000819cc;
+  text-shadow:0 2px 3px #00152d;
+}
+
+.scoringFreeLimitShell > section{
+  margin-top:0;
+}
+'''
+          if marker not in c:
+            raise SystemExit('Scoring next area marker not found')
+          css.write_text(c.replace(marker, shell, 1))
+          PY
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add 'app/src/app/room/[code]/page.tsx' 'app/src/app/room/[code]/page.module.css'
+          git commit -m 'Place scoring Free limit inside blue shell'
+          git push
