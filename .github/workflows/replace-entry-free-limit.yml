@@ -1,0 +1,39 @@
+name: Replace entry Free limit boxes
+on:
+  push:
+    branches: [fix/scoring-free-limit-and-table-fit]
+    paths: [.github/workflows/replace-entry-free-limit.yml]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/scoring-free-limit-and-table-fit
+      - name: Replace legacy entry boxes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('app/src/app/room/[code]/page.tsx')
+          s = p.read_text()
+
+          pattern = re.compile(r'''            <section\n              style=\{\{\n                padding: 14,\n                border: \\"2px solid #f59e0b\\",\n                borderRadius: 10,\n                background: \\"#fff7ed\\",\n              \}\}\n            >\n              <h3 style=\{\{ marginTop: 0 \}\}>\{t\(\\"freeLimitTitle\\"\)\}</h3>\n              <p>\{t\(\\"freeLimitText\\"\)\}</p>\n.*?            </section>''', re.S)
+
+          replacement = '''            <FreeLimitPanel\n              language={uiLanguage}\n              purchaseDisabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}\n              rewardDisabled={showRewardedAdPlaceholder || categoryPurchaseBusy !== null}\n              onBuyPremium={() => void startPremiumPurchase()}\n              onBuySuperPremium={() => void startSuperPremiumPurchase()}\n              onWatchRewarded={() => void startFreeRewardedAd()}\n            />'''
+
+          s, count = pattern.subn(replacement, s)
+          if count != 2:
+            raise SystemExit(f'Expected 2 legacy entry Free limit boxes, replaced {count}')
+
+          p.write_text(s)
+          PY
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add 'app/src/app/room/[code]/page.tsx'
+          git commit -m 'Use shared Free limit panel on room entry'
+          git push
