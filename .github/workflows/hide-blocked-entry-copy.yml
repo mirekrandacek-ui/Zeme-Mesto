@@ -1,3 +1,4 @@
+# trigger
 name: Hide blocked join copy
 on:
   push:
