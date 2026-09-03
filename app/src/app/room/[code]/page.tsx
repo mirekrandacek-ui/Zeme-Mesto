@@ -3156,58 +3156,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           <p className={roomStyles.entryJoinHelp}>{t("joinNameHelp")}</p>
 
           {freeJoinBlocked ? (
-            <section
-              style={{
-                padding: 14,
-                border: "2px solid #f59e0b",
-                borderRadius: 10,
-                background: "#fff7ed",
-              }}
-            >
-              <h3 style={{ marginTop: 0 }}>{t("freeLimitTitle")}</h3>
-              <p>{t("freeLimitText")}</p>
-
-              <button
-                type="button"
-                disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
-                onClick={() => void startPremiumPurchase()}
-                style={{
-                  padding: 14,
-                  width: "100%",
-                  fontWeight: 700,
-                }}
-              >
-                {t("freeUpgradeButton")}
-              </button>
-
-              <button
-                type="button"
-                disabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
-                onClick={() => void startSuperPremiumPurchase()}
-                style={{
-                  marginTop: 10,
-                  padding: 14,
-                  width: "100%",
-                  fontWeight: 700,
-                }}
-              >
-                {uiMessage({ cs: "Koupit Super Premium", en: "Buy Super Premium", es: "Comprar Super Premium", de: "Super Premium kaufen", fr: "Acheter Super Premium", "pt-BR": "Comprar Super Premium", id: "Beli Super Premium", tr: "Super Premium satın al", pl: "Kup Super Premium", it: "Acquista Super Premium" })}
-              </button>
-
-              <button
-                type="button"
-                disabled={showRewardedAdPlaceholder || categoryPurchaseBusy !== null}
-                onClick={() => void startFreeRewardedAd()}
-                style={{
-                  marginTop: 10,
-                  padding: 14,
-                  width: "100%",
-                  fontWeight: 700,
-                }}
-              >
-                {t("freeRewardButton")}
-              </button>
-            </section>
+            <FreeLimitPanel
+    language={uiLanguage}
+    purchaseDisabled={categoryPurchaseBusy !== null || showRewardedAdPlaceholder}
+    rewardDisabled={showRewardedAdPlaceholder || categoryPurchaseBusy !== null}
+    onBuyPremium={() => void startPremiumPurchase()}
+    onBuySuperPremium={() => void startSuperPremiumPurchase()}
+    onWatchRewarded={() => void startFreeRewardedAd()}
+  />
           ) : roomIsFull ? (
             <p>
               {roomFullMessage(uiLanguage, maxPlayers)}
