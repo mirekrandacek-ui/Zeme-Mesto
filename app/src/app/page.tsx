@@ -24,6 +24,7 @@ import { getOrCreateLetterDeckOwnerId } from "@/lib/letterDeckOwner";
 import { useStableViewportUnit } from "@/lib/useStableViewportUnit";
 import { getUiText as getRoomUiText } from "@/app/room/[code]/uiText";
 import FreeLimitPanel from "@/app/components/FreeLimitPanel";
+import { exitAndroidApp, isAppExitAvailable } from "@/lib/appControl";
 
 type Tier = "free" | "premium" | "super_premium";
 type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
@@ -275,6 +276,7 @@ const HOME_TEXT = {
     roomCode: "Kód místnosti",
     join: "Připojit se",
     privacyPolicy: "Zásady ochrany soukromí",
+    exitGame: "Ukončit hru",
     intro: "Vytvoř místnost, pošli odkaz ostatním hráčům a hrajte společně.",
     billingNotReady: "Google Play Billing zatím není připravený.",
     productUnavailable: "Produkt zatím není dostupný.",
@@ -317,6 +319,7 @@ const HOME_TEXT = {
     roomCode: "Room code",
     join: "Join",
     privacyPolicy: "Privacy Policy",
+    exitGame: "Exit game",
     intro: "Create a room, share the link with other players and play together.",
     billingNotReady: "Google Play Billing is not ready.",
     productUnavailable: "The product is not available.",
@@ -360,6 +363,7 @@ const HOME_TEXT = {
     roomCode: "Código de sala",
     join: "Unirse",
     privacyPolicy: "Política de privacidad",
+    exitGame: "Salir del juego",
     intro: "Crea una sala, comparte el enlace con los demás jugadores y jugad juntos.",
     billingNotReady: "Google Play Billing no está preparado.",
     productUnavailable: "El producto no está disponible.",
@@ -404,6 +408,7 @@ const HOME_TEXT = {
     roomCode: "Raumcode",
     join: "Beitreten",
     privacyPolicy: "Datenschutzerklärung",
+    exitGame: "Spiel beenden",
     intro:
       "Erstelle einen Raum, teile den Link mit den anderen Spielern und spielt gemeinsam.",
     billingNotReady: "Google Play Billing ist noch nicht bereit.",
@@ -445,6 +450,7 @@ const HOME_TEXT = {
     roomCode: "Code de salle",
     join: "Rejoindre",
     privacyPolicy: "Politique de confidentialité",
+    exitGame: "Quitter le jeu",
     intro: "Crée une salle, partage le lien avec les autres joueurs et jouez tous ensemble.",
     billingNotReady: "La facturation Google Play n’est pas encore prête.",
     productUnavailable: "Le produit n’est pas disponible.",
@@ -481,6 +487,7 @@ const HOME_TEXT = {
     roomCode: "Código da sala",
     join: "Entrar",
     privacyPolicy: "Política de Privacidade",
+    exitGame: "Sair do jogo",
     intro: "Crie uma sala, compartilhe o link com os outros jogadores e joguem juntos.",
     billingNotReady: "O faturamento do Google Play ainda não está pronto.",
     productUnavailable: "O produto não está disponível.",
@@ -516,6 +523,7 @@ const HOME_TEXT = {
     roomCode: "Kode ruang",
     join: "Gabung",
     privacyPolicy: "Kebijakan Privasi",
+    exitGame: "Keluar dari permainan",
     intro: "Buat ruang, bagikan tautannya kepada pemain lain, lalu bermain bersama.",
     billingNotReady: "Google Play Billing belum siap.",
     productUnavailable: "Produk tidak tersedia.",
@@ -551,6 +559,7 @@ const HOME_TEXT = {
     roomCode: "Oda kodu",
     join: "Katıl",
     privacyPolicy: "Gizlilik Politikası",
+    exitGame: "Oyundan çık",
     intro: "Bir oda oluştur, bağlantıyı diğer oyuncularla paylaş ve birlikte oyna.",
     billingNotReady: "Google Play Billing henüz hazır değil.",
     productUnavailable: "Ürün kullanılamıyor.",
@@ -586,6 +595,7 @@ const HOME_TEXT = {
     roomCode: "Kod pokoju",
     join: "Dołącz",
     privacyPolicy: "Polityka prywatności",
+    exitGame: "Wyjdź z gry",
     intro: "Utwórz pokój, udostępnij link innym graczom i grajcie razem.",
     billingNotReady: "Płatności w Google Play nie są gotowe.",
     productUnavailable: "Produkt jest niedostępny.",
@@ -622,6 +632,7 @@ const HOME_TEXT = {
     roomCode: "Codice stanza",
     join: "Entra",
     privacyPolicy: "Informativa sulla privacy",
+    exitGame: "Esci dal gioco",
     intro: "Crea una stanza, condividi il link con gli altri giocatori e giocate insieme.",
     billingNotReady: "I pagamenti Google Play non sono pronti.",
     productUnavailable: "Il prodotto non è disponibile.",
@@ -1060,6 +1071,11 @@ export default function Home() {
     setCreating(false);
   }
 
+  async function exitGame() {
+    if (!isAppExitAvailable()) return;
+    await exitAndroidApp();
+  }
+
   function joinRoomByCode() {
     const cleaned = roomCodeInput
       .trim()
@@ -1325,6 +1341,10 @@ export default function Home() {
         {status && status !== getRoomUiText(language, "freeLimitReachedMessage") && (
           <p className={styles.status} role="status">{status}</p>
         )}
+        <button type="button" className={styles.exitGameButton} onClick={() => void exitGame()}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9" /></svg>
+          <span>{h("exitGame")}</span>
+        </button>
         <p className={styles.privacy}><a href="/privacy">{h("privacyPolicy")}</a></p>
       </div>
     </main>
