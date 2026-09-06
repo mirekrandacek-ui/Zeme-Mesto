@@ -1,0 +1,52 @@
+name: Patch scoring disconnect stay room
+
+on:
+  push:
+    branches:
+      - fix/scoring-disconnect-home
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/scoring-disconnect-home
+          fetch-depth: 0
+
+      - name: Patch scoring disconnect behavior
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('app/src/app/room/[code]/page.tsx')
+          text = path.read_text()
+
+          old_helper = '''\n  async function signOutToHome() {\n    const disconnected = await signOut();\n    if (disconnected && typeof window !== "undefined") {\n      window.location.href = "/";\n    }\n  }\n'''
+          if old_helper not in text:
+            raise SystemExit('signOutToHome helper not found')
+          text = text.replace(old_helper, '\n', 1)
+
+          old_handler = '''                if (window.confirm(`${t("disconnect")}?`)) {\n                  void signOutToHome();\n                }'''
+          new_handler = '''                if (window.confirm(`${t("disconnect")}?`)) {\n                  void signOut();\n                }'''
+          if old_handler not in text:
+            raise SystemExit('scoring disconnect handler not found')
+          text = text.replace(old_handler, new_handler, 1)
+
+          path.write_text(text)
+          PY
+
+      - name: Commit patch and remove temporary workflow
+        shell: bash
+        run: |
+          rm .github/workflows/patch-scoring-disconnect-stay-room.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/src/app/room/'[code]'/page.tsx .github/workflows/patch-scoring-disconnect-stay-room.yml
+          git commit -m "Keep scoring disconnect on room join screen"
+          git push origin HEAD:fix/scoring-disconnect-home
