@@ -18,123 +18,43 @@ jobs:
           ref: feat/home-exit-game
           fetch-depth: 0
 
-      - name: Add homepage exit game
+      - name: Patch files
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-
-          page = Path('app/src/app/page.tsx')
-          text = page.read_text()
-
-          text = text.replace(
-              'import FreeLimitPanel from "@/app/components/FreeLimitPanel";\n',
-              'import FreeLimitPanel from "@/app/components/FreeLimitPanel";\nimport { exitAndroidApp, isAppExitAvailable } from "@/lib/appControl";\n',
-              1,
-          )
-
-          translations = {
-              '    privacyPolicy: "Zásady ochrany soukromí",': '    privacyPolicy: "Zásady ochrany soukromí",\n    exitGame: "Ukončit hru",',
-              '    privacyPolicy: "Privacy Policy",': '    privacyPolicy: "Privacy Policy",\n    exitGame: "Exit game",',
-              '    privacyPolicy: "Política de privacidad",': '    privacyPolicy: "Política de privacidad",\n    exitGame: "Salir del juego",',
-              '    privacyPolicy: "Datenschutzerklärung",': '    privacyPolicy: "Datenschutzerklärung",\n    exitGame: "Spiel beenden",',
-              '    privacyPolicy: "Politique de confidentialité",': '    privacyPolicy: "Politique de confidentialité",\n    exitGame: "Quitter le jeu",',
-              '    privacyPolicy: "Política de Privacidade",': '    privacyPolicy: "Política de Privacidade",\n    exitGame: "Sair do jogo",',
-              '    privacyPolicy: "Kebijakan Privasi",': '    privacyPolicy: "Kebijakan Privasi",\n    exitGame: "Keluar dari permainan",',
-              '    privacyPolicy: "Gizlilik Politikası",': '    privacyPolicy: "Gizlilik Politikası",\n    exitGame: "Oyundan çık",',
-              '    privacyPolicy: "Polityka prywatności",': '    privacyPolicy: "Polityka prywatności",\n    exitGame: "Wyjdź z gry",',
-              '    privacyPolicy: "Informativa sulla privacy",': '    privacyPolicy: "Informativa sulla privacy",\n    exitGame: "Esci dal gioco",',
-          }
-
-          for old, new in translations.items():
-              if old not in text:
-                  raise SystemExit(f'missing translation anchor: {old}')
-              text = text.replace(old, new, 1)
-
-          anchor = '''  function joinRoomByCode() {
-    const cleaned = roomCodeInput
-'''
-          replacement = '''  async function exitGame() {
-    if (!isAppExitAvailable()) return;
-    await exitAndroidApp();
-  }
-
-  function joinRoomByCode() {
-    const cleaned = roomCodeInput
-'''
-          if anchor not in text:
-              raise SystemExit('joinRoomByCode anchor not found')
-          text = text.replace(anchor, replacement, 1)
-
-          footer = '''        <p className={styles.privacy}><a href="/privacy">{h("privacyPolicy")}</a></p>
-'''
-          footer_new = '''        <button type="button" className={styles.exitGameButton} onClick={() => void exitGame()}>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9" />
-          </svg>
-          <span>{h("exitGame")}</span>
-        </button>
-        <p className={styles.privacy}><a href="/privacy">{h("privacyPolicy")}</a></p>
-'''
-          if footer not in text:
-              raise SystemExit('privacy footer anchor not found')
-          text = text.replace(footer, footer_new, 1)
-          page.write_text(text)
-
-          css = Path('app/src/app/page.module.css')
-          css_text = css.read_text()
-          css_anchor = '.privacy{margin:10px 0 0;text-align:center;font-size:11px}.privacy a{color:#fff;text-underline-offset:3px}'
-          css_replacement = '.exitGameButton{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:40px;margin:8px auto 0;padding:7px 12px;border:2px solid #49c8ff;border-radius:14px;color:#fff;background:linear-gradient(#075f99,#003f72 58%,#002b55);box-shadow:inset 0 2px 4px #55cfff,inset 0 -4px 6px #001f43,0 0 0 2px #002d52,0 4px 7px #001126;font-size:12px;font-weight:700;text-shadow:0 2px 2px #00152d}.exitGameButton svg{width:19px;height:19px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.privacy{margin:10px 0 0;text-align:center;font-size:11px}.privacy a{color:#fff;text-underline-offset:3px}'
-          if css_anchor not in css_text:
-              raise SystemExit('privacy css anchor not found')
-          css.write_text(css_text.replace(css_anchor, css_replacement, 1))
-
-          Path('app/src/lib/appControl.ts').write_text('''import { Capacitor, registerPlugin } from "@capacitor/core";
-
-interface AppControlPlugin {
-  exitApp(): Promise<void>;
-}
-
-const AppControl = registerPlugin<AppControlPlugin>("AppControl");
-
-export function isAppExitAvailable() {
-  return Capacitor.getPlatform() === "android";
-}
-
-export async function exitAndroidApp() {
-  await AppControl.exitApp();
-}
-''')
-
-          Path('app/android/app/src/main/java/com/randis2288/zememesto/AppControlPlugin.java').write_text('''package com.randis2288.zememesto;
-
-import com.getcapacitor.Plugin;
-import com.getcapacitor.PluginCall;
-import com.getcapacitor.PluginMethod;
-import com.getcapacitor.annotation.CapacitorPlugin;
-
-@CapacitorPlugin(name = "AppControl")
-public class AppControlPlugin extends Plugin {
-
-    @PluginMethod
-    public void exitApp(PluginCall call) {
-        getActivity().runOnUiThread(() -> {
-            call.resolve();
-            getActivity().finishAndRemoveTask();
-        });
-    }
-}
-''')
-
-          main = Path('app/android/app/src/main/java/com/randis2288/zememesto/MainActivity.java')
-          main_text = main.read_text()
-          main_anchor = '        registerPlugin(PlayBillingPlugin.class);\n'
-          if main_anchor not in main_text:
-              raise SystemExit('MainActivity plugin anchor not found')
-          main.write_text(main_text.replace(main_anchor, main_anchor + '        registerPlugin(AppControlPlugin.class);\n', 1))
+          import base64
+          page=Path('app/src/app/page.tsx')
+          text=page.read_text()
+          text=text.replace('import FreeLimitPanel from "@/app/components/FreeLimitPanel";\n','import FreeLimitPanel from "@/app/components/FreeLimitPanel";\nimport { exitAndroidApp, isAppExitAvailable } from "@/lib/appControl";\n',1)
+          replacements=[('    privacyPolicy: "Zásady ochrany soukromí",','    privacyPolicy: "Zásady ochrany soukromí",\n    exitGame: "Ukončit hru",'),('    privacyPolicy: "Privacy Policy",','    privacyPolicy: "Privacy Policy",\n    exitGame: "Exit game",'),('    privacyPolicy: "Política de privacidad",','    privacyPolicy: "Política de privacidad",\n    exitGame: "Salir del juego",'),('    privacyPolicy: "Datenschutzerklärung",','    privacyPolicy: "Datenschutzerklärung",\n    exitGame: "Spiel beenden",'),('    privacyPolicy: "Politique de confidentialité",','    privacyPolicy: "Politique de confidentialité",\n    exitGame: "Quitter le jeu",'),('    privacyPolicy: "Política de Privacidade",','    privacyPolicy: "Política de Privacidade",\n    exitGame: "Sair do jogo",'),('    privacyPolicy: "Kebijakan Privasi",','    privacyPolicy: "Kebijakan Privasi",\n    exitGame: "Keluar dari permainan",'),('    privacyPolicy: "Gizlilik Politikası",','    privacyPolicy: "Gizlilik Politikası",\n    exitGame: "Oyundan çık",'),('    privacyPolicy: "Polityka prywatności",','    privacyPolicy: "Polityka prywatności",\n    exitGame: "Wyjdź z gry",'),('    privacyPolicy: "Informativa sulla privacy",','    privacyPolicy: "Informativa sulla privacy",\n    exitGame: "Esci dal gioco",')]
+          for old,new in replacements:
+              if old not in text: raise SystemExit('missing translation anchor: '+old)
+              text=text.replace(old,new,1)
+          old='  function joinRoomByCode() {\n    const cleaned = roomCodeInput\n'
+          new='  async function exitGame() {\n    if (!isAppExitAvailable()) return;\n    await exitAndroidApp();\n  }\n\n  function joinRoomByCode() {\n    const cleaned = roomCodeInput\n'
+          if old not in text: raise SystemExit('joinRoomByCode anchor not found')
+          text=text.replace(old,new,1)
+          old='        <p className={styles.privacy}><a href="/privacy">{h("privacyPolicy")}</a></p>\n'
+          new='        <button type="button" className={styles.exitGameButton} onClick={() => void exitGame()}>\n          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9" /></svg>\n          <span>{h("exitGame")}</span>\n        </button>\n        <p className={styles.privacy}><a href="/privacy">{h("privacyPolicy")}</a></p>\n'
+          if old not in text: raise SystemExit('privacy footer anchor not found')
+          page.write_text(text.replace(old,new,1))
+          css=Path('app/src/app/page.module.css')
+          c=css.read_text()
+          old='.privacy{margin:10px 0 0;text-align:center;font-size:11px}.privacy a{color:#fff;text-underline-offset:3px}'
+          new='.exitGameButton{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:40px;margin:8px auto 0;padding:7px 12px;border:2px solid #49c8ff;border-radius:14px;color:#fff;background:linear-gradient(#075f99,#003f72 58%,#002b55);box-shadow:inset 0 2px 4px #55cfff,inset 0 -4px 6px #001f43,0 0 0 2px #002d52,0 4px 7px #001126;font-size:12px;font-weight:700;text-shadow:0 2px 2px #00152d}.exitGameButton svg{width:19px;height:19px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.privacy{margin:10px 0 0;text-align:center;font-size:11px}.privacy a{color:#fff;text-underline-offset:3px}'
+          if old not in c: raise SystemExit('privacy css anchor not found')
+          css.write_text(c.replace(old,new,1))
+          Path('app/src/lib/appControl.ts').write_bytes(base64.b64decode('aW1wb3J0IHsgQ2FwYWNpdG9yLCByZWdpc3RlclBsdWdpbiB9IGZyb20gIkBjYXBhY2l0b3IvY29yZSI7CgppbnRlcmZhY2UgQXBwQ29udHJvbFBsdWdpbiB7CiAgZXhpdEFwcCgpOiBQcm9taXNlPHZvaWQ+Owp9Cgpjb25zdCBBcHBDb250cm9sID0gcmVnaXN0ZXJQbHVnaW48QXBwQ29udHJvbFBsdWdpbj4oIkFwcENvbnRyb2wiKTsKCmV4cG9ydCBmdW5jdGlvbiBpc0FwcEV4aXRBdmFpbGFibGUoKSB7CiAgcmV0dXJuIENhcGFjaXRvci5nZXRQbGF0Zm9ybSgpID09PSAiYW5kcm9pZCI7Cn0KCmV4cG9ydCBhc3luYyBmdW5jdGlvbiBleGl0QW5kcm9pZEFwcCgpIHsKICBhd2FpdCBBcHBDb250cm9sLmV4aXRBcHAoKTsKfQo='))
+          Path('app/android/app/src/main/java/com/randis2288/zememesto/AppControlPlugin.java').write_bytes(base64.b64decode('cGFja2FnZSBjb20ucmFuZGlzMjI4OC56ZW1lbWVzdG87CgppbXBvcnQgY29tLmdldGNhcGFjaXRvci5QbHVnaW47CmltcG9ydCBjb20uZ2V0Y2FwYWNpdG9yLlBsdWdpbkNhbGw7CmltcG9ydCBjb20uZ2V0Y2FwYWNpdG9yLlBsdWdpbk1ldGhvZDsKaW1wb3J0IGNvbS5nZXRjYXBhY2l0b3IuYW5ub3RhdGlvbi5DYXBhY2l0b3JQbHVnaW47CgpAQ2FwYWNpdG9yUGx1Z2luKG5hbWUgPSAiQXBwQ29udHJvbCIpCnB1YmxpYyBjbGFzcyBBcHBDb250cm9sUGx1Z2luIGV4dGVuZHMgUGx1Z2luIHsKCiAgICBAUGx1Z2luTWV0aG9kCiAgICBwdWJsaWMgdm9pZCBleGl0QXBwKFBsdWdpbkNhbGwgY2FsbCkgewogICAgICAgIGdldEFjdGl2aXR5KCkucnVuT25VaVRocmVhZCgoKSAtPiB7CiAgICAgICAgICAgIGNhbGwucmVzb2x2ZSgpOwogICAgICAgICAgICBnZXRBY3Rpdml0eSgpLmZpbmlzaEFuZFJlbW92ZVRhc2soKTsKICAgICAgICB9KTsKICAgIH0KfQo='))
+          main=Path('app/android/app/src/main/java/com/randis2288/zememesto/MainActivity.java')
+          m=main.read_text()
+          old='        registerPlugin(PlayBillingPlugin.class);\n'
+          if old not in m: raise SystemExit('MainActivity anchor not found')
+          main.write_text(m.replace(old,old+'        registerPlugin(AppControlPlugin.class);\n',1))
           PY
 
-      - name: Commit patch and remove temporary workflow
+      - name: Commit patch
         shell: bash
         run: |
           rm .github/workflows/patch-home-exit-game.yml
