@@ -1822,8 +1822,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     await loadPlayers(roomId);
   }
 
-  async function signOut() {
-    if (!roomId || !myPlayer) return;
+  async function signOut(): Promise<boolean> {
+    if (!roomId || !myPlayer) return false;
 
     const rid = roomId;
 
@@ -1834,7 +1834,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       setMsg(
         uiMessage({ cs: "❌ Odpojení se nepodařilo.", en: "❌ Could not leave the room.", es: "❌ No se pudo salir de la sala." , de: "❌ Der Raum konnte nicht verlassen werden.", fr: "❌ Impossible de quitter la salle.", "pt-BR": "❌ Não foi possível sair da sala.", id: "❌ Tidak dapat keluar dari ruang.", tr: "❌ Odadan çıkılamadı.", pl: "❌ Nie udało się opuścić pokoju.", it: "❌ Impossibile uscire dalla stanza."})
       );
-      return;
+      return false;
     }
 
     clearMyPlayer(rid);
@@ -1848,11 +1848,19 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       await resetRoomData(rid);
       setPlayers([]);
       setMsg("");
-      return;
+      return true;
     }
 
     await loadPlayers(rid);
     setMsg("");
+    return true;
+  }
+
+  async function signOutToHome() {
+    const disconnected = await signOut();
+    if (disconnected && typeof window !== "undefined") {
+      window.location.href = "/";
+    }
   }
 
   async function createRound(rid: string, ltr: string) {
@@ -3854,6 +3862,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   ? `🛑 ${stopPressedMessage(uiLanguage, stoppedByName).replace(/^✅\s*/, "")}`
                   : ""}
             </p>
+            <button
+              type="button"
+              className={roomStyles.gameDisconnectButton}
+              onClick={() => {
+                if (window.confirm(`${t("disconnect")}?`)) {
+                  void signOutToHome();
+                }
+              }}
+            >
+              {t("disconnect")}
+            </button>
           </section>
 
           <section className={roomStyles.scoringStatus}>
