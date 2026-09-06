@@ -1856,12 +1856,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     return true;
   }
 
-  async function signOutToHome() {
-    const disconnected = await signOut();
-    if (disconnected && typeof window !== "undefined") {
-      window.location.href = "/";
-    }
-  }
 
   async function createRound(rid: string, ltr: string) {
     const { data: last } = await supabase
@@ -3867,7 +3861,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               className={roomStyles.gameDisconnectButton}
               onClick={() => {
                 if (window.confirm(`${t("disconnect")}?`)) {
-                  void signOutToHome();
+                  void signOut();
                 }
               }}
             >
