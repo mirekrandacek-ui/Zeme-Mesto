@@ -61,6 +61,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(PlayBillingPlugin.class);
+        registerPlugin(AppControlPlugin.class);
         super.onCreate(savedInstanceState);
 
         appUpdateManager = AppUpdateManagerFactory.create(this);
