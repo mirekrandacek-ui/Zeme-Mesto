@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -27,6 +28,7 @@ public class MainActivity extends BridgeActivity {
     private boolean updateCheckInProgress = false;
     private boolean updateFlowStarted = false;
     private boolean completionDialogVisible = false;
+    private boolean exitDialogVisible = false;
 
     private final ActivityResultLauncher<IntentSenderRequest> updateLauncher =
         registerForActivityResult(
@@ -61,8 +63,17 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(PlayBillingPlugin.class);
-        registerPlugin(AppControlPlugin.class);
         super.onCreate(savedInstanceState);
+
+        getOnBackPressedDispatcher().addCallback(
+            this,
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    showExitGameDialog();
+                }
+            }
+        );
 
         appUpdateManager = AppUpdateManagerFactory.create(this);
         appUpdateManager.registerListener(updateListener);
@@ -81,6 +92,41 @@ public class MainActivity extends BridgeActivity {
         }
 
         super.onDestroy();
+    }
+
+    private void showExitGameDialog() {
+        if (exitDialogVisible || isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        exitDialogVisible = true;
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+            .setMessage(
+                localizedText(
+                    "Ukončit hru?",
+                    "Exit game?",
+                    "¿Salir del juego?"
+                )
+            )
+            .setNegativeButton(
+                localizedText("Ano", "Yes", "Sí"),
+                (ignored, which) -> {
+                    exitDialogVisible = false;
+                    finishAndRemoveTask();
+                }
+            )
+            .setPositiveButton(
+                localizedText("Ne", "No", "No"),
+                (ignored, which) -> exitDialogVisible = false
+            )
+            .create();
+
+        dialog.setOnCancelListener(
+            ignored -> exitDialogVisible = false
+        );
+
+        dialog.show();
     }
 
     private void checkForAppUpdate() {
