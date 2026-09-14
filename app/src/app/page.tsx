@@ -24,7 +24,6 @@ import { getOrCreateLetterDeckOwnerId } from "@/lib/letterDeckOwner";
 import { useStableViewportUnit } from "@/lib/useStableViewportUnit";
 import { getUiText as getRoomUiText } from "@/app/room/[code]/uiText";
 import FreeLimitPanel from "@/app/components/FreeLimitPanel";
-import { exitAndroidApp, isAppExitAvailable } from "@/lib/appControl";
 
 type Tier = "free" | "premium" | "super_premium";
 type UiLanguage = "cs" | "en" | "es" | "de" | "fr" | "pt-BR" | "id" | "tr" | "pl" | "it";
@@ -1071,11 +1070,6 @@ export default function Home() {
     setCreating(false);
   }
 
-  async function exitGame() {
-    if (!isAppExitAvailable()) return;
-    await exitAndroidApp();
-  }
-
   function joinRoomByCode() {
     const cleaned = roomCodeInput
       .trim()
@@ -1341,10 +1335,6 @@ export default function Home() {
         {status && status !== getRoomUiText(language, "freeLimitReachedMessage") && (
           <p className={styles.status} role="status">{status}</p>
         )}
-        <button type="button" className={styles.exitGameButton} onClick={() => void exitGame()}>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9" /></svg>
-          <span>{h("exitGame")}</span>
-        </button>
         <p className={styles.privacy}><a href="/privacy">{h("privacyPolicy")}</a></p>
       </div>
     </main>
