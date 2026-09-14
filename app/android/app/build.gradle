@@ -14,8 +14,8 @@ android {
         applicationId "com.randis2288.zememesto"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 37
-        versionName "v037"
+        versionCode 38
+        versionName "v038"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -59,7 +59,7 @@ dependencies {
     implementation "com.google.android.play:app-update:2.1.0"
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
 }
 
