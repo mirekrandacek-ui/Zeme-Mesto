@@ -1,8 +1,11 @@
 package com.randis2288.zememesto;
 
 import android.app.AlertDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -29,6 +32,7 @@ public class MainActivity extends BridgeActivity {
     private boolean updateFlowStarted = false;
     private boolean completionDialogVisible = false;
     private boolean exitDialogVisible = false;
+    private OnBackInvokedCallback backInvokedCallback;
 
     private final ActivityResultLauncher<IntentSenderRequest> updateLauncher =
         registerForActivityResult(
@@ -65,15 +69,23 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(PlayBillingPlugin.class);
         super.onCreate(savedInstanceState);
 
-        getOnBackPressedDispatcher().addCallback(
-            this,
-            new OnBackPressedCallback(true) {
-                @Override
-                public void handleOnBackPressed() {
-                    showExitGameDialog();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            backInvokedCallback = this::showExitGameDialog;
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                backInvokedCallback
+            );
+        } else {
+            getOnBackPressedDispatcher().addCallback(
+                this,
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        showExitGameDialog();
+                    }
                 }
-            }
-        );
+            );
+        }
 
         appUpdateManager = AppUpdateManagerFactory.create(this);
         appUpdateManager.registerListener(updateListener);
@@ -87,6 +99,16 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     public void onDestroy() {
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && backInvokedCallback != null
+        ) {
+            getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(
+                backInvokedCallback
+            );
+            backInvokedCallback = null;
+        }
+
         if (appUpdateManager != null) {
             appUpdateManager.unregisterListener(updateListener);
         }
