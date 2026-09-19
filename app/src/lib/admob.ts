@@ -44,6 +44,12 @@ function setBannerBottomInset(height: number) {
     "--zm-banner-bottom-inset",
     `${safeHeight}px`
   );
+
+  if (safeHeight > 0) {
+    document.documentElement.dataset.zmBannerVisible = "true";
+  } else {
+    delete document.documentElement.dataset.zmBannerVisible;
+  }
 }
 
 function clearBannerRetry() {
