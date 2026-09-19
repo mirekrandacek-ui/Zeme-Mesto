@@ -1,0 +1,56 @@
+name: Build unsigned v038 AAB
+
+on:
+  push:
+    branches:
+      - ci/probe-signing-20260919
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install npm dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Sync Capacitor Android
+        working-directory: app
+        run: npx cap sync android
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 36 SDK
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Build unsigned release bundle
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sed -i '/signingConfig signingConfigs.release/d' app/android/app/build.gradle
+          cd app/android
+          chmod +x gradlew
+          ./gradlew :app:bundleRelease --console=plain
+
+      - name: Upload unsigned AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeme-mesto-v038-unsigned
+          path: app/android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
