@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/app/lib/supabase";
+import {\n  createRoomSupabaseClient,\n  hashAccessToken,\n  supabase,\n} from "@/app/lib/supabase";
 import {
   isNativeAdMobAvailable,
   showFreeBannerAdForNativeApp,
@@ -1032,12 +1032,14 @@ export default function Home() {
     for (let attempt = 1; attempt <= 5; attempt++) {
       const roomCode = createRoomCode();
       const creatorToken = createCreatorToken();
+      const creatorTokenHash = await hashAccessToken(creatorToken);
+      const roomSupabase = createRoomSupabaseClient(roomCode, creatorToken);
 
-      const { error } = await supabase.from("rooms").insert({
+      const { error } = await roomSupabase.from("rooms").insert({
         code: roomCode,
         status: "lobby",
         letter: null,
-        creator_token: creatorToken,
+        creator_token_hash: creatorTokenHash,
         letter_deck_owner_id: letterDeckOwnerId,
         language: gameLanguage,
         ...roomSettings,
