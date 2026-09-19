@@ -494,6 +494,9 @@ export default function RoomPage() {
   const [premiumLockedOfferCategory, setPremiumLockedOfferCategory] = useState<string | null>(null);
   const [billingProducts, setBillingProducts] = useState<BillingProduct[]>([]);
   const [billingReady, setBillingReady] = useState(false);
+  const [billingEntitlementResolved, setBillingEntitlementResolved] = useState(
+    () => !isPlayBillingAvailable()
+  );
   const [ownedCategoryProductIds, setOwnedCategoryProductIds] = useState<string[]>([]);
   const [ownedTier, setOwnedTier] = useState<RoomTier>("free");
   const [categoryPurchaseBusy, setCategoryPurchaseBusy] = useState<string | null>(null);
@@ -756,11 +759,16 @@ export default function RoomPage() {
         }
 
         setOwnedCategoryProductIds([...new Set(ownedCategoryIds)]);
-        if (ownedProducts.has("super_premium")) {
-          setOwnedTier("super_premium");
-        } else if (ownedProducts.has("premium")) {
-          setOwnedTier("premium");
-        }
+
+        const resolvedOwnedTier: RoomTier = ownedProducts.has("super_premium")
+          ? "super_premium"
+          : ownedProducts.has("premium")
+            ? "premium"
+            : "free";
+
+        setOwnedTier(resolvedOwnedTier);
+        setBillingEntitlementResolved(true);
+
         for (const purchaseToken of purchaseTokensToAcknowledge) {
           await acknowledgePlayPurchase(purchaseToken);
         }
@@ -1713,6 +1721,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   async function joinRoom() {
     if (!roomId) return;
+
+    if (isPlayBillingAvailable() && !billingEntitlementResolved) {
+      return;
+    }
 
     const currentQuota = getFreeQuotaState();
     setFreeRoundsRemaining(currentQuota.remainingRounds);
@@ -2805,7 +2817,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const roomIsFull = !myPlayer && players.length + waitingPlayers.length >= maxPlayers;
   const freeJoinBlocked =
-    roomTier === "free" && ownedTier === "free" && freeRoundsRemaining <= 0;
+    billingEntitlementResolved &&
+    roomTier === "free" &&
+    ownedTier === "free" &&
+    freeRoundsRemaining <= 0;
   const activeMyPlayer = Boolean(myPlayer && myPlayer.status !== "waiting");
 
   const filledCustomCategoryCount = roomCustomCategories.filter((value) => value.trim().length > 0).length;
@@ -3183,7 +3198,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </section>
       )}
 
-      {visibleStatusMessage && <p>{visibleStatusMessage}</p>}
+      {visibleStatusMessage && (
+        <p className={isRoomEntry ? roomStyles.entryMessage : undefined}>
+          {visibleStatusMessage}
+        </p>
+      )}
 
       {roomId && !myPlayer && (
         <section className={roomStyles.entryJoin}>

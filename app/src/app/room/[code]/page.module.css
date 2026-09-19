@@ -248,6 +248,22 @@
   line-height:1.4;
 }
 
+.entryMessage{
+  width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
+  margin:0 auto 12px;
+  padding:11px 14px;
+  border:2px solid #43c8ff;
+  border-radius:16px;
+  color:#fff;
+  background:linear-gradient(145deg,rgba(8,94,151,.98),rgba(0,43,82,.99) 58%,rgba(0,25,54,.99));
+  box-shadow:inset 0 0 0 2px #087cbf,inset 0 5px 10px #4cd1ff44,inset 0 -7px 12px #001f43,0 0 11px #04aaff,0 6px 10px #000819bb;
+  font-size:clamp(14px,3.8vw,17px);
+  font-weight:800;
+  line-height:1.3;
+  text-align:center;
+  text-shadow:0 2px 3px #00152d;
+}
+
 .entryJoin{
   margin-top:0;
   margin-bottom:12px;
