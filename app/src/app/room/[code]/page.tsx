@@ -3,7 +3,13 @@
 import { Share } from "@capacitor/share";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { supabase } from "@/app/lib/supabase";
+import {
+  createAccessToken,
+  hashAccessToken,
+  roomCreatorTokenStorageKey,
+  roomPlayerTokenStorageKey,
+  supabase,
+} from "@/app/lib/supabase";
 import {
   isNativeAdMobAvailable,
   showFreeBannerAdForNativeApp,
@@ -42,7 +48,7 @@ import roomStyles from "./page.module.css";
 type RoomStatus = "lobby" | "drawing" | "playing" | "scoring" | "finished";
 type PlayerStatus = "active" | "waiting";
 type Player = { id: string; name: string; status?: PlayerStatus };
-type MyPlayer = { id: string; name: string; status?: PlayerStatus };
+type MyPlayer = { id: string; name: string; status?: PlayerStatus; playerToken: string };
 type RoundLite = { id: string; round_no: number; letter: string; status: string; deadline_at?: string | null };
 type AnswerRow = { player_id: string; category: string; value: string };
 type ScoreRow = { player_id: string; round?: number; category: string; points: number };
@@ -508,7 +514,6 @@ export default function RoomPage() {
   const superPremiumGameSettingsEnabled = roomTier === "super_premium";
   const [customCategorySlotCount, setCustomCategorySlotCount] = useState(0);
   const [localCreatorToken, setLocalCreatorToken] = useState<string | null>(null);
-  const [roomCreatorToken, setRoomCreatorToken] = useState<string | null>(null);
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [waitingPlayers, setWaitingPlayers] = useState<Player[]>([]);
@@ -1120,16 +1125,53 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setMyPlayer(p);
     try {
       window.localStorage.setItem(myKey(rid), JSON.stringify(p));
+      window.localStorage.setItem(roomPlayerTokenStorageKey(code), p.playerToken);
     } catch {}
   }
 
-  function loadMyPlayer(rid: string) {
+  async function loadMyPlayer(rid: string): Promise<MyPlayer | null> {
     try {
       const raw = window.localStorage.getItem(myKey(rid));
       if (!raw) return null;
-      const parsed = JSON.parse(raw) as MyPlayer;
+
+      const parsed = JSON.parse(raw) as Partial<MyPlayer>;
       if (!parsed?.id || !parsed?.name) return null;
-      return parsed;
+
+      let playerToken =
+        parsed.playerToken ??
+        window.localStorage.getItem(roomPlayerTokenStorageKey(code));
+
+      if (!playerToken) {
+        playerToken = createAccessToken();
+        const playerTokenHash = await hashAccessToken(playerToken);
+
+        window.localStorage.setItem(
+          roomPlayerTokenStorageKey(code),
+          playerToken
+        );
+
+        const { error } = await supabase
+          .from("players")
+          .update({ player_token_hash: playerTokenHash })
+          .eq("id", parsed.id)
+          .eq("room_id", rid);
+
+        if (error) {
+          window.localStorage.removeItem(roomPlayerTokenStorageKey(code));
+          console.error("Player token migration failed:", error);
+          return null;
+        }
+      }
+
+      const normalized: MyPlayer = {
+        id: parsed.id,
+        name: parsed.name,
+        status: parsed.status === "waiting" ? "waiting" : "active",
+        playerToken,
+      };
+
+      saveMyPlayer(rid, normalized);
+      return normalized;
     } catch {
       return null;
     }
@@ -1139,6 +1181,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setMyPlayer(null);
     try {
       window.localStorage.removeItem(myKey(rid));
+      window.localStorage.removeItem(roomPlayerTokenStorageKey(code));
     } catch {}
   }
 
@@ -1163,7 +1206,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    setLocalCreatorToken(localStorage.getItem(`zm_roomCreatorToken_${code}`));
+    setLocalCreatorToken(localStorage.getItem(roomCreatorTokenStorageKey(code)));
   }, [code]);
 
   useEffect(() => {
@@ -1273,7 +1316,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function loadRoomByCode() {
     const { data, error } = await supabase
       .from("rooms")
-      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language,round_time_limit_seconds,round_count_limit,free_rounds_unlocked,free_rounds_started")
+      .select("id,status,letter,active_categories,max_players,creator_tier,ads_enabled,language,round_time_limit_seconds,round_count_limit,free_rounds_unlocked,free_rounds_started")
       .eq("code", code)
       .single();
 
@@ -1301,7 +1344,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setActiveCategories(roomCategories);
     setMaxPlayers(Number((data as any).max_players ?? 3));
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
-    setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
     setRoomLanguage(((data as any).language ?? "cs") as GameLanguage);
     setRoundTimeLimitSeconds(parseRoundTimeLimit((data as any).round_time_limit_seconds));
     setRoundCountLimit(parseRoundCountLimit((data as any).round_count_limit));
@@ -1316,7 +1358,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
     ].slice(0, 5));
 
-    const saved = loadMyPlayer(data.id);
+    const saved = await loadMyPlayer(data.id);
     if (saved) setMyPlayer(saved);
 
     return data.id as string;
@@ -1325,7 +1367,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function refreshRoomState(rid: string) {
     const { data, error } = await supabase
       .from("rooms")
-      .select("status,letter,active_categories,max_players,creator_tier,ads_enabled,creator_token,language,round_time_limit_seconds,round_count_limit,free_rounds_unlocked,free_rounds_started")
+      .select("status,letter,active_categories,max_players,creator_tier,ads_enabled,language,round_time_limit_seconds,round_count_limit,free_rounds_unlocked,free_rounds_started")
       .eq("id", rid)
       .single();
 
@@ -1341,7 +1383,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setActiveCategories(roomCategories);
     setMaxPlayers(Number((data as any).max_players ?? 3));
     setRoomTier(((data as any).creator_tier ?? "free") as RoomTier);
-    setRoomCreatorToken(((data as any).creator_token ?? null) as string | null);
     setRoomLanguage(((data as any).language ?? "cs") as GameLanguage);
     setRoundTimeLimitSeconds(parseRoundTimeLimit((data as any).round_time_limit_seconds));
     setRoundCountLimit(parseRoundCountLimit((data as any).round_count_limit));
@@ -1383,7 +1424,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (myPlayer) {
       const freshPlayer = normalizedPlayers.find((player) => player.id === myPlayer.id);
       if (freshPlayer) {
-        saveMyPlayer(rid, freshPlayer);
+        saveMyPlayer(rid, {
+          ...freshPlayer,
+          playerToken: myPlayer.playerToken,
+        });
       }
     }
   }
@@ -1705,46 +1749,38 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     }
 
     const playerStatus: PlayerStatus = roomStatus === "lobby" ? "active" : "waiting";
+    const playerToken = createAccessToken();
+    const playerTokenHash = await hashAccessToken(playerToken);
+
+    try {
+      window.localStorage.setItem(
+        roomPlayerTokenStorageKey(code),
+        playerToken
+      );
+    } catch {}
 
     const { data, error } = await supabase
       .from("players")
-      .insert({ room_id: roomId, name: trimmed, status: playerStatus })
+      .insert({
+        room_id: roomId,
+        name: trimmed,
+        status: playerStatus,
+        player_token_hash: playerTokenHash,
+      })
       .select("id,name,status")
       .single();
 
     if (error || !data) {
+      try {
+        window.localStorage.removeItem(roomPlayerTokenStorageKey(code));
+      } catch {}
+
       const isDuplicateName =
         error?.code === "23505" ||
         error?.message?.includes("duplicate key") ||
         error?.message?.includes("players_room_id_name_key");
 
       if (isDuplicateName) {
-        const existing = await supabase
-          .from("players")
-          .select("id,name,status")
-          .eq("room_id", roomId)
-          .eq("name", trimmed)
-          .maybeSingle();
-
-        if (existing.data) {
-          const existingPlayer: Player = {
-            id: existing.data.id,
-            name: existing.data.name,
-            status: existing.data.status === "waiting" ? "waiting" : "active",
-          };
-
-          saveMyPlayer(roomId, existingPlayer);
-
-          setNameInput("");
-          setMsg(
-            existingPlayer.status === "waiting"
-              ? uiMessage({ cs: `⏳ ${trimmed} čeká na připojení po aktuálním kole.`, en: `⏳ ${trimmed} will join after the current round.`, es: `⏳ ${trimmed} se unirá después de la ronda actual.` , de: `⏳ ${trimmed} tritt nach der aktuellen Runde bei.`, fr: `⏳ ${trimmed} rejoindra la partie après la manche en cours.`, "pt-BR": `⏳ ${trimmed} entrará depois da rodada atual.`, id: `⏳ ${trimmed} akan bergabung setelah ronde saat ini.`, tr: `⏳ ${trimmed} mevcut turdan sonra katılacak.`, pl: `⏳ ${trimmed} dołączy po zakończeniu bieżącej rundy.`, it: `⏳ ${trimmed} si unirà dopo il turno in corso.`})
-              : ""
-          );
-          await loadPlayers(roomId);
-          return;
-        }
-
         setMsg(
           uiMessage({ cs: "❌ Tohle jméno už v místnosti existuje. Zadej jiné.", en: "❌ This name already exists in the room. Choose another one.", es: "❌ Este nombre ya existe en la sala. Elige otro." , de: "❌ Dieser Name existiert bereits im Raum. Wähle einen anderen.", fr: "❌ Ce nom existe déjà dans la salle. Choisis-en un autre.", "pt-BR": "❌ Este nome já existe na sala. Escolha outro.", id: "❌ Nama ini sudah digunakan di dalam ruang. Pilih nama lain.", tr: "❌ Bu ad odada zaten kullanılıyor. Başka bir ad seç.", pl: "❌ To imię już istnieje w pokoju. Wybierz inne.", it: "❌ Questo nome esiste già nella stanza. Scegline un altro."})
         );
@@ -1758,10 +1794,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       return;
     }
 
-    const newPlayer: Player = {
+    const newPlayer: MyPlayer = {
       id: data.id,
       name: data.name,
       status: data.status === "waiting" ? "waiting" : "active",
+      playerToken,
     };
 
     saveMyPlayer(roomId, newPlayer);
@@ -1886,9 +1923,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     return nextRound;
   }
 
-  const isOrganizer = Boolean(
-    myPlayer && localCreatorToken && roomCreatorToken && localCreatorToken === roomCreatorToken
-  );
+  const isOrganizer = Boolean(myPlayer && localCreatorToken);
 
   useEffect(() => {
     roomIdRef.current = roomId;
