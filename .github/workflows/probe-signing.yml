@@ -1,0 +1,36 @@
+name: Probe signing secrets
+
+on:
+  push:
+    branches:
+      - ci/probe-signing-20260919
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe presence only
+        shell: bash
+        env:
+          S1: ${{ secrets.KEYSTORE_BASE64 }}
+          S2: ${{ secrets.KEYSTORE_PASSWORD }}
+          S3: ${{ secrets.KEY_ALIAS }}
+          S4: ${{ secrets.KEY_PASSWORD }}
+          S5: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          S6: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          S7: ${{ secrets.ANDROID_KEY_ALIAS }}
+          S8: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          S9: ${{ secrets.SIGNING_KEY_BASE64 }}
+          S10: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          S11: ${{ secrets.SIGNING_KEY_ALIAS }}
+          S12: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          set -eu
+          for n in {1..12}; do
+            v="S$n"
+            if [ -n "${!v:-}" ]; then
+              echo "$v=present"
+            else
+              echo "$v=missing"
+            fi
+          done
