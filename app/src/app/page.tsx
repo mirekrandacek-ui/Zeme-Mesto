@@ -58,8 +58,13 @@ const EXTENDED_CATEGORIES = [
 ];
 
 
+const ROOM_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+
 function createRoomCode() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
+  return Array.from(
+    { length: 6 },
+    () => ROOM_CODE_ALPHABET[Math.floor(Math.random() * ROOM_CODE_ALPHABET.length)]
+  ).join("");
 }
 
 function createCreatorToken() {
