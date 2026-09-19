@@ -1,0 +1,72 @@
+name: Build v039 test APK
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install npm dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Sync Capacitor Android
+        working-directory: app
+        run: npx cap sync android
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 36 SDK
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Make parallel-installable test package
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("app/android/app/build.gradle")
+          s = p.read_text()
+          needle = "    buildTypes {\n        release {"
+          repl = "    buildTypes {\n        debug {\n            applicationIdSuffix \".v39test\"\n            versionNameSuffix \"-test\"\n        }\n        release {"
+          if needle not in s:
+              raise SystemExit("buildTypes anchor not found")
+          p.write_text(s.replace(needle, repl, 1))
+          PY
+
+      - name: Build debug APK
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd app/android
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug --console=plain
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeme-mesto-v039-test-apk
+          path: app/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
