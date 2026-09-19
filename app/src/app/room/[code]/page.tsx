@@ -1698,15 +1698,38 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }, [roomStatus, round?.id]);
 
   async function resetRoomData(rid: string) {
-    await Promise.all([
-      supabase.from("scores").delete().eq("room_id", rid),
-      supabase.from("answers").delete().eq("room_id", rid),
-      supabase.from("rounds").delete().eq("room_id", rid),
-      supabase
-        .from("rooms")
-        .update({ status: "lobby", letter: null })
-        .eq("id", rid),
-    ]);
+    const { error: rpcError } = await (supabase as any).rpc(
+      "prepare_room_for_join",
+      { p_room_id: rid }
+    );
+
+    if (rpcError) {
+      const rpcMissing =
+        rpcError.code === "PGRST202" ||
+        String(rpcError.message ?? "").includes("prepare_room_for_join");
+
+      if (!rpcMissing) {
+        console.error("Room reset RPC failed:", rpcError);
+        return false;
+      }
+
+      const fallbackResults = await Promise.all([
+        supabase.from("scores").delete().eq("room_id", rid),
+        supabase.from("answers").delete().eq("room_id", rid),
+        supabase.from("rounds").delete().eq("room_id", rid),
+        supabase
+          .from("rooms")
+          .update({ status: "lobby", letter: null })
+          .eq("id", rid),
+      ]);
+
+      const fallbackError = fallbackResults.find((result) => result.error)?.error;
+
+      if (fallbackError) {
+        console.error("Room reset fallback failed:", fallbackError);
+        return false;
+      }
+    }
 
     setRoomStatus("lobby");
     setLetter(null);
@@ -1717,6 +1740,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setAllScores([]);
     setAllRoomScores([]);
     setMyScoreSubmitted(false);
+    return true;
   }
 
   async function joinRoom() {
@@ -1752,7 +1776,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .eq("room_id", roomId);
 
     if ((existingPlayersCount ?? 0) === 0) {
-      await resetRoomData(roomId);
+      const roomPrepared = await resetRoomData(roomId);
+
+      if (!roomPrepared) {
+        setMsg(
+          uiMessage({ cs: "❌ Připojení do místnosti se nepodařilo.", en: "❌ Could not join the room.", es: "❌ No se pudo entrar en la sala.", de: "❌ Der Beitritt zum Raum ist fehlgeschlagen.", fr: "❌ Impossible de rejoindre la salle.", "pt-BR": "❌ Não foi possível entrar na sala.", id: "❌ Tidak dapat bergabung ke ruang.", tr: "❌ Odaya katılınamadı.", pl: "❌ Nie udało się dołączyć do pokoju.", it: "❌ Impossibile entrare nella stanza." })
+        );
+        return;
+      }
     }
 
     if ((existingPlayersCount ?? 0) >= maxPlayers) {
