@@ -1,6 +1,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --zm-banner-bottom-inset: 0px;
 }
 
 * {
@@ -9,6 +10,7 @@
 
 body {
   margin: 0;
+  padding-bottom: var(--zm-banner-bottom-inset);
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
