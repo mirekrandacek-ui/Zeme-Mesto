@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
-import {\n  createRoomSupabaseClient,\n  hashAccessToken,\n  supabase,\n} from "@/app/lib/supabase";
+import {
+  createRoomSupabaseClient,
+  hashAccessToken,
+  supabase,
+} from "@/app/lib/supabase";
 import {
   isNativeAdMobAvailable,
   showFreeBannerAdForNativeApp,
