@@ -3183,7 +3183,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </section>
       )}
 
-      {visibleStatusMessage && <p>{visibleStatusMessage}</p>}
+      {visibleStatusMessage && (
+        <p className={isRoomEntry ? roomStyles.entryMessage : undefined}>
+          {visibleStatusMessage}
+        </p>
+      )}
 
       {roomId && !myPlayer && (
         <section className={roomStyles.entryJoin}>
