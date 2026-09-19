@@ -36,6 +36,16 @@ export function initializeAdMobForTesting() {
   return initializePromise;
 }
 
+function setBannerBottomInset(height: number) {
+  if (typeof document === "undefined") return;
+
+  const safeHeight = Number.isFinite(height) ? Math.max(0, height) : 0;
+  document.documentElement.style.setProperty(
+    "--zm-banner-bottom-inset",
+    `${safeHeight}px`
+  );
+}
+
 function clearBannerRetry() {
   if (bannerRetryTimer === null) return;
 
@@ -67,9 +77,13 @@ async function installBannerListeners() {
         bannerExists = true;
         clearBannerRetry();
       }),
+      AdMob.addListener(BannerAdPluginEvents.SizeChanged, (size) => {
+        setBannerBottomInset(Number(size.height));
+      }),
       AdMob.addListener(BannerAdPluginEvents.FailedToLoad, (error) => {
         console.warn("AdMob banner load failed", error);
         bannerExists = false;
+        setBannerBottomInset(0);
         scheduleBannerRetry();
       }),
     ]);
@@ -91,7 +105,7 @@ async function createFreeBanner() {
     await AdMob.showBanner({
       adId: ADMOB_TEST_BANNER_ID,
       adSize: BannerAdSize.ADAPTIVE_BANNER,
-      position: BannerAdPosition.TOP_CENTER,
+      position: BannerAdPosition.BOTTOM_CENTER,
       margin: 0,
       isTesting: false,
     });
@@ -99,6 +113,7 @@ async function createFreeBanner() {
     return true;
   } catch (error) {
     bannerExists = false;
+    setBannerBottomInset(0);
     console.warn("AdMob banner failed", error);
     scheduleBannerRetry();
     return false;
@@ -181,6 +196,7 @@ export async function hideFreeBannerAdForNativeApp() {
   bannerRequested = false;
   bannerExists = false;
   clearBannerRetry();
+  setBannerBottomInset(0);
 
   try {
     await AdMob.removeBanner();
