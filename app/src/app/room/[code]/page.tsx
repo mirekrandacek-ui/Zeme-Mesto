@@ -2912,7 +2912,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         aria-busy="true"
         style={{
           padding: 24,
-          paddingTop: "calc(72px + env(safe-area-inset-top))",
+          paddingTop: "calc(8px + env(safe-area-inset-top))",
           fontFamily: "system-ui",
         }}
       >
@@ -2954,7 +2954,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         }}
         style={{
           padding: 24,
-          paddingTop: "calc(72px + env(safe-area-inset-top))",
+          paddingTop: "calc(8px + env(safe-area-inset-top))",
           fontFamily: "system-ui",
         }}
       >
