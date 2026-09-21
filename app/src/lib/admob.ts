@@ -15,7 +15,10 @@ let bannerRequested = false;
 let bannerExists = false;
 let bannerRecoveryInstalled = false;
 let bannerListenersInstalled = false;
+let bannerListenersPromise: Promise<void> | null = null;
+let bannerLoading = false;
 let bannerRetryTimer: number | null = null;
+let bannerLoadWatchdogTimer: number | null = null;
 
 export function isNativeAdMobAvailable() {
   return Capacitor.getPlatform() !== "web";
@@ -53,6 +56,30 @@ function clearBannerRetry() {
   bannerRetryTimer = null;
 }
 
+function clearBannerLoadWatchdog() {
+  if (bannerLoadWatchdogTimer === null) return;
+
+  clearTimeout(bannerLoadWatchdogTimer);
+  bannerLoadWatchdogTimer = null;
+}
+
+function scheduleBannerLoadWatchdog() {
+  if (typeof window === "undefined") return;
+
+  clearBannerLoadWatchdog();
+
+  bannerLoadWatchdogTimer = window.setTimeout(() => {
+    bannerLoadWatchdogTimer = null;
+
+    if (!bannerRequested || !bannerLoading || bannerExists) return;
+
+    console.warn("AdMob banner load timed out; scheduling retry");
+    bannerLoading = false;
+    setBannerBottomInset(0);
+    scheduleBannerRetry();
+  }, 30000);
+}
+
 function scheduleBannerRetry() {
   if (
     bannerRetryTimer !== null ||
@@ -70,36 +97,62 @@ function scheduleBannerRetry() {
 
 async function installBannerListeners() {
   if (bannerListenersInstalled) return;
+  if (bannerListenersPromise) return bannerListenersPromise;
 
-  try {
-    await Promise.all([
-      AdMob.addListener(BannerAdPluginEvents.Loaded, () => {
-        bannerExists = true;
-        clearBannerRetry();
-      }),
-      AdMob.addListener(BannerAdPluginEvents.SizeChanged, (size) => {
-        setBannerBottomInset(Number(size.height));
-      }),
-      AdMob.addListener(BannerAdPluginEvents.FailedToLoad, (error) => {
-        console.warn("AdMob banner load failed", error);
-        bannerExists = false;
-        setBannerBottomInset(0);
-        scheduleBannerRetry();
-      }),
-    ]);
+  bannerListenersPromise = (async () => {
+    try {
+      await Promise.all([
+        AdMob.addListener(BannerAdPluginEvents.Loaded, () => {
+          bannerExists = true;
+          bannerLoading = false;
+          clearBannerLoadWatchdog();
+          clearBannerRetry();
+          console.info("AdMob banner loaded");
+        }),
+        AdMob.addListener(BannerAdPluginEvents.SizeChanged, (size) => {
+          setBannerBottomInset(Number(size.height));
+        }),
+        AdMob.addListener(BannerAdPluginEvents.FailedToLoad, (error) => {
+          const details =
+            error && typeof error === "object"
+              ? (error as Record<string, unknown>)
+              : {};
 
-    bannerListenersInstalled = true;
-  } catch (error) {
-    console.warn("AdMob banner listeners failed", error);
-  }
+          console.warn("AdMob banner load failed", {
+            code: details.code,
+            message: details.message,
+            error,
+          });
+
+          bannerExists = false;
+          bannerLoading = false;
+          clearBannerLoadWatchdog();
+          setBannerBottomInset(0);
+          scheduleBannerRetry();
+        }),
+      ]);
+
+      bannerListenersInstalled = true;
+    } catch (error) {
+      console.warn("AdMob banner listeners failed", error);
+    } finally {
+      bannerListenersPromise = null;
+    }
+  })();
+
+  return bannerListenersPromise;
 }
 
 async function createFreeBanner() {
   if (!bannerRequested || !isNativeAdMobAvailable()) return false;
 
-  // Označ hned před showBanner, aby přechod na další screen neposlal
-  // druhý showBanner do stejného nativního AdView během načítání reklamy.
-  bannerExists = true;
+  // A route change can request the same native banner again while AdMob is
+  // still loading it. Keep "loading" separate from "loaded" so we never send
+  // a second showBanner() into the same native AdView.
+  if (bannerLoading) return true;
+
+  bannerLoading = true;
+  scheduleBannerLoadWatchdog();
 
   try {
     await AdMob.showBanner({
@@ -113,6 +166,8 @@ async function createFreeBanner() {
     return true;
   } catch (error) {
     bannerExists = false;
+    bannerLoading = false;
+    clearBannerLoadWatchdog();
     setBannerBottomInset(0);
     console.warn("AdMob banner failed", error);
     scheduleBannerRetry();
@@ -133,8 +188,12 @@ async function ensureFreeBannerVisible() {
     } catch (error) {
       console.warn("AdMob banner resume failed", error);
       bannerExists = false;
+      bannerLoading = false;
+      clearBannerLoadWatchdog();
     }
   }
+
+  if (bannerLoading) return true;
 
   return createFreeBanner();
 }
@@ -195,6 +254,8 @@ export async function hideFreeBannerAdForNativeApp() {
 
   bannerRequested = false;
   bannerExists = false;
+  bannerLoading = false;
+  clearBannerLoadWatchdog();
   clearBannerRetry();
   setBannerBottomInset(0);
 
