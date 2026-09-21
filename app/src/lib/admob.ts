@@ -2,7 +2,6 @@ import { Capacitor } from "@capacitor/core";
 import {
   AdMob,
   AdmobConsentStatus,
-  PrivacyOptionsRequirementStatus,
   BannerAdPluginEvents,
   BannerAdPosition,
   BannerAdSize,
@@ -64,8 +63,7 @@ async function ensureAdMobConsentForAds() {
       consentResolvedForSession = true;
       consentAllowsAds = Boolean(consentInfo.canRequestAds);
       privacyOptionsRequiredForSession =
-        consentInfo.privacyOptionsRequirementStatus ===
-        PrivacyOptionsRequirementStatus.REQUIRED;
+        consentInfo.privacyOptionsRequirementStatus === "REQUIRED";
 
       if (!consentAllowsAds) {
         console.info("AdMob consent does not currently allow ad requests");
