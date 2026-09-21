@@ -279,7 +279,7 @@ export async function showAdMobPrivacyOptionsForNativeApp() {
     consentAllowsAds = Boolean(consentInfo.canRequestAds);
     privacyOptionsRequiredForSession =
       consentInfo.privacyOptionsRequirementStatus ===
-      PrivacyOptionsRequirementStatus.REQUIRED;
+      "REQUIRED";
 
     return true;
   } catch (error) {
