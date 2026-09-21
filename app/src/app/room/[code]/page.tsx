@@ -1,7 +1,7 @@
 "use client";
 
 import { Share } from "@capacitor/share";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   createAccessToken,
@@ -609,6 +609,19 @@ export default function RoomPage() {
       window.removeEventListener("resize", updateKeyboardInset);
     };
   }, []);
+
+  useLayoutEffect(() => {
+    if (!roomInitialLoadComplete) return;
+
+    // Each room phase is a separate logical screen even though the URL stays
+    // the same. Never carry the previous screen's scroll position into it.
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    // The answer list has its own scroll area during play.
+    answerScrollBoxRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [code, roomInitialLoadComplete, myPlayer?.id, roomStatus]);
 
   useEffect(() => {
     function updateConnectionState() {
