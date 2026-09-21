@@ -1,3 +1,5 @@
+import AdPrivacyOptionsButton from "./AdPrivacyOptionsButton";
+
 export default function PrivacyPolicyPage() {
   return (
     <main
@@ -112,6 +114,16 @@ export default function PrivacyPolicyPage() {
           </a>
         </li>
       </ul>
+
+      <h2>Nastavení soukromí reklam / Ad privacy settings</h2>
+      <p>
+        Pokud to pravidla ochrany soukromí pro tvůj region vyžadují, můžeš zde
+        kdykoliv upravit své volby pro reklamní služby Google. / If required by
+        privacy rules in your region, you can update your Google advertising
+        privacy choices here at any time.
+      </p>
+
+      <AdPrivacyOptionsButton />
 
       <h2>Lokální uložení v zařízení / Local storage</h2>
       <p>

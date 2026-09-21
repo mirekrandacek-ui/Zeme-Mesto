@@ -15,6 +15,7 @@ let initializePromise: Promise<boolean> | null = null;
 let consentPromise: Promise<boolean> | null = null;
 let consentResolvedForSession = false;
 let consentAllowsAds = false;
+let privacyOptionsRequiredForSession = false;
 let bannerRequested = false;
 let bannerExists = false;
 let bannerRecoveryInstalled = false;
@@ -61,6 +62,8 @@ async function ensureAdMobConsentForAds() {
 
       consentResolvedForSession = true;
       consentAllowsAds = Boolean(consentInfo.canRequestAds);
+      privacyOptionsRequiredForSession =
+        consentInfo.privacyOptionsRequirementStatus === "REQUIRED";
 
       if (!consentAllowsAds) {
         console.info("AdMob consent does not currently allow ad requests");
@@ -250,6 +253,39 @@ function installBannerRecovery() {
   document.addEventListener("visibilitychange", restoreBanner);
   window.addEventListener("focus", restoreBanner);
   window.addEventListener("pageshow", restoreBanner);
+}
+
+export async function isAdMobPrivacyOptionsRequiredForNativeApp() {
+  if (!isNativeAdMobAvailable()) return false;
+
+  const initialized = await initializeAdMobForTesting();
+  if (!initialized) return false;
+
+  await ensureAdMobConsentForAds();
+  return privacyOptionsRequiredForSession;
+}
+
+export async function showAdMobPrivacyOptionsForNativeApp() {
+  if (!isNativeAdMobAvailable()) return false;
+
+  const initialized = await initializeAdMobForTesting();
+  if (!initialized) return false;
+
+  try {
+    await AdMob.showPrivacyOptionsForm();
+
+    const consentInfo = await AdMob.requestConsentInfo();
+    consentResolvedForSession = true;
+    consentAllowsAds = Boolean(consentInfo.canRequestAds);
+    privacyOptionsRequiredForSession =
+      consentInfo.privacyOptionsRequirementStatus ===
+      "REQUIRED";
+
+    return true;
+  } catch (error) {
+    console.warn("AdMob privacy options failed", error);
+    return false;
+  }
 }
 
 export async function showFreeBannerAdForNativeApp() {
