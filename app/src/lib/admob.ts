@@ -1,6 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import {
   AdMob,
+  AdmobConsentStatus,
   BannerAdPluginEvents,
   BannerAdPosition,
   BannerAdSize,
@@ -11,6 +12,9 @@ export const ADMOB_TEST_BANNER_ID = "ca-app-pub-9232105399279318/1813492693";
 export const ADMOB_TEST_REWARDED_ID = "ca-app-pub-9232105399279318/1454400045";
 
 let initializePromise: Promise<boolean> | null = null;
+let consentPromise: Promise<boolean> | null = null;
+let consentResolvedForSession = false;
+let consentAllowsAds = false;
 let bannerRequested = false;
 let bannerExists = false;
 let bannerRecoveryInstalled = false;
@@ -37,6 +41,41 @@ export function initializeAdMobForTesting() {
     });
 
   return initializePromise;
+}
+
+async function ensureAdMobConsentForAds() {
+  if (!isNativeAdMobAvailable()) return false;
+  if (consentResolvedForSession) return consentAllowsAds;
+  if (consentPromise) return consentPromise;
+
+  consentPromise = (async () => {
+    try {
+      let consentInfo = await AdMob.requestConsentInfo();
+
+      if (
+        consentInfo.isConsentFormAvailable &&
+        consentInfo.status === AdmobConsentStatus.REQUIRED
+      ) {
+        consentInfo = await AdMob.showConsentForm();
+      }
+
+      consentResolvedForSession = true;
+      consentAllowsAds = Boolean(consentInfo.canRequestAds);
+
+      if (!consentAllowsAds) {
+        console.info("AdMob consent does not currently allow ad requests");
+      }
+
+      return consentAllowsAds;
+    } catch (error) {
+      console.warn("AdMob consent flow failed", error);
+      return false;
+    } finally {
+      consentPromise = null;
+    }
+  })();
+
+  return consentPromise;
 }
 
 function setBannerBottomInset(height: number) {
@@ -217,6 +256,9 @@ export async function showFreeBannerAdForNativeApp() {
   const initialized = await initializeAdMobForTesting();
   if (!initialized) return false;
 
+  const consentAllowsRequest = await ensureAdMobConsentForAds();
+  if (!consentAllowsRequest) return false;
+
   bannerRequested = true;
   await installBannerListeners();
   installBannerRecovery();
@@ -227,6 +269,9 @@ export async function showFreeBannerAdForNativeApp() {
 export async function showFreeRewardedAdForNativeApp() {
   const initialized = await initializeAdMobForTesting();
   if (!initialized) return false;
+
+  const consentAllowsRequest = await ensureAdMobConsentForAds();
+  if (!consentAllowsRequest) return false;
 
   try {
     await AdMob.prepareRewardVideoAd({
