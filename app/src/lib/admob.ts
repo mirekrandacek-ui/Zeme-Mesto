@@ -113,14 +113,9 @@ async function installBannerListeners() {
           setBannerBottomInset(Number(size.height));
         }),
         AdMob.addListener(BannerAdPluginEvents.FailedToLoad, (error) => {
-          const details =
-            error && typeof error === "object"
-              ? (error as Record<string, unknown>)
-              : {};
-
           console.warn("AdMob banner load failed", {
-            code: details.code,
-            message: details.message,
+            code: error.code,
+            message: error.message,
             error,
           });
 
