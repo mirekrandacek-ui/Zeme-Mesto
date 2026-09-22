@@ -1,0 +1,81 @@
+name: Build v042 Firebase release
+
+on:
+  push:
+    branches:
+      - release/v042-firebase
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Sync Capacitor Android
+        working-directory: app
+        run: npx cap sync android
+
+      - name: Verify Firebase config
+        shell: bash
+        run: |
+          set -euxo pipefail
+          test -s app/android/app/google-services.json
+          grep -q '"package_name": "com.randis2288.zememesto"' app/android/app/google-services.json
+          grep -q '"project_id": "zeme-mesto-475b8"' app/android/app/google-services.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Ensure Android 36 SDK
+        shell: bash
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Build unsigned R8 release AAB
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sed -i '/signingConfig signingConfigs.release/d' app/android/app/build.gradle
+          cd app/android
+          chmod +x gradlew
+          ./gradlew :app:bundleRelease --console=plain
+
+      - name: Verify v042 outputs
+        shell: bash
+        run: |
+          set -euxo pipefail
+          grep -q "versionCode 42" app/android/app/build.gradle
+          grep -q 'versionName "v042"' app/android/app/build.gradle
+          test -s app/android/app/build/outputs/bundle/release/app-release.aab
+          test -s app/android/app/build/outputs/mapping/release/mapping.txt
+          unzip -l app/android/app/build/outputs/bundle/release/app-release.aab | grep -E 'BUNDLE-METADATA/.*/proguard|BUNDLE-METADATA/.*/mapping'
+
+      - name: Upload v042 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeme-mesto-v042-r8
+          path: |
+            app/android/app/build/outputs/bundle/release/app-release.aab
+            app/android/app/build/outputs/mapping/release/mapping.txt
+          if-no-files-found: error
