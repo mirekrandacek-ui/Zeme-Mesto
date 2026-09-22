@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "461378570440",
+    "project_id": "zeme-mesto-475b8",
+    "storage_bucket": "zeme-mesto-475b8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:461378570440:android:ed702c0fdfa69b743f7dfd",
+        "android_client_info": {
+          "package_name": "com.randis2288.zememesto"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJ8hu_kRi0dpnC6t1J-93U1WArL8EOU18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
