@@ -29,6 +29,9 @@ jobs:
       - name: Build web app
         working-directory: app
         run: npm run build
+      - name: Sync Capacitor Android
+        working-directory: app
+        run: npx cap sync android
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
