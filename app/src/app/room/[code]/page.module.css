@@ -70,23 +70,28 @@
   text-shadow:0 2px 3px #00152d;
 }
 
-.entryTitleRow{
+.entryMeta{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
+  flex-wrap:wrap;
+  gap:8px 12px;
+  margin:8px 0 10px;
 }
 
 .entryTitle{
-  min-width:0;
   margin:0;
   font-size:clamp(19px,5vw,25px);
   line-height:1.1;
+}
+
+.entryRoomCode{
   white-space:nowrap;
 }
 
 .entryTier{
   flex:0 0 auto;
+  max-width:100%;
   padding:5px 11px;
   border:1.5px solid #c0ff8c;
   border-radius:99px;
@@ -100,13 +105,14 @@
   display:flex;
   align-items:center;
   gap:8px;
-  margin:8px 0 10px;
+  margin:0;
   font-size:14px;
   font-weight:700;
 }
 
 .entryStatus::before{
   content:"";
+  flex:0 0 8px;
   width:8px;
   height:8px;
   border-radius:50%;
