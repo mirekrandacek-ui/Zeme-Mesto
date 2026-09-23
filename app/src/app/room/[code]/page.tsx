@@ -3043,7 +3043,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h11"/></svg>
             <span>{t("backHome")}</span>
           </a>
-          <button className={roomStyles.entryAction} type="button" onClick={shareInviteLink}>
+          <button className={`${roomStyles.entryAction} ${roomStyles.entryActionGreen}`} type="button" onClick={shareInviteLink}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/></svg>
             <span>{t("shareRoomCode")}</span>
           </button>
@@ -3250,9 +3250,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {roomId && !myPlayer && (
         <section className={roomStyles.entryJoin}>
-          <h2 className={roomStyles.entryJoinTitle}>
-            {t("joinGame")}
-          </h2>
           <p className={roomStyles.entryJoinHelp}>{t("joinNameHelp")}</p>
 
           {freeJoinBlocked ? (
