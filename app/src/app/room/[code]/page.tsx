@@ -3027,16 +3027,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       {!isActiveGamePhase && (
       isRoomEntry ? (
       <header className={roomStyles.entryHeader}>
-        <div className={roomStyles.entryTitleRow}>
-          <h1 className={roomStyles.entryTitle}>
-            {t("room")} {code.toUpperCase()}
-          </h1>
+        <h1 className={roomStyles.entryTitle}>
+          {t("room")} <span className={roomStyles.entryRoomCode}>{code.toUpperCase()}</span>
+        </h1>
+
+        <div className={roomStyles.entryMeta}>
+          <p className={roomStyles.entryStatus}>{t("notSignedIn")}</p>
           <span className={roomStyles.entryTier}>
             {roomTier === "super_premium" ? "Super Premium" : roomTier === "premium" ? "Premium" : "Free"}
           </span>
         </div>
-
-        <p className={roomStyles.entryStatus}>{t("notSignedIn")}</p>
 
         <div className={roomStyles.entryActions}>
           <a className={`${roomStyles.entryAction} ${roomStyles.entryActionHome}`} href="/">
