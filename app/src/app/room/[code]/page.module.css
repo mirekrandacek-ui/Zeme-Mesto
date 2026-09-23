@@ -145,6 +145,13 @@
   background:linear-gradient(#7163c5,#51469d 58%,#38317c);
 }
 
+.entryActionGreen{
+  border-color:#dcffa4;
+  background:linear-gradient(#84e43d,#4ebe12 48%,#189000 77%,#35ae0a);
+  box-shadow:inset 0 4px 6px #ffffffbf,inset 0 -6px 8px #147700,0 0 10px #77f335,0 3px 7px #00162c;
+  text-shadow:0 2px 2px #145c0d;
+}
+
 .entryAction svg{
   flex:0 0 auto;
   width:24px;
@@ -284,10 +291,11 @@
 }
 
 .entryJoinHelp{
-  margin:0 0 12px;
-  color:#d9f4ff;
-  font-size:12px;
-  line-height:1.3;
+  margin:0 0 14px;
+  color:#fff;
+  font-size:clamp(18px,4.8vw,22px);
+  font-weight:800;
+  line-height:1.18;
 }
 
 .entryNameInput{
