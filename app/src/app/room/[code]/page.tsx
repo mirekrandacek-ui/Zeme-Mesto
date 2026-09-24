@@ -1399,6 +1399,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         ? uniqueNonEmpty((data as any).active_categories as unknown[])
         : DEFAULT_ACTIVE_CATEGORIES;
 
+    const customCategories = roomCategories
+      .filter((category) => !ALL_PREDEFINED_CATEGORIES.includes(category))
+      .slice(0, 5);
+
     setRoomStatus(data.status as RoomStatus);
     setLetter((data.letter ?? null) as string | null);
     setActiveCategories(roomCategories);
@@ -1413,6 +1417,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setRoomFreeRoundsStarted(
       Number((data as any).free_rounds_started ?? 0)
     );
+    setRoomCustomCategories([
+      ...customCategories,
+      ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
+    ].slice(0, 5));
 
     setAnswers((current) => alignStringRecord(current, roomCategories));
     setScores((current) => alignScoreRecord(current, roomCategories));
@@ -1576,22 +1584,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (!roomId || !isOnline) return;
 
     const poll = window.setInterval(async () => {
-      const { data } = await supabase
-        .from("rooms")
-        .select("status,letter,free_rounds_unlocked,free_rounds_started")
-        .eq("id", roomId)
-        .single();
-
-      if (data) {
-        setRoomStatus(data.status as RoomStatus);
-        setLetter((data.letter ?? null) as string | null);
-        setRoomFreeRoundsUnlocked(
-          Number((data as any).free_rounds_unlocked ?? FREE_ROUND_BLOCK_SIZE)
-        );
-        setRoomFreeRoundsStarted(
-          Number((data as any).free_rounds_started ?? 0)
-        );
-      }
+      // The room row is the single source of truth for every connected device.
+      // This keeps categories and room-level settings in sync even when the
+      // organizer changes them after another player has already joined.
+      await refreshRoomState(roomId);
 
       await loadPlayers(roomId);
       await loadCurrentRound(roomId);
