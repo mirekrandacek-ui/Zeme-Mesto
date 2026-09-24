@@ -1055,6 +1055,20 @@
   font-size:18px;
 }
 
+.scoringMineTitleButton{
+  margin:0;
+  padding:0;
+  border:0;
+  color:#fff;
+  background:transparent;
+  font:inherit;
+  font-weight:800;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  text-shadow:inherit;
+  cursor:pointer;
+}
+
 .scoringCategoryRow{
   display:grid;
   grid-template-columns:minmax(0,1fr) auto;
