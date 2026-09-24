@@ -131,6 +131,7 @@ function parseRoundCountLimit(value: unknown): RoundCountLimit {
 }
 
 const DEFAULT_ACTIVE_CATEGORIES = ["Země", "Město", "Jméno"];
+const TOTAL_POINTS_SCORING_KEY = "__total_points__";
 
 const PREMIUM_CATEGORIES = ["Země", "Město", "Jméno", "Zvíře", "Věc", "Rostlina"];
 
@@ -4005,7 +4006,11 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   ))}
                   <th
                     id="score-column-total"
-                    className={`${roomStyles.scoringTableCell} ${roomStyles.scoringTableHead}`}
+                    className={`${roomStyles.scoringTableCell} ${roomStyles.scoringTableHead} ${
+                      selectedScoringCategory === TOTAL_POINTS_SCORING_KEY
+                        ? roomStyles.scoringSelectedColumn
+                        : ""
+                    }`}
                   >
                     <span className={roomStyles.scoringTotalPointsText}>{t("totalPoints")}</span>
                   </th>
@@ -4029,7 +4034,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         {answerFor(p.id, c)}
                       </td>
                     ))}
-                    <td className={roomStyles.scoringTableCell}>
+                    <td
+                      className={`${roomStyles.scoringTableCell} ${
+                        selectedScoringCategory === TOTAL_POINTS_SCORING_KEY
+                          ? roomStyles.scoringSelectedColumn
+                          : ""
+                      }`}
+                    >
                       <b>{playerTotalPoints(p.id)}</b>
                     </td>
                   </tr>
@@ -4101,7 +4112,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   type="button"
                   className={roomStyles.scoringMineTitleButton}
                   onClick={() => {
-                    setSelectedScoringCategory(null);
+                    setSelectedScoringCategory(TOTAL_POINTS_SCORING_KEY);
 
                     requestAnimationFrame(() => {
                       const scrollBox = document.getElementById("scoring-table-scroll");
