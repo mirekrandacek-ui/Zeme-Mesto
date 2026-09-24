@@ -4337,6 +4337,47 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         );
                       })}
                     </div>
+
+                    {roomTierForCategoryPreview === "super_premium" && (
+                      <>
+                        <h4 style={{ marginTop: 16 }}>{t("customCategories")}</h4>
+
+                        {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
+                          <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                            <input
+                              placeholder={`${t("customCategoryPrefix")} ${index + 1}`}
+                              value={value}
+                              onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
+                              style={{ padding: 12, width: "100%" }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeRoomCustomCategory(index)}
+                              aria-label={t("removeCustomCategory")}
+                              style={{ padding: "0 12px" }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+
+                        {visibleCustomCategoryCount < 5 && (
+                          <button
+                            type="button"
+                            onClick={addRoomCustomCategory}
+                            style={{ marginTop: 8, padding: 10, width: "100%" }}
+                          >
+                            {t("addCustomCategory")}
+                          </button>
+                        )}
+
+                        {visibleCustomCategoryCount >= 5 && (
+                          <p style={{ opacity: 0.75, marginBottom: 0 }}>
+                            {t("maxCustomCategories")}
+                          </p>
+                        )}
+                      </>
+                    )}
                   </>
                 )}
               </section>
