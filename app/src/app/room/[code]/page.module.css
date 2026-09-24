@@ -1134,6 +1134,11 @@
 }
 
 .scoringMineInfo,
+.scoringCategoryEditor{
+  order:5;
+  margin-bottom:6px!important;
+}
+
 .scoringWaiting{
   order:5;
   margin-top:0;
