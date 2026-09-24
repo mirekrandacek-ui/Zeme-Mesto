@@ -3935,7 +3935,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 paddingBottom: `calc(${Math.max(96, keyboardInsetPx + 96)}px + env(safe-area-inset-bottom))`,
               }}
             >
-              {activeCategories.map((category, index) => (
+              {currentRoundCategories.map((category, index) => (
                 <label key={category} className={roomStyles.gameAnswerLabel}>
                   <div className={roomStyles.gameAnswerName}>
                     {categoryLabel(category)}
@@ -3945,7 +3945,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       answerInputRefs.current[category] = element;
                     }}
                     className={roomStyles.gameAnswerInput}
-                    enterKeyHint={index === activeCategories.length - 1 ? "done" : "next"}
+                    enterKeyHint={index === currentRoundCategories.length - 1 ? "done" : "next"}
                     value={answers[category] ?? ""}
                     onChange={(e) => saveAnswer(category, e.target.value)}
                     onFocus={(e) => {
@@ -3958,7 +3958,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       if (e.key !== "Enter") return;
 
                       e.preventDefault();
-                      const nextCategory = activeCategories[index + 1];
+                      const nextCategory = currentRoundCategories[index + 1];
 
                       if (nextCategory) {
                         const nextInput = answerInputRefs.current[nextCategory];
@@ -4102,7 +4102,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   >
                     {t("player")}
                   </th>
-                  {activeCategories.map((c, index) => (
+                  {scoringTableCategories.map((c, index) => (
                     <th
                       id={`score-column-${index}`}
                       key={c}
@@ -4133,16 +4133,20 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     >
                       {p.name}
                     </td>
-                    {activeCategories.map((c) => (
-                      <td
-                        key={c}
-                        className={`${roomStyles.scoringTableCell} ${
-                          selectedScoringCategory === c ? roomStyles.scoringSelectedColumn : ""
-                        }`}
-                      >
-                        {answerFor(p.id, c)}
-                      </td>
-                    ))}
+                    {scoringTableCategories.map((c) => {
+                      const isCurrentRoundCategory = currentRoundCategories.includes(c);
+
+                      return (
+                        <td
+                          key={c}
+                          className={`${roomStyles.scoringTableCell} ${
+                            selectedScoringCategory === c ? roomStyles.scoringSelectedColumn : ""
+                          }`}
+                        >
+                          {isCurrentRoundCategory ? answerFor(p.id, c) : <b>{playerCategoryPoints(p.id, c)}</b>}
+                        </td>
+                      );
+                    })}
                     <td
                       className={`${roomStyles.scoringTableCell} ${
                         selectedScoringCategory === TOTAL_POINTS_SCORING_KEY
@@ -4214,6 +4218,130 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             )}
           </div>
 
+          {isOrganizer &&
+            canEditRoomCategories &&
+            (roomTierForCategoryPreview === "premium" ||
+              roomTierForCategoryPreview === "super_premium") && (
+              <section
+                className={roomStyles.roomCategoriesPanel}
+                style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 10 }}
+              >
+                <button
+                  type="button"
+                  className={roomStyles.scoringHistoryButton}
+                  onClick={() => setShowNextRoundCategoryEditor((value) => !value)}
+                >
+                  {showNextRoundCategoryEditor
+                    ? uiMessage({
+                        cs: "Skrýt změnu kategorií",
+                        en: "Hide category changes",
+                        es: "Ocultar cambios de categorías",
+                        de: "Kategorieänderungen ausblenden",
+                        fr: "Masquer les changements de catégories",
+                        "pt-BR": "Ocultar alterações de categorias",
+                        id: "Sembunyikan perubahan kategori",
+                        tr: "Kategori değişikliklerini gizle",
+                        pl: "Ukryj zmianę kategorii",
+                        it: "Nascondi modifica categorie",
+                      })
+                    : uiMessage({
+                        cs: "Změnit kategorie pro další kolo",
+                        en: "Change categories for the next round",
+                        es: "Cambiar categorías para la siguiente ronda",
+                        de: "Kategorien für die nächste Runde ändern",
+                        fr: "Modifier les catégories pour la prochaine manche",
+                        "pt-BR": "Alterar categorias para a próxima rodada",
+                        id: "Ubah kategori untuk ronde berikutnya",
+                        tr: "Sonraki tur için kategorileri değiştir",
+                        pl: "Zmień kategorie na następną rundę",
+                        it: "Cambia categorie per il turno successivo",
+                      })}
+                </button>
+
+                <p style={{ marginBottom: showNextRoundCategoryEditor ? 10 : 0 }}>
+                  <strong>
+                    {uiMessage({
+                      cs: "Kategorie pro další kolo:",
+                      en: "Categories for the next round:",
+                      es: "Categorías para la siguiente ronda:",
+                      de: "Kategorien für die nächste Runde:",
+                      fr: "Catégories pour la prochaine manche :",
+                      "pt-BR": "Categorias para a próxima rodada:",
+                      id: "Kategori untuk ronde berikutnya:",
+                      tr: "Sonraki turun kategorileri:",
+                      pl: "Kategorie na następną rundę:",
+                      it: "Categorie per il turno successivo:",
+                    })}
+                  </strong>{" "}
+                  {activeCategories.map(categoryLabel).join(", ")}
+                </p>
+
+                {showNextRoundCategoryEditor && (
+                  <>
+                    <p style={{ opacity: 0.75, marginTop: 0 }}>
+                      {uiMessage({
+                        cs: "Změna se projeví až od následujícího kola. Aktuální bodování zůstane beze změny.",
+                        en: "The change will apply from the next round. The current scoring stays unchanged.",
+                        es: "El cambio se aplicará a partir de la siguiente ronda. La puntuación actual no cambiará.",
+                        de: "Die Änderung gilt ab der nächsten Runde. Die aktuelle Wertung bleibt unverändert.",
+                        fr: "La modification s’appliquera à partir de la prochaine manche. Le comptage actuel reste inchangé.",
+                        "pt-BR": "A alteração valerá a partir da próxima rodada. A pontuação atual não muda.",
+                        id: "Perubahan berlaku mulai ronde berikutnya. Penilaian ronde saat ini tidak berubah.",
+                        tr: "Değişiklik bir sonraki turdan itibaren geçerli olur. Mevcut puanlama değişmez.",
+                        pl: "Zmiana zacznie obowiązywać od następnej rundy. Bieżące punktowanie pozostanie bez zmian.",
+                        it: "La modifica si applicherà dal turno successivo. Il punteggio attuale rimane invariato.",
+                      })}
+                    </p>
+
+                    <h4>{t("basicCategories")}</h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      {PREMIUM_CATEGORIES.map((category) => (
+                        <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          <input
+                            type="checkbox"
+                            checked={activeCategories.includes(category)}
+                            disabled={!canToggleRoomCategory(category)}
+                            style={{
+                              accentColor: "#2563eb",
+                              cursor: canToggleRoomCategory(category) ? "pointer" : "default",
+                            }}
+                            onChange={() => toggleRoomCategory(category)}
+                          />
+                          {categoryLabel(category)}
+                        </label>
+                      ))}
+                    </div>
+
+                    <h4 style={{ marginTop: 16 }}>{t("extendedCategories")}</h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => {
+                        const canToggle = canToggleRoomCategory(category);
+
+                        return (
+                          <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                            <input
+                              type="checkbox"
+                              checked={activeCategories.includes(category)}
+                              disabled={!canToggle}
+                              style={{
+                                accentColor: "#2563eb",
+                                cursor: canToggle ? "pointer" : "default",
+                              }}
+                              onChange={() => toggleRoomCategory(category)}
+                            />
+                            <span>
+                              {!canToggle ? "🔒 " : ""}
+                              {categoryLabel(category)}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </section>
+            )}
+
           {activeMyPlayer ? (
             <section className={roomStyles.scoringMine}>
               <h3>
@@ -4251,7 +4379,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 </button>
               </h3>
 
-              {activeCategories.map((category, index) => (
+              {currentRoundCategories.map((category) => (
                 <label key={category} className={roomStyles.scoringCategoryRow}>
                   <span
                     className={roomStyles.scoringCategoryName}
@@ -4260,7 +4388,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
                       requestAnimationFrame(() => {
                         const scrollBox = document.getElementById("scoring-table-scroll");
-                        const column = document.getElementById(`score-column-${index}`);
+                        const columnIndex = scoringTableCategories.indexOf(category);
+                        const column = document.getElementById(`score-column-${columnIndex}`);
                         const stickyPlayerColumn =
                           scrollBox?.querySelector('[data-sticky-player="true"]') as
                             | HTMLElement
@@ -4292,7 +4421,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
                       requestAnimationFrame(() => {
                         const scrollBox = document.getElementById("scoring-table-scroll");
-                        const column = document.getElementById(`score-column-${index}`);
+                        const columnIndex = scoringTableCategories.indexOf(category);
+                        const column = document.getElementById(`score-column-${columnIndex}`);
                         const stickyPlayerColumn =
                           scrollBox?.querySelector('[data-sticky-player="true"]') as
                             | HTMLElement
