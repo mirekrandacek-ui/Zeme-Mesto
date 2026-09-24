@@ -4003,7 +4003,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       {categoryLabel(c)}
                     </th>
                   ))}
-                  <th className={`${roomStyles.scoringTableCell} ${roomStyles.scoringTableHead}`}>
+                  <th
+                    id="score-column-total"
+                    className={`${roomStyles.scoringTableCell} ${roomStyles.scoringTableHead}`}
+                  >
                     <span className={roomStyles.scoringTotalPointsText}>{t("totalPoints")}</span>
                   </th>
                 </tr>
@@ -4093,7 +4096,40 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {activeMyPlayer ? (
             <section className={roomStyles.scoringMine}>
-              <h3>{t("myScoring")}</h3>
+              <h3>
+                <button
+                  type="button"
+                  className={roomStyles.scoringMineTitleButton}
+                  onClick={() => {
+                    setSelectedScoringCategory(null);
+
+                    requestAnimationFrame(() => {
+                      const scrollBox = document.getElementById("scoring-table-scroll");
+                      const totalColumn = document.getElementById("score-column-total");
+                      const stickyPlayerColumn =
+                        scrollBox?.querySelector('[data-sticky-player="true"]') as
+                          | HTMLElement
+                          | null;
+
+                      if (!scrollBox || !totalColumn) return;
+
+                      const stickyWidth = stickyPlayerColumn?.offsetWidth ?? 0;
+                      const visibleWidth = scrollBox.clientWidth - stickyWidth;
+                      const centredPosition =
+                        totalColumn.offsetLeft -
+                        stickyWidth -
+                        Math.max(0, (visibleWidth - totalColumn.offsetWidth) / 2);
+
+                      scrollBox.scrollTo({
+                        left: Math.max(0, centredPosition),
+                        behavior: "smooth",
+                      });
+                    });
+                  }}
+                >
+                  {t("myScoring")}
+                </button>
+              </h3>
 
               {activeCategories.map((category, index) => (
                 <label key={category} className={roomStyles.scoringCategoryRow}>
