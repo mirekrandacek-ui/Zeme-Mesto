@@ -1,7 +1,7 @@
 "use client";
 
 import { Share } from "@capacitor/share";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   createAccessToken,
@@ -49,7 +49,8 @@ type RoomStatus = "lobby" | "drawing" | "playing" | "scoring" | "finished";
 type PlayerStatus = "active" | "waiting";
 type Player = { id: string; name: string; status?: PlayerStatus };
 type MyPlayer = { id: string; name: string; status?: PlayerStatus; playerToken: string };
-type RoundLite = { id: string; round_no: number; letter: string; status: string; deadline_at?: string | null };
+type RoundLite = { id: string; round_no: number; letter: string; status: string; deadline_at?: string | null; categories?: string[] | null };
+type RoundCategorySnapshot = { round_no: number; categories: string[] };
 type AnswerRow = { player_id: string; category: string; value: string };
 type ScoreRow = { player_id: string; round?: number; category: string; points: number };
 
@@ -535,6 +536,8 @@ export default function RoomPage() {
   const [roomFreeRoundsStarted, setRoomFreeRoundsStarted] = useState(0);
 
   const [round, setRound] = useState<RoundLite | null>(null);
+  const [roundCategoryHistory, setRoundCategoryHistory] = useState<RoundCategorySnapshot[]>([]);
+  const [showNextRoundCategoryEditor, setShowNextRoundCategoryEditor] = useState(false);
   const [serverTimeOffsetMs, setServerTimeOffsetMs] = useState(0);
   const [timerNowMs, setTimerNowMs] = useState(0);
   const [answers, setAnswers] = useState<Record<Category, string>>(emptyAnswers());
@@ -1053,13 +1056,32 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   return normalizedAnswer.startsWith(normalizedLetter);
 }
 
-  const allAnswersFilled = activeCategories.every((c) => (answers[c] ?? "").trim().length > 0);
+  const currentRoundCategories = useMemo(
+    () =>
+      Array.isArray(round?.categories) && round.categories.length > 0
+        ? uniqueNonEmpty(round.categories)
+        : activeCategories,
+    [round?.categories, activeCategories]
+  );
 
-  const allAnswersAtLeastTwoChars = activeCategories.every((c) => (answers[c] ?? "").trim().length >= 2);
+  const currentRoundCategoriesKey = currentRoundCategories.join("\u001f");
+
+  const scoringTableCategories = useMemo(
+    () =>
+      uniqueNonEmpty([
+        ...roundCategoryHistory.flatMap((snapshot) => snapshot.categories),
+        ...currentRoundCategories,
+      ]),
+    [roundCategoryHistory, currentRoundCategories]
+  );
+
+  const allAnswersFilled = currentRoundCategories.every((c) => (answers[c] ?? "").trim().length > 0);
+
+  const allAnswersAtLeastTwoChars = currentRoundCategories.every((c) => (answers[c] ?? "").trim().length >= 2);
 
   const allAnswersStartWithLetter =
     Boolean(letter) &&
-    activeCategories.every((c) => answerStartsWithLetter(answers[c], letter));
+    currentRoundCategories.every((c) => answerStartsWithLetter(answers[c], letter));
 
   const canStop = allAnswersFilled && allAnswersAtLeastTwoChars && allAnswersStartWithLetter;
 
@@ -1258,9 +1280,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }, [roomTier]);
 
   useEffect(() => {
-    setAnswers((current) => alignStringRecord(current, activeCategories));
-    setScores((current) => alignScoreRecord(current, activeCategories));
-  }, [activeCategories]);
+    setAnswers((current) => alignStringRecord(current, currentRoundCategories));
+    setScores((current) => alignScoreRecord(current, currentRoundCategories));
+  }, [currentRoundCategoriesKey]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -1465,7 +1487,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function loadCurrentRound(rid: string) {
     const { data, error } = await supabase
       .from("rounds")
-      .select("id,round_no,letter,status,deadline_at")
+      .select("id,round_no,letter,status,deadline_at,categories")
       .eq("room_id", rid)
       .order("round_no", { ascending: false })
       .limit(1);
@@ -1480,6 +1502,29 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     const r = data?.[0] as RoundLite | undefined;
     setRound(r ?? null);
+  }
+
+  async function loadRoundCategoryHistory(rid: string) {
+    const { data, error } = await supabase
+      .from("rounds")
+      .select("round_no,categories")
+      .eq("room_id", rid)
+      .order("round_no", { ascending: true });
+
+    if (error) {
+      console.error("Round category history loading failed:", error);
+      return;
+    }
+
+    setRoundCategoryHistory(
+      (data ?? []).map((row: any) => ({
+        round_no: Number(row.round_no ?? 0),
+        categories:
+          Array.isArray(row.categories) && row.categories.length > 0
+            ? uniqueNonEmpty(row.categories as unknown[])
+            : [],
+      }))
+    );
   }
 
   async function loadAllAnswers(rid: string, roundNo: number) {
@@ -1521,7 +1566,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (!myPlayer) return;
 
     const mine = rows.filter((s) => s.player_id === myPlayer.id);
-    setMyScoreSubmitted(mine.length >= activeCategories.length);
+    setMyScoreSubmitted(mine.length >= currentRoundCategories.length);
 
     // Důležité:
     // Dokud hráč bodování neodeslal, nepřepisujeme mu rozpracované hodnoty.
@@ -1530,7 +1575,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const next = emptyScores();
 
     for (const row of mine) {
-      if (activeCategories.includes(row.category as Category)) {
+      if (currentRoundCategories.includes(row.category as Category)) {
         next[row.category as Category] = row.points as -10 | -5 | 0 | 5 | 10;
       }
     }
@@ -1572,6 +1617,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       if (!rid) return;
       await loadPlayers(rid);
       await loadCurrentRound(rid);
+      await loadRoundCategoryHistory(rid);
       await loadRoomScores(rid);
     })();
 
@@ -1592,6 +1638,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       await loadPlayers(roomId);
       await loadCurrentRound(roomId);
+      await loadRoundCategoryHistory(roomId);
 
       // Celkové skóre načti dřív, než allScores může přepnout UI do Free limitu.
       await loadRoomScores(roomId);
@@ -1628,6 +1675,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         await Promise.all([
           loadPlayers(rid),
           loadCurrentRound(rid),
+          loadRoundCategoryHistory(rid),
           loadRoomScores(rid),
         ]);
 
@@ -1692,20 +1740,20 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   useEffect(() => {
     if (!round?.id) return;
 
-    setAnswers(emptyAnswers(activeCategories));
-    setScores(emptyScores(activeCategories));
+    setAnswers(emptyAnswers(currentRoundCategories));
+    setScores(emptyScores(currentRoundCategories));
     setAllAnswers([]);
     setAllScores([]);
     setMyScoreSubmitted(false);
-  }, [round?.id]);
+  }, [round?.id, currentRoundCategoriesKey]);
 
   // Při vstupu do bodování nového kola začni vždy s nulovým bodováním
   useEffect(() => {
     if (roomStatus !== "scoring" || !round?.id) return;
 
-    setScores(emptyScores(activeCategories));
+    setScores(emptyScores(currentRoundCategories));
     setMyScoreSubmitted(false);
-  }, [roomStatus, round?.id]);
+  }, [roomStatus, round?.id, currentRoundCategoriesKey]);
 
   async function resetRoomData(rid: string) {
     const { error: rpcError } = await (supabase as any).rpc(
@@ -1749,6 +1797,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setAllAnswers([]);
     setAllScores([]);
     setAllRoomScores([]);
+    setRoundCategoryHistory([]);
+    setShowNextRoundCategoryEditor(false);
     setMyScoreSubmitted(false);
     return true;
   }
@@ -1948,31 +1998,73 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
 
   async function createRound(rid: string, ltr: string) {
-    const { data: last } = await supabase
-      .from("rounds")
-      .select("round_no")
-      .eq("room_id", rid)
-      .order("round_no", { ascending: false })
-      .limit(1);
+    const [{ data: last }, { data: roomConfig, error: roomConfigError }] = await Promise.all([
+      supabase
+        .from("rounds")
+        .select("round_no")
+        .eq("room_id", rid)
+        .order("round_no", { ascending: false })
+        .limit(1),
+      supabase
+        .from("rooms")
+        .select("active_categories")
+        .eq("id", rid)
+        .single(),
+    ]);
+
+    if (roomConfigError || !roomConfig) {
+      console.error("Next-round categories loading failed:", roomConfigError);
+      setMsg(
+        uiMessage({
+          cs: "❌ Kategorie pro další kolo se nepodařilo načíst.",
+          en: "❌ The categories for the next round could not be loaded.",
+          es: "❌ No se pudieron cargar las categorías para la siguiente ronda.",
+          de: "❌ Die Kategorien für die nächste Runde konnten nicht geladen werden.",
+          fr: "❌ Impossible de charger les catégories de la prochaine manche.",
+          "pt-BR": "❌ Não foi possível carregar as categorias da próxima rodada.",
+          id: "❌ Kategori untuk ronde berikutnya tidak dapat dimuat.",
+          tr: "❌ Sonraki turun kategorileri yüklenemedi.",
+          pl: "❌ Nie udało się wczytać kategorii na następną rundę.",
+          it: "❌ Impossibile caricare le categorie per il turno successivo.",
+        })
+      );
+      return null;
+    }
+
+    const nextRoundCategories =
+      Array.isArray((roomConfig as any).active_categories) &&
+      (roomConfig as any).active_categories.length > 0
+        ? uniqueNonEmpty((roomConfig as any).active_categories as unknown[])
+        : DEFAULT_ACTIVE_CATEGORIES;
 
     const nextNo = ((last?.[0]?.round_no ?? 0) as number) + 1;
 
     const { data, error } = await supabase
       .from("rounds")
-      .insert({ room_id: rid, round_no: nextNo, letter: ltr, status: "playing" })
-      .select("id,round_no,letter,status,deadline_at")
+      .insert({
+        room_id: rid,
+        round_no: nextNo,
+        letter: ltr,
+        status: "playing",
+        categories: nextRoundCategories,
+      })
+      .select("id,round_no,letter,status,deadline_at,categories")
       .single();
 
     if (error || !data) {
       console.error("Round creation failed:", error);
       setMsg(
-        uiMessage({ cs: "❌ Nové kolo se nepodařilo vytvořit.", en: "❌ The new round could not be created.", es: "❌ No se pudo crear la nueva ronda." , de: "❌ Die neue Runde konnte nicht erstellt werden.", fr: "❌ Impossible de créer la nouvelle manche.", "pt-BR": "❌ Não foi possível criar a nova rodada.", id: "❌ Ronde baru tidak dapat dibuat.", tr: "❌ Yeni tur oluşturulamadı.", pl: "❌ Nie udało się utworzyć nowej rundy.", it: "❌ Impossibile creare il nuovo turno."})
+        uiMessage({ cs: "❌ Nové kolo se nepodařilo vytvořit.", en: "❌ The new round could not be created.", es: "❌ No se pudo crear la nueva ronda." , de: "❌ Die Runde konnte nicht erstellt werden.", fr: "❌ Impossible de créer la manche.", "pt-BR": "❌ Não foi possível criar a rodada.", id: "❌ Ronde baru tidak dapat dibuat.", tr: "❌ Yeni tur oluşturulamadı.", pl: "❌ Nie udało się utworzyć rundy.", it: "❌ Impossibile creare il turno."})
       );
       return null;
     }
 
     const nextRound = data as RoundLite;
     setRound(nextRound);
+    setRoundCategoryHistory((current) => [
+      ...current.filter((snapshot) => snapshot.round_no !== nextNo),
+      { round_no: nextNo, categories: nextRoundCategories },
+    ].sort((a, b) => a.round_no - b.round_no));
     return nextRound;
   }
 
@@ -2019,7 +2111,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }
 
   async function updateRoomCategories(predefinedCategories: string[], customCategories: string[]) {
-    if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
+    if (!isOrganizer || !roomId || (roomStatus !== "lobby" && roomStatus !== "scoring")) return;
 
     if (roomTierForCategoryPreview === "premium" && !premiumCategorySelectionUnlocked) {
       setMsg(
@@ -2454,8 +2546,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         .eq("id", rid)
         .eq("status", "drawing");
 
-      setAnswers(emptyAnswers(activeCategories));
-      setScores(emptyScores(activeCategories));
+      const startedCategories =
+        Array.isArray(newRound.categories) && newRound.categories.length > 0
+          ? uniqueNonEmpty(newRound.categories)
+          : activeCategories;
+
+      setAnswers(emptyAnswers(startedCategories));
+      setScores(emptyScores(startedCategories));
       setAllAnswers([]);
       setAllScores([]);
       setMyScoreSubmitted(false);
@@ -2569,7 +2666,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     await supabase.from("rounds").update({ status: "scoring" }).eq("id", round.id);
 
     setRoomStatus("scoring");
-    setScores(emptyScores(activeCategories));
+    setScores(emptyScores(currentRoundCategories));
     setMyScoreSubmitted(false);
 
     setMsg(
@@ -2582,7 +2679,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   async function submitScores() {
     if (!roomId || !myPlayer || !round?.round_no) return;
 
-    const rows = activeCategories.map((category) => ({
+    const rows = currentRoundCategories.map((category) => ({
       room_id: roomId,
       player_id: myPlayer.id,
       round: round.round_no,
@@ -2611,7 +2708,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const scoredPlayerIds = new Set(
     players
-      .filter((p) => activeCategories.every((c) => allScores.some((s) => s.player_id === p.id && s.category === c)))
+      .filter((p) => currentRoundCategories.every((c) => allScores.some((s) => s.player_id === p.id && s.category === c)))
       .map((p) => p.id)
   );
 
@@ -2670,6 +2767,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   function playerTotalPoints(playerId: string) {
     return allRoomScores
       .filter((s) => s.player_id === playerId)
+      .reduce((sum, s) => sum + Number(s.points ?? 0), 0);
+  }
+
+  function playerCategoryPoints(playerId: string, category: string) {
+    return allRoomScores
+      .filter((s) => s.player_id === playerId && s.category === category)
       .reduce((sum, s) => sum + Number(s.points ?? 0), 0);
   }
 
@@ -2869,6 +2972,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     5,
     Math.max(customCategorySlotCount, filledCustomCategoryCount)
   );
+
+  useEffect(() => {
+    if (roomStatus !== "scoring") {
+      setShowNextRoundCategoryEditor(false);
+    }
+  }, [roomStatus]);
 
   const isGameScreen = Boolean(
     myPlayer && (roomStatus === "drawing" || roomStatus === "playing")
@@ -3826,7 +3935,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 paddingBottom: `calc(${Math.max(96, keyboardInsetPx + 96)}px + env(safe-area-inset-bottom))`,
               }}
             >
-              {activeCategories.map((category, index) => (
+              {currentRoundCategories.map((category, index) => (
                 <label key={category} className={roomStyles.gameAnswerLabel}>
                   <div className={roomStyles.gameAnswerName}>
                     {categoryLabel(category)}
@@ -3836,7 +3945,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       answerInputRefs.current[category] = element;
                     }}
                     className={roomStyles.gameAnswerInput}
-                    enterKeyHint={index === activeCategories.length - 1 ? "done" : "next"}
+                    enterKeyHint={index === currentRoundCategories.length - 1 ? "done" : "next"}
                     value={answers[category] ?? ""}
                     onChange={(e) => saveAnswer(category, e.target.value)}
                     onFocus={(e) => {
@@ -3849,7 +3958,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       if (e.key !== "Enter") return;
 
                       e.preventDefault();
-                      const nextCategory = activeCategories[index + 1];
+                      const nextCategory = currentRoundCategories[index + 1];
 
                       if (nextCategory) {
                         const nextInput = answerInputRefs.current[nextCategory];
@@ -3993,7 +4102,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   >
                     {t("player")}
                   </th>
-                  {activeCategories.map((c, index) => (
+                  {scoringTableCategories.map((c, index) => (
                     <th
                       id={`score-column-${index}`}
                       key={c}
@@ -4024,16 +4133,20 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     >
                       {p.name}
                     </td>
-                    {activeCategories.map((c) => (
-                      <td
-                        key={c}
-                        className={`${roomStyles.scoringTableCell} ${
-                          selectedScoringCategory === c ? roomStyles.scoringSelectedColumn : ""
-                        }`}
-                      >
-                        {answerFor(p.id, c)}
-                      </td>
-                    ))}
+                    {scoringTableCategories.map((c) => {
+                      const isCurrentRoundCategory = currentRoundCategories.includes(c);
+
+                      return (
+                        <td
+                          key={c}
+                          className={`${roomStyles.scoringTableCell} ${
+                            selectedScoringCategory === c ? roomStyles.scoringSelectedColumn : ""
+                          }`}
+                        >
+                          {isCurrentRoundCategory ? answerFor(p.id, c) : <b>{playerCategoryPoints(p.id, c)}</b>}
+                        </td>
+                      );
+                    })}
                     <td
                       className={`${roomStyles.scoringTableCell} ${
                         selectedScoringCategory === TOTAL_POINTS_SCORING_KEY
@@ -4105,6 +4218,171 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             )}
           </div>
 
+          {isOrganizer &&
+            canEditRoomCategories &&
+            (roomTierForCategoryPreview === "premium" ||
+              roomTierForCategoryPreview === "super_premium") && (
+              <section
+                className={roomStyles.roomCategoriesPanel}
+                style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 10 }}
+              >
+                <button
+                  type="button"
+                  className={roomStyles.scoringHistoryButton}
+                  onClick={() => setShowNextRoundCategoryEditor((value) => !value)}
+                >
+                  {showNextRoundCategoryEditor
+                    ? uiMessage({
+                        cs: "Skrýt změnu kategorií",
+                        en: "Hide category changes",
+                        es: "Ocultar cambios de categorías",
+                        de: "Kategorieänderungen ausblenden",
+                        fr: "Masquer les changements de catégories",
+                        "pt-BR": "Ocultar alterações de categorias",
+                        id: "Sembunyikan perubahan kategori",
+                        tr: "Kategori değişikliklerini gizle",
+                        pl: "Ukryj zmianę kategorii",
+                        it: "Nascondi modifica categorie",
+                      })
+                    : uiMessage({
+                        cs: "Změnit kategorie pro další kolo",
+                        en: "Change categories for the next round",
+                        es: "Cambiar categorías para la siguiente ronda",
+                        de: "Kategorien für die nächste Runde ändern",
+                        fr: "Modifier les catégories pour la prochaine manche",
+                        "pt-BR": "Alterar categorias para a próxima rodada",
+                        id: "Ubah kategori untuk ronde berikutnya",
+                        tr: "Sonraki tur için kategorileri değiştir",
+                        pl: "Zmień kategorie na następną rundę",
+                        it: "Cambia categorie per il turno successivo",
+                      })}
+                </button>
+
+                <p style={{ marginBottom: showNextRoundCategoryEditor ? 10 : 0 }}>
+                  <strong>
+                    {uiMessage({
+                      cs: "Kategorie pro další kolo:",
+                      en: "Categories for the next round:",
+                      es: "Categorías para la siguiente ronda:",
+                      de: "Kategorien für die nächste Runde:",
+                      fr: "Catégories pour la prochaine manche :",
+                      "pt-BR": "Categorias para a próxima rodada:",
+                      id: "Kategori untuk ronde berikutnya:",
+                      tr: "Sonraki turun kategorileri:",
+                      pl: "Kategorie na następną rundę:",
+                      it: "Categorie per il turno successivo:",
+                    })}
+                  </strong>{" "}
+                  {activeCategories.map(categoryLabel).join(", ")}
+                </p>
+
+                {showNextRoundCategoryEditor && (
+                  <>
+                    <p style={{ opacity: 0.75, marginTop: 0 }}>
+                      {uiMessage({
+                        cs: "Změna se projeví až od následujícího kola. Aktuální bodování zůstane beze změny.",
+                        en: "The change will apply from the next round. The current scoring stays unchanged.",
+                        es: "El cambio se aplicará a partir de la siguiente ronda. La puntuación actual no cambiará.",
+                        de: "Die Änderung gilt ab der nächsten Runde. Die aktuelle Wertung bleibt unverändert.",
+                        fr: "La modification s’appliquera à partir de la prochaine manche. Le comptage actuel reste inchangé.",
+                        "pt-BR": "A alteração valerá a partir da próxima rodada. A pontuação atual não muda.",
+                        id: "Perubahan berlaku mulai ronde berikutnya. Penilaian ronde saat ini tidak berubah.",
+                        tr: "Değişiklik bir sonraki turdan itibaren geçerli olur. Mevcut puanlama değişmez.",
+                        pl: "Zmiana zacznie obowiązywać od następnej rundy. Bieżące punktowanie pozostanie bez zmian.",
+                        it: "La modifica si applicherà dal turno successivo. Il punteggio attuale rimane invariato.",
+                      })}
+                    </p>
+
+                    <h4>{t("basicCategories")}</h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      {PREMIUM_CATEGORIES.map((category) => (
+                        <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          <input
+                            type="checkbox"
+                            checked={activeCategories.includes(category)}
+                            disabled={!canToggleRoomCategory(category)}
+                            style={{
+                              accentColor: "#2563eb",
+                              cursor: canToggleRoomCategory(category) ? "pointer" : "default",
+                            }}
+                            onChange={() => toggleRoomCategory(category)}
+                          />
+                          {categoryLabel(category)}
+                        </label>
+                      ))}
+                    </div>
+
+                    <h4 style={{ marginTop: 16 }}>{t("extendedCategories")}</h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => {
+                        const canToggle = canToggleRoomCategory(category);
+
+                        return (
+                          <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                            <input
+                              type="checkbox"
+                              checked={activeCategories.includes(category)}
+                              disabled={!canToggle}
+                              style={{
+                                accentColor: "#2563eb",
+                                cursor: canToggle ? "pointer" : "default",
+                              }}
+                              onChange={() => toggleRoomCategory(category)}
+                            />
+                            <span>
+                              {!canToggle ? "🔒 " : ""}
+                              {categoryLabel(category)}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+
+                    {roomTierForCategoryPreview === "super_premium" && (
+                      <>
+                        <h4 style={{ marginTop: 16 }}>{t("customCategories")}</h4>
+
+                        {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
+                          <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                            <input
+                              placeholder={`${t("customCategoryPrefix")} ${index + 1}`}
+                              value={value}
+                              onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
+                              style={{ padding: 12, width: "100%" }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeRoomCustomCategory(index)}
+                              aria-label={t("removeCustomCategory")}
+                              style={{ padding: "0 12px" }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+
+                        {visibleCustomCategoryCount < 5 && (
+                          <button
+                            type="button"
+                            onClick={addRoomCustomCategory}
+                            style={{ marginTop: 8, padding: 10, width: "100%" }}
+                          >
+                            {t("addCustomCategory")}
+                          </button>
+                        )}
+
+                        {visibleCustomCategoryCount >= 5 && (
+                          <p style={{ opacity: 0.75, marginBottom: 0 }}>
+                            {t("maxCustomCategories")}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+              </section>
+            )}
+
           {activeMyPlayer ? (
             <section className={roomStyles.scoringMine}>
               <h3>
@@ -4142,7 +4420,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 </button>
               </h3>
 
-              {activeCategories.map((category, index) => (
+              {currentRoundCategories.map((category) => (
                 <label key={category} className={roomStyles.scoringCategoryRow}>
                   <span
                     className={roomStyles.scoringCategoryName}
@@ -4151,7 +4429,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
                       requestAnimationFrame(() => {
                         const scrollBox = document.getElementById("scoring-table-scroll");
-                        const column = document.getElementById(`score-column-${index}`);
+                        const columnIndex = scoringTableCategories.indexOf(category);
+                        const column = document.getElementById(`score-column-${columnIndex}`);
                         const stickyPlayerColumn =
                           scrollBox?.querySelector('[data-sticky-player="true"]') as
                             | HTMLElement
@@ -4183,7 +4462,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
                       requestAnimationFrame(() => {
                         const scrollBox = document.getElementById("scoring-table-scroll");
-                        const column = document.getElementById(`score-column-${index}`);
+                        const columnIndex = scoringTableCategories.indexOf(category);
+                        const column = document.getElementById(`score-column-${columnIndex}`);
                         const stickyPlayerColumn =
                           scrollBox?.querySelector('[data-sticky-player="true"]') as
                             | HTMLElement
