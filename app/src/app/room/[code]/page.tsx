@@ -31,7 +31,6 @@ import {
 import { useStableViewportUnit } from "@/lib/useStableViewportUnit";
 
 import {
-  categoryHelpText,
   gameLanguageInstructionText,
   gameLanguageNameText,
   getUiRules,
@@ -2075,11 +2074,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     isOrganizerRef.current = isOrganizer;
   }, [roomId, isOrganizer]);
 
-  const ownedExtendedCategories = SUPER_PREMIUM_EXTRA_CATEGORIES.filter(
-    (category) =>
-      ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category])
-  );
-
   const premiumPreviewLockTest =
     typeof window !== "undefined" &&
     window.location.hostname.endsWith("vercel.app") &&
@@ -2089,18 +2083,15 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   // rules as production Premium instead of separate preview-only permissions.
   const roomTierForCategoryPreview: RoomTier = premiumPreviewLockTest ? "premium" : roomTier;
 
-  const premiumCategorySelectionUnlocked =
-    roomTierForCategoryPreview === "premium" && ownedExtendedCategories.length > 0;
-
   useEffect(() => {
     if (!premiumPreviewLockTest || !roomId) return;
-    if (ownedExtendedCategories.length > 0) return;
     setActiveCategories(PREMIUM_CATEGORIES);
-  }, [premiumPreviewLockTest, roomId, ownedExtendedCategories.length]);
+  }, [premiumPreviewLockTest, roomId]);
 
   const canEditRoomCategories =
     isOrganizer &&
-    (roomTierForCategoryPreview === "super_premium" || premiumCategorySelectionUnlocked);
+    (roomTierForCategoryPreview === "premium" ||
+      roomTierForCategoryPreview === "super_premium");
 
   function canToggleRoomCategory(category: string) {
     if (!canEditRoomCategories) return false;
@@ -2112,13 +2103,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   async function updateRoomCategories(predefinedCategories: string[], customCategories: string[]) {
     if (!isOrganizer || !roomId || (roomStatus !== "lobby" && roomStatus !== "scoring")) return;
-
-    if (roomTierForCategoryPreview === "premium" && !premiumCategorySelectionUnlocked) {
-      setMsg(
-        uiMessage({ cs: "Premium má základní kategorie pevně dané. Výběr se odemkne po koupi alespoň jedné rozšířené kategorie.", en: "Premium has fixed basic categories. Category selection unlocks after purchasing at least one extended category.", es: "Premium tiene categorías básicas fijas. La selección se desbloquea al comprar al menos una categoría ampliada." , de: "Premium hat feste Grundkategorien. Die Kategorieauswahl wird nach dem Kauf mindestens einer Zusatzkategorie freigeschaltet.", fr: "Premium propose des catégories de base fixes. La sélection des catégories se déverrouille après l’achat d’au moins une catégorie supplémentaire.", "pt-BR": "O Premium tem categorias básicas fixas. A seleção de categorias é liberada após a compra de pelo menos uma categoria adicional.", id: "Premium memiliki kategori dasar tetap. Pemilihan kategori akan terbuka setelah membeli setidaknya satu kategori tambahan.", tr: "Premium'da temel kategoriler sabittir. En az bir ek kategori satın alındığında kategori seçimi açılır.", pl: "Premium ma stałe kategorie podstawowe. Wybór kategorii zostanie odblokowany po zakupie co najmniej jednej kategorii rozszerzonej.", it: "Premium ha categorie base fisse. La selezione delle categorie si sblocca dopo l’acquisto di almeno una categoria estesa."})
-      );
-      return;
-    }
 
     if (roomTierForCategoryPreview === "premium") {
       const unownedExtendedCategories = predefinedCategories.filter(
@@ -2173,6 +2157,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   function showPremiumLockedCategoryOffer(category: string) {
     setPremiumLockedOfferCategory(category);
     setMsg("");
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document
+          .getElementById("premium-category-purchase-offer")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
   }
 
   async function startCategoryPurchase(category: string) {
@@ -3558,14 +3550,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     className={roomStyles.roomCategoriesPanel}
     style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
   >
-              <h3 style={{ marginTop: 0 }}>
-                {t("roomCategories")}
-              </h3>
-
-              <p style={{ opacity: 0.75 }}>
-                {categoryHelpText(uiLanguage, isOrganizer, roomTierForCategoryPreview)}
-              </p>
-
               <h4>
                 {t("basicCategories")}
               </h4>
@@ -3693,6 +3677,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 isOrganizer &&
                 premiumLockedOfferCategory && (
                   <section
+                    id="premium-category-purchase-offer"
                     style={{
                       marginTop: 10,
                       padding: 10,
@@ -3726,10 +3711,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         : ""}
                     </button>
 
-                    <p>
-                      {t("premiumLockedCategoryOfferIntro")}
-                    </p>
-
                     <p style={{ marginBottom: 0 }}>
                       {t("superPremiumUpsellBefore")}{" "}
                       <button
@@ -3754,12 +3735,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         : ""}{" "}
                       {t("superPremiumUpsellAfter")}
                     </p>
-                    <p>{t("superPremiumBenefitsIntro")}</p>
-                    <ul>
-                      {t("superPremiumBenefits").split("|").map((benefit) => (
-                        <li key={benefit}>{benefit}</li>
-                      ))}
-                    </ul>
                   </section>
                 )}
 
@@ -4366,6 +4341,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           )}
 
           {isOrganizer &&
+            myScoreSubmitted &&
             canEditRoomCategories &&
             (roomTierForCategoryPreview === "premium" ||
               roomTierForCategoryPreview === "super_premium") && (
@@ -4463,23 +4439,52 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => {
                         const canToggle = canToggleRoomCategory(category);
+                        const isPremiumLockedPurchase =
+                          roomTierForCategoryPreview === "premium" &&
+                          isOrganizer &&
+                          !ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
 
                         return (
                           <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                            <input
-                              type="checkbox"
-                              checked={activeCategories.includes(category)}
-                              disabled={!canToggle}
-                              style={{
-                                accentColor: "#2563eb",
-                                cursor: canToggle ? "pointer" : "default",
-                              }}
-                              onChange={() => toggleRoomCategory(category)}
-                            />
-                            <span>
-                              {!canToggle ? "🔒 " : ""}
-                              {categoryLabel(category)}
-                            </span>
+                            {isPremiumLockedPurchase ? (
+                              <>
+                                <span aria-hidden="true">🔒</span>
+                                <button
+                                  type="button"
+                                  disabled={categoryPurchaseBusy !== null}
+                                  onClick={() => void startCategoryPurchase(category)}
+                                  style={{
+                                    border: "none",
+                                    background: "transparent",
+                                    padding: 0,
+                                    color: "#fff",
+                                    textAlign: "left",
+                                    textDecoration: "underline",
+                                    cursor: categoryPurchaseBusy === null ? "pointer" : "default",
+                                    font: "inherit",
+                                  }}
+                                >
+                                  {categoryLabel(category)}
+                                  {categoryPlayPrice(category)
+                                    ? ` – ${categoryPlayPrice(category)}`
+                                    : ""}
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <input
+                                  type="checkbox"
+                                  checked={activeCategories.includes(category)}
+                                  disabled={!canToggle}
+                                  style={{
+                                    accentColor: "#2563eb",
+                                    cursor: canToggle ? "pointer" : "default",
+                                  }}
+                                  onChange={() => toggleRoomCategory(category)}
+                                />
+                                <span>{categoryLabel(category)}</span>
+                              </>
+                            )}
                           </label>
                         );
                       })}
