@@ -699,6 +699,7 @@ export default function Home() {
   const [rewardedBusy, setRewardedBusy] = useState(false);
 
   const [tier, setTier] = useState<Tier>("free");
+  const [testTierOverride, setTestTierOverride] = useState<Tier | null>(null);
   const [language, setLanguage] = useState<UiLanguage>("cs");
   const [gameLanguage, setGameLanguage] = useState<RoomLanguage>("cs");
   const [gameLanguageManuallySelected, setGameLanguageManuallySelected] =
@@ -715,8 +716,26 @@ export default function Home() {
   const en = language === "en";
   const es = language === "es";
   const h = (key: HomeTextKey) => getHomeText(language, key);
+  const activeTier = testTierOverride ?? tier;
   const freeQuotaExhausted =
-    tier === "free" && freeRoundsRemaining <= 0;
+    activeTier === "free" && freeRoundsRemaining <= 0;
+
+  useEffect(() => {
+    const savedTestTier = window.sessionStorage.getItem("zm_testTierOverride");
+    if (
+      savedTestTier === "free" ||
+      savedTestTier === "premium" ||
+      savedTestTier === "super_premium"
+    ) {
+      setTestTierOverride(savedTestTier);
+    }
+  }, []);
+
+  function selectTestTier(nextTier: Tier) {
+    setTestTierOverride(nextTier);
+    window.sessionStorage.setItem("zm_testTierOverride", nextTier);
+    setStatus("");
+  }
 
   useEffect(() => {
     const syncFreeQuota = () => {
@@ -951,7 +970,7 @@ export default function Home() {
     )?.formattedPrice;
 
   function getRoomSettings() {
-    if (tier === "premium") {
+    if (activeTier === "premium") {
       return {
         creator_tier: "premium",
         max_players: 5,
@@ -961,7 +980,7 @@ export default function Home() {
       };
     }
 
-    if (tier === "super_premium") {
+    if (activeTier === "super_premium") {
       return {
         creator_tier: "super_premium",
         max_players: 999,
@@ -998,7 +1017,7 @@ export default function Home() {
     return () => {
       cancelled = true;
     };
-  }, [tier]);
+  }, [activeTier]);
 
   async function startHomeFreeRewardedAd() {
     if (rewardedBusy) return;
@@ -1026,7 +1045,7 @@ export default function Home() {
     const currentQuota = getFreeQuotaState();
     setFreeRoundsRemaining(currentQuota.remainingRounds);
 
-    if (tier === "free" && currentQuota.remainingRounds <= 0) {
+    if (activeTier === "free" && currentQuota.remainingRounds <= 0) {
       setShowOtherModes(true);
       setStatus(getRoomUiText(language, "freeLimitReachedMessage"));
       return;
@@ -1052,7 +1071,7 @@ export default function Home() {
         letter_deck_owner_id: letterDeckOwnerId,
         language: gameLanguage,
         ...roomSettings,
-        ...(tier === "free"
+        ...(activeTier === "free"
           ? {
               free_rounds_unlocked: currentQuota.remainingRounds,
               free_rounds_started: 0,
@@ -1184,15 +1203,15 @@ export default function Home() {
           <div className={styles.modeHeading}>
             <div className={styles.modeTitleRow}>
               <span className={styles.modeLabel}>{h("yourMode")}</span>
-              <strong className={tier === "super_premium" ? styles.superTierName : styles.tierName}>
-                {tierLabel(tier)}
+              <strong className={activeTier === "super_premium" ? styles.superTierName : styles.tierName}>
+                {tierLabel(activeTier)}
               </strong>
             </div>
 
             <div className={styles.modeStatusRow}>
               <span className={styles.active}>{h("active")}</span>
 
-              {tier === "free" && !freeQuotaExhausted && (
+              {activeTier === "free" && !freeQuotaExhausted && (
                 <p className={styles.quota}>
                   <span aria-hidden="true">
                     <svg viewBox="0 0 24 24">
@@ -1207,9 +1226,9 @@ export default function Home() {
           </div>
 
           <div className={styles.description}>
-            {tier === "free" && <p>{h("freeDescription")}</p>}
-            {tier === "premium" && <p style={{ marginTop: 8 }}>{getRoomUiText(language, "premiumPurchaseDescription")}</p>}
-            {tier === "super_premium" && <><p>{h("superPremiumDescription")}</p><p>{h("superPremiumCategories")}</p></>}
+            {activeTier === "free" && <p>{h("freeDescription")}</p>}
+            {activeTier === "premium" && <p style={{ marginTop: 8 }}>{getRoomUiText(language, "premiumPurchaseDescription")}</p>}
+            {activeTier === "super_premium" && <><p>{h("superPremiumDescription")}</p><p>{h("superPremiumCategories")}</p></>}
           </div>
 
           <div className={styles.divider} />
@@ -1286,13 +1305,13 @@ export default function Home() {
         {!roomCodeOpen && showOtherModes && (
           <section className={styles.purchaseOptions}>
             <article><h3>Premium{premiumDisplayPrice ? ` – ${premiumDisplayPrice}` : ""}</h3><p>{getRoomUiText(language, "premiumPurchaseDescription")}</p>
-              <button type="button" disabled={tier === "premium" || tier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("premium")}>
-                {tier === "premium" ? h("active") : tier === "super_premium" ? h("includedInSuperPremium") : getRoomUiText(language, "freeUpgradeButton")}
+              <button type="button" disabled={activeTier === "premium" || activeTier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("premium")}>
+                {activeTier === "premium" ? h("active") : activeTier === "super_premium" ? h("includedInSuperPremium") : getRoomUiText(language, "freeUpgradeButton")}
               </button>
             </article>
             <article><h3>Super Premium{superPremiumDisplayPrice ? ` – ${superPremiumDisplayPrice}` : ""}</h3><p>{getRoomUiText(language, "superPremiumPurchaseDescription")}</p><p>{getRoomUiText(language, "superPremiumBenefitsIntro")}</p><ul>{getRoomUiText(language, "superPremiumBenefits").split("|").map((benefit) => <li key={benefit}>{benefit}</li>)}</ul>
-              <button type="button" disabled={tier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("super_premium")}>
-                {tier === "super_premium" ? h("active") : tier === "premium" ? superPremiumUpgradePrice ? `${h("upgradeToSuperPremiumFor")} ${superPremiumUpgradePrice}` : h("upgradeToSuperPremium") : getRoomUiText(language, "buySuperPremium")}
+              <button type="button" disabled={activeTier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("super_premium")}>
+                {activeTier === "super_premium" ? h("active") : activeTier === "premium" ? superPremiumUpgradePrice ? `${h("upgradeToSuperPremiumFor")} ${superPremiumUpgradePrice}` : h("upgradeToSuperPremium") : getRoomUiText(language, "buySuperPremium")}
               </button>
             </article>
           </section>
@@ -1346,6 +1365,20 @@ export default function Home() {
         {status && status !== getRoomUiText(language, "freeLimitReachedMessage") && (
           <p className={styles.status} role="status">{status}</p>
         )}
+        <section className={styles.testTierPanel} aria-label="TEST">
+          <span className={styles.testTierLabel}>TEST</span>
+          {(["free", "premium", "super_premium"] as Tier[]).map((testTier) => (
+            <button
+              key={testTier}
+              type="button"
+              className={activeTier === testTier ? styles.testTierActive : ""}
+              onClick={() => selectTestTier(testTier)}
+            >
+              {tierLabel(testTier)}
+            </button>
+          ))}
+        </section>
+
         <p className={styles.privacy}><a href="/privacy">{h("privacyPolicy")}</a></p>
       </div>
     </main>
