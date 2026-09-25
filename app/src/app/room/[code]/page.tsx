@@ -553,6 +553,7 @@ export default function RoomPage() {
   const autoStopRoundIdRef = useRef<string | null>(null);
   const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const answerScrollBoxRef = useRef<HTMLDivElement | null>(null);
+  const editingCustomCategoryIndexRef = useRef<number | null>(null);
   const [keyboardInsetPx, setKeyboardInsetPx] = useState(0);
   const [isOnline, setIsOnline] = useState(true);
   const [isReconnecting, setIsReconnecting] = useState(false);
@@ -1439,10 +1440,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setRoomFreeRoundsStarted(
       Number((data as any).free_rounds_started ?? 0)
     );
-    setRoomCustomCategories([
-      ...customCategories,
-      ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
-    ].slice(0, 5));
+    if (editingCustomCategoryIndexRef.current === null) {
+      setRoomCustomCategories([
+        ...customCategories,
+        ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
+      ].slice(0, 5));
+    }
 
     setAnswers((current) => alignStringRecord(current, roomCategories));
     setScores((current) => alignScoreRecord(current, roomCategories));
@@ -2335,6 +2338,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }
 
   function updateRoomCustomCategory(index: number, value: string) {
+    setRoomCustomCategories((current) => {
+      const next = [...current];
+      next[index] = value;
+      return next;
+    });
+  }
+
+  async function commitRoomCustomCategory(index: number, value: string) {
     const next = [...roomCustomCategories];
     next[index] = value;
     setRoomCustomCategories(next);
@@ -2343,7 +2354,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       ALL_PREDEFINED_CATEGORIES.includes(item)
     );
 
-    void updateRoomCategories(selectedPredefined, next);
+    try {
+      await updateRoomCategories(selectedPredefined, next);
+    } finally {
+      if (editingCustomCategoryIndexRef.current === index) {
+        editingCustomCategoryIndexRef.current = null;
+      }
+    }
   }
 
   async function updateRoomGameSettings(
@@ -3422,25 +3439,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       {roomStatus === "lobby" && myPlayer && (
         <>
             {superPremiumGameSettingsEnabled && (
-            <section
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: 8,
-                padding: 12,
-                marginBottom: 16,
-              }}
-            >
-              <h3 style={{ marginTop: 0 }}>{t("gameSettings")}</h3>
+            <section className={`${roomStyles.roomCategoriesPanel} ${roomStyles.gameSettingsPanel}`}>
+              <h3>{t("gameSettings")}</h3>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-                  gap: 12,
-                }}
-              >
+              <div className={roomStyles.gameSettingsGrid}>
                 <label>
-                  <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
+                  <span className={roomStyles.gameSettingsLabel}>
                     {t("timeLimit")}
                   </span>
 
@@ -3453,7 +3457,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                           roundCountLimit
                         );
                       }}
-                      style={{ width: "100%", padding: 10 }}
                     >
                       <option value="">{t("noTimeLimit")}</option>
                       {ROUND_TIME_LIMIT_OPTIONS.map((seconds) => (
@@ -3463,14 +3466,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       ))}
                     </select>
                   ) : (
-                    <div style={{ padding: "10px 0" }}>
+                    <div className={roomStyles.gameSettingsValue}>
                       {roundTimeLimitSeconds ? `${roundTimeLimitSeconds} s` : t("noTimeLimit")}
                     </div>
                   )}
                 </label>
 
                 <label>
-                  <span style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
+                  <span className={roomStyles.gameSettingsLabel}>
                     {t("roundCount")}
                   </span>
 
@@ -3483,7 +3486,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                           parseRoundCountLimit(e.target.value)
                         );
                       }}
-                      style={{ width: "100%", padding: 10 }}
                     >
                       <option value="">{t("unlimitedRounds")}</option>
                       {ROUND_COUNT_LIMIT_OPTIONS.map((count) => (
@@ -3493,7 +3495,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       ))}
                     </select>
                   ) : (
-                    <div style={{ padding: "10px 0" }}>
+                    <div className={roomStyles.gameSettingsValue}>
                       {roundCountLimit ? `${roundCountLimit} ${t("roundsCountSuffix")}` : t("unlimitedRounds")}
                     </div>
                   )}
@@ -3762,7 +3764,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     }
                     value={value}
                     disabled={!isOrganizer}
+                    onFocus={() => {
+                      editingCustomCategoryIndexRef.current = index;
+                    }}
                     onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
+                    onBlur={(e) => {
+                      void commitRoomCustomCategory(index, e.currentTarget.value);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.currentTarget.blur();
+                      }
+                    }}
                     style={{ padding: 12, width: "100%" }}
                   />
 
@@ -4523,7 +4536,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                             <input
                               placeholder={`${t("customCategoryPrefix")} ${index + 1}`}
                               value={value}
+                              onFocus={() => {
+                                editingCustomCategoryIndexRef.current = index;
+                              }}
                               onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
+                              onBlur={(e) => {
+                                void commitRoomCustomCategory(index, e.currentTarget.value);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.currentTarget.blur();
+                                }
+                              }}
                               style={{ padding: 12, width: "100%" }}
                             />
                             <button
