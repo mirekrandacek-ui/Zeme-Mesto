@@ -1277,6 +1277,68 @@
   line-height:1.1;
 }
 
+.gameSettingsPanel{
+  margin-bottom:16px!important;
+}
+
+.gameSettingsGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+
+.gameSettingsPanel label{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:7px;
+}
+
+.gameSettingsLabel{
+  display:block;
+  color:#fff;
+  font-size:14px;
+  font-weight:800;
+  line-height:1.2;
+}
+
+.gameSettingsPanel select{
+  box-sizing:border-box;
+  width:100%;
+  min-height:40px;
+  padding:8px 10px;
+  border:2px solid #61d7ff;
+  border-radius:10px;
+  outline:0;
+  color:#15344d;
+  background:#f7fbff;
+  box-shadow:inset 0 2px 4px #cdefff,0 0 6px #00aaff;
+  font:inherit;
+  font-size:14px;
+  font-weight:700;
+  text-shadow:none;
+}
+
+.gameSettingsValue{
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  padding:8px 10px;
+  border:1px solid rgba(105,216,255,.72);
+  border-radius:10px;
+  background:rgba(0,38,76,.68);
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  line-height:1.2;
+}
+
+@media(max-width:340px){
+  .gameSettingsGrid{
+    grid-template-columns:1fr;
+  }
+}
+
 .roomCategoriesPanel h4{
   margin:13px 0 8px!important;
   padding-top:9px;
