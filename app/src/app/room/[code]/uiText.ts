@@ -92,7 +92,7 @@ export const UI_TEXT = {
     addCustomCategory: "+ Přidat vlastní kategorii",
     maxCustomCategories: "Maximum je 5 vlastních kategorií.",
     categoryPurchaseAction: "Koupit",
-    premiumLockedCategoryOfferIntro: "Zakoupením této rozšířené kategorie si zároveň odemkneš možnost libovolně vybírat ze základních a všech zakoupených rozšířených kategorií.",
+    premiumLockedCategoryOfferIntro: "Zakoupená rozšířená kategorie se přidá mezi kategorie, které můžeš ve své místnosti libovolně zapínat a vypínat.",
     superPremiumUpsellBefore: "A nebo si dokup",
     superPremiumLinkText: "Super Premium",
     superPremiumBenefitsIntro: "Pravidelným hraním v režimu Super Premium získáváš coiny, za které dostáváš další herní výhody:",
@@ -103,7 +103,7 @@ export const UI_TEXT = {
       freeLimitTitle: "Free limit dosažen",
       freeLimitText: "Ve Free verzi máš 3 kola. Pro pokračování přejdi na Premium nebo Super Premium, případně si dobrovolně pusť reklamu a odemkni další 3 kola.",
       freeUpgradeButton: "Koupit Premium",
-      premiumPurchaseDescription: "Až 5 hráčů. Pevně dané základní kategorie: Země, Město, Jméno, Zvíře, Věc, Rostlina.",
+      premiumPurchaseDescription: "Až 5 hráčů. Volitelných 6 základních kategorií: Země, Město, Jméno, Zvíře, Věc, Rostlina. Rozšířené kategorie lze dokupovat jednotlivě.",
       superPremiumPurchaseDescription: "Neomezený počet hráčů, volitelné základní kategorie a 4 rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto.",
       buySuperPremium: "Koupit Super Premium",
       freeRewardButton: "Sledovat reklamu a odemknout další 3 kola",
@@ -202,7 +202,7 @@ export const UI_TEXT = {
     addCustomCategory: "+ Add custom category",
     maxCustomCategories: "The maximum is 5 custom categories.",
     categoryPurchaseAction: "Buy",
-    premiumLockedCategoryOfferIntro: "Buying this extended category also unlocks the option to freely choose from the basic categories and all extended categories you own.",
+    premiumLockedCategoryOfferIntro: "The purchased extended category is added to the categories you can freely turn on or off in your room.",
     superPremiumUpsellBefore: "Or upgrade to",
     superPremiumLinkText: "Super Premium",
     superPremiumBenefitsIntro: "By playing regularly in Super Premium, you earn coins that give you more game advantages:",
@@ -213,7 +213,7 @@ export const UI_TEXT = {
       freeLimitTitle: "Free limit reached",
       freeLimitText: "The Free version includes 3 rounds. To continue, upgrade to Premium or Super Premium, or watch an ad and unlock 3 more rounds.",
       freeUpgradeButton: "Buy Premium",
-      premiumPurchaseDescription: "Up to 5 players. Fixed basic categories: Country, City, Name, Animal, Thing, Plant.",
+      premiumPurchaseDescription: "Up to 5 players. Choose freely from 6 basic categories: Country, City, Name, Animal, Thing, Plant. Extended categories can be purchased individually.",
       superPremiumPurchaseDescription: "Unlimited players, optional basic categories and 4 extended categories: Film / Series, Sport, Brand and Car / Motorbike.",
       buySuperPremium: "Buy Super Premium",
       freeRewardButton: "Watch an ad and unlock 3 more rounds",
@@ -312,7 +312,7 @@ export const UI_TEXT = {
     addCustomCategory: "+ Añadir categoría propia",
     maxCustomCategories: "El máximo es de 5 categorías propias.",
     categoryPurchaseAction: "Comprar",
-    premiumLockedCategoryOfferIntro: "Al comprar esta categoría ampliada también desbloqueas la posibilidad de elegir libremente entre las categorías básicas y todas las categorías ampliadas que hayas comprado.",
+    premiumLockedCategoryOfferIntro: "La categoría ampliada comprada se añade a las categorías que puedes activar o desactivar libremente en tu sala.",
     superPremiumUpsellBefore: "O mejora a",
     superPremiumLinkText: "Super Premium",
     superPremiumBenefitsIntro: "Jugando con regularidad en el modo Super Premium ganas monedas con las que obtienes más ventajas de juego:",
@@ -323,7 +323,7 @@ export const UI_TEXT = {
       freeLimitTitle: "Límite Free alcanzado",
       freeLimitText: "La versión Free incluye 3 rondas. Para continuar, pásate a Premium o Super Premium, o mira un anuncio y desbloquea 3 rondas más.",
       freeUpgradeButton: "Comprar Premium",
-      premiumPurchaseDescription: "Hasta 5 jugadores. Categorías básicas fijas: País, Ciudad, Nombre, Animal, Cosa, Planta.",
+      premiumPurchaseDescription: "Hasta 5 jugadores. Elige libremente entre 6 categorías básicas: País, Ciudad, Nombre, Animal, Cosa, Planta. Las categorías ampliadas se pueden comprar por separado.",
       superPremiumPurchaseDescription: "Jugadores ilimitados, categorías básicas opcionales y 4 categorías ampliadas: Película / Serie, Deporte, Marca y Coche / Moto.",
       buySuperPremium: "Comprar Super Premium",
       freeRewardButton: "Ver un anuncio y desbloquear 3 rondas más",
@@ -423,7 +423,7 @@ export const UI_TEXT = {
     addCustomCategory: "+ Eigene Kategorie hinzufügen",
     maxCustomCategories: "Maximal 5 eigene Kategorien.",
     categoryPurchaseAction: "Kaufen",
-    premiumLockedCategoryOfferIntro: "Mit dem Kauf dieser erweiterten Kategorie schaltest du zugleich die freie Auswahl aus den Grundkategorien und allen von dir gekauften erweiterten Kategorien frei.",
+    premiumLockedCategoryOfferIntro: "Die gekaufte Zusatzkategorie wird zu den Kategorien hinzugefügt, die du in deinem Raum frei ein- und ausschalten kannst.",
     superPremiumUpsellBefore: "Oder hol dir",
     superPremiumLinkText: "Super Premium",
     superPremiumBenefitsIntro: "Durch regelmäßiges Spielen im Super-Premium-Modus erhältst du Münzen, mit denen du weitere Spielvorteile bekommst:",
@@ -434,7 +434,7 @@ export const UI_TEXT = {
     freeLimitTitle: "Free-Limit erreicht",
     freeLimitText: "Die Free-Version enthält 3 Runden. Um fortzufahren, wechsle zu Premium oder Super Premium oder sieh dir eine Werbung an und schalte 3 weitere Runden frei.",
     freeUpgradeButton: "Premium kaufen",
-      premiumPurchaseDescription: "Bis zu 5 Spieler. Feste Grundkategorien: Land, Stadt, Name, Tier, Gegenstand, Pflanze.",
+      premiumPurchaseDescription: "Bis zu 5 Spieler. Freie Auswahl aus 6 Grundkategorien: Land, Stadt, Name, Tier, Gegenstand, Pflanze. Zusatzkategorien können einzeln gekauft werden.",
       superPremiumPurchaseDescription: "Unbegrenzt viele Spieler, frei wählbare Grundkategorien und 4 erweiterte Kategorien: Film / Serie, Sportart, Marke und Auto / Motorrad.",
       buySuperPremium: "Super Premium kaufen",
     freeRewardButton: "Werbung ansehen und 3 weitere Runden freischalten",
@@ -534,7 +534,7 @@ export const UI_TEXT = {
     addCustomCategory: "+ Ajouter une catégorie personnalisée",
     maxCustomCategories: "Le maximum est de 5 catégories personnalisées.",
     categoryPurchaseAction: "Acheter",
-    premiumLockedCategoryOfferIntro: "L’achat de cette catégorie supplémentaire déverrouille aussi le libre choix parmi les catégories de base et toutes les catégories supplémentaires achetées.",
+    premiumLockedCategoryOfferIntro: "La catégorie supplémentaire achetée s’ajoute aux catégories que tu peux activer ou désactiver librement dans ta salle.",
     superPremiumUpsellBefore: "Ou passe à",
     superPremiumLinkText: "Super Premium",
     superPremiumBenefitsIntro: "En jouant régulièrement en mode Super Premium, tu gagnes des pièces qui te donnent accès à davantage d’avantages de jeu :",
@@ -545,7 +545,7 @@ export const UI_TEXT = {
     freeLimitTitle: "Limite Free atteinte",
     freeLimitText: "La version Free comprend 3 manches. Pour continuer, passe à Premium ou Super Premium, ou regarde une publicité afin de débloquer 3 manches supplémentaires.",
     freeUpgradeButton: "Acheter Premium",
-      premiumPurchaseDescription: "Jusqu’à 5 joueurs. Catégories de base fixes : Pays, Ville, Prénom, Animal, Objet, Plante.",
+      premiumPurchaseDescription: "Jusqu’à 5 joueurs. Choix libre parmi 6 catégories de base : Pays, Ville, Prénom, Animal, Objet, Plante. Les catégories supplémentaires peuvent être achetées séparément.",
       superPremiumPurchaseDescription: "Nombre de joueurs illimité, catégories de base au choix et 4 catégories supplémentaires : Film / Série, Sport, Marque et Voiture / Moto.",
       buySuperPremium: "Acheter Super Premium",
     freeRewardButton: "Regarder une publicité et débloquer 3 manches supplémentaires",
@@ -645,7 +645,7 @@ export const UI_TEXT = {
     addCustomCategory: "+ Adicionar categoria personalizada",
     maxCustomCategories: "O máximo é de 5 categorias personalizadas.",
     categoryPurchaseAction: "Comprar",
-    premiumLockedCategoryOfferIntro: "Ao comprar esta categoria adicional, você também libera a escolha livre entre as categorias básicas e todas as categorias adicionais compradas.",
+    premiumLockedCategoryOfferIntro: "A categoria adicional comprada é adicionada às categorias que você pode ativar ou desativar livremente na sua sala.",
     superPremiumUpsellBefore: "Ou faça upgrade para",
     superPremiumLinkText: "Super Premium",
     superPremiumBenefitsIntro: "Jogando regularmente no modo Super Premium, você ganha moedas que dão acesso a mais vantagens no jogo:",
@@ -656,7 +656,7 @@ export const UI_TEXT = {
     freeLimitTitle: "Limite Free atingido",
     freeLimitText: "A versão Free inclui 3 rodadas. Para continuar, faça upgrade para Premium ou Super Premium, ou assista a um anúncio e libere mais 3 rodadas.",
     freeUpgradeButton: "Comprar Premium",
-      premiumPurchaseDescription: "Até 5 jogadores. Categorias básicas fixas: País, Cidade, Nome, Animal, Objeto, Planta.",
+      premiumPurchaseDescription: "Até 5 jogadores. Escolha livre entre 6 categorias básicas: País, Cidade, Nome, Animal, Objeto, Planta. Categorias adicionais podem ser compradas separadamente.",
       superPremiumPurchaseDescription: "Jogadores ilimitados, categorias básicas opcionais e 4 categorias adicionais: Filme / Série, Esporte, Marca e Carro / Moto.",
       buySuperPremium: "Comprar Super Premium",
     freeRewardButton: "Assistir a um anúncio e liberar mais 3 rodadas",
@@ -755,7 +755,7 @@ export const UI_TEXT = {
     addCustomCategory: "+ Tambahkan kategori buatan sendiri",
     maxCustomCategories: "Maksimal 5 kategori buatan sendiri.",
     categoryPurchaseAction: "Beli",
-    premiumLockedCategoryOfferIntro: "Dengan membeli kategori tambahan ini, kamu juga membuka pilihan bebas dari kategori dasar dan semua kategori tambahan yang telah dibeli.",
+    premiumLockedCategoryOfferIntro: "Kategori tambahan yang dibeli ditambahkan ke kategori yang dapat kamu aktifkan atau nonaktifkan secara bebas di ruangmu.",
     superPremiumUpsellBefore: "Atau upgrade ke",
     superPremiumLinkText: "Super Premium",
     superPremiumBenefitsIntro: "Dengan bermain rutin dalam mode Super Premium, kamu mendapatkan koin untuk membuka lebih banyak keuntungan dalam permainan:",
@@ -766,7 +766,7 @@ export const UI_TEXT = {
     freeLimitTitle: "Batas Free tercapai",
     freeLimitText: "Versi Free mencakup 3 ronde. Untuk melanjutkan, tingkatkan ke Premium atau Super Premium, atau tonton iklan untuk membuka 3 ronde tambahan.",
     freeUpgradeButton: "Beli Premium",
-      premiumPurchaseDescription: "Hingga 5 pemain. Kategori dasar tetap: Negara, Kota, Nama, Hewan, Benda, Tanaman.",
+      premiumPurchaseDescription: "Hingga 5 pemain. Bebas memilih dari 6 kategori dasar: Negara, Kota, Nama, Hewan, Benda, Tanaman. Kategori tambahan dapat dibeli satu per satu.",
       superPremiumPurchaseDescription: "Pemain tanpa batas, kategori dasar yang dapat dipilih, serta 4 kategori tambahan: Film / Serial, Olahraga, Merek, dan Mobil / Motor.",
       buySuperPremium: "Beli Super Premium",
     freeRewardButton: "Tonton iklan dan buka 3 ronde tambahan",
@@ -865,7 +865,7 @@ export const UI_TEXT = {
     addCustomCategory: "+ Özel kategori ekle",
     maxCustomCategories: "En fazla 5 özel kategori.",
     categoryPurchaseAction: "Satın al",
-    premiumLockedCategoryOfferIntro: "Bu ek kategoriyi satın aldığında temel kategoriler ile satın aldığın tüm ek kategoriler arasından özgürce seçim yapma özelliğini de açarsın.",
+    premiumLockedCategoryOfferIntro: "Satın alınan ek kategori, odanda istediğin gibi açıp kapatabileceğin kategorilere eklenir.",
     superPremiumUpsellBefore: "Ya da yükselt",
     superPremiumLinkText: "Super Premium",
     superPremiumBenefitsIntro: "Super Premium modunda düzenli oynayarak daha fazla oyun avantajı sağlayan coinler kazanırsın:",
@@ -876,7 +876,7 @@ export const UI_TEXT = {
     freeLimitTitle: "Free sınırına ulaşıldı",
     freeLimitText: "Free sürümü 3 tur içerir. Devam etmek için Premium veya Super Premium'a geç ya da 3 ek turun kilidini açmak üzere reklam izle.",
     freeUpgradeButton: "Premium satın al",
-      premiumPurchaseDescription: "5 oyuncuya kadar. Sabit temel kategoriler: Ülke, Şehir, İsim, Hayvan, Eşya, Bitki.",
+      premiumPurchaseDescription: "5 oyuncuya kadar. 6 temel kategori arasından özgürce seçim: Ülke, Şehir, İsim, Hayvan, Eşya, Bitki. Ek kategoriler ayrı ayrı satın alınabilir.",
       superPremiumPurchaseDescription: "Sınırsız oyuncu, seçilebilir temel kategoriler ve 4 ek kategori: Film / Dizi, Spor, Marka ve Araba / Motosiklet.",
       buySuperPremium: "Super Premium satın al",
     freeRewardButton: "Reklamı izle ve 3 ek turun kilidini aç",
@@ -975,7 +975,7 @@ export const UI_TEXT = {
     addCustomCategory: "+ Dodaj własną kategorię",
     maxCustomCategories: "Maksymalnie można dodać 5 własnych kategorii.",
     categoryPurchaseAction: "Kup",
-    premiumLockedCategoryOfferIntro: "Kupując tę kategorię rozszerzoną, odblokujesz także swobodny wybór spośród kategorii podstawowych i wszystkich zakupionych kategorii rozszerzonych.",
+    premiumLockedCategoryOfferIntro: "Kupiona kategoria rozszerzona zostanie dodana do kategorii, które możesz dowolnie włączać i wyłączać w swoim pokoju.",
     superPremiumUpsellBefore: "Albo dokup",
     superPremiumLinkText: "Super Premium",
     superPremiumBenefitsIntro: "Regularnie grając w trybie Super Premium, zdobywasz monety, za które otrzymujesz kolejne korzyści w grze:",
@@ -986,7 +986,7 @@ export const UI_TEXT = {
     freeLimitTitle: "Osiągnięto limit wersji Free",
     freeLimitText: "Wersja Free obejmuje 3 rundy. Aby kontynuować, przejdź na Premium lub Super Premium albo obejrzyj reklamę i odblokuj 3 kolejne rundy.",
     freeUpgradeButton: "Kup Premium",
-      premiumPurchaseDescription: "Do 5 graczy. Stałe kategorie podstawowe: Państwo, Miasto, Imię, Zwierzę, Rzecz, Roślina.",
+      premiumPurchaseDescription: "Do 5 graczy. Dowolny wybór spośród 6 kategorii podstawowych: Państwo, Miasto, Imię, Zwierzę, Rzecz, Roślina. Kategorie rozszerzone można kupować osobno.",
       superPremiumPurchaseDescription: "Nieograniczona liczba graczy, dowolnie wybierane kategorie podstawowe oraz 4 kategorie rozszerzone: Film / Serial, Sport, Marka i Samochód / Motocykl.",
       buySuperPremium: "Kup Super Premium",
     freeRewardButton: "Obejrzyj reklamę i odblokuj 3 kolejne rundy",
@@ -1085,7 +1085,7 @@ export const UI_TEXT = {
     addCustomCategory: "+ Aggiungi categoria personalizzata",
     maxCustomCategories: "È possibile aggiungere al massimo 5 categorie personalizzate.",
     categoryPurchaseAction: "Acquista",
-    premiumLockedCategoryOfferIntro: "Acquistando questa categoria estesa sblocchi anche la possibilità di scegliere liberamente tra le categorie base e tutte le categorie estese acquistate.",
+    premiumLockedCategoryOfferIntro: "La categoria estesa acquistata viene aggiunta alle categorie che puoi attivare o disattivare liberamente nella tua stanza.",
     superPremiumUpsellBefore: "Oppure passa a",
     superPremiumLinkText: "Super Premium",
     superPremiumBenefitsIntro: "Giocando regolarmente in modalità Super Premium ottieni monete con cui sblocchi altri vantaggi di gioco:",
@@ -1096,7 +1096,7 @@ export const UI_TEXT = {
     freeLimitTitle: "Limite della versione Free raggiunto",
     freeLimitText: "La versione Free include 3 turni. Per continuare, passa a Premium o Super Premium oppure guarda un annuncio e sblocca altri 3 turni.",
     freeUpgradeButton: "Acquista Premium",
-      premiumPurchaseDescription: "Fino a 5 giocatori. Categorie base fisse: Paese, Città, Nome, Animale, Oggetto, Pianta.",
+      premiumPurchaseDescription: "Fino a 5 giocatori. Scelta libera tra 6 categorie base: Paese, Città, Nome, Animale, Oggetto, Pianta. Le categorie estese possono essere acquistate singolarmente.",
       superPremiumPurchaseDescription: "Giocatori illimitati, categorie base selezionabili e 4 categorie estese: Film / Serie TV, Sport, Marca e Auto / Moto.",
       buySuperPremium: "Acquista Super Premium",
     freeRewardButton: "Guarda un annuncio e sblocca altri 3 turni",
@@ -1256,7 +1256,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "Kategorie vybírá organizátor místnosti. Ty vidíš aktuální výběr a můžeš mu radit, co upravit.",
     premiumOrganizer:
-      "Premium: základní kategorie jsou pevně dané. Rozšířené kategorie jsou zamčené. Po zakoupení alespoň jedné rozšířené kategorie si můžeš libovolně vybrat základní kategorie a všechny zakoupené rozšířené kategorie.",
+      "Premium: základní kategorie si můžeš libovolně vybírat. Rozšířené kategorie jsou zamčené a můžeš je dokupovat jednotlivě.",
     superPremiumOrganizer:
       "Super Premium: neomezený počet hráčů, volitelné základní kategorie, rozšířené kategorie Film / Seriál, Sport, Značka a Auto / Moto. Další kategorie a herní možnosti si postupně odemykáš za coiny získané pravidelným hraním.",
   },
@@ -1264,7 +1264,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "The organiser chooses the room categories. You can see the current selection and suggest changes.",
     premiumOrganizer:
-      "Premium: the basic categories are fixed. Extended categories are locked. After purchasing at least one extended category, you can freely choose from the basic categories and all extended categories you own.",
+      "Premium: you can freely choose the basic categories. Extended categories are locked and can be purchased individually.",
     superPremiumOrganizer:
       "Super Premium: unlimited players, basic categories, and the extended categories Film / Series, Sport, Brand, and Car / Motorbike. You gradually unlock more categories and game options with coins earned through regular play.",
   },
@@ -1272,7 +1272,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "El organizador elige las categorías de la sala. Tú ves la selección actual y puedes sugerir cambios.",
     premiumOrganizer:
-      "Premium: las categorías básicas son fijas. Las categorías ampliadas están bloqueadas. Tras comprar al menos una categoría ampliada, puedes elegir libremente entre las categorías básicas y todas las categorías ampliadas que hayas comprado.",
+      "Premium: puedes elegir libremente las categorías básicas. Las categorías ampliadas están bloqueadas y se pueden comprar por separado.",
     superPremiumOrganizer:
       "Super Premium: jugadores ilimitados, categorías básicas y las categorías ampliadas Película / Serie, Deporte, Marca y Coche / Moto. Desbloqueas poco a poco más categorías y opciones de juego con monedas obtenidas jugando con regularidad.",
   },
@@ -1281,7 +1281,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "Der Organisator wählt die Kategorien des Raums aus. Du kannst die aktuelle Auswahl sehen und Änderungen vorschlagen.",
     premiumOrganizer:
-      "Premium: Die Grundkategorien sind fest vorgegeben. Erweiterte Kategorien sind gesperrt. Nach dem Kauf mindestens einer erweiterten Kategorie kannst du die Grundkategorien und alle von dir gekauften erweiterten Kategorien frei auswählen.",
+      "Premium: Die Grundkategorien kannst du frei auswählen. Erweiterte Kategorien sind gesperrt und können einzeln gekauft werden.",
     superPremiumOrganizer:
       "Super Premium: unbegrenzt viele Spieler, Grundkategorien sowie die erweiterten Kategorien Film / Serie, Sportart, Marke und Auto / Motorrad. Weitere Kategorien und Spieloptionen schaltest du nach und nach mit Coins frei, die du durch regelmäßiges Spielen verdienst.",
   },
@@ -1290,7 +1290,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "L’organisateur choisit les catégories de la salle. Tu peux voir la sélection actuelle et lui suggérer des modifications.",
     premiumOrganizer:
-      "Premium : les catégories de base sont fixes. Les catégories supplémentaires sont verrouillées. Après l’achat d’au moins une catégorie supplémentaire, tu peux choisir librement parmi les catégories de base et toutes les catégories supplémentaires achetées.",
+      "Premium : tu peux choisir librement les catégories de base. Les catégories supplémentaires sont verrouillées et peuvent être achetées séparément.",
     superPremiumOrganizer:
       "Super Premium : nombre de joueurs illimité, catégories de base et catégories supplémentaires Film / Série, Sport, Marque et Voiture / Moto. Tu débloques progressivement d’autres catégories et options de jeu avec des pièces gagnées en jouant régulièrement.",
   },
@@ -1299,25 +1299,25 @@ const CATEGORY_HELP_TEXT = {
     player:
       "O organizador escolhe as categorias da sala. Você pode ver a seleção atual e sugerir alterações.",
     premiumOrganizer:
-      "Premium: as categorias básicas são fixas. As categorias adicionais ficam bloqueadas. Depois de comprar pelo menos uma categoria adicional, você pode escolher livremente entre as categorias básicas e todas as categorias adicionais compradas.",
+      "Premium: você pode escolher livremente as categorias básicas. As categorias adicionais ficam bloqueadas e podem ser compradas separadamente.",
     superPremiumOrganizer:
       "Super Premium: jogadores ilimitados, categorias básicas e as categorias adicionais Filme / Série, Esporte, Marca e Carro / Moto. Você libera gradualmente mais categorias e opções de jogo com moedas ganhas jogando regularmente.",
   },
   id: {
     player: "Penyelenggara memilih kategori ruang. Kamu dapat melihat pilihan saat ini dan menyarankan perubahan.",
-    premiumOrganizer: "Premium: kategori dasar bersifat tetap. Kategori tambahan terkunci. Setelah membeli setidaknya satu kategori tambahan, kamu dapat bebas memilih kategori dasar dan semua kategori tambahan yang telah dibeli.",
+    premiumOrganizer: "Premium: kamu dapat bebas memilih kategori dasar. Kategori tambahan terkunci dan dapat dibeli satu per satu.",
     superPremiumOrganizer: "Super Premium: pemain tanpa batas, kategori dasar, serta kategori tambahan Film / Serial, Olahraga, Merek, dan Mobil / Motor. Kamu membuka lebih banyak kategori dan opsi permainan secara bertahap dengan koin yang diperoleh dari bermain secara rutin.",
   },
   tr: {
     player: "Oda sahibi oda kategorilerini seçer. Geçerli seçimi görebilir ve değişiklik önerebilirsin.",
-    premiumOrganizer: "Premium: temel kategoriler sabittir. Ek kategoriler kilitlidir. En az bir ek kategori satın aldıktan sonra temel kategoriler ile satın aldığın tüm ek kategorileri özgürce seçebilirsin.",
+    premiumOrganizer: "Premium: temel kategorileri özgürce seçebilirsin. Ek kategoriler kilitlidir ve ayrı ayrı satın alınabilir.",
     superPremiumOrganizer: "Super Premium: sınırsız oyuncu, temel kategoriler ve Film / Dizi, Spor, Marka ile Araba / Motosiklet ek kategorileri. Düzenli oynayarak kazandığın coinlerle zamanla daha fazla kategori ve oyun seçeneğinin kilidini açarsın.",
   },
   pl: {
     player:
       "Organizator wybiera kategorie pokoju. Możesz zobaczyć aktualny wybór i zaproponować zmiany.",
     premiumOrganizer:
-      "Premium: kategorie podstawowe są stałe. Kategorie rozszerzone są zablokowane. Po zakupie co najmniej jednej kategorii rozszerzonej możesz dowolnie wybierać kategorie podstawowe i wszystkie zakupione kategorie rozszerzone.",
+      "Premium: możesz dowolnie wybierać kategorie podstawowe. Kategorie rozszerzone są zablokowane i można je kupować osobno.",
     superPremiumOrganizer:
       "Super Premium: nieograniczona liczba graczy, kategorie podstawowe oraz kategorie rozszerzone Film / Serial, Sport, Marka i Samochód / Motocykl. Kolejne kategorie i opcje gry odblokowujesz stopniowo za monety zdobywane podczas regularnej gry.",
   },
@@ -1325,7 +1325,7 @@ const CATEGORY_HELP_TEXT = {
     player:
       "L’organizzatore sceglie le categorie della stanza. Puoi vedere la selezione attuale e suggerire modifiche.",
     premiumOrganizer:
-      "Premium: le categorie base sono fisse. Le categorie estese sono bloccate. Dopo aver acquistato almeno una categoria estesa, puoi scegliere liberamente tra le categorie base e tutte le categorie estese acquistate.",
+      "Premium: puoi scegliere liberamente le categorie base. Le categorie estese sono bloccate e possono essere acquistate singolarmente.",
     superPremiumOrganizer:
       "Super Premium: giocatori illimitati, categorie base e le categorie estese Film / Serie TV, Sport, Marca e Auto / Moto. Sblocchi gradualmente altre categorie e opzioni di gioco con le monete guadagnate giocando regolarmente.",
   },
