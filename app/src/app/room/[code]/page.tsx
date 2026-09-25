@@ -2172,7 +2172,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     if (premiumPreviewLockTest && productId) {
       setOwnedCategoryProductIds((current) => [...new Set([...current, productId])]);
-      setActiveCategories((current) => uniqueNonEmpty([...PREMIUM_CATEGORIES, ...current, category]));
+      setActiveCategories((current) => uniqueNonEmpty([...current, category]));
       setPremiumLockedOfferCategory(null);
       setMsg(`✅ TEST: ${categoryLabel(category)} odemčeno.`);
       return;
