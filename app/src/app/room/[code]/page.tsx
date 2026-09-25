@@ -3735,6 +3735,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         : ""}{" "}
                       {t("superPremiumUpsellAfter")}
                     </p>
+
+                    <p>{t("superPremiumBenefitsIntro")}</p>
+                    <ul>
+                      {t("superPremiumBenefits").split("|").map((benefit) => (
+                        <li key={benefit}>{benefit}</li>
+                      ))}
+                    </ul>
                   </section>
                 )}
 
@@ -4447,29 +4454,26 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         return (
                           <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
                             {isPremiumLockedPurchase ? (
-                              <>
-                                <span aria-hidden="true">🔒</span>
-                                <button
-                                  type="button"
-                                  disabled={categoryPurchaseBusy !== null}
-                                  onClick={() => void startCategoryPurchase(category)}
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                    padding: 0,
-                                    color: "#fff",
-                                    textAlign: "left",
-                                    textDecoration: "underline",
-                                    cursor: categoryPurchaseBusy === null ? "pointer" : "default",
-                                    font: "inherit",
-                                  }}
-                                >
-                                  {categoryLabel(category)}
-                                  {categoryPlayPrice(category)
-                                    ? ` – ${categoryPlayPrice(category)}`
-                                    : ""}
-                                </button>
-                              </>
+                              <button
+                                type="button"
+                                disabled={categoryPurchaseBusy !== null}
+                                onClick={() => void startCategoryPurchase(category)}
+                                style={{
+                                  border: "none",
+                                  background: "transparent",
+                                  padding: 0,
+                                  color: "#fff",
+                                  textAlign: "left",
+                                  textDecoration: "underline",
+                                  cursor: categoryPurchaseBusy === null ? "pointer" : "default",
+                                  font: "inherit",
+                                }}
+                              >
+                                🔒 {categoryLabel(category)}
+                                {categoryPlayPrice(category)
+                                  ? ` – ${categoryPlayPrice(category)}`
+                                  : ""}
+                              </button>
                             ) : (
                               <>
                                 <input
