@@ -3441,19 +3441,24 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {roomStatus === "lobby" && myPlayer && (
         <>
-          <button
-            type="button"
-            className={`${roomStyles.lobbySettingsBar} ${
-              showGameSettingsMenu ? roomStyles.lobbySettingsBarOpen : ""
-            }`}
-            aria-expanded={showGameSettingsMenu}
-            onClick={() => setShowGameSettingsMenu((value) => !value)}
-          >
-            <span aria-hidden="true">⚙️</span>
-            <span>{t("gameSettings")}</span>
-          </button>
+          {(roomTierForCategoryPreview === "premium" ||
+            roomTierForCategoryPreview === "super_premium") && (
+            <button
+              type="button"
+              className={`${roomStyles.lobbySettingsBar} ${
+                showGameSettingsMenu ? roomStyles.lobbySettingsBarOpen : ""
+              }`}
+              aria-expanded={showGameSettingsMenu}
+              onClick={() => setShowGameSettingsMenu((value) => !value)}
+            >
+              <span aria-hidden="true">⚙️</span>
+              <span>{t("gameSettings")}</span>
+            </button>
+          )}
 
-          {showGameSettingsMenu && (
+          {(roomTierForCategoryPreview === "premium" ||
+            roomTierForCategoryPreview === "super_premium") &&
+            showGameSettingsMenu && (
             <div className={roomStyles.gameSettingsDrawer}>
               {superPremiumGameSettingsEnabled && (
             <section className={`${roomStyles.roomCategoriesPanel} ${roomStyles.gameSettingsPanel}`}>
