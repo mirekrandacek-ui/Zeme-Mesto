@@ -431,7 +431,7 @@
 .lobbyHeader{
   position:relative;
   margin-bottom:10px;
-  padding:13px 62px 13px 13px;
+  padding:13px;
   border:2px solid #43c8ff;
   border-radius:28px;
   background:linear-gradient(145deg,rgba(8,115,175,.97),rgba(0,48,91,.985) 38%,rgba(0,28,59,.99));
@@ -441,6 +441,7 @@
 
 .lobbyRoomTitle{
   margin:0 0 3px;
+  padding-right:50px;
   font-size:clamp(19px,5vw,25px);
   line-height:1.1;
   font-weight:800;
