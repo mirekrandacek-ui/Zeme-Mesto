@@ -3187,18 +3187,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       </header>
       ) : isStyledLobby ? (
       <header className={roomStyles.lobbyHeader}>
-        <button
-          type="button"
-          className={`${roomStyles.lobbySettingsToggle} ${
-            showGameSettingsMenu ? roomStyles.lobbySettingsToggleOpen : ""
-          }`}
-          aria-label={t("gameSettings")}
-          aria-expanded={showGameSettingsMenu}
-          onClick={() => setShowGameSettingsMenu((value) => !value)}
-        >
-          ⚙️
-        </button>
-
         <h1 className={roomStyles.lobbyRoomTitle}>
           {t("room")}: {code.toUpperCase()}
         </h1>
@@ -3453,6 +3441,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {roomStatus === "lobby" && myPlayer && (
         <>
+          <button
+            type="button"
+            className={`${roomStyles.lobbySettingsBar} ${
+              showGameSettingsMenu ? roomStyles.lobbySettingsBarOpen : ""
+            }`}
+            aria-expanded={showGameSettingsMenu}
+            onClick={() => setShowGameSettingsMenu((value) => !value)}
+          >
+            <span aria-hidden="true">⚙️</span>
+            <span>{t("gameSettings")}</span>
+          </button>
+
           {showGameSettingsMenu && (
             <div className={roomStyles.gameSettingsDrawer}>
               <div className={roomStyles.gameSettingsDrawerTitle}>
