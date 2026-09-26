@@ -49,7 +49,6 @@ type PlayerStatus = "active" | "waiting";
 type Player = { id: string; name: string; status?: PlayerStatus };
 type MyPlayer = { id: string; name: string; status?: PlayerStatus; playerToken: string };
 type RoundLite = { id: string; round_no: number; letter: string; status: string; deadline_at?: string | null; categories?: string[] | null };
-type RoundCategorySnapshot = { round_no: number; categories: string[] };
 type AnswerRow = { player_id: string; category: string; value: string };
 type ScoreRow = { player_id: string; round?: number; category: string; points: number };
 
@@ -536,7 +535,6 @@ export default function RoomPage() {
   const [roomFreeRoundsStarted, setRoomFreeRoundsStarted] = useState(0);
 
   const [round, setRound] = useState<RoundLite | null>(null);
-  const [roundCategoryHistory, setRoundCategoryHistory] = useState<RoundCategorySnapshot[]>([]);
   const [showNextRoundCategoryEditor, setShowNextRoundCategoryEditor] = useState(false);
   const [serverTimeOffsetMs, setServerTimeOffsetMs] = useState(0);
   const [timerNowMs, setTimerNowMs] = useState(0);
@@ -1067,15 +1065,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const currentRoundCategoriesKey = currentRoundCategories.join("\u001f");
 
-  const scoringTableCategories = useMemo(
-    () =>
-      uniqueNonEmpty([
-        ...roundCategoryHistory.flatMap((snapshot) => snapshot.categories),
-        ...currentRoundCategories,
-      ]),
-    [roundCategoryHistory, currentRoundCategories]
-  );
-
   const allAnswersFilled = currentRoundCategories.every((c) => (answers[c] ?? "").trim().length > 0);
 
   const allAnswersAtLeastTwoChars = currentRoundCategories.every((c) => (answers[c] ?? "").trim().length >= 2);
@@ -1507,29 +1496,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setRound(r ?? null);
   }
 
-  async function loadRoundCategoryHistory(rid: string) {
-    const { data, error } = await supabase
-      .from("rounds")
-      .select("round_no,categories")
-      .eq("room_id", rid)
-      .order("round_no", { ascending: true });
-
-    if (error) {
-      console.error("Round category history loading failed:", error);
-      return;
-    }
-
-    setRoundCategoryHistory(
-      (data ?? []).map((row: any) => ({
-        round_no: Number(row.round_no ?? 0),
-        categories:
-          Array.isArray(row.categories) && row.categories.length > 0
-            ? uniqueNonEmpty(row.categories as unknown[])
-            : [],
-      }))
-    );
-  }
-
   async function loadAllAnswers(rid: string, roundNo: number) {
     const { data, error } = await supabase
       .from("answers")
@@ -1620,7 +1586,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       if (!rid) return;
       await loadPlayers(rid);
       await loadCurrentRound(rid);
-      await loadRoundCategoryHistory(rid);
       await loadRoomScores(rid);
     })();
 
@@ -1641,7 +1606,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       await loadPlayers(roomId);
       await loadCurrentRound(roomId);
-      await loadRoundCategoryHistory(roomId);
 
       // Celkové skóre načti dřív, než allScores může přepnout UI do Free limitu.
       await loadRoomScores(roomId);
@@ -1678,7 +1642,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         await Promise.all([
           loadPlayers(rid),
           loadCurrentRound(rid),
-          loadRoundCategoryHistory(rid),
           loadRoomScores(rid),
         ]);
 
@@ -1800,7 +1763,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setAllAnswers([]);
     setAllScores([]);
     setAllRoomScores([]);
-    setRoundCategoryHistory([]);
     setShowNextRoundCategoryEditor(false);
     setMyScoreSubmitted(false);
     return true;
@@ -2064,10 +2026,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     const nextRound = data as RoundLite;
     setRound(nextRound);
-    setRoundCategoryHistory((current) => [
-      ...current.filter((snapshot) => snapshot.round_no !== nextNo),
-      { round_no: nextNo, categories: nextRoundCategories },
-    ].sort((a, b) => a.round_no - b.round_no));
     return nextRound;
   }
 
@@ -2787,11 +2745,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       .reduce((sum, s) => sum + Number(s.points ?? 0), 0);
   }
 
-  function playerCategoryPoints(playerId: string, category: string) {
-    return allRoomScores
-      .filter((s) => s.player_id === playerId && s.category === category)
-      .reduce((sum, s) => sum + Number(s.points ?? 0), 0);
-  }
+
 
   const finalStandings = players
     .map((player) => ({
@@ -4130,7 +4084,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                   >
                     {t("player")}
                   </th>
-                  {scoringTableCategories.map((c, index) => (
+                  {currentRoundCategories.map((c, index) => (
                     <th
                       id={`score-column-${index}`}
                       key={c}
@@ -4161,20 +4115,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     >
                       {p.name}
                     </td>
-                    {scoringTableCategories.map((c) => {
-                      const isCurrentRoundCategory = currentRoundCategories.includes(c);
-
-                      return (
-                        <td
-                          key={c}
-                          className={`${roomStyles.scoringTableCell} ${
-                            selectedScoringCategory === c ? roomStyles.scoringSelectedColumn : ""
-                          }`}
-                        >
-                          {isCurrentRoundCategory ? answerFor(p.id, c) : <b>{playerCategoryPoints(p.id, c)}</b>}
-                        </td>
-                      );
-                    })}
+                    {currentRoundCategories.map((c) => (
+                      <td
+                        key={c}
+                        className={`${roomStyles.scoringTableCell} ${
+                          selectedScoringCategory === c ? roomStyles.scoringSelectedColumn : ""
+                        }`}
+                      >
+                        {answerFor(p.id, c)}
+                      </td>
+                    ))}
                     <td
                       className={`${roomStyles.scoringTableCell} ${
                         selectedScoringCategory === TOTAL_POINTS_SCORING_KEY
@@ -4292,7 +4242,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
                       requestAnimationFrame(() => {
                         const scrollBox = document.getElementById("scoring-table-scroll");
-                        const columnIndex = scoringTableCategories.indexOf(category);
+                        const columnIndex = currentRoundCategories.indexOf(category);
                         const column = document.getElementById(`score-column-${columnIndex}`);
                         const stickyPlayerColumn =
                           scrollBox?.querySelector('[data-sticky-player="true"]') as
@@ -4325,7 +4275,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
                       requestAnimationFrame(() => {
                         const scrollBox = document.getElementById("scoring-table-scroll");
-                        const columnIndex = scoringTableCategories.indexOf(category);
+                        const columnIndex = currentRoundCategories.indexOf(category);
                         const column = document.getElementById(`score-column-${columnIndex}`);
                         const stickyPlayerColumn =
                           scrollBox?.querySelector('[data-sticky-player="true"]') as
