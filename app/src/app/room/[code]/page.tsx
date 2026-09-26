@@ -3455,11 +3455,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {showGameSettingsMenu && (
             <div className={roomStyles.gameSettingsDrawer}>
-              <div className={roomStyles.gameSettingsDrawerTitle}>
-                <span>⚙️</span>
-                <strong>{t("gameSettings")}</strong>
-              </div>
-
               {superPremiumGameSettingsEnabled && (
             <section className={`${roomStyles.roomCategoriesPanel} ${roomStyles.gameSettingsPanel}`}>
               <h3>{t("gameSettings")}</h3>
