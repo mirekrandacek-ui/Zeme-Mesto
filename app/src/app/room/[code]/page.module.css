@@ -441,7 +441,6 @@
 
 .lobbyRoomTitle{
   margin:0 0 3px;
-  padding-right:50px;
   font-size:clamp(19px,5vw,25px);
   line-height:1.1;
   font-weight:800;
@@ -469,26 +468,36 @@
   font-weight:800;
 }
 
-.lobbySettingsToggle{
-  position:absolute;
-  top:12px;
-  right:12px;
-  display:grid;
-  place-items:center;
-  width:40px;
-  height:40px;
-  padding:0;
+.lobbySettingsBar{
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:9px;
+  width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
+  min-height:46px;
+  margin:0 auto 8px;
+  padding:8px 12px;
   border:2px solid #61d7ff;
-  border-radius:50%;
+  border-radius:16px;
   color:#fff;
   background:linear-gradient(#1686ca,#00508b 58%,#003360);
   box-shadow:inset 0 2px 5px #56c9ff,inset 0 -5px 8px #002746,0 3px 7px #00162c;
-  font-size:21px;
-  line-height:1;
+  font:inherit;
+  font-size:16px;
+  font-weight:850;
+  text-align:left;
+  text-shadow:0 2px 2px #001b38;
   cursor:pointer;
 }
 
-.lobbySettingsToggleOpen{
+.lobbySettingsBar span:first-child{
+  flex:0 0 auto;
+  font-size:21px;
+  line-height:1;
+}
+
+.lobbySettingsBarOpen{
   border-color:#ffe06a;
   background:linear-gradient(#9b6900,#644000);
   box-shadow:inset 0 2px 4px #ffd76a88,0 0 8px #ffd75d88,0 3px 7px #00162c;
@@ -500,20 +509,6 @@
   margin:0 auto 10px;
   display:grid;
   gap:8px;
-}
-
-.gameSettingsDrawerTitle{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 11px;
-  border:2px solid #55d5ff;
-  border-radius:14px;
-  color:#fff;
-  background:linear-gradient(#1686ca,#00508b 58%,#003360);
-  box-shadow:inset 0 2px 5px #56c9ff,inset 0 -5px 8px #002746,0 4px 7px #00162c;
-  font-size:16px;
-  text-shadow:0 2px 2px #001b38;
 }
 
 .gameSettingsDrawer .roomCategoriesPanel,
