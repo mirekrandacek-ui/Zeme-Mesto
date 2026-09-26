@@ -525,6 +525,7 @@ export default function RoomPage() {
   const [myPlayer, setMyPlayer] = useState<MyPlayer | null>(null);
   const [msg, setMsg] = useState("");
   const [showRules, setShowRules] = useState(false);
+  const [showGameSettingsMenu, setShowGameSettingsMenu] = useState(false);
   const [showRoundHistory, setShowRoundHistory] = useState(false);
   const [showFreeLimitUpsell, setShowFreeLimitUpsell] = useState(false);
   const [showRewardedAdPlaceholder, setShowRewardedAdPlaceholder] = useState(false);
@@ -2749,6 +2750,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   ]);
 
   const currentRoundNo = round?.round_no ?? 0;
+  const currentRoundLimit =
+    roomTier === "free" ? roomFreeRoundsUnlocked : roundCountLimit;
+  const roundProgressText =
+    currentRoundNo > 0
+      ? `${t("round")} ${currentRoundNo} / ${currentRoundLimit ?? "∞"}`
+      : "";
+
   const isFinalScoringRound =
     superPremiumGameSettingsEnabled &&
     roomStatus === "scoring" &&
@@ -2986,6 +2994,10 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (roomStatus !== "scoring") {
       setShowNextRoundCategoryEditor(false);
     }
+
+    if (roomStatus !== "lobby") {
+      setShowGameSettingsMenu(false);
+    }
   }, [roomStatus]);
 
   const isGameScreen = Boolean(
@@ -3175,6 +3187,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       </header>
       ) : isStyledLobby ? (
       <header className={roomStyles.lobbyHeader}>
+        <button
+          type="button"
+          className={`${roomStyles.lobbySettingsToggle} ${
+            showGameSettingsMenu ? roomStyles.lobbySettingsToggleOpen : ""
+          }`}
+          aria-label={t("gameSettings")}
+          aria-expanded={showGameSettingsMenu}
+          onClick={() => setShowGameSettingsMenu((value) => !value)}
+        >
+          ⚙️
+        </button>
+
         <h1 className={roomStyles.lobbyRoomTitle}>
           {t("room")}: {code.toUpperCase()}
         </h1>
@@ -3184,6 +3208,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         <p className={roomStyles.lobbySignedIn}>
           {t("signedIn")}: <b>{myPlayer?.name}</b>
         </p>
+        <div className={roomStyles.lobbyLanguageCompact}>
+          {t("gameLanguage")}: {gameLanguageName} {gameLanguageFlag}
+        </div>
 
         <div className={roomStyles.lobbyActions}>
           <a className={`${roomStyles.lobbyAction} ${roomStyles.lobbyActionPurple}`} href="/">
@@ -3295,19 +3322,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           <p className={roomStyles.entryLanguageNote}>{t("diacriticsOptional")}</p>
         )}
       </section>
-      ) : isStyledLobby ? (
-      <section className={roomStyles.lobbyLanguage} data-game-language-banner>
-        <div className={roomStyles.lobbyLanguageCurrent}>
-          {t("gameLanguage")}: {gameLanguageName} {gameLanguageFlag}
-        </div>
-        {uiLanguage !== roomLanguage && (
-          <p className={roomStyles.lobbyLanguageInstruction}>{gameLanguageInstruction}</p>
-        )}
-        {gameLanguageHasDiacritics && (
-          <p className={roomStyles.lobbyLanguageNote}>{t("diacriticsOptional")}</p>
-        )}
-      </section>
-      ) : (
+      ) : isStyledLobby ? null : (
       <section
         data-game-language-banner
         style={{
@@ -3438,7 +3453,14 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
       {roomStatus === "lobby" && myPlayer && (
         <>
-            {superPremiumGameSettingsEnabled && (
+          {showGameSettingsMenu && (
+            <div className={roomStyles.gameSettingsDrawer}>
+              <div className={roomStyles.gameSettingsDrawerTitle}>
+                <span>⚙️</span>
+                <strong>{t("gameSettings")}</strong>
+              </div>
+
+              {superPremiumGameSettingsEnabled && (
             <section className={`${roomStyles.roomCategoriesPanel} ${roomStyles.gameSettingsPanel}`}>
               <h3>{t("gameSettings")}</h3>
 
@@ -3504,50 +3526,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             </section>
             )}
 
-          {isOrganizer && myPlayer && (
-            <button
-              data-main-start-button
-              className={roomStyles.lobbyStartButton}
-              onClick={startGame}
-            >
-              {t("startGame")}
-            </button>
-          )}
-
-          <p className={roomStyles.lobbyLetters}>
+              <p className={roomStyles.lobbyLetters}>
             <strong>{t("availableLetters")}:</strong>{" "}
             <span>{getLettersForLanguage(roomLanguage).join(", ")}</span>
           </p>
 
-          <section className={roomStyles.lobbyPlayers}>
-            <h3>
-              {t("players")} ({players.length})
-            </h3>
-            <ul>
-              {players.map((p) => (
-                <li key={p.id}>{p.name}</li>
-              ))}
-            </ul>
-          </section>
-
-          {waitingPlayers.length > 0 && (
-            <>
-              <h3>
-                {t("waitingPlayers")}{" "}
-                ({waitingPlayers.length})
-              </h3>
-              <ul>
-                {waitingPlayers.map((p) => (
-                  <li key={p.id}>
-                    ⏳ {p.name} –{" "}
-                    {t("waitingPlayerNextRound")}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          {(roomTierForCategoryPreview === "premium" || roomTierForCategoryPreview === "super_premium") && myPlayer && (
+              {(roomTierForCategoryPreview === "premium" || roomTierForCategoryPreview === "super_premium") && myPlayer && (
             <section
     className={roomStyles.roomCategoriesPanel}
     style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
@@ -3860,7 +3844,46 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
               )}
             </section>
           )}
+            </div>
+          )}
 
+          {isOrganizer && myPlayer && (
+            <button
+              data-main-start-button
+              className={roomStyles.lobbyStartButton}
+              onClick={startGame}
+            >
+              {t("startGame")}
+            </button>
+          )}
+
+          <section className={roomStyles.lobbyPlayers}>
+            <h3>
+              {t("players")} ({players.length})
+            </h3>
+            <ul>
+              {players.map((p) => (
+                <li key={p.id}>{p.name}</li>
+              ))}
+            </ul>
+          </section>
+
+          {waitingPlayers.length > 0 && (
+            <>
+              <h3>
+                {t("waitingPlayers")}{" "}
+                ({waitingPlayers.length})
+              </h3>
+              <ul>
+                {waitingPlayers.map((p) => (
+                  <li key={p.id}>
+                    ⏳ {p.name} –{" "}
+                    {t("waitingPlayerNextRound")}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </>
       )}
 
@@ -3868,7 +3891,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         <section className={roomStyles.gameScreen}>
           <section className={roomStyles.gameHeader}>
             <div className={roomStyles.gameHeaderTop}>
-              <h2 className={roomStyles.gameTitle}>{t("playing")}</h2>
+              <div>
+                <h2 className={roomStyles.gameTitle}>{t("playing")}</h2>
+                {roundProgressText && (
+                  <div className={roomStyles.roundProgressBadge}>{roundProgressText}</div>
+                )}
+              </div>
               <div className={roomStyles.gameLetter} aria-live="polite">
                 {roomStatus === "drawing" ? rollingLetter || "…" : letter}
               </div>
@@ -4037,7 +4065,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         <section className={roomStyles.scoringScreen}>
           <section className={roomStyles.scoringHeader}>
             <div className={roomStyles.scoringHeaderTop}>
-              <h2>{t("scoring")}</h2>
+              <div>
+                <h2>{t("scoring")}</h2>
+                {roundProgressText && (
+                  <div className={roomStyles.roundProgressBadge}>{roundProgressText}</div>
+                )}
+              </div>
               <div className={roomStyles.scoringLetter} aria-label={`${t("round")} ${letter || ""}`}>
                 {letter || "–"}
               </div>
