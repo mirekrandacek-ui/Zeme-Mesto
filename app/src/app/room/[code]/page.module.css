@@ -1560,3 +1560,219 @@
 .roomCategoriesPanel ol button:disabled{
   opacity:.38;
 }
+
+
+/* Final results */
+.finalResultsPanel{
+  box-sizing:border-box;
+  width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
+  margin:10px auto 14px;
+  padding:13px;
+  border:2px solid #43c8ff;
+  border-radius:22px;
+  color:#fff;
+  background:linear-gradient(145deg,rgba(8,115,175,.97),rgba(0,48,91,.985) 38%,rgba(0,28,59,.99));
+  box-shadow:inset 0 0 0 2px #087cbf,inset 0 7px 14px #4cd1ff55,inset 0 -9px 16px #001f43,0 0 13px #04aaff,0 9px 16px #000819cc;
+  text-shadow:0 2px 3px #00152d;
+}
+
+.finalResultsHeading{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.finalResultsHeading > span{
+  flex:0 0 auto;
+  font-size:24px;
+  line-height:1;
+}
+
+.finalResultsHeading h2{
+  min-width:0;
+  margin:0;
+  font-size:clamp(22px,5.8vw,29px);
+  line-height:1.1;
+  overflow-wrap:anywhere;
+}
+
+.finalResultsMobile{
+  display:grid;
+  gap:8px;
+}
+
+.finalResultCard{
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) minmax(82px,auto);
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  padding:9px 10px;
+  border:1.5px solid rgba(105,216,255,.82);
+  border-radius:13px;
+  background:rgba(0,38,76,.72);
+  box-shadow:inset 0 1px 3px rgba(86,201,255,.3);
+}
+
+.finalResultFirst{
+  border-color:#ffe36a;
+  background:linear-gradient(135deg,rgba(126,84,0,.88),rgba(63,42,0,.85));
+  box-shadow:inset 0 1px 3px #fff1a966,0 0 7px #ffd84f55;
+}
+
+.finalResultSecond{
+  border-color:#dce9f4;
+  background:linear-gradient(135deg,rgba(83,104,122,.9),rgba(41,55,68,.86));
+}
+
+.finalResultThird{
+  border-color:#e8b07a;
+  background:linear-gradient(135deg,rgba(117,65,28,.9),rgba(62,35,17,.86));
+}
+
+.finalResultRank{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+  font-size:22px;
+  font-weight:900;
+  line-height:1;
+}
+
+.finalResultRank span{
+  display:block;
+}
+
+.finalResultPlayer{
+  min-width:0;
+}
+
+.finalResultPlayerLabel{
+  display:block;
+  margin-bottom:2px;
+  color:#cfefff;
+  font-size:10px;
+  line-height:1.1;
+  font-weight:750;
+}
+
+.finalResultPlayer strong{
+  display:block;
+  min-width:0;
+  font-size:16px;
+  line-height:1.18;
+  overflow-wrap:anywhere;
+}
+
+.finalResultPoints{
+  min-width:0;
+  text-align:right;
+}
+
+.finalResultPoints span{
+  display:block;
+  color:#cfefff;
+  font-size:10px;
+  line-height:1.1;
+  font-weight:750;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+
+.finalResultPoints strong{
+  display:block;
+  margin-top:2px;
+  font-size:22px;
+  line-height:1;
+  white-space:nowrap;
+}
+
+.finalResultsDesktop{
+  display:none;
+}
+
+.finalResultsTable{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  overflow:hidden;
+  border:1.5px solid #69d8ff;
+  border-radius:12px;
+  background:rgba(0,38,76,.64);
+}
+
+.finalResultsTable th,
+.finalResultsTable td{
+  padding:9px 10px;
+  border-right:1px solid rgba(105,216,255,.42);
+  border-bottom:1px solid rgba(105,216,255,.42);
+  text-align:left;
+  vertical-align:middle;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+
+.finalResultsTable th:last-child,
+.finalResultsTable td:last-child{
+  border-right:0;
+  text-align:right;
+}
+
+.finalResultsTable tbody tr:last-child td{
+  border-bottom:0;
+}
+
+.finalResultsTable th{
+  color:#dff6ff;
+  background:rgba(0,80,139,.7);
+  font-size:13px;
+  line-height:1.2;
+}
+
+.finalResultsTable td{
+  font-size:14px;
+  line-height:1.25;
+}
+
+.finalResultsDesktopRank{
+  font-size:18px;
+  font-weight:900;
+}
+
+@media(max-width:340px){
+  .finalResultCard{
+    grid-template-columns:36px minmax(0,1fr);
+  }
+
+  .finalResultPoints{
+    grid-column:2;
+    text-align:left;
+  }
+
+  .finalResultPoints span,
+  .finalResultPoints strong{
+    display:inline;
+  }
+
+  .finalResultPoints strong{
+    margin-left:6px;
+    font-size:18px;
+  }
+}
+
+@media(min-width:720px){
+  .finalResultsPanel{
+    width:min(92vw,760px);
+    padding:16px;
+  }
+
+  .finalResultsMobile{
+    display:none;
+  }
+
+  .finalResultsDesktop{
+    display:block;
+  }
+}

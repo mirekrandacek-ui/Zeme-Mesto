@@ -3990,23 +3990,66 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )}
 
         {roomStatus === "finished" && myPlayer && (
-          <section style={{ border: "2px solid #16a34a", borderRadius: 8, padding: 12, marginTop: 16, background: "#f0fdf4" }}>
-            <h2 style={{ marginTop: 0 }}>{t("finalResults")}</h2>
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 320 }}>
+          <section className={roomStyles.finalResultsPanel}>
+            <div className={roomStyles.finalResultsHeading}>
+              <span aria-hidden="true">🏁</span>
+              <h2>{t("finalResults")}</h2>
+            </div>
+
+            <div className={roomStyles.finalResultsMobile}>
+              {finalStandings.map((player, index) => {
+                const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : null;
+
+                return (
+                  <article
+                    key={player.id}
+                    className={`${roomStyles.finalResultCard} ${
+                      index === 0
+                        ? roomStyles.finalResultFirst
+                        : index === 1
+                          ? roomStyles.finalResultSecond
+                          : index === 2
+                            ? roomStyles.finalResultThird
+                            : ""
+                    }`}
+                  >
+                    <div className={roomStyles.finalResultRank} aria-label={`${t("position")} ${index + 1}`}>
+                      {medal ? <span aria-hidden="true">{medal}</span> : <span>{index + 1}.</span>}
+                    </div>
+
+                    <div className={roomStyles.finalResultPlayer}>
+                      <span className={roomStyles.finalResultPlayerLabel}>{t("player")}</span>
+                      <strong>{player.name}</strong>
+                    </div>
+
+                    <div className={roomStyles.finalResultPoints}>
+                      <span>{t("totalPoints")}</span>
+                      <strong>{player.totalPoints}</strong>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className={roomStyles.finalResultsDesktop}>
+              <table className={roomStyles.finalResultsTable}>
                 <thead>
                   <tr>
-                    <th style={{ border: "1px solid #ccc", padding: 8, textAlign: "left" }}>{t("position")}</th>
-                    <th style={{ border: "1px solid #ccc", padding: 8, textAlign: "left" }}>{t("player")}</th>
-                    <th style={{ border: "1px solid #ccc", padding: 8, textAlign: "right" }}>{t("totalPoints")}</th>
+                    <th>{t("position")}</th>
+                    <th>{t("player")}</th>
+                    <th>{t("totalPoints")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {finalStandings.map((player, index) => (
                     <tr key={player.id}>
-                      <td style={{ border: "1px solid #ccc", padding: 8 }}>{index + 1}.</td>
-                      <td style={{ border: "1px solid #ccc", padding: 8 }}>{player.name}</td>
-                      <td style={{ border: "1px solid #ccc", padding: 8, textAlign: "right" }}><b>{player.totalPoints}</b></td>
+                      <td>
+                        <span className={roomStyles.finalResultsDesktopRank}>
+                          {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}.`}
+                        </span>
+                      </td>
+                      <td>{player.name}</td>
+                      <td><strong>{player.totalPoints}</strong></td>
                     </tr>
                   ))}
                 </tbody>
