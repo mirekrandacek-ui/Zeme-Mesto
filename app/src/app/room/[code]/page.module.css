@@ -1880,11 +1880,12 @@
 }
 
 
+.entryPage > .coinToast,
 .coinToast{
-  position:fixed;
+  position:fixed!important;
   left:50%;
   top:50%;
-  z-index:1200;
+  z-index:1200!important;
   width:min(82vw,360px);
   padding:12px 16px;
   border:2px solid #ffe06a;
