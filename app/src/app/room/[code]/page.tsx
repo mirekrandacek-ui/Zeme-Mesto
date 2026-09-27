@@ -4089,7 +4089,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         <button
                           type="button"
                           className={roomStyles.coinCategoryUnlockButton}
-                          disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                          disabled={!coinWalletLoaded}
                           onClick={() => void purchaseCoinUnlock(coinUnlockKey)}
                         >
                           🔒 {categoryLabel(category)} – {COIN_UNLOCK_COSTS[coinUnlockKey]} 🪙
@@ -4185,7 +4185,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     <button
                       type="button"
                       className={roomStyles.coinFeatureUnlockButton}
-                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                      disabled={!coinWalletLoaded}
                       onClick={() => void purchaseCoinUnlock("feature_category_order")}
                     >
                       <span className={roomStyles.coinFeatureUnlockTitle}>
@@ -4258,7 +4258,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     <button
                       type="button"
                       className={roomStyles.coinUnlockButton}
-                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                      disabled={!coinWalletLoaded}
                       onClick={() => void purchaseCoinUnlock("feature_round_count")}
                     >
                       <span className={roomStyles.coinUnlockTitle}>
@@ -4299,7 +4299,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     <button
                       type="button"
                       className={roomStyles.coinUnlockButton}
-                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                      disabled={!coinWalletLoaded}
                       onClick={() => void purchaseCoinUnlock("feature_round_time")}
                     >
                       <span className={roomStyles.coinUnlockTitle}>
@@ -4323,7 +4323,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     <button
                       type="button"
                       className={roomStyles.coinFeatureUnlockButton}
-                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                      disabled={!coinWalletLoaded}
                       onClick={() => void purchaseCoinUnlock("feature_custom_categories")}
                     >
                       <span className={roomStyles.coinFeatureUnlockTitle}>
@@ -5136,7 +5136,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                                   <button
                                     type="button"
                                     className={roomStyles.coinCategoryUnlockButton}
-                                    disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                                    disabled={!coinWalletLoaded}
                                     onClick={() => void purchaseCoinUnlock(coinUnlockKey)}
                                   >
                                     🔒 {categoryLabel(category)} – {COIN_UNLOCK_COSTS[coinUnlockKey]} 🪙
@@ -5171,7 +5171,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                           <button
                             type="button"
                             className={roomStyles.coinFeatureUnlockButton}
-                            disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                            disabled={!coinWalletLoaded}
                             onClick={() => void purchaseCoinUnlock("feature_custom_categories")}
                           >
                             🔒 {t("customCategories")} – {COIN_UNLOCK_COSTS.feature_custom_categories} 🪙
