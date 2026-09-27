@@ -4001,74 +4001,94 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 {t("extendedCategories")}
               </h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
-                  <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {canToggleRoomCategory(category) ? (
-                    <input
-                      type="checkbox"
-                      checked={activeCategories.includes(category)}
-                      style={{
-                        accentColor: "#2563eb",
-                        cursor: "pointer",
-                      }}
-                      onChange={() => toggleRoomCategory(category)}
-                    />
-                  ) : (
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        width: 14,
-                        height: 14,
-                        borderRadius: 3,
-                        border: activeCategories.includes(category)
-                          ? "1px solid #2563eb"
-                          : "1px solid #767676",
-                        background: activeCategories.includes(category) ? "#2563eb" : "#fff",
-                        color: "#fff",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 11,
-                        fontWeight: 700,
-                        lineHeight: 1,
-                        flex: "0 0 14px",
-                        pointerEvents: "none",
-                        userSelect: "none",
-                      }}
-                    >
-                      {activeCategories.includes(category) ? "✓" : ""}
-                    </span>
-                  )}
-
-                    {roomTierForCategoryPreview === "premium" &&
+                {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => {
+                  const canToggle = canToggleRoomCategory(category);
+                  const premiumLockedPurchase =
+                    roomTierForCategoryPreview === "premium" &&
                     isOrganizer &&
-                    !ownedCategoryProductIds.includes(
-                      CATEGORY_PRODUCT_ID[category]
-                    ) ? (
-                      <button
-                        type="button"
-                        onClick={() => showPremiumLockedCategoryOffer(category)}
-                        style={{
-                          border: "none",
-                          background: "transparent",
-                          padding: 0,
-                          textAlign: "left",
-                          color: "#111827",
-                          textDecoration: "underline",
-                          cursor: "pointer",
-                          font: "inherit",
-                        }}
-                      >
-                        🔒 {categoryLabel(category)}
-                        {categoryPlayPrice(category)
-                          ? ` – ${categoryPlayPrice(category)}`
-                          : ""}
-                      </button>
-                    ) : (
-                      categoryLabel(category)
-                    )}
-                  </label>
-                ))}
+                    !ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
+                  const coinUnlockKey =
+                    SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS[category];
+                  const superPremiumCoinLocked =
+                    roomTierForCategoryPreview === "super_premium" &&
+                    isOrganizer &&
+                    Boolean(coinUnlockKey) &&
+                    !coinUnlockSet.has(coinUnlockKey);
+
+                  return (
+                    <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      {canToggle ? (
+                        <input
+                          type="checkbox"
+                          checked={activeCategories.includes(category)}
+                          style={{
+                            accentColor: "#2563eb",
+                            cursor: "pointer",
+                          }}
+                          onChange={() => toggleRoomCategory(category)}
+                        />
+                      ) : (
+                        <span
+                          aria-hidden="true"
+                          style={{
+                            width: 14,
+                            height: 14,
+                            borderRadius: 3,
+                            border: activeCategories.includes(category)
+                              ? "1px solid #2563eb"
+                              : "1px solid #767676",
+                            background: activeCategories.includes(category) ? "#2563eb" : "#fff",
+                            color: "#fff",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 11,
+                            fontWeight: 700,
+                            lineHeight: 1,
+                            flex: "0 0 14px",
+                            pointerEvents: "none",
+                            userSelect: "none",
+                          }}
+                        >
+                          {activeCategories.includes(category) ? "✓" : ""}
+                        </span>
+                      )}
+
+                      {premiumLockedPurchase ? (
+                        <button
+                          type="button"
+                          onClick={() => showPremiumLockedCategoryOffer(category)}
+                          style={{
+                            border: "none",
+                            background: "transparent",
+                            padding: 0,
+                            textAlign: "left",
+                            color: "#111827",
+                            textDecoration: "underline",
+                            cursor: "pointer",
+                            font: "inherit",
+                          }}
+                        >
+                          🔒 {categoryLabel(category)}
+                          {categoryPlayPrice(category)
+                            ? ` – ${categoryPlayPrice(category)}`
+                            : ""}
+                        </button>
+                      ) : superPremiumCoinLocked && coinUnlockKey ? (
+                        <button
+                          type="button"
+                          className={roomStyles.coinCategoryUnlockButton}
+                          disabled={coinPurchaseBusy !== null}
+                          onClick={() => void purchaseCoinUnlock(coinUnlockKey)}
+                        >
+                          🔒 {categoryLabel(category)} – {COIN_UNLOCK_COSTS[coinUnlockKey]} 🪙
+                        </button>
+                      ) : (
+                        categoryLabel(category)
+                      )}
+                    </label>
+                  );
+                })}
               </div>
 
                 {roomTierForCategoryPreview === "premium" &&
