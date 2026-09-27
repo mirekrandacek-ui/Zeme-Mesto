@@ -25,6 +25,7 @@ import {
   unlockFreeRoundBlock,
 } from "@/lib/freeQuota";
 import { getOrCreateLetterDeckOwnerId } from "@/lib/letterDeckOwner";
+import { getCoinIdentity } from "@/lib/coinIdentity";
 import { useStableViewportUnit } from "@/lib/useStableViewportUnit";
 import { getUiText as getRoomUiText } from "@/app/room/[code]/uiText";
 import FreeLimitPanel from "@/app/components/FreeLimitPanel";
@@ -280,6 +281,7 @@ const HOME_TEXT = {
       "❌ Nepodařilo se vytvořit unikátní kód místnosti. Zkus to znovu.",
     roomCodeRequired: "❗ Zadej kód místnosti.",
     yourMode: "Tvůj režim",
+    myAccount: "Moje konto",
     active: "Aktivní",
     gameLanguage: "Jazyk hry",
     gameLanguageHelp:
@@ -323,6 +325,7 @@ const HOME_TEXT = {
       "❌ Could not create a unique room code. Try again.",
     roomCodeRequired: "❗ Enter a room code.",
     yourMode: "Your mode",
+    myAccount: "My account",
     active: "Active",
     gameLanguage: "Game language",
     gameLanguageHelp:
@@ -367,6 +370,7 @@ const HOME_TEXT = {
       "❌ No se pudo crear un código de sala único. Inténtalo de nuevo.",
     roomCodeRequired: "❗ Introduce el código de la sala.",
     yourMode: "Tu modo",
+    myAccount: "Mi cuenta",
     active: "Activo",
     gameLanguage: "Idioma del juego",
     gameLanguageHelp:
@@ -412,6 +416,7 @@ const HOME_TEXT = {
       "❌ Es konnte kein eindeutiger Raumcode erstellt werden. Versuche es erneut.",
     roomCodeRequired: "❗ Gib einen Raumcode ein.",
     yourMode: "Dein Modus",
+    myAccount: "Mein Konto",
     active: "Aktiv",
     gameLanguage: "Spielsprache",
     gameLanguageHelp:
@@ -456,6 +461,7 @@ const HOME_TEXT = {
     uniqueRoomCodeError: "❌ Impossible de créer un code de salle unique. Réessaie.",
     roomCodeRequired: "❗ Saisis un code de salle.",
     yourMode: "Ton mode",
+    myAccount: "Mon compte",
     active: "Actif",
     gameLanguage: "Langue du jeu",
     gameLanguageHelp: "Tu écriras les réponses dans cette langue et l’alphabet adapté sera choisi automatiquement.",
@@ -493,6 +499,7 @@ const HOME_TEXT = {
     uniqueRoomCodeError: "❌ Não foi possível criar um código de sala exclusivo. Tente novamente.",
     roomCodeRequired: "❗ Digite o código da sala.",
     yourMode: "Seu modo",
+    myAccount: "Minha conta",
     active: "Ativo",
     gameLanguage: "Idioma do jogo",
     gameLanguageHelp: "Você escreverá as respostas neste idioma, e o alfabeto adequado será escolhido automaticamente.",
@@ -529,6 +536,7 @@ const HOME_TEXT = {
     uniqueRoomCodeError: "❌ Kode ruang unik tidak dapat dibuat. Coba lagi.",
     roomCodeRequired: "❗ Masukkan kode ruang.",
     yourMode: "Mode kamu",
+    myAccount: "Akun saya",
     active: "Aktif",
     gameLanguage: "Bahasa permainan",
     gameLanguageHelp: "Jawaban akan ditulis dalam bahasa ini, dan alfabet yang sesuai akan dipilih secara otomatis.",
@@ -565,6 +573,7 @@ const HOME_TEXT = {
     uniqueRoomCodeError: "❌ Benzersiz oda kodu oluşturulamadı. Tekrar dene.",
     roomCodeRequired: "❗ Oda kodunu gir.",
     yourMode: "Modun",
+    myAccount: "Hesabım",
     active: "Aktif",
     gameLanguage: "Oyun dili",
     gameLanguageHelp: "Yanıtlar bu dilde yazılacak ve uygun alfabe otomatik olarak seçilecek.",
@@ -601,6 +610,7 @@ const HOME_TEXT = {
     uniqueRoomCodeError: "❌ Nie udało się utworzyć unikalnego kodu pokoju. Spróbuj ponownie.",
     roomCodeRequired: "❗ Wpisz kod pokoju.",
     yourMode: "Twój tryb",
+    myAccount: "Moje konto",
     active: "Aktywny",
     gameLanguage: "Język gry",
     gameLanguageHelp: "W tym języku będziesz wpisywać odpowiedzi; na jego podstawie zostanie wybrany alfabet.",
@@ -638,6 +648,7 @@ const HOME_TEXT = {
     uniqueRoomCodeError: "❌ Impossibile creare un codice stanza univoco. Riprova.",
     roomCodeRequired: "❗ Inserisci il codice della stanza.",
     yourMode: "La tua modalità",
+    myAccount: "Il mio conto",
     active: "Attivo",
     gameLanguage: "Lingua di gioco",
     gameLanguageHelp: "In questa lingua inserirai le risposte; in base ad essa verrà scelto l’alfabeto.",
@@ -719,6 +730,8 @@ export default function Home() {
   const [tierResolved, setTierResolved] = useState(false);
   const [purchaseBusy, setPurchaseBusy] =
     useState<"premium" | "super_premium" | null>(null);
+  const [homeCoinBalance, setHomeCoinBalance] = useState(0);
+  const [homeCoinWalletLoaded, setHomeCoinWalletLoaded] = useState(false);
 
   const en = language === "en";
   const es = language === "es";
@@ -758,6 +771,50 @@ export default function Home() {
       window.removeEventListener("pageshow", syncFreeQuota);
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function syncHomeCoinWallet() {
+      if (activeTier !== "super_premium") {
+        if (!cancelled) {
+          setHomeCoinBalance(0);
+          setHomeCoinWalletLoaded(false);
+        }
+        return;
+      }
+
+      const identity = getCoinIdentity();
+      const { data, error } = await (supabase as any).rpc(
+        "get_coin_wallet_state",
+        {
+          p_device_id: identity.deviceId,
+          p_device_secret: identity.secret,
+        }
+      );
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error("Home coin wallet loading failed:", error);
+        setHomeCoinWalletLoaded(false);
+        return;
+      }
+
+      setHomeCoinBalance(Number((data as any)?.balance ?? 0));
+      setHomeCoinWalletLoaded(true);
+    }
+
+    void syncHomeCoinWallet();
+    window.addEventListener("focus", syncHomeCoinWallet);
+    window.addEventListener("pageshow", syncHomeCoinWallet);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", syncHomeCoinWallet);
+      window.removeEventListener("pageshow", syncHomeCoinWallet);
+    };
+  }, [activeTier]);
 
   useEffect(() => {
     const savedUiLanguage = window.localStorage.getItem("zm_uiLanguage");
@@ -1163,6 +1220,13 @@ export default function Home() {
       <div className={styles.blueVeil} aria-hidden="true" />
 
       <div className={styles.content}>
+        {activeTier === "super_premium" && homeCoinWalletLoaded && (
+          <div className={styles.myAccountBar}>
+            <span>{h("myAccount")}</span>
+            <strong>🪙 {homeCoinBalance}</strong>
+          </div>
+        )}
+
         <header className={styles.header}>
           <div className={styles.applicationLanguage} aria-label={h("applicationLanguage")}>
             <span>{h("applicationLanguage")}</span>
