@@ -2941,6 +2941,68 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     await loadAllScores(roomId, round.round_no);
   }
 
+  async function claimCoinRoundReward() {
+    if (
+      roomTierForCategoryPreview !== "super_premium" ||
+      !isOrganizer ||
+      !roomId ||
+      !round?.id ||
+      !localCreatorToken
+    ) {
+      return;
+    }
+
+    const identity = getOrCreateCoinIdentity();
+
+    const { error: walletError } = await (supabase as any).rpc(
+      "get_coin_wallet_state",
+      {
+        p_device_id: identity.deviceId,
+        p_device_secret: identity.secret,
+      }
+    );
+
+    if (walletError) {
+      console.error("Coin wallet initialization failed:", walletError);
+      return;
+    }
+
+    const { data, error } = await (supabase as any).rpc(
+      "claim_coin_round_reward",
+      {
+        p_room_id: roomId,
+        p_round_id: round.id,
+        p_creator_token: localCreatorToken,
+        p_device_id: identity.deviceId,
+        p_device_secret: identity.secret,
+      }
+    );
+
+    if (error) {
+      console.error("Coin round reward failed:", error);
+      return;
+    }
+
+    applyCoinWalletState(data);
+
+    if ((data as any)?.awarded === true) {
+      setMsg(
+        uiMessage({
+          cs: "🪙 +2 coiny za kvalifikované kolo.",
+          en: "🪙 +2 coins for a qualifying round.",
+          es: "🪙 +2 monedas por una ronda válida.",
+          de: "🪙 +2 Coins für eine qualifizierte Runde.",
+          fr: "🪙 +2 pièces pour une manche admissible.",
+          "pt-BR": "🪙 +2 moedas por uma rodada válida.",
+          id: "🪙 +2 koin untuk ronde yang memenuhi syarat.",
+          tr: "🪙 Uygun tur için +2 coin.",
+          pl: "🪙 +2 monety za kwalifikującą się rundę.",
+          it: "🪙 +2 monete per un turno valido.",
+        })
+      );
+    }
+  }
+
   const scoredPlayerIds = new Set(
     players
       .filter((p) => currentRoundCategories.every((c) => allScores.some((s) => s.player_id === p.id && s.category === c)))
@@ -2948,6 +3010,28 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   );
 
   const everyoneScored = players.length > 0 && scoredPlayerIds.size === players.length;
+
+  useEffect(() => {
+    if (
+      roomTierForCategoryPreview !== "super_premium" ||
+      roomStatus !== "scoring" ||
+      !everyoneScored ||
+      !isOrganizer ||
+      !roomId ||
+      !round?.id
+    ) {
+      return;
+    }
+
+    void claimCoinRoundReward();
+  }, [
+    roomTierForCategoryPreview,
+    roomStatus,
+    everyoneScored,
+    isOrganizer,
+    roomId,
+    round?.id,
+  ]);
 
   useEffect(() => {
     if (
