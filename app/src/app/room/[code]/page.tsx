@@ -5123,6 +5123,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                           </>
                         )}
                       </>
+                    )}
                   </>
                 )}
               </section>
