@@ -1865,6 +1865,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const playerStatus: PlayerStatus = roomStatus === "lobby" ? "active" : "waiting";
     const playerToken = createAccessToken();
     const playerTokenHash = await hashAccessToken(playerToken);
+    const { deviceId } = getOrCreateCoinIdentity();
 
     try {
       window.localStorage.setItem(
@@ -1880,6 +1881,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         name: trimmed,
         status: playerStatus,
         player_token_hash: playerTokenHash,
+        device_id: deviceId,
       })
       .select("id,name,status")
       .single();
@@ -2221,7 +2223,15 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   function canToggleRoomCategory(category: string) {
     if (!canEditRoomCategories) return false;
-    if (roomTierForCategoryPreview === "super_premium") return true;
+
+    if (roomTierForCategoryPreview === "super_premium") {
+      if (PREMIUM_CATEGORIES.includes(category)) return true;
+      if (SUPER_PREMIUM_INCLUDED_CATEGORIES.includes(category)) return true;
+
+      const unlockKey = SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS[category];
+      return Boolean(unlockKey && coinUnlockSet.has(unlockKey));
+    }
+
     if (PREMIUM_CATEGORIES.includes(category)) return true;
 
     return ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
@@ -2245,8 +2255,57 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       }
     }
 
+    if (roomTierForCategoryPreview === "super_premium") {
+      const lockedCoinCategories = predefinedCategories.filter((category) => {
+        if (PREMIUM_CATEGORIES.includes(category)) return false;
+        if (SUPER_PREMIUM_INCLUDED_CATEGORIES.includes(category)) return false;
+        const unlockKey = SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS[category];
+        return !unlockKey || !coinUnlockSet.has(unlockKey);
+      });
+
+      if (lockedCoinCategories.length > 0) {
+        setMsg(
+          uiMessage({
+            cs: "🔒 Tuto kategorii je nejdřív potřeba odemknout za coiny.",
+            en: "🔒 Unlock this category with coins first.",
+            es: "🔒 Primero desbloquea esta categoría con monedas.",
+            de: "🔒 Schalte diese Kategorie zuerst mit Coins frei.",
+            fr: "🔒 Déverrouille d’abord cette catégorie avec des pièces.",
+            "pt-BR": "🔒 Primeiro desbloqueie esta categoria com moedas.",
+            id: "🔒 Buka kategori ini dengan koin terlebih dahulu.",
+            tr: "🔒 Önce bu kategorinin kilidini coin ile aç.",
+            pl: "🔒 Najpierw odblokuj tę kategorię za monety.",
+            it: "🔒 Prima sblocca questa categoria con le monete.",
+          })
+        );
+        return;
+      }
+
+      if (
+        uniqueNonEmpty(customCategories).length > 0 &&
+        !coinUnlockSet.has("feature_custom_categories")
+      ) {
+        setMsg(
+          uiMessage({
+            cs: "🔒 Vlastní kategorie je potřeba nejdřív odemknout za coiny.",
+            en: "🔒 Unlock custom categories with coins first.",
+            es: "🔒 Primero desbloquea las categorías personalizadas con monedas.",
+            de: "🔒 Schalte benutzerdefinierte Kategorien zuerst mit Coins frei.",
+            fr: "🔒 Déverrouille d’abord les catégories personnalisées avec des pièces.",
+            "pt-BR": "🔒 Primeiro desbloqueie as categorias personalizadas com moedas.",
+            id: "🔒 Buka kategori kustom dengan koin terlebih dahulu.",
+            tr: "🔒 Önce özel kategorilerin kilidini coin ile aç.",
+            pl: "🔒 Najpierw odblokuj własne kategorie za monety.",
+            it: "🔒 Prima sblocca le categorie personalizzate con le monete.",
+          })
+        );
+        return;
+      }
+    }
+
     const cleanedCustomCategories =
-      roomTierForCategoryPreview === "super_premium"
+      roomTierForCategoryPreview === "super_premium" &&
+      coinUnlockSet.has("feature_custom_categories")
         ? uniqueNonEmpty(customCategories).slice(0, 5)
         : [];
     const finalCategories = uniqueNonEmpty([...predefinedCategories, ...cleanedCustomCategories]);
@@ -2492,6 +2551,20 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   ) {
     if (!isOrganizer || !roomId || roomStatus !== "lobby" || !superPremiumGameSettingsEnabled) return;
 
+    if (
+      nextRoundTimeLimitSeconds !== roundTimeLimitSeconds &&
+      !coinUnlockSet.has("feature_round_time")
+    ) {
+      return;
+    }
+
+    if (
+      nextRoundCountLimit !== roundCountLimit &&
+      !coinUnlockSet.has("feature_round_count")
+    ) {
+      return;
+    }
+
     setRoundTimeLimitSeconds(nextRoundTimeLimitSeconds);
     setRoundCountLimit(nextRoundCountLimit);
 
@@ -2512,6 +2585,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   async function saveRoomCategoryOrder(nextCategories: string[]) {
     if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
+    if (
+      roomTierForCategoryPreview === "super_premium" &&
+      !coinUnlockSet.has("feature_category_order")
+    ) {
+      return;
+    }
 
     const finalCategories = uniqueNonEmpty(nextCategories);
 
