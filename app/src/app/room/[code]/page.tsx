@@ -3855,7 +3855,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 <section className={`${roomStyles.roomCategoriesPanel} ${roomStyles.gameSettingsPanel}`}>
                   <div className={roomStyles.coinBalanceBar}>
                     <strong>🪙 {coinBalance}</strong>
-                    <span>+2 / {t("round").toLocaleLowerCase()}</span>
+                    <span>🏁 {coinQualifyingRounds} · +2 🪙</span>
                   </div>
 
                   <div className={roomStyles.gameSettingsGrid}>
