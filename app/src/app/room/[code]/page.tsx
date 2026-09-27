@@ -29,6 +29,7 @@ import {
   unlockFreeRoundBlock,
 } from "@/lib/freeQuota";
 import { useStableViewportUnit } from "@/lib/useStableViewportUnit";
+import { getCoinIdentity, type CoinIdentity } from "@/lib/coinIdentity";
 
 import {
   gameLanguageInstructionText,
@@ -145,6 +146,33 @@ const SUPER_PREMIUM_EXTRA_CATEGORIES = [
   "Povolání",
   "Barva",
 ];
+
+const SUPER_PREMIUM_INCLUDED_CATEGORIES = [
+  "Film / Seriál",
+  "Sport",
+  "Značka",
+  "Auto / Moto",
+];
+
+const SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS: Record<string, string> = {
+  "Herec / Herečka": "category_actor",
+  "Zpěvák / Zpěvačka / Kapela": "category_music",
+  "Řeka / Hora": "category_river_mountain",
+  Povolání: "category_job",
+  Barva: "category_color",
+};
+
+const COIN_UNLOCK_COSTS: Record<string, number> = {
+  category_actor: 250,
+  category_music: 250,
+  category_river_mountain: 250,
+  category_job: 250,
+  category_color: 250,
+  feature_category_order: 350,
+  feature_round_count: 450,
+  feature_round_time: 550,
+  feature_custom_categories: 750,
+};
 
 const CATEGORY_PRODUCT_ID: Record<string, string> = {
   "Film / Seriál": "category_film_serial",
@@ -500,6 +528,10 @@ export default function RoomPage() {
   const [ownedCategoryProductIds, setOwnedCategoryProductIds] = useState<string[]>([]);
   const [ownedTier, setOwnedTier] = useState<RoomTier>("free");
   const [categoryPurchaseBusy, setCategoryPurchaseBusy] = useState<string | null>(null);
+  const [coinBalance, setCoinBalance] = useState(0);
+  const [coinQualifyingRounds, setCoinQualifyingRounds] = useState(0);
+  const [coinUnlocks, setCoinUnlocks] = useState<string[]>([]);
+  const [coinPurchaseBusy, setCoinPurchaseBusy] = useState<string | null>(null);
   const [roomLanguage, setRoomLanguage] = useState<GameLanguage>("cs");
   const [roundTimeLimitSeconds, setRoundTimeLimitSeconds] = useState<RoundTimeLimitSeconds>(null);
   const [roundCountLimit, setRoundCountLimit] = useState<RoundCountLimit>(null);
@@ -554,6 +586,7 @@ export default function RoomPage() {
   const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const answerScrollBoxRef = useRef<HTMLDivElement | null>(null);
   const editingCustomCategoryIndexRef = useRef<number | null>(null);
+  const coinIdentityRef = useRef<CoinIdentity | null>(null);
   const [keyboardInsetPx, setKeyboardInsetPx] = useState(0);
   const [isOnline, setIsOnline] = useState(true);
   const [isReconnecting, setIsReconnecting] = useState(false);
