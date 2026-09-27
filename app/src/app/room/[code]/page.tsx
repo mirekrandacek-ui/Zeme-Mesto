@@ -2216,6 +2216,30 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const coinUnlockSet = useMemo(() => new Set(coinUnlocks), [coinUnlocks]);
 
+  useEffect(() => {
+    if (!roomId || !myPlayer) return;
+
+    const { deviceId } = getOrCreateCoinIdentity();
+
+    void supabase
+      .from("players")
+      .update({ device_id: deviceId })
+      .eq("id", myPlayer.id)
+      .eq("room_id", roomId);
+  }, [roomId, myPlayer?.id]);
+
+  useEffect(() => {
+    if (
+      roomTierForCategoryPreview !== "super_premium" ||
+      !isOrganizer ||
+      !roomId
+    ) {
+      return;
+    }
+
+    void loadCoinWalletState();
+  }, [roomTierForCategoryPreview, isOrganizer, roomId]);
+
   const canEditRoomCategories =
     isOrganizer &&
     (roomTierForCategoryPreview === "premium" ||
