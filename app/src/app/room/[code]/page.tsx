@@ -4978,10 +4978,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                           roomTierForCategoryPreview === "premium" &&
                           isOrganizer &&
                           !ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
+                        const coinUnlockKey =
+                          SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS[category];
+                        const isSuperPremiumCoinLocked =
+                          roomTierForCategoryPreview === "super_premium" &&
+                          isOrganizer &&
+                          Boolean(coinUnlockKey) &&
+                          !coinUnlockSet.has(coinUnlockKey);
 
                         return (
                           <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                            {isPremiumLockedPurchase ? (
+                            {isPremiumLockedPurchase || isSuperPremiumCoinLocked ? (
                               <>
                                 <span
                                   aria-hidden="true"
@@ -5003,24 +5010,35 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                                     userSelect: "none",
                                   }}
                                 />
-                                <button
-                                  type="button"
-                                  disabled={categoryPurchaseBusy !== null}
-                                  onClick={() => void startCategoryPurchase(category)}
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                    padding: 0,
-                                    textAlign: "left",
-                                    cursor: categoryPurchaseBusy === null ? "pointer" : "default",
-                                    font: "inherit",
-                                  }}
-                                >
-                                  🔒 {categoryLabel(category)}
-                                  {categoryPlayPrice(category)
-                                    ? ` – ${categoryPlayPrice(category)}`
-                                    : ""}
-                                </button>
+                                {isPremiumLockedPurchase ? (
+                                  <button
+                                    type="button"
+                                    disabled={categoryPurchaseBusy !== null}
+                                    onClick={() => void startCategoryPurchase(category)}
+                                    style={{
+                                      border: "none",
+                                      background: "transparent",
+                                      padding: 0,
+                                      textAlign: "left",
+                                      cursor: categoryPurchaseBusy === null ? "pointer" : "default",
+                                      font: "inherit",
+                                    }}
+                                  >
+                                    🔒 {categoryLabel(category)}
+                                    {categoryPlayPrice(category)
+                                      ? ` – ${categoryPlayPrice(category)}`
+                                      : ""}
+                                  </button>
+                                ) : coinUnlockKey ? (
+                                  <button
+                                    type="button"
+                                    className={roomStyles.coinCategoryUnlockButton}
+                                    disabled={coinPurchaseBusy !== null}
+                                    onClick={() => void purchaseCoinUnlock(coinUnlockKey)}
+                                  >
+                                    🔒 {categoryLabel(category)} – {COIN_UNLOCK_COSTS[coinUnlockKey]} 🪙
+                                  </button>
+                                ) : null}
                               </>
                             ) : (
                               <>
@@ -5046,53 +5064,65 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       <>
                         <h4 style={{ marginTop: 16 }}>{t("customCategories")}</h4>
 
-                        {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
-                          <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                            <input
-                              placeholder={`${t("customCategoryPrefix")} ${index + 1}`}
-                              value={value}
-                              onFocus={() => {
-                                editingCustomCategoryIndexRef.current = index;
-                              }}
-                              onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
-                              onBlur={(e) => {
-                                void commitRoomCustomCategory(index, e.currentTarget.value);
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  e.currentTarget.blur();
-                                }
-                              }}
-                              style={{ padding: 12, width: "100%" }}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => removeRoomCustomCategory(index)}
-                              aria-label={t("removeCustomCategory")}
-                              style={{ padding: "0 12px" }}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-
-                        {visibleCustomCategoryCount < 5 && (
+                        {!coinUnlockSet.has("feature_custom_categories") ? (
                           <button
                             type="button"
-                            onClick={addRoomCustomCategory}
-                            style={{ marginTop: 8, padding: 10, width: "100%" }}
+                            className={roomStyles.coinFeatureUnlockButton}
+                            disabled={coinPurchaseBusy !== null}
+                            onClick={() => void purchaseCoinUnlock("feature_custom_categories")}
                           >
-                            {t("addCustomCategory")}
+                            🔒 {t("customCategories")} – {COIN_UNLOCK_COSTS.feature_custom_categories} 🪙
                           </button>
-                        )}
+                        ) : (
+                          <>
+                            {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
+                              <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                                <input
+                                  placeholder={`${t("customCategoryPrefix")} ${index + 1}`}
+                                  value={value}
+                                  onFocus={() => {
+                                    editingCustomCategoryIndexRef.current = index;
+                                  }}
+                                  onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
+                                  onBlur={(e) => {
+                                    void commitRoomCustomCategory(index, e.currentTarget.value);
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      e.currentTarget.blur();
+                                    }
+                                  }}
+                                  style={{ padding: 12, width: "100%" }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => removeRoomCustomCategory(index)}
+                                  aria-label={t("removeCustomCategory")}
+                                  style={{ padding: "0 12px" }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
 
-                        {visibleCustomCategoryCount >= 5 && (
-                          <p style={{ opacity: 0.75, marginBottom: 0 }}>
-                            {t("maxCustomCategories")}
-                          </p>
+                            {visibleCustomCategoryCount < 5 && (
+                              <button
+                                type="button"
+                                onClick={addRoomCustomCategory}
+                                style={{ marginTop: 8, padding: 10, width: "100%" }}
+                              >
+                                {t("addCustomCategory")}
+                              </button>
+                            )}
+
+                            {visibleCustomCategoryCount >= 5 && (
+                              <p style={{ opacity: 0.75, marginBottom: 0 }}>
+                                {t("maxCustomCategories")}
+                              </p>
+                            )}
+                          </>
                         )}
                       </>
-                    )}
                   </>
                 )}
               </section>
