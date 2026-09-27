@@ -535,6 +535,7 @@ export default function RoomPage() {
   const [roomFreeRoundsStarted, setRoomFreeRoundsStarted] = useState(0);
 
   const [round, setRound] = useState<RoundLite | null>(null);
+  const [pendingRoundNo, setPendingRoundNo] = useState<number | null>(null);
   const [showNextRoundCategoryEditor, setShowNextRoundCategoryEditor] = useState(false);
   const [serverTimeOffsetMs, setServerTimeOffsetMs] = useState(0);
   const [timerNowMs, setTimerNowMs] = useState(0);
@@ -1702,6 +1703,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     );
   }, [roomStatus, round?.status, round?.id, uiLanguage]);
 
+  useEffect(() => {
+    if (roomStatus === "drawing" && round?.status === "done") {
+      setPendingRoundNo(round.round_no + 1);
+      return;
+    }
+
+    if (roomStatus !== "drawing") {
+      setPendingRoundNo(null);
+    }
+  }, [roomStatus, round?.status, round?.round_no]);
+
   // Při novém kole vyčisti lokální odpovědi a bodování u všech hráčů
   useEffect(() => {
     if (!round?.id) return;
@@ -1758,6 +1770,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setRoomStatus("lobby");
     setLetter(null);
     setRound(null);
+    setPendingRoundNo(null);
     setAnswers(emptyAnswers(activeCategories));
     setScores(emptyScores(activeCategories));
     setAllAnswers([]);
@@ -2707,7 +2720,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     myPlayer?.status,
   ]);
 
-  const currentRoundNo = round?.round_no ?? 0;
+  const currentRoundNo = pendingRoundNo ?? round?.round_no ?? 0;
   const currentRoundLimit =
     roomTier === "free" ? roomFreeRoundsUnlocked : roundCountLimit;
   const roundProgressText =
@@ -2814,6 +2827,63 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setMsg(t("freeRewardUnlocked"));
   }
 
+  async function restartGameInSameRoom() {
+    if (!roomId || !localCreatorToken || !isOrganizer) return;
+
+    const { data, error } = await (supabase as any).rpc(
+      "restart_room_game",
+      {
+        p_room_id: roomId,
+        p_creator_token: localCreatorToken,
+      }
+    );
+
+    if (error || data !== true) {
+      console.error("Restarting game in the same room failed:", error);
+      setMsg(
+        uiMessage({
+          cs: "❌ Novou hru ve stejné místnosti se nepodařilo spustit.",
+          en: "❌ Could not start a new game in the same room.",
+          es: "❌ No se pudo iniciar una nueva partida en la misma sala.",
+          de: "❌ Ein neues Spiel im selben Raum konnte nicht gestartet werden.",
+          fr: "❌ Impossible de démarrer une nouvelle partie dans la même salle.",
+          "pt-BR": "❌ Não foi possível iniciar um novo jogo na mesma sala.",
+          id: "❌ Tidak dapat memulai permainan baru di ruang yang sama.",
+          tr: "❌ Aynı odada yeni oyun başlatılamadı.",
+          pl: "❌ Nie udało się rozpocząć nowej gry w tym samym pokoju.",
+          it: "❌ Impossibile avviare una nuova partita nella stessa stanza.",
+        })
+      );
+      return;
+    }
+
+    setRoomStatus("lobby");
+    setLetter(null);
+    setRound(null);
+    setPendingRoundNo(null);
+    setAnswers(emptyAnswers(activeCategories));
+    setScores(emptyScores(activeCategories));
+    setAllAnswers([]);
+    setAllScores([]);
+    setAllRoomScores([]);
+    setMyScoreSubmitted(false);
+    setSelectedScoringCategory(null);
+    setShowRoundHistory(false);
+    setShowNextRoundCategoryEditor(false);
+    setShowFreeLimitUpsell(false);
+    setRoomFreeRoundsStarted(0);
+    if (roomTier === "free") {
+      setRoomFreeRoundsUnlocked(FREE_ROUND_BLOCK_SIZE);
+    }
+    setMsg("");
+
+    await Promise.all([
+      refreshRoomState(roomId),
+      loadPlayers(roomId),
+      loadRoomScores(roomId),
+    ]);
+  }
+
   async function finishGame() {
     if (!roomId || !round?.id || !everyoneScored || !myPlayer) {
       setMsg(t("joinNameFirst"));
@@ -2889,6 +2959,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       await loadPlayers(roomId);
     }
 
+    setPendingRoundNo((round?.round_no ?? 0) + 1);
     setMsg(t("drawingNextRound"));
     setRoomStatus("drawing");
     setLetter(null);
@@ -2902,10 +2973,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     window.setTimeout(async () => {
       const finalLetter = await pickLetter(rid);
-      if (!finalLetter) return;
+      if (!finalLetter) {
+        setPendingRoundNo(null);
+        return;
+      }
 
       const newRound = await createRound(rid, finalLetter);
-      if (!newRound) return;
+      if (!newRound) {
+        setPendingRoundNo(null);
+        return;
+      }
+
+      setPendingRoundNo(null);
 
       await supabase
         .from("rooms")
@@ -3157,10 +3236,22 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </div>
 
         <div className={roomStyles.lobbyActions}>
-          <a className={`${roomStyles.lobbyAction} ${roomStyles.lobbyActionPurple}`} href="/">
-            <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="11" cy="10" r="5"/><path d="M2 27c0-6 3-9 9-9s9 3 9 9M24 13v12M18 19h12"/></svg>
-            <span>{newRoomLabel}</span>
-          </a>
+          {isStyledFinished ? (
+            <button
+              className={`${roomStyles.lobbyAction} ${roomStyles.lobbyActionPurple}`}
+              type="button"
+              onClick={() => void restartGameInSameRoom()}
+              disabled={!isOrganizer}
+            >
+              <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M26 10a11 11 0 1 0 2 10M26 4v8h-8"/></svg>
+              <span>{t("playAgain")}</span>
+            </button>
+          ) : (
+            <a className={`${roomStyles.lobbyAction} ${roomStyles.lobbyActionPurple}`} href="/">
+              <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="11" cy="10" r="5"/><path d="M2 27c0-6 3-9 9-9s9 3 9 9M24 13v12M18 19h12"/></svg>
+              <span>{newRoomLabel}</span>
+            </a>
+          )}
 
           <button className={roomStyles.lobbyAction} type="button" onClick={signOut}>
             <span>{t("changePlayerOnDevice")}</span>
@@ -4271,7 +4362,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       const centredPosition =
                         totalColumn.offsetLeft -
                         stickyWidth -
-                        Math.max(0, (visibleWidth - totalColumn.offsetWidth) / 2);
+                        (visibleWidth - totalColumn.offsetWidth) / 2;
 
                       scrollBox.scrollTo({
                         left: Math.max(0, centredPosition),
@@ -4307,7 +4398,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         const centredPosition =
                           column.offsetLeft -
                           stickyWidth -
-                          Math.max(0, (visibleWidth - column.offsetWidth) / 2);
+                          (visibleWidth - column.offsetWidth) / 2;
 
                         scrollBox.scrollTo({
                           left: Math.max(0, centredPosition),
@@ -4340,7 +4431,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         const centredPosition =
                           column.offsetLeft -
                           stickyWidth -
-                          Math.max(0, (visibleWidth - column.offsetWidth) / 2);
+                          (visibleWidth - column.offsetWidth) / 2;
 
                         scrollBox.scrollTo({
                           left: Math.max(0, centredPosition),
