@@ -2187,7 +2187,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if ((data as any)?.reason === "insufficient_coins") {
       setMsg(
         uiMessage({
-          cs: "🪙 Na toto odemčení zatím nemáš dost coinů.",
+          cs: "🪙 Na toto odemčení nemáš dost coinů.",
           en: "🪙 You do not have enough coins for this unlock yet.",
           es: "🪙 Aún no tienes suficientes monedas para este desbloqueo.",
           de: "🪙 Du hast noch nicht genug Coins für diese Freischaltung.",
@@ -3905,6 +3905,15 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             >
               <span aria-hidden="true">⚙️</span>
               <span>{t("gameSettings")}</span>
+              <svg
+                className={`${roomStyles.entryActionChevron} ${
+                  showGameSettingsMenu ? roomStyles.entryActionChevronOpen : ""
+                }`}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="m5 9 7 7 7-7" />
+              </svg>
             </button>
           )}
 
@@ -3912,94 +3921,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             roomTierForCategoryPreview === "super_premium") &&
             showGameSettingsMenu && (
             <div className={roomStyles.gameSettingsDrawer}>
-              {superPremiumGameSettingsEnabled && (
-                <section className={`${roomStyles.roomCategoriesPanel} ${roomStyles.gameSettingsPanel}`}>
-                  <div className={roomStyles.coinBalanceBar}>
-                    <strong>🪙 {coinBalance}</strong>
-                    <span>🏁 {coinQualifyingRounds} · +2 🪙</span>
-                  </div>
-
-                  <div className={roomStyles.gameSettingsGrid}>
-                    <label>
-                      <span className={roomStyles.gameSettingsLabel}>
-                        {t("timeLimit")}
-                      </span>
-
-                      {isOrganizer && coinUnlockSet.has("feature_round_time") ? (
-                        <select
-                          value={roundTimeLimitSeconds ?? ""}
-                          onChange={(e) => {
-                            void updateRoomGameSettings(
-                              parseRoundTimeLimit(e.target.value),
-                              roundCountLimit
-                            );
-                          }}
-                        >
-                          <option value="">{t("noTimeLimit")}</option>
-                          {ROUND_TIME_LIMIT_OPTIONS.map((seconds) => (
-                            <option key={seconds} value={seconds}>
-                              {seconds} s
-                            </option>
-                          ))}
-                        </select>
-                      ) : isOrganizer ? (
-                        <button
-                          type="button"
-                          className={roomStyles.coinUnlockButton}
-                          disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
-                          onClick={() => void purchaseCoinUnlock("feature_round_time")}
-                        >
-                          🔒 {COIN_UNLOCK_COSTS.feature_round_time} 🪙
-                        </button>
-                      ) : (
-                        <div className={roomStyles.gameSettingsValue}>
-                          {roundTimeLimitSeconds ? `${roundTimeLimitSeconds} s` : t("noTimeLimit")}
-                        </div>
-                      )}
-                    </label>
-
-                    <label>
-                      <span className={roomStyles.gameSettingsLabel}>
-                        {t("roundCount")}
-                      </span>
-
-                      {isOrganizer && coinUnlockSet.has("feature_round_count") ? (
-                        <select
-                          value={roundCountLimit ?? ""}
-                          onChange={(e) => {
-                            void updateRoomGameSettings(
-                              roundTimeLimitSeconds,
-                              parseRoundCountLimit(e.target.value)
-                            );
-                          }}
-                        >
-                          <option value="">{t("unlimitedRounds")}</option>
-                          {ROUND_COUNT_LIMIT_OPTIONS.map((count) => (
-                            <option key={count} value={count}>
-                              {count} {t("roundsCountSuffix")}
-                            </option>
-                          ))}
-                        </select>
-                      ) : isOrganizer ? (
-                        <button
-                          type="button"
-                          className={roomStyles.coinUnlockButton}
-                          disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
-                          onClick={() => void purchaseCoinUnlock("feature_round_count")}
-                        >
-                          🔒 {COIN_UNLOCK_COSTS.feature_round_count} 🪙
-                        </button>
-                      ) : (
-                        <div className={roomStyles.gameSettingsValue}>
-                          {roundCountLimit ? `${roundCountLimit} ${t("roundsCountSuffix")}` : t("unlimitedRounds")}
-                        </div>
-                      )}
-                    </label>
-                  </div>
-                </section>
-              )}
-
-              <p className={roomStyles.lobbyLetters}>
+                            <p className={roomStyles.lobbyLetters}>
             <strong>{t("availableLetters")}:</strong>{" "}
             <span>{getLettersForLanguage(roomLanguage).join(", ")}</span>
           </p>
@@ -4009,6 +3931,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     className={roomStyles.roomCategoriesPanel}
     style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
   >
+              {roomTierForCategoryPreview === "super_premium" && isOrganizer && (
+                <div className={roomStyles.coinBalanceBar}>
+                  <strong>🪙 {coinBalance}</strong>
+                  <span>🏁 {coinQualifyingRounds} · +2 🪙</span>
+                </div>
+              )}
+
               <h4>
                 {t("basicCategories")}
               </h4>
@@ -4229,6 +4158,134 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
               {roomTierForCategoryPreview === "super_premium" && (
                 <>
+                  <h4 style={{ marginTop: 16 }}>{t("categoryOrder")}</h4>
+
+                  {isOrganizer && !coinUnlockSet.has("feature_category_order") ? (
+                    <button
+                      type="button"
+                      className={roomStyles.coinFeatureUnlockButton}
+                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                      onClick={() => void purchaseCoinUnlock("feature_category_order")}
+                    >
+                      <span className={roomStyles.coinFeatureUnlockTitle}>
+                        🔒 {t("categoryOrder")}
+                      </span>
+                      <span className={roomStyles.coinFeatureUnlockPrice}>
+                        {COIN_UNLOCK_COSTS.feature_category_order} 🪙
+                      </span>
+                    </button>
+                  ) : coinUnlockSet.has("feature_category_order") ? (
+                    <ol style={{ paddingLeft: 20 }}>
+                      {activeCategories.map((category, index) => (
+                        <li
+                          key={category}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            gap: 8,
+                            marginTop: 8,
+                          }}
+                        >
+                          <span>
+                            {index + 1}. {categoryLabel(category)}
+                          </span>
+
+                          {canEditRoomCategories && (
+                            <span style={{ display: "flex", gap: 6 }}>
+                              <button
+                                type="button"
+                                onClick={() => moveRoomCategory(category, -1)}
+                                disabled={index === 0}
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moveRoomCategory(category, 1)}
+                                disabled={index === activeCategories.length - 1}
+                              >
+                                ↓
+                              </button>
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ol>
+                  ) : null}
+
+                  <h4 style={{ marginTop: 16 }}>{t("roundCount")}</h4>
+
+                  {isOrganizer && coinUnlockSet.has("feature_round_count") ? (
+                    <select
+                      value={roundCountLimit ?? ""}
+                      onChange={(e) => {
+                        void updateRoomGameSettings(
+                          roundTimeLimitSeconds,
+                          parseRoundCountLimit(e.target.value)
+                        );
+                      }}
+                    >
+                      <option value="">{t("unlimitedRounds")}</option>
+                      {ROUND_COUNT_LIMIT_OPTIONS.map((count) => (
+                        <option key={count} value={count}>
+                          {count} {t("roundsCountSuffix")}
+                        </option>
+                      ))}
+                    </select>
+                  ) : isOrganizer ? (
+                    <button
+                      type="button"
+                      className={roomStyles.coinUnlockButton}
+                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                      onClick={() => void purchaseCoinUnlock("feature_round_count")}
+                    >
+                      🔒 {t("roundCount")} – {COIN_UNLOCK_COSTS.feature_round_count} 🪙
+                    </button>
+                  ) : (
+                    <div className={roomStyles.gameSettingsValue}>
+                      {roundCountLimit
+                        ? `${roundCountLimit} ${t("roundsCountSuffix")}`
+                        : t("unlimitedRounds")}
+                    </div>
+                  )}
+
+                  <h4 style={{ marginTop: 16 }}>{t("timeLimit")}</h4>
+
+                  {isOrganizer && coinUnlockSet.has("feature_round_time") ? (
+                    <select
+                      value={roundTimeLimitSeconds ?? ""}
+                      onChange={(e) => {
+                        void updateRoomGameSettings(
+                          parseRoundTimeLimit(e.target.value),
+                          roundCountLimit
+                        );
+                      }}
+                    >
+                      <option value="">{t("noTimeLimit")}</option>
+                      {ROUND_TIME_LIMIT_OPTIONS.map((seconds) => (
+                        <option key={seconds} value={seconds}>
+                          {seconds} s
+                        </option>
+                      ))}
+                    </select>
+                  ) : isOrganizer ? (
+                    <button
+                      type="button"
+                      className={roomStyles.coinUnlockButton}
+                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                      onClick={() => void purchaseCoinUnlock("feature_round_time")}
+                    >
+                      🔒 {t("timeLimit")} – {COIN_UNLOCK_COSTS.feature_round_time} 🪙
+                    </button>
+                  ) : (
+                    <div className={roomStyles.gameSettingsValue}>
+                      {roundTimeLimitSeconds
+                        ? `${roundTimeLimitSeconds} s`
+                        : t("noTimeLimit")}
+                    </div>
+                  )}
+
                   <h4 style={{ marginTop: 16 }}>{t("customCategories")}</h4>
 
                   {isOrganizer && !coinUnlockSet.has("feature_custom_categories") ? (
@@ -4238,7 +4295,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
                       onClick={() => void purchaseCoinUnlock("feature_custom_categories")}
                     >
-                      🔒 {t("customCategories")} – {COIN_UNLOCK_COSTS.feature_custom_categories} 🪙
+                      <span className={roomStyles.coinFeatureUnlockTitle}>
+                        🔒 {t("customCategories")}
+                      </span>
+                      <span className={roomStyles.coinFeatureUnlockPrice}>
+                        {COIN_UNLOCK_COSTS.feature_custom_categories} 🪙
+                      </span>
                     </button>
                   ) : coinUnlockSet.has("feature_custom_categories") ? (
                     <>
@@ -4292,57 +4354,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         </p>
                       )}
                     </>
-                  ) : null}
-
-                  <h4 style={{ marginTop: 16 }}>{t("categoryOrder")}</h4>
-
-                  {isOrganizer && !coinUnlockSet.has("feature_category_order") ? (
-                    <button
-                      type="button"
-                      className={roomStyles.coinFeatureUnlockButton}
-                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
-                      onClick={() => void purchaseCoinUnlock("feature_category_order")}
-                    >
-                      🔒 {t("categoryOrder")} – {COIN_UNLOCK_COSTS.feature_category_order} 🪙
-                    </button>
-                  ) : coinUnlockSet.has("feature_category_order") ? (
-                    <ol style={{ paddingLeft: 20 }}>
-                      {activeCategories.map((category, index) => (
-                        <li
-                          key={category}
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            gap: 8,
-                            marginTop: 8,
-                          }}
-                        >
-                          <span>
-                            {index + 1}. {categoryLabel(category)}
-                          </span>
-
-                          {canEditRoomCategories && (
-                            <span style={{ display: "flex", gap: 6 }}>
-                              <button
-                                type="button"
-                                onClick={() => moveRoomCategory(category, -1)}
-                                disabled={index === 0}
-                              >
-                                ↑
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => moveRoomCategory(category, 1)}
-                                disabled={index === activeCategories.length - 1}
-                              >
-                                ↓
-                              </button>
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ol>
                   ) : null}
                 </>
               )}
