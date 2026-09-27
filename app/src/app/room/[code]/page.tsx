@@ -4166,112 +4166,123 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 </>
               )}
 
-              {roomTier === "super_premium" && (
-                <>
-              <h4 style={{ marginTop: 16 }}>
-                {t("customCategories")}
-              </h4>
-
-              {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
-                <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                  <input
-                    placeholder={
-                      `${t("customCategoryPrefix")} ${index + 1}`
-                    }
-                    value={value}
-                    disabled={!isOrganizer}
-                    onFocus={() => {
-                      editingCustomCategoryIndexRef.current = index;
-                    }}
-                    onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
-                    onBlur={(e) => {
-                      void commitRoomCustomCategory(index, e.currentTarget.value);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.currentTarget.blur();
-                      }
-                    }}
-                    style={{ padding: 12, width: "100%" }}
-                  />
-
-                  {isOrganizer && (
-                    <button
-                      type="button"
-                      onClick={() => removeRoomCustomCategory(index)}
-                      aria-label={
-                        t("removeCustomCategory")
-                      }
-                      style={{ padding: "0 12px" }}
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
-
-              {isOrganizer && visibleCustomCategoryCount < 5 && (
-                <button
-                  type="button"
-                  onClick={addRoomCustomCategory}
-                  style={{ marginTop: 8, padding: 10, width: "100%" }}
-                >
-                  {t("addCustomCategory")}
-                </button>
-              )}
-
-              {isOrganizer && visibleCustomCategoryCount >= 5 && (
-                <p style={{ opacity: 0.75, marginBottom: 0 }}>
-                  {t("maxCustomCategories")}
-                </p>
-              )}
-
-                </>
-              )}
-
               {roomTierForCategoryPreview === "super_premium" && (
                 <>
-              <h4 style={{ marginTop: 16 }}>
-                {t("categoryOrder")}
-              </h4>
+                  <h4 style={{ marginTop: 16 }}>{t("customCategories")}</h4>
 
-              <ol style={{ paddingLeft: 20 }}>
-                {activeCategories.map((category, index) => (
-                  <li
-                    key={category}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: 8,
-                      marginTop: 8,
-                    }}
-                  >
-                    <span>
-                      {index + 1}. {categoryLabel(category)}
-                    </span>
+                  {isOrganizer && !coinUnlockSet.has("feature_custom_categories") ? (
+                    <button
+                      type="button"
+                      className={roomStyles.coinFeatureUnlockButton}
+                      disabled={coinPurchaseBusy !== null}
+                      onClick={() => void purchaseCoinUnlock("feature_custom_categories")}
+                    >
+                      🔒 {t("customCategories")} – {COIN_UNLOCK_COSTS.feature_custom_categories} 🪙
+                    </button>
+                  ) : coinUnlockSet.has("feature_custom_categories") ? (
+                    <>
+                      {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
+                        <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                          <input
+                            placeholder={`${t("customCategoryPrefix")} ${index + 1}`}
+                            value={value}
+                            disabled={!isOrganizer}
+                            onFocus={() => {
+                              editingCustomCategoryIndexRef.current = index;
+                            }}
+                            onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
+                            onBlur={(e) => {
+                              void commitRoomCustomCategory(index, e.currentTarget.value);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.currentTarget.blur();
+                              }
+                            }}
+                            style={{ padding: 12, width: "100%" }}
+                          />
 
-                    {canEditRoomCategories && (
-                      <span style={{ display: "flex", gap: 6 }}>
+                          {isOrganizer && (
+                            <button
+                              type="button"
+                              onClick={() => removeRoomCustomCategory(index)}
+                              aria-label={t("removeCustomCategory")}
+                              style={{ padding: "0 12px" }}
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                      ))}
+
+                      {isOrganizer && visibleCustomCategoryCount < 5 && (
                         <button
                           type="button"
-                          onClick={() => moveRoomCategory(category, -1)}
-                          disabled={index === 0}
+                          onClick={addRoomCustomCategory}
+                          style={{ marginTop: 8, padding: 10, width: "100%" }}
                         >
-                          ↑
+                          {t("addCustomCategory")}
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => moveRoomCategory(category, 1)}
-                          disabled={index === activeCategories.length - 1}
+                      )}
+
+                      {isOrganizer && visibleCustomCategoryCount >= 5 && (
+                        <p style={{ opacity: 0.75, marginBottom: 0 }}>
+                          {t("maxCustomCategories")}
+                        </p>
+                      )}
+                    </>
+                  ) : null}
+
+                  <h4 style={{ marginTop: 16 }}>{t("categoryOrder")}</h4>
+
+                  {isOrganizer && !coinUnlockSet.has("feature_category_order") ? (
+                    <button
+                      type="button"
+                      className={roomStyles.coinFeatureUnlockButton}
+                      disabled={coinPurchaseBusy !== null}
+                      onClick={() => void purchaseCoinUnlock("feature_category_order")}
+                    >
+                      🔒 {t("categoryOrder")} – {COIN_UNLOCK_COSTS.feature_category_order} 🪙
+                    </button>
+                  ) : coinUnlockSet.has("feature_category_order") ? (
+                    <ol style={{ paddingLeft: 20 }}>
+                      {activeCategories.map((category, index) => (
+                        <li
+                          key={category}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            gap: 8,
+                            marginTop: 8,
+                          }}
                         >
-                          ↓
-                        </button>
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ol>
+                          <span>
+                            {index + 1}. {categoryLabel(category)}
+                          </span>
+
+                          {canEditRoomCategories && (
+                            <span style={{ display: "flex", gap: 6 }}>
+                              <button
+                                type="button"
+                                onClick={() => moveRoomCategory(category, -1)}
+                                disabled={index === 0}
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moveRoomCategory(category, 1)}
+                                disabled={index === activeCategories.length - 1}
+                              >
+                                ↓
+                              </button>
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ol>
+                  ) : null}
                 </>
               )}
             </section>
