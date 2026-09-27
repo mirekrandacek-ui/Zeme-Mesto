@@ -29,6 +29,7 @@ import {
   unlockFreeRoundBlock,
 } from "@/lib/freeQuota";
 import { useStableViewportUnit } from "@/lib/useStableViewportUnit";
+import { getCoinIdentity, type CoinIdentity } from "@/lib/coinIdentity";
 
 import {
   gameLanguageInstructionText,
@@ -145,6 +146,33 @@ const SUPER_PREMIUM_EXTRA_CATEGORIES = [
   "Povolání",
   "Barva",
 ];
+
+const SUPER_PREMIUM_INCLUDED_CATEGORIES = [
+  "Film / Seriál",
+  "Sport",
+  "Značka",
+  "Auto / Moto",
+];
+
+const SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS: Record<string, string> = {
+  "Herec / Herečka": "category_actor",
+  "Zpěvák / Zpěvačka / Kapela": "category_music",
+  "Řeka / Hora": "category_river_mountain",
+  Povolání: "category_job",
+  Barva: "category_color",
+};
+
+const COIN_UNLOCK_COSTS: Record<string, number> = {
+  category_actor: 250,
+  category_music: 250,
+  category_river_mountain: 250,
+  category_job: 250,
+  category_color: 250,
+  feature_category_order: 350,
+  feature_round_count: 450,
+  feature_round_time: 550,
+  feature_custom_categories: 750,
+};
 
 const CATEGORY_PRODUCT_ID: Record<string, string> = {
   "Film / Seriál": "category_film_serial",
@@ -500,6 +528,11 @@ export default function RoomPage() {
   const [ownedCategoryProductIds, setOwnedCategoryProductIds] = useState<string[]>([]);
   const [ownedTier, setOwnedTier] = useState<RoomTier>("free");
   const [categoryPurchaseBusy, setCategoryPurchaseBusy] = useState<string | null>(null);
+  const [coinBalance, setCoinBalance] = useState(0);
+  const [coinQualifyingRounds, setCoinQualifyingRounds] = useState(0);
+  const [coinUnlocks, setCoinUnlocks] = useState<string[]>([]);
+  const [coinWalletLoaded, setCoinWalletLoaded] = useState(false);
+  const [coinPurchaseBusy, setCoinPurchaseBusy] = useState<string | null>(null);
   const [roomLanguage, setRoomLanguage] = useState<GameLanguage>("cs");
   const [roundTimeLimitSeconds, setRoundTimeLimitSeconds] = useState<RoundTimeLimitSeconds>(null);
   const [roundCountLimit, setRoundCountLimit] = useState<RoundCountLimit>(null);
@@ -554,6 +587,7 @@ export default function RoomPage() {
   const answerInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const answerScrollBoxRef = useRef<HTMLDivElement | null>(null);
   const editingCustomCategoryIndexRef = useRef<number | null>(null);
+  const coinIdentityRef = useRef<CoinIdentity | null>(null);
   const [keyboardInsetPx, setKeyboardInsetPx] = useState(0);
   const [isOnline, setIsOnline] = useState(true);
   const [isReconnecting, setIsReconnecting] = useState(false);
@@ -1832,6 +1866,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     const playerStatus: PlayerStatus = roomStatus === "lobby" ? "active" : "waiting";
     const playerToken = createAccessToken();
     const playerTokenHash = await hashAccessToken(playerToken);
+    const { deviceId } = getOrCreateCoinIdentity();
 
     try {
       window.localStorage.setItem(
@@ -1847,6 +1882,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         name: trimmed,
         status: playerStatus,
         player_token_hash: playerTokenHash,
+        device_id: deviceId,
       })
       .select("id,name,status")
       .single();
@@ -2063,6 +2099,208 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setActiveCategories(PREMIUM_CATEGORIES);
   }, [premiumPreviewLockTest, roomId]);
 
+  function getOrCreateCoinIdentity() {
+    if (!coinIdentityRef.current) {
+      coinIdentityRef.current = getCoinIdentity();
+    }
+    return coinIdentityRef.current;
+  }
+
+  function applyCoinWalletState(data: any) {
+    if (!data) return;
+    setCoinBalance(Number(data.balance ?? 0));
+    setCoinQualifyingRounds(Number(data.qualifying_rounds ?? 0));
+    setCoinUnlocks(
+      Array.isArray(data.unlocks)
+        ? data.unlocks.filter((value: unknown): value is string => typeof value === "string")
+        : []
+    );
+    setCoinWalletLoaded(true);
+  }
+
+  async function loadCoinWalletState() {
+    if (roomTierForCategoryPreview !== "super_premium" || !isOrganizer) return;
+
+    setCoinWalletLoaded(false);
+    const identity = getOrCreateCoinIdentity();
+    const { data, error } = await (supabase as any).rpc(
+      "get_coin_wallet_state",
+      {
+        p_device_id: identity.deviceId,
+        p_device_secret: identity.secret,
+      }
+    );
+
+    if (error) {
+      console.error("Coin wallet loading failed:", error);
+      return;
+    }
+
+    applyCoinWalletState(data);
+  }
+
+  async function purchaseCoinUnlock(unlockKey: string) {
+    if (
+      roomTierForCategoryPreview !== "super_premium" ||
+      !isOrganizer ||
+      !coinWalletLoaded ||
+      coinPurchaseBusy
+    ) {
+      return;
+    }
+
+    const identity = getOrCreateCoinIdentity();
+    setCoinPurchaseBusy(unlockKey);
+
+    const { data, error } = await (supabase as any).rpc(
+      "purchase_coin_unlock",
+      {
+        p_device_id: identity.deviceId,
+        p_device_secret: identity.secret,
+        p_unlock_key: unlockKey,
+      }
+    );
+
+    setCoinPurchaseBusy(null);
+
+    if (error) {
+      console.error("Coin unlock purchase failed:", error);
+      setMsg(
+        uiMessage({
+          cs: "❌ Odemčení za coiny se nepodařilo.",
+          en: "❌ The coin unlock failed.",
+          es: "❌ No se pudo desbloquear con monedas.",
+          de: "❌ Das Freischalten mit Coins ist fehlgeschlagen.",
+          fr: "❌ Le déverrouillage avec des pièces a échoué.",
+          "pt-BR": "❌ Não foi possível desbloquear com moedas.",
+          id: "❌ Gagal membuka dengan koin.",
+          tr: "❌ Coin ile kilit açma başarısız oldu.",
+          pl: "❌ Nie udało się odblokować za monety.",
+          it: "❌ Sblocco con monete non riuscito.",
+        })
+      );
+      return;
+    }
+
+    applyCoinWalletState(data);
+
+    if ((data as any)?.reason === "insufficient_coins") {
+      setMsg(
+        uiMessage({
+          cs: "🪙 Na toto odemčení zatím nemáš dost coinů.",
+          en: "🪙 You do not have enough coins for this unlock yet.",
+          es: "🪙 Aún no tienes suficientes monedas para este desbloqueo.",
+          de: "🪙 Du hast noch nicht genug Coins für diese Freischaltung.",
+          fr: "🪙 Tu n’as pas encore assez de pièces pour ce déverrouillage.",
+          "pt-BR": "🪙 Você ainda não tem moedas suficientes para este desbloqueio.",
+          id: "🪙 Koin kamu belum cukup untuk membuka fitur ini.",
+          tr: "🪙 Bu kilidi açmak için henüz yeterli coin yok.",
+          pl: "🪙 Nie masz jeszcze wystarczającej liczby monet na to odblokowanie.",
+          it: "🪙 Non hai ancora abbastanza monete per questo sblocco.",
+        })
+      );
+      return;
+    }
+
+    setMsg(
+      uiMessage({
+        cs: "✅ Odemčeno za coiny.",
+        en: "✅ Unlocked with coins.",
+        es: "✅ Desbloqueado con monedas.",
+        de: "✅ Mit Coins freigeschaltet.",
+        fr: "✅ Déverrouillé avec des pièces.",
+        "pt-BR": "✅ Desbloqueado com moedas.",
+        id: "✅ Dibuka dengan koin.",
+        tr: "✅ Coin ile kilit açıldı.",
+        pl: "✅ Odblokowano za monety.",
+        it: "✅ Sbloccato con monete.",
+      })
+    );
+  }
+
+  const coinUnlockSet = useMemo(() => new Set(coinUnlocks), [coinUnlocks]);
+
+  useEffect(() => {
+    if (!roomId || !myPlayer) return;
+
+    const { deviceId } = getOrCreateCoinIdentity();
+
+    void supabase
+      .from("players")
+      .update({ device_id: deviceId })
+      .eq("id", myPlayer.id)
+      .eq("room_id", roomId);
+  }, [roomId, myPlayer?.id]);
+
+  useEffect(() => {
+    if (
+      roomTierForCategoryPreview !== "super_premium" ||
+      !isOrganizer ||
+      !roomId
+    ) {
+      setCoinWalletLoaded(false);
+      return;
+    }
+
+    void loadCoinWalletState();
+  }, [roomTierForCategoryPreview, isOrganizer, roomId]);
+
+  useEffect(() => {
+    if (
+      !coinWalletLoaded ||
+      roomTierForCategoryPreview !== "super_premium" ||
+      !isOrganizer ||
+      !roomId
+    ) {
+      return;
+    }
+
+    const nextCategories = activeCategories.filter((category) => {
+      if (PREMIUM_CATEGORIES.includes(category)) return true;
+      if (SUPER_PREMIUM_INCLUDED_CATEGORIES.includes(category)) return true;
+
+      const unlockKey = SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS[category];
+      if (unlockKey) return coinUnlockSet.has(unlockKey);
+
+      return coinUnlockSet.has("feature_custom_categories");
+    });
+
+    const safeCategories =
+      nextCategories.length > 0 ? uniqueNonEmpty(nextCategories) : [...PREMIUM_CATEGORIES];
+
+    if (
+      safeCategories.length === activeCategories.length &&
+      safeCategories.every((category, index) => category === activeCategories[index])
+    ) {
+      return;
+    }
+
+    const customCategories = safeCategories
+      .filter((category) => !ALL_PREDEFINED_CATEGORIES.includes(category))
+      .slice(0, 5);
+
+    setActiveCategories(safeCategories);
+    setRoomCustomCategories([
+      ...customCategories,
+      ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
+    ].slice(0, 5));
+
+    void supabase
+      .from("rooms")
+      .update({
+        active_categories: safeCategories,
+        custom_category: customCategories.join(" | ") || null,
+      })
+      .eq("id", roomId);
+  }, [
+    coinWalletLoaded,
+    coinUnlocks.join("\u001f"),
+    roomTierForCategoryPreview,
+    isOrganizer,
+    roomId,
+    activeCategories.join("\u001f"),
+  ]);
+
   const canEditRoomCategories =
     isOrganizer &&
     (roomTierForCategoryPreview === "premium" ||
@@ -2070,7 +2308,15 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   function canToggleRoomCategory(category: string) {
     if (!canEditRoomCategories) return false;
-    if (roomTierForCategoryPreview === "super_premium") return true;
+
+    if (roomTierForCategoryPreview === "super_premium") {
+      if (PREMIUM_CATEGORIES.includes(category)) return true;
+      if (SUPER_PREMIUM_INCLUDED_CATEGORIES.includes(category)) return true;
+
+      const unlockKey = SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS[category];
+      return Boolean(unlockKey && coinUnlockSet.has(unlockKey));
+    }
+
     if (PREMIUM_CATEGORIES.includes(category)) return true;
 
     return ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
@@ -2094,8 +2340,57 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       }
     }
 
+    if (roomTierForCategoryPreview === "super_premium") {
+      const lockedCoinCategories = predefinedCategories.filter((category) => {
+        if (PREMIUM_CATEGORIES.includes(category)) return false;
+        if (SUPER_PREMIUM_INCLUDED_CATEGORIES.includes(category)) return false;
+        const unlockKey = SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS[category];
+        return !unlockKey || !coinUnlockSet.has(unlockKey);
+      });
+
+      if (lockedCoinCategories.length > 0) {
+        setMsg(
+          uiMessage({
+            cs: "🔒 Tuto kategorii je nejdřív potřeba odemknout za coiny.",
+            en: "🔒 Unlock this category with coins first.",
+            es: "🔒 Primero desbloquea esta categoría con monedas.",
+            de: "🔒 Schalte diese Kategorie zuerst mit Coins frei.",
+            fr: "🔒 Déverrouille d’abord cette catégorie avec des pièces.",
+            "pt-BR": "🔒 Primeiro desbloqueie esta categoria com moedas.",
+            id: "🔒 Buka kategori ini dengan koin terlebih dahulu.",
+            tr: "🔒 Önce bu kategorinin kilidini coin ile aç.",
+            pl: "🔒 Najpierw odblokuj tę kategorię za monety.",
+            it: "🔒 Prima sblocca questa categoria con le monete.",
+          })
+        );
+        return;
+      }
+
+      if (
+        uniqueNonEmpty(customCategories).length > 0 &&
+        !coinUnlockSet.has("feature_custom_categories")
+      ) {
+        setMsg(
+          uiMessage({
+            cs: "🔒 Vlastní kategorie je potřeba nejdřív odemknout za coiny.",
+            en: "🔒 Unlock custom categories with coins first.",
+            es: "🔒 Primero desbloquea las categorías personalizadas con monedas.",
+            de: "🔒 Schalte benutzerdefinierte Kategorien zuerst mit Coins frei.",
+            fr: "🔒 Déverrouille d’abord les catégories personnalisées avec des pièces.",
+            "pt-BR": "🔒 Primeiro desbloqueie as categorias personalizadas com moedas.",
+            id: "🔒 Buka kategori kustom dengan koin terlebih dahulu.",
+            tr: "🔒 Önce özel kategorilerin kilidini coin ile aç.",
+            pl: "🔒 Najpierw odblokuj własne kategorie za monety.",
+            it: "🔒 Prima sblocca le categorie personalizzate con le monete.",
+          })
+        );
+        return;
+      }
+    }
+
     const cleanedCustomCategories =
-      roomTierForCategoryPreview === "super_premium"
+      roomTierForCategoryPreview === "super_premium" &&
+      coinUnlockSet.has("feature_custom_categories")
         ? uniqueNonEmpty(customCategories).slice(0, 5)
         : [];
     const finalCategories = uniqueNonEmpty([...predefinedCategories, ...cleanedCustomCategories]);
@@ -2341,6 +2636,20 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   ) {
     if (!isOrganizer || !roomId || roomStatus !== "lobby" || !superPremiumGameSettingsEnabled) return;
 
+    if (
+      nextRoundTimeLimitSeconds !== roundTimeLimitSeconds &&
+      !coinUnlockSet.has("feature_round_time")
+    ) {
+      return;
+    }
+
+    if (
+      nextRoundCountLimit !== roundCountLimit &&
+      !coinUnlockSet.has("feature_round_count")
+    ) {
+      return;
+    }
+
     setRoundTimeLimitSeconds(nextRoundTimeLimitSeconds);
     setRoundCountLimit(nextRoundCountLimit);
 
@@ -2361,6 +2670,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   async function saveRoomCategoryOrder(nextCategories: string[]) {
     if (!isOrganizer || !roomId || roomStatus !== "lobby") return;
+    if (
+      roomTierForCategoryPreview === "super_premium" &&
+      !coinUnlockSet.has("feature_category_order")
+    ) {
+      return;
+    }
 
     const finalCategories = uniqueNonEmpty(nextCategories);
 
@@ -2687,6 +3002,68 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     await loadAllScores(roomId, round.round_no);
   }
 
+  async function claimCoinRoundReward() {
+    if (
+      roomTierForCategoryPreview !== "super_premium" ||
+      !isOrganizer ||
+      !roomId ||
+      !round?.id ||
+      !localCreatorToken
+    ) {
+      return;
+    }
+
+    const identity = getOrCreateCoinIdentity();
+
+    const { error: walletError } = await (supabase as any).rpc(
+      "get_coin_wallet_state",
+      {
+        p_device_id: identity.deviceId,
+        p_device_secret: identity.secret,
+      }
+    );
+
+    if (walletError) {
+      console.error("Coin wallet initialization failed:", walletError);
+      return;
+    }
+
+    const { data, error } = await (supabase as any).rpc(
+      "claim_coin_round_reward",
+      {
+        p_room_id: roomId,
+        p_round_id: round.id,
+        p_creator_token: localCreatorToken,
+        p_device_id: identity.deviceId,
+        p_device_secret: identity.secret,
+      }
+    );
+
+    if (error) {
+      console.error("Coin round reward failed:", error);
+      return;
+    }
+
+    applyCoinWalletState(data);
+
+    if ((data as any)?.awarded === true) {
+      setMsg(
+        uiMessage({
+          cs: "🪙 +2 coiny za kvalifikované kolo.",
+          en: "🪙 +2 coins for a qualifying round.",
+          es: "🪙 +2 monedas por una ronda válida.",
+          de: "🪙 +2 Coins für eine qualifizierte Runde.",
+          fr: "🪙 +2 pièces pour une manche admissible.",
+          "pt-BR": "🪙 +2 moedas por uma rodada válida.",
+          id: "🪙 +2 koin untuk ronde yang memenuhi syarat.",
+          tr: "🪙 Uygun tur için +2 coin.",
+          pl: "🪙 +2 monety za kwalifikującą się rundę.",
+          it: "🪙 +2 monete per un turno valido.",
+        })
+      );
+    }
+  }
+
   const scoredPlayerIds = new Set(
     players
       .filter((p) => currentRoundCategories.every((c) => allScores.some((s) => s.player_id === p.id && s.category === c)))
@@ -2694,6 +3071,28 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   );
 
   const everyoneScored = players.length > 0 && scoredPlayerIds.size === players.length;
+
+  useEffect(() => {
+    if (
+      roomTierForCategoryPreview !== "super_premium" ||
+      roomStatus !== "scoring" ||
+      !everyoneScored ||
+      !isOrganizer ||
+      !roomId ||
+      !round?.id
+    ) {
+      return;
+    }
+
+    void claimCoinRoundReward();
+  }, [
+    roomTierForCategoryPreview,
+    roomStatus,
+    everyoneScored,
+    isOrganizer,
+    roomId,
+    round?.id,
+  ]);
 
   useEffect(() => {
     if (
@@ -3514,70 +3913,91 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
             showGameSettingsMenu && (
             <div className={roomStyles.gameSettingsDrawer}>
               {superPremiumGameSettingsEnabled && (
-            <section className={`${roomStyles.roomCategoriesPanel} ${roomStyles.gameSettingsPanel}`}>
-              <h3>{t("gameSettings")}</h3>
+                <section className={`${roomStyles.roomCategoriesPanel} ${roomStyles.gameSettingsPanel}`}>
+                  <div className={roomStyles.coinBalanceBar}>
+                    <strong>🪙 {coinBalance}</strong>
+                    <span>🏁 {coinQualifyingRounds} · +2 🪙</span>
+                  </div>
 
-              <div className={roomStyles.gameSettingsGrid}>
-                <label>
-                  <span className={roomStyles.gameSettingsLabel}>
-                    {t("timeLimit")}
-                  </span>
+                  <div className={roomStyles.gameSettingsGrid}>
+                    <label>
+                      <span className={roomStyles.gameSettingsLabel}>
+                        {t("timeLimit")}
+                      </span>
 
-                  {isOrganizer ? (
-                    <select
-                      value={roundTimeLimitSeconds ?? ""}
-                      onChange={(e) => {
-                        void updateRoomGameSettings(
-                          parseRoundTimeLimit(e.target.value),
-                          roundCountLimit
-                        );
-                      }}
-                    >
-                      <option value="">{t("noTimeLimit")}</option>
-                      {ROUND_TIME_LIMIT_OPTIONS.map((seconds) => (
-                        <option key={seconds} value={seconds}>
-                          {seconds} s
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className={roomStyles.gameSettingsValue}>
-                      {roundTimeLimitSeconds ? `${roundTimeLimitSeconds} s` : t("noTimeLimit")}
-                    </div>
-                  )}
-                </label>
+                      {isOrganizer && coinUnlockSet.has("feature_round_time") ? (
+                        <select
+                          value={roundTimeLimitSeconds ?? ""}
+                          onChange={(e) => {
+                            void updateRoomGameSettings(
+                              parseRoundTimeLimit(e.target.value),
+                              roundCountLimit
+                            );
+                          }}
+                        >
+                          <option value="">{t("noTimeLimit")}</option>
+                          {ROUND_TIME_LIMIT_OPTIONS.map((seconds) => (
+                            <option key={seconds} value={seconds}>
+                              {seconds} s
+                            </option>
+                          ))}
+                        </select>
+                      ) : isOrganizer ? (
+                        <button
+                          type="button"
+                          className={roomStyles.coinUnlockButton}
+                          disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                          onClick={() => void purchaseCoinUnlock("feature_round_time")}
+                        >
+                          🔒 {COIN_UNLOCK_COSTS.feature_round_time} 🪙
+                        </button>
+                      ) : (
+                        <div className={roomStyles.gameSettingsValue}>
+                          {roundTimeLimitSeconds ? `${roundTimeLimitSeconds} s` : t("noTimeLimit")}
+                        </div>
+                      )}
+                    </label>
 
-                <label>
-                  <span className={roomStyles.gameSettingsLabel}>
-                    {t("roundCount")}
-                  </span>
+                    <label>
+                      <span className={roomStyles.gameSettingsLabel}>
+                        {t("roundCount")}
+                      </span>
 
-                  {isOrganizer ? (
-                    <select
-                      value={roundCountLimit ?? ""}
-                      onChange={(e) => {
-                        void updateRoomGameSettings(
-                          roundTimeLimitSeconds,
-                          parseRoundCountLimit(e.target.value)
-                        );
-                      }}
-                    >
-                      <option value="">{t("unlimitedRounds")}</option>
-                      {ROUND_COUNT_LIMIT_OPTIONS.map((count) => (
-                        <option key={count} value={count}>
-                          {count} {t("roundsCountSuffix")}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className={roomStyles.gameSettingsValue}>
-                      {roundCountLimit ? `${roundCountLimit} ${t("roundsCountSuffix")}` : t("unlimitedRounds")}
-                    </div>
-                  )}
-                </label>
-              </div>
-            </section>
-            )}
+                      {isOrganizer && coinUnlockSet.has("feature_round_count") ? (
+                        <select
+                          value={roundCountLimit ?? ""}
+                          onChange={(e) => {
+                            void updateRoomGameSettings(
+                              roundTimeLimitSeconds,
+                              parseRoundCountLimit(e.target.value)
+                            );
+                          }}
+                        >
+                          <option value="">{t("unlimitedRounds")}</option>
+                          {ROUND_COUNT_LIMIT_OPTIONS.map((count) => (
+                            <option key={count} value={count}>
+                              {count} {t("roundsCountSuffix")}
+                            </option>
+                          ))}
+                        </select>
+                      ) : isOrganizer ? (
+                        <button
+                          type="button"
+                          className={roomStyles.coinUnlockButton}
+                          disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                          onClick={() => void purchaseCoinUnlock("feature_round_count")}
+                        >
+                          🔒 {COIN_UNLOCK_COSTS.feature_round_count} 🪙
+                        </button>
+                      ) : (
+                        <div className={roomStyles.gameSettingsValue}>
+                          {roundCountLimit ? `${roundCountLimit} ${t("roundsCountSuffix")}` : t("unlimitedRounds")}
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                </section>
+              )}
 
               <p className={roomStyles.lobbyLetters}>
             <strong>{t("availableLetters")}:</strong>{" "}
@@ -3642,74 +4062,94 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 {t("extendedCategories")}
               </h4>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => (
-                  <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    {canToggleRoomCategory(category) ? (
-                    <input
-                      type="checkbox"
-                      checked={activeCategories.includes(category)}
-                      style={{
-                        accentColor: "#2563eb",
-                        cursor: "pointer",
-                      }}
-                      onChange={() => toggleRoomCategory(category)}
-                    />
-                  ) : (
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        width: 14,
-                        height: 14,
-                        borderRadius: 3,
-                        border: activeCategories.includes(category)
-                          ? "1px solid #2563eb"
-                          : "1px solid #767676",
-                        background: activeCategories.includes(category) ? "#2563eb" : "#fff",
-                        color: "#fff",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 11,
-                        fontWeight: 700,
-                        lineHeight: 1,
-                        flex: "0 0 14px",
-                        pointerEvents: "none",
-                        userSelect: "none",
-                      }}
-                    >
-                      {activeCategories.includes(category) ? "✓" : ""}
-                    </span>
-                  )}
-
-                    {roomTierForCategoryPreview === "premium" &&
+                {SUPER_PREMIUM_EXTRA_CATEGORIES.map((category) => {
+                  const canToggle = canToggleRoomCategory(category);
+                  const premiumLockedPurchase =
+                    roomTierForCategoryPreview === "premium" &&
                     isOrganizer &&
-                    !ownedCategoryProductIds.includes(
-                      CATEGORY_PRODUCT_ID[category]
-                    ) ? (
-                      <button
-                        type="button"
-                        onClick={() => showPremiumLockedCategoryOffer(category)}
-                        style={{
-                          border: "none",
-                          background: "transparent",
-                          padding: 0,
-                          textAlign: "left",
-                          color: "#111827",
-                          textDecoration: "underline",
-                          cursor: "pointer",
-                          font: "inherit",
-                        }}
-                      >
-                        🔒 {categoryLabel(category)}
-                        {categoryPlayPrice(category)
-                          ? ` – ${categoryPlayPrice(category)}`
-                          : ""}
-                      </button>
-                    ) : (
-                      categoryLabel(category)
-                    )}
-                  </label>
-                ))}
+                    !ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
+                  const coinUnlockKey =
+                    SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS[category];
+                  const superPremiumCoinLocked =
+                    roomTierForCategoryPreview === "super_premium" &&
+                    isOrganizer &&
+                    Boolean(coinUnlockKey) &&
+                    !coinUnlockSet.has(coinUnlockKey);
+
+                  return (
+                    <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      {canToggle ? (
+                        <input
+                          type="checkbox"
+                          checked={activeCategories.includes(category)}
+                          style={{
+                            accentColor: "#2563eb",
+                            cursor: "pointer",
+                          }}
+                          onChange={() => toggleRoomCategory(category)}
+                        />
+                      ) : (
+                        <span
+                          aria-hidden="true"
+                          style={{
+                            width: 14,
+                            height: 14,
+                            borderRadius: 3,
+                            border: activeCategories.includes(category)
+                              ? "1px solid #2563eb"
+                              : "1px solid #767676",
+                            background: activeCategories.includes(category) ? "#2563eb" : "#fff",
+                            color: "#fff",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 11,
+                            fontWeight: 700,
+                            lineHeight: 1,
+                            flex: "0 0 14px",
+                            pointerEvents: "none",
+                            userSelect: "none",
+                          }}
+                        >
+                          {activeCategories.includes(category) ? "✓" : ""}
+                        </span>
+                      )}
+
+                      {premiumLockedPurchase ? (
+                        <button
+                          type="button"
+                          onClick={() => showPremiumLockedCategoryOffer(category)}
+                          style={{
+                            border: "none",
+                            background: "transparent",
+                            padding: 0,
+                            textAlign: "left",
+                            color: "#111827",
+                            textDecoration: "underline",
+                            cursor: "pointer",
+                            font: "inherit",
+                          }}
+                        >
+                          🔒 {categoryLabel(category)}
+                          {categoryPlayPrice(category)
+                            ? ` – ${categoryPlayPrice(category)}`
+                            : ""}
+                        </button>
+                      ) : superPremiumCoinLocked && coinUnlockKey ? (
+                        <button
+                          type="button"
+                          className={roomStyles.coinCategoryUnlockButton}
+                          disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                          onClick={() => void purchaseCoinUnlock(coinUnlockKey)}
+                        >
+                          🔒 {categoryLabel(category)} – {COIN_UNLOCK_COSTS[coinUnlockKey]} 🪙
+                        </button>
+                      ) : (
+                        categoryLabel(category)
+                      )}
+                    </label>
+                  );
+                })}
               </div>
 
                 {roomTierForCategoryPreview === "premium" &&
@@ -3787,112 +4227,123 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                 </>
               )}
 
-              {roomTier === "super_premium" && (
-                <>
-              <h4 style={{ marginTop: 16 }}>
-                {t("customCategories")}
-              </h4>
-
-              {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
-                <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                  <input
-                    placeholder={
-                      `${t("customCategoryPrefix")} ${index + 1}`
-                    }
-                    value={value}
-                    disabled={!isOrganizer}
-                    onFocus={() => {
-                      editingCustomCategoryIndexRef.current = index;
-                    }}
-                    onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
-                    onBlur={(e) => {
-                      void commitRoomCustomCategory(index, e.currentTarget.value);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.currentTarget.blur();
-                      }
-                    }}
-                    style={{ padding: 12, width: "100%" }}
-                  />
-
-                  {isOrganizer && (
-                    <button
-                      type="button"
-                      onClick={() => removeRoomCustomCategory(index)}
-                      aria-label={
-                        t("removeCustomCategory")
-                      }
-                      style={{ padding: "0 12px" }}
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
-
-              {isOrganizer && visibleCustomCategoryCount < 5 && (
-                <button
-                  type="button"
-                  onClick={addRoomCustomCategory}
-                  style={{ marginTop: 8, padding: 10, width: "100%" }}
-                >
-                  {t("addCustomCategory")}
-                </button>
-              )}
-
-              {isOrganizer && visibleCustomCategoryCount >= 5 && (
-                <p style={{ opacity: 0.75, marginBottom: 0 }}>
-                  {t("maxCustomCategories")}
-                </p>
-              )}
-
-                </>
-              )}
-
               {roomTierForCategoryPreview === "super_premium" && (
                 <>
-              <h4 style={{ marginTop: 16 }}>
-                {t("categoryOrder")}
-              </h4>
+                  <h4 style={{ marginTop: 16 }}>{t("customCategories")}</h4>
 
-              <ol style={{ paddingLeft: 20 }}>
-                {activeCategories.map((category, index) => (
-                  <li
-                    key={category}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: 8,
-                      marginTop: 8,
-                    }}
-                  >
-                    <span>
-                      {index + 1}. {categoryLabel(category)}
-                    </span>
+                  {isOrganizer && !coinUnlockSet.has("feature_custom_categories") ? (
+                    <button
+                      type="button"
+                      className={roomStyles.coinFeatureUnlockButton}
+                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                      onClick={() => void purchaseCoinUnlock("feature_custom_categories")}
+                    >
+                      🔒 {t("customCategories")} – {COIN_UNLOCK_COSTS.feature_custom_categories} 🪙
+                    </button>
+                  ) : coinUnlockSet.has("feature_custom_categories") ? (
+                    <>
+                      {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
+                        <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                          <input
+                            placeholder={`${t("customCategoryPrefix")} ${index + 1}`}
+                            value={value}
+                            disabled={!isOrganizer}
+                            onFocus={() => {
+                              editingCustomCategoryIndexRef.current = index;
+                            }}
+                            onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
+                            onBlur={(e) => {
+                              void commitRoomCustomCategory(index, e.currentTarget.value);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.currentTarget.blur();
+                              }
+                            }}
+                            style={{ padding: 12, width: "100%" }}
+                          />
 
-                    {canEditRoomCategories && (
-                      <span style={{ display: "flex", gap: 6 }}>
+                          {isOrganizer && (
+                            <button
+                              type="button"
+                              onClick={() => removeRoomCustomCategory(index)}
+                              aria-label={t("removeCustomCategory")}
+                              style={{ padding: "0 12px" }}
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                      ))}
+
+                      {isOrganizer && visibleCustomCategoryCount < 5 && (
                         <button
                           type="button"
-                          onClick={() => moveRoomCategory(category, -1)}
-                          disabled={index === 0}
+                          onClick={addRoomCustomCategory}
+                          style={{ marginTop: 8, padding: 10, width: "100%" }}
                         >
-                          ↑
+                          {t("addCustomCategory")}
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => moveRoomCategory(category, 1)}
-                          disabled={index === activeCategories.length - 1}
+                      )}
+
+                      {isOrganizer && visibleCustomCategoryCount >= 5 && (
+                        <p style={{ opacity: 0.75, marginBottom: 0 }}>
+                          {t("maxCustomCategories")}
+                        </p>
+                      )}
+                    </>
+                  ) : null}
+
+                  <h4 style={{ marginTop: 16 }}>{t("categoryOrder")}</h4>
+
+                  {isOrganizer && !coinUnlockSet.has("feature_category_order") ? (
+                    <button
+                      type="button"
+                      className={roomStyles.coinFeatureUnlockButton}
+                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                      onClick={() => void purchaseCoinUnlock("feature_category_order")}
+                    >
+                      🔒 {t("categoryOrder")} – {COIN_UNLOCK_COSTS.feature_category_order} 🪙
+                    </button>
+                  ) : coinUnlockSet.has("feature_category_order") ? (
+                    <ol style={{ paddingLeft: 20 }}>
+                      {activeCategories.map((category, index) => (
+                        <li
+                          key={category}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            gap: 8,
+                            marginTop: 8,
+                          }}
                         >
-                          ↓
-                        </button>
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ol>
+                          <span>
+                            {index + 1}. {categoryLabel(category)}
+                          </span>
+
+                          {canEditRoomCategories && (
+                            <span style={{ display: "flex", gap: 6 }}>
+                              <button
+                                type="button"
+                                onClick={() => moveRoomCategory(category, -1)}
+                                disabled={index === 0}
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moveRoomCategory(category, 1)}
+                                disabled={index === activeCategories.length - 1}
+                              >
+                                ↓
+                              </button>
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ol>
+                  ) : null}
                 </>
               )}
             </section>
@@ -4588,10 +5039,17 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                           roomTierForCategoryPreview === "premium" &&
                           isOrganizer &&
                           !ownedCategoryProductIds.includes(CATEGORY_PRODUCT_ID[category]);
+                        const coinUnlockKey =
+                          SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS[category];
+                        const isSuperPremiumCoinLocked =
+                          roomTierForCategoryPreview === "super_premium" &&
+                          isOrganizer &&
+                          Boolean(coinUnlockKey) &&
+                          !coinUnlockSet.has(coinUnlockKey);
 
                         return (
                           <label key={category} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                            {isPremiumLockedPurchase ? (
+                            {isPremiumLockedPurchase || isSuperPremiumCoinLocked ? (
                               <>
                                 <span
                                   aria-hidden="true"
@@ -4613,24 +5071,35 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                                     userSelect: "none",
                                   }}
                                 />
-                                <button
-                                  type="button"
-                                  disabled={categoryPurchaseBusy !== null}
-                                  onClick={() => void startCategoryPurchase(category)}
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                    padding: 0,
-                                    textAlign: "left",
-                                    cursor: categoryPurchaseBusy === null ? "pointer" : "default",
-                                    font: "inherit",
-                                  }}
-                                >
-                                  🔒 {categoryLabel(category)}
-                                  {categoryPlayPrice(category)
-                                    ? ` – ${categoryPlayPrice(category)}`
-                                    : ""}
-                                </button>
+                                {isPremiumLockedPurchase ? (
+                                  <button
+                                    type="button"
+                                    disabled={categoryPurchaseBusy !== null}
+                                    onClick={() => void startCategoryPurchase(category)}
+                                    style={{
+                                      border: "none",
+                                      background: "transparent",
+                                      padding: 0,
+                                      textAlign: "left",
+                                      cursor: categoryPurchaseBusy === null ? "pointer" : "default",
+                                      font: "inherit",
+                                    }}
+                                  >
+                                    🔒 {categoryLabel(category)}
+                                    {categoryPlayPrice(category)
+                                      ? ` – ${categoryPlayPrice(category)}`
+                                      : ""}
+                                  </button>
+                                ) : coinUnlockKey ? (
+                                  <button
+                                    type="button"
+                                    className={roomStyles.coinCategoryUnlockButton}
+                                    disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                                    onClick={() => void purchaseCoinUnlock(coinUnlockKey)}
+                                  >
+                                    🔒 {categoryLabel(category)} – {COIN_UNLOCK_COSTS[coinUnlockKey]} 🪙
+                                  </button>
+                                ) : null}
                               </>
                             ) : (
                               <>
@@ -4656,50 +5125,63 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       <>
                         <h4 style={{ marginTop: 16 }}>{t("customCategories")}</h4>
 
-                        {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
-                          <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                            <input
-                              placeholder={`${t("customCategoryPrefix")} ${index + 1}`}
-                              value={value}
-                              onFocus={() => {
-                                editingCustomCategoryIndexRef.current = index;
-                              }}
-                              onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
-                              onBlur={(e) => {
-                                void commitRoomCustomCategory(index, e.currentTarget.value);
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  e.currentTarget.blur();
-                                }
-                              }}
-                              style={{ padding: 12, width: "100%" }}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => removeRoomCustomCategory(index)}
-                              aria-label={t("removeCustomCategory")}
-                              style={{ padding: "0 12px" }}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-
-                        {visibleCustomCategoryCount < 5 && (
+                        {!coinUnlockSet.has("feature_custom_categories") ? (
                           <button
                             type="button"
-                            onClick={addRoomCustomCategory}
-                            style={{ marginTop: 8, padding: 10, width: "100%" }}
+                            className={roomStyles.coinFeatureUnlockButton}
+                            disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
+                            onClick={() => void purchaseCoinUnlock("feature_custom_categories")}
                           >
-                            {t("addCustomCategory")}
+                            🔒 {t("customCategories")} – {COIN_UNLOCK_COSTS.feature_custom_categories} 🪙
                           </button>
-                        )}
+                        ) : (
+                          <>
+                            {roomCustomCategories.slice(0, visibleCustomCategoryCount).map((value, index) => (
+                              <div key={index} style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                                <input
+                                  placeholder={`${t("customCategoryPrefix")} ${index + 1}`}
+                                  value={value}
+                                  onFocus={() => {
+                                    editingCustomCategoryIndexRef.current = index;
+                                  }}
+                                  onChange={(e) => updateRoomCustomCategory(index, e.target.value)}
+                                  onBlur={(e) => {
+                                    void commitRoomCustomCategory(index, e.currentTarget.value);
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      e.currentTarget.blur();
+                                    }
+                                  }}
+                                  style={{ padding: 12, width: "100%" }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => removeRoomCustomCategory(index)}
+                                  aria-label={t("removeCustomCategory")}
+                                  style={{ padding: "0 12px" }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
 
-                        {visibleCustomCategoryCount >= 5 && (
-                          <p style={{ opacity: 0.75, marginBottom: 0 }}>
-                            {t("maxCustomCategories")}
-                          </p>
+                            {visibleCustomCategoryCount < 5 && (
+                              <button
+                                type="button"
+                                onClick={addRoomCustomCategory}
+                                style={{ marginTop: 8, padding: 10, width: "100%" }}
+                              >
+                                {t("addCustomCategory")}
+                              </button>
+                            )}
+
+                            {visibleCustomCategoryCount >= 5 && (
+                              <p style={{ opacity: 0.75, marginBottom: 0 }}>
+                                {t("maxCustomCategories")}
+                              </p>
+                            )}
+                          </>
                         )}
                       </>
                     )}

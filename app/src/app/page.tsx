@@ -57,6 +57,13 @@ const EXTENDED_CATEGORIES = [
   "Barva",
 ];
 
+const SUPER_PREMIUM_INCLUDED_CATEGORIES = [
+  "Film / Seriál",
+  "Sport",
+  "Značka",
+  "Auto / Moto",
+];
+
 
 const ROOM_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
@@ -984,7 +991,7 @@ export default function Home() {
       return {
         creator_tier: "super_premium",
         max_players: 999,
-        active_categories: [...PREMIUM_CATEGORIES, ...EXTENDED_CATEGORIES],
+        active_categories: [...PREMIUM_CATEGORIES, ...SUPER_PREMIUM_INCLUDED_CATEGORIES],
         custom_category: null,
         ads_enabled: true,
       };
