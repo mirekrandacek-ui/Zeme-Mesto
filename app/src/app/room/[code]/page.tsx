@@ -2975,7 +2975,9 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
   const isRoomEntry = Boolean(roomId && !myPlayer);
   const isStyledLobby = Boolean(roomId && myPlayer && roomStatus === "lobby");
-  const usePhotoRoomChrome = isRoomEntry || isStyledLobby || isActiveGamePhase;
+  const isStyledFinished = Boolean(roomId && myPlayer && roomStatus === "finished");
+  const usePhotoRoomChrome =
+    isRoomEntry || isStyledLobby || isStyledFinished || isActiveGamePhase;
   const newRoomLabel = uiMessage({
     cs: "Nová místnost",
     en: "New room",
@@ -3139,7 +3141,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           </button>
         </div>
       </header>
-      ) : isStyledLobby ? (
+      ) : isStyledLobby || isStyledFinished ? (
       <header className={roomStyles.lobbyHeader}>
         <h1 className={roomStyles.lobbyRoomTitle}>
           {t("room")}: {code.toUpperCase()}
@@ -3264,7 +3266,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
           <p className={roomStyles.entryLanguageNote}>{t("diacriticsOptional")}</p>
         )}
       </section>
-      ) : isStyledLobby ? null : (
+      ) : isStyledLobby || isStyledFinished ? null : (
       <section
         data-game-language-banner
         style={{
@@ -3296,7 +3298,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )
       )}
 
-      {showRules && !isStyledLobby && !isActiveGamePhase && (
+      {showRules && !isStyledLobby && !isStyledFinished && !isActiveGamePhase && (
         <section
           className={usePhotoRoomChrome ? roomStyles.entryRules : undefined}
           style={usePhotoRoomChrome ? undefined : { border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
@@ -3315,7 +3317,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )}
 
       {visibleStatusMessage && (
-        <p className={isRoomEntry ? roomStyles.entryMessage : undefined}>
+        <p
+          className={
+            isRoomEntry || isStyledFinished
+              ? roomStyles.entryMessage
+              : undefined
+          }
+        >
           {visibleStatusMessage}
         </p>
       )}
