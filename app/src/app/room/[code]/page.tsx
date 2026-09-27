@@ -531,6 +531,7 @@ export default function RoomPage() {
   const [coinBalance, setCoinBalance] = useState(0);
   const [coinQualifyingRounds, setCoinQualifyingRounds] = useState(0);
   const [coinUnlocks, setCoinUnlocks] = useState<string[]>([]);
+  const [coinWalletLoaded, setCoinWalletLoaded] = useState(false);
   const [coinPurchaseBusy, setCoinPurchaseBusy] = useState<string | null>(null);
   const [roomLanguage, setRoomLanguage] = useState<GameLanguage>("cs");
   const [roundTimeLimitSeconds, setRoundTimeLimitSeconds] = useState<RoundTimeLimitSeconds>(null);
@@ -2114,11 +2115,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         ? data.unlocks.filter((value: unknown): value is string => typeof value === "string")
         : []
     );
+    setCoinWalletLoaded(true);
   }
 
   async function loadCoinWalletState() {
     if (roomTierForCategoryPreview !== "super_premium" || !isOrganizer) return;
 
+    setCoinWalletLoaded(false);
     const identity = getOrCreateCoinIdentity();
     const { data, error } = await (supabase as any).rpc(
       "get_coin_wallet_state",
@@ -2234,11 +2237,68 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       !isOrganizer ||
       !roomId
     ) {
+      setCoinWalletLoaded(false);
       return;
     }
 
     void loadCoinWalletState();
   }, [roomTierForCategoryPreview, isOrganizer, roomId]);
+
+  useEffect(() => {
+    if (
+      !coinWalletLoaded ||
+      roomTierForCategoryPreview !== "super_premium" ||
+      !isOrganizer ||
+      !roomId
+    ) {
+      return;
+    }
+
+    const nextCategories = activeCategories.filter((category) => {
+      if (PREMIUM_CATEGORIES.includes(category)) return true;
+      if (SUPER_PREMIUM_INCLUDED_CATEGORIES.includes(category)) return true;
+
+      const unlockKey = SUPER_PREMIUM_COIN_CATEGORY_UNLOCKS[category];
+      if (unlockKey) return coinUnlockSet.has(unlockKey);
+
+      return coinUnlockSet.has("feature_custom_categories");
+    });
+
+    const safeCategories =
+      nextCategories.length > 0 ? uniqueNonEmpty(nextCategories) : [...PREMIUM_CATEGORIES];
+
+    if (
+      safeCategories.length === activeCategories.length &&
+      safeCategories.every((category, index) => category === activeCategories[index])
+    ) {
+      return;
+    }
+
+    const customCategories = safeCategories
+      .filter((category) => !ALL_PREDEFINED_CATEGORIES.includes(category))
+      .slice(0, 5);
+
+    setActiveCategories(safeCategories);
+    setRoomCustomCategories([
+      ...customCategories,
+      ...Array(Math.max(0, 5 - customCategories.length)).fill(""),
+    ].slice(0, 5));
+
+    void supabase
+      .from("rooms")
+      .update({
+        active_categories: safeCategories,
+        custom_category: customCategories.join(" | ") || null,
+      })
+      .eq("id", roomId);
+  }, [
+    coinWalletLoaded,
+    coinUnlocks.join("\u001f"),
+    roomTierForCategoryPreview,
+    isOrganizer,
+    roomId,
+    activeCategories.join("\u001f"),
+  ]);
 
   const canEditRoomCategories =
     isOrganizer &&
