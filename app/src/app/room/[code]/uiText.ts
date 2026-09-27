@@ -18,7 +18,7 @@ export const UI_TEXT = {
     copyRoomLink: "Kopírovat odkaz na místnost",
     shareRoomCode: "Sdílet kód místnosti ostatním hráčům",
     joinNameHelp: "Zadej jméno, pod kterým budeš hrát",
-    roomCapacity: "Místnost je připravená pro maximálně {count} hráče.",
+    roomCapacity: "Místnost je připravená pro maximálně {count} hráčů.",
     roomCapacityUnlimited: "Místnost je připravená pro neomezený počet hráčů.",
     privacyPolicy: "Zásady ochrany soukromí",
     disconnect: "Odpojit",
