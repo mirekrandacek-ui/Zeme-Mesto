@@ -1413,6 +1413,80 @@
   line-height:1.2;
 }
 
+.coinBalanceBar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+  padding:9px 11px;
+  border:1.5px solid #ffe06a;
+  border-radius:12px;
+  background:linear-gradient(135deg,rgba(132,88,0,.88),rgba(65,43,0,.9));
+  box-shadow:inset 0 1px 4px #fff0a155,0 0 7px #ffd75d44;
+  color:#fff;
+  font-size:13px;
+  line-height:1.2;
+}
+
+.coinBalanceBar strong{
+  font-size:18px;
+  white-space:nowrap;
+}
+
+.coinBalanceBar span{
+  min-width:0;
+  text-align:right;
+  font-weight:800;
+}
+
+.coinUnlockButton,
+.coinFeatureUnlockButton{
+  box-sizing:border-box;
+  width:100%;
+  min-height:44px;
+  padding:8px 10px;
+  border:1.5px solid #ffe06a;
+  border-radius:10px;
+  color:#fff;
+  background:linear-gradient(#9b6900,#644000);
+  box-shadow:inset 0 1px 3px #ffd76a77,0 0 5px #ffd75d44;
+  font:inherit;
+  font-size:14px;
+  font-weight:850;
+  line-height:1.2;
+  text-align:left;
+  text-shadow:0 1px 2px #3d2600;
+  cursor:pointer;
+}
+
+.coinFeatureUnlockButton{
+  margin-top:2px;
+}
+
+.coinUnlockButton:disabled,
+.coinFeatureUnlockButton:disabled,
+.coinCategoryUnlockButton:disabled{
+  opacity:.65;
+  cursor:default;
+}
+
+.coinCategoryUnlockButton{
+  min-width:0;
+  padding:0;
+  border:0;
+  color:#ffe88a!important;
+  background:transparent;
+  font:inherit;
+  font-weight:800;
+  line-height:1.2;
+  text-align:left;
+  text-shadow:0 1px 2px #00152d;
+  overflow-wrap:anywhere;
+  cursor:pointer;
+}
+
+
 .roomCategoriesPanel h4{
   margin:13px 0 8px!important;
   padding-top:9px;
