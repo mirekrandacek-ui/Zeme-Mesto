@@ -2096,6 +2096,124 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setActiveCategories(PREMIUM_CATEGORIES);
   }, [premiumPreviewLockTest, roomId]);
 
+  function getOrCreateCoinIdentity() {
+    if (!coinIdentityRef.current) {
+      coinIdentityRef.current = getCoinIdentity();
+    }
+    return coinIdentityRef.current;
+  }
+
+  function applyCoinWalletState(data: any) {
+    if (!data) return;
+    setCoinBalance(Number(data.balance ?? 0));
+    setCoinQualifyingRounds(Number(data.qualifying_rounds ?? 0));
+    setCoinUnlocks(
+      Array.isArray(data.unlocks)
+        ? data.unlocks.filter((value: unknown): value is string => typeof value === "string")
+        : []
+    );
+  }
+
+  async function loadCoinWalletState() {
+    if (roomTierForCategoryPreview !== "super_premium" || !isOrganizer) return;
+
+    const identity = getOrCreateCoinIdentity();
+    const { data, error } = await (supabase as any).rpc(
+      "get_coin_wallet_state",
+      {
+        p_device_id: identity.deviceId,
+        p_device_secret: identity.secret,
+      }
+    );
+
+    if (error) {
+      console.error("Coin wallet loading failed:", error);
+      return;
+    }
+
+    applyCoinWalletState(data);
+  }
+
+  async function purchaseCoinUnlock(unlockKey: string) {
+    if (
+      roomTierForCategoryPreview !== "super_premium" ||
+      !isOrganizer ||
+      coinPurchaseBusy
+    ) {
+      return;
+    }
+
+    const identity = getOrCreateCoinIdentity();
+    setCoinPurchaseBusy(unlockKey);
+
+    const { data, error } = await (supabase as any).rpc(
+      "purchase_coin_unlock",
+      {
+        p_device_id: identity.deviceId,
+        p_device_secret: identity.secret,
+        p_unlock_key: unlockKey,
+      }
+    );
+
+    setCoinPurchaseBusy(null);
+
+    if (error) {
+      console.error("Coin unlock purchase failed:", error);
+      setMsg(
+        uiMessage({
+          cs: "❌ Odemčení za coiny se nepodařilo.",
+          en: "❌ The coin unlock failed.",
+          es: "❌ No se pudo desbloquear con monedas.",
+          de: "❌ Das Freischalten mit Coins ist fehlgeschlagen.",
+          fr: "❌ Le déverrouillage avec des pièces a échoué.",
+          "pt-BR": "❌ Não foi possível desbloquear com moedas.",
+          id: "❌ Gagal membuka dengan koin.",
+          tr: "❌ Coin ile kilit açma başarısız oldu.",
+          pl: "❌ Nie udało się odblokować za monety.",
+          it: "❌ Sblocco con monete non riuscito.",
+        })
+      );
+      return;
+    }
+
+    applyCoinWalletState(data);
+
+    if ((data as any)?.reason === "insufficient_coins") {
+      setMsg(
+        uiMessage({
+          cs: "🪙 Na toto odemčení zatím nemáš dost coinů.",
+          en: "🪙 You do not have enough coins for this unlock yet.",
+          es: "🪙 Aún no tienes suficientes monedas para este desbloqueo.",
+          de: "🪙 Du hast noch nicht genug Coins für diese Freischaltung.",
+          fr: "🪙 Tu n’as pas encore assez de pièces pour ce déverrouillage.",
+          "pt-BR": "🪙 Você ainda não tem moedas suficientes para este desbloqueio.",
+          id: "🪙 Koin kamu belum cukup untuk membuka fitur ini.",
+          tr: "🪙 Bu kilidi açmak için henüz yeterli coin yok.",
+          pl: "🪙 Nie masz jeszcze wystarczającej liczby monet na to odblokowanie.",
+          it: "🪙 Non hai ancora abbastanza monete per questo sblocco.",
+        })
+      );
+      return;
+    }
+
+    setMsg(
+      uiMessage({
+        cs: "✅ Odemčeno za coiny.",
+        en: "✅ Unlocked with coins.",
+        es: "✅ Desbloqueado con monedas.",
+        de: "✅ Mit Coins freigeschaltet.",
+        fr: "✅ Déverrouillé avec des pièces.",
+        "pt-BR": "✅ Desbloqueado com moedas.",
+        id: "✅ Dibuka dengan koin.",
+        tr: "✅ Coin ile kilit açıldı.",
+        pl: "✅ Odblokowano za monety.",
+        it: "✅ Sbloccato con monete.",
+      })
+    );
+  }
+
+  const coinUnlockSet = useMemo(() => new Set(coinUnlocks), [coinUnlocks]);
+
   const canEditRoomCategories =
     isOrganizer &&
     (roomTierForCategoryPreview === "premium" ||
