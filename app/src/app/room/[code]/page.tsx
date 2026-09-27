@@ -556,6 +556,7 @@ export default function RoomPage() {
   const [nameInput, setNameInput] = useState("");
   const [myPlayer, setMyPlayer] = useState<MyPlayer | null>(null);
   const [msg, setMsg] = useState("");
+  const [coinToast, setCoinToast] = useState("");
   const [showRules, setShowRules] = useState(false);
   const [showGameSettingsMenu, setShowGameSettingsMenu] = useState(false);
   const [showRoundHistory, setShowRoundHistory] = useState(false);
@@ -2185,18 +2186,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     applyCoinWalletState(data);
 
     if ((data as any)?.reason === "insufficient_coins") {
-      setMsg(
+      setCoinToast(
         uiMessage({
           cs: "🪙 Na toto odemčení nemáš dost coinů.",
-          en: "🪙 You do not have enough coins for this unlock yet.",
-          es: "🪙 Aún no tienes suficientes monedas para este desbloqueo.",
-          de: "🪙 Du hast noch nicht genug Coins für diese Freischaltung.",
-          fr: "🪙 Tu n’as pas encore assez de pièces pour ce déverrouillage.",
-          "pt-BR": "🪙 Você ainda não tem moedas suficientes para este desbloqueio.",
-          id: "🪙 Koin kamu belum cukup untuk membuka fitur ini.",
-          tr: "🪙 Bu kilidi açmak için henüz yeterli coin yok.",
-          pl: "🪙 Nie masz jeszcze wystarczającej liczby monet na to odblokowanie.",
-          it: "🪙 Non hai ancora abbastanza monete per questo sblocco.",
+          en: "🪙 You do not have enough coins for this unlock.",
+          es: "🪙 No tienes suficientes monedas para este desbloqueo.",
+          de: "🪙 Du hast nicht genug Coins für diese Freischaltung.",
+          fr: "🪙 Tu n’as pas assez de pièces pour ce déverrouillage.",
+          "pt-BR": "🪙 Você não tem moedas suficientes para este desbloqueio.",
+          id: "🪙 Koin kamu tidak cukup untuk membuka fitur ini.",
+          tr: "🪙 Bu kilidi açmak için yeterli coin yok.",
+          pl: "🪙 Nie masz wystarczającej liczby monet na to odblokowanie.",
+          it: "🪙 Non hai abbastanza monete per questo sblocco.",
         })
       );
       return;
@@ -2219,6 +2220,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
   }
 
   const coinUnlockSet = useMemo(() => new Set(coinUnlocks), [coinUnlocks]);
+
+  useEffect(() => {
+    if (!coinToast) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setCoinToast("");
+    }, 1000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [coinToast]);
 
   useEffect(() => {
     if (!roomId || !myPlayer) return;
@@ -3818,6 +3829,16 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         </p>
       )}
 
+      {coinToast && (
+        <div
+          className={roomStyles.coinToast}
+          role="status"
+          aria-live="polite"
+        >
+          {coinToast}
+        </div>
+      )}
+
       {roomId && !myPlayer && (
         <section className={roomStyles.entryJoin}>
           <p className={roomStyles.entryJoinHelp}>{t("joinNameHelp")}</p>
@@ -4240,7 +4261,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
                       onClick={() => void purchaseCoinUnlock("feature_round_count")}
                     >
-                      🔒 {t("roundCount")} – {COIN_UNLOCK_COSTS.feature_round_count} 🪙
+                      <span className={roomStyles.coinUnlockTitle}>
+                        🔒 {t("roundCount")}
+                      </span>
+                      <span className={roomStyles.coinUnlockPrice}>
+                        {COIN_UNLOCK_COSTS.feature_round_count} 🪙
+                      </span>
                     </button>
                   ) : (
                     <div className={roomStyles.gameSettingsValue}>
@@ -4276,7 +4302,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                       disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
                       onClick={() => void purchaseCoinUnlock("feature_round_time")}
                     >
-                      🔒 {t("timeLimit")} – {COIN_UNLOCK_COSTS.feature_round_time} 🪙
+                      <span className={roomStyles.coinUnlockTitle}>
+                        🔒 {t("timeLimit")}
+                      </span>
+                      <span className={roomStyles.coinUnlockPrice}>
+                        {COIN_UNLOCK_COSTS.feature_round_time} 🪙
+                      </span>
                     </button>
                   ) : (
                     <div className={roomStyles.gameSettingsValue}>
