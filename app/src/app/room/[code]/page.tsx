@@ -2253,7 +2253,18 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       return;
     }
 
-    void loadCoinWalletState();
+    const syncCoinWallet = () => {
+      void loadCoinWalletState();
+    };
+
+    syncCoinWallet();
+    window.addEventListener("focus", syncCoinWallet);
+    window.addEventListener("pageshow", syncCoinWallet);
+
+    return () => {
+      window.removeEventListener("focus", syncCoinWallet);
+      window.removeEventListener("pageshow", syncCoinWallet);
+    };
   }, [roomTierForCategoryPreview, isOrganizer, roomId]);
 
   useEffect(() => {
@@ -3463,6 +3474,12 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     isActiveGamePhase ? "" : myPlayer ? statusMessage : msg;
 
   const isRoomEntry = Boolean(roomId && !myPlayer);
+  const showMyAccount =
+    coinWalletLoaded &&
+    roomTierForCategoryPreview === "super_premium" &&
+    isOrganizer &&
+    roomStatus !== "playing" &&
+    roomStatus !== "drawing";
   const isStyledLobby = Boolean(roomId && myPlayer && roomStatus === "lobby");
   const isStyledFinished = Boolean(roomId && myPlayer && roomStatus === "finished");
   const usePhotoRoomChrome =
@@ -3594,6 +3611,13 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
         >
           Reklamní banner
         </section>
+      )}
+
+      {showMyAccount && (
+        <div className={roomStyles.myAccountBar}>
+          <span>{t("myAccount")}</span>
+          <strong>🪙 {coinBalance}</strong>
+        </div>
       )}
 
       {!isActiveGamePhase && (
