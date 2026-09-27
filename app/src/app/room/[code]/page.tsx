@@ -2143,6 +2143,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     if (
       roomTierForCategoryPreview !== "super_premium" ||
       !isOrganizer ||
+      !coinWalletLoaded ||
       coinPurchaseBusy
     ) {
       return;
@@ -3945,7 +3946,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         <button
                           type="button"
                           className={roomStyles.coinUnlockButton}
-                          disabled={coinPurchaseBusy !== null}
+                          disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
                           onClick={() => void purchaseCoinUnlock("feature_round_time")}
                         >
                           🔒 {COIN_UNLOCK_COSTS.feature_round_time} 🪙
@@ -3983,7 +3984,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         <button
                           type="button"
                           className={roomStyles.coinUnlockButton}
-                          disabled={coinPurchaseBusy !== null}
+                          disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
                           onClick={() => void purchaseCoinUnlock("feature_round_count")}
                         >
                           🔒 {COIN_UNLOCK_COSTS.feature_round_count} 🪙
@@ -4138,7 +4139,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                         <button
                           type="button"
                           className={roomStyles.coinCategoryUnlockButton}
-                          disabled={coinPurchaseBusy !== null}
+                          disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
                           onClick={() => void purchaseCoinUnlock(coinUnlockKey)}
                         >
                           🔒 {categoryLabel(category)} – {COIN_UNLOCK_COSTS[coinUnlockKey]} 🪙
@@ -4234,7 +4235,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     <button
                       type="button"
                       className={roomStyles.coinFeatureUnlockButton}
-                      disabled={coinPurchaseBusy !== null}
+                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
                       onClick={() => void purchaseCoinUnlock("feature_custom_categories")}
                     >
                       🔒 {t("customCategories")} – {COIN_UNLOCK_COSTS.feature_custom_categories} 🪙
@@ -4299,7 +4300,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                     <button
                       type="button"
                       className={roomStyles.coinFeatureUnlockButton}
-                      disabled={coinPurchaseBusy !== null}
+                      disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
                       onClick={() => void purchaseCoinUnlock("feature_category_order")}
                     >
                       🔒 {t("categoryOrder")} – {COIN_UNLOCK_COSTS.feature_category_order} 🪙
@@ -5093,7 +5094,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                                   <button
                                     type="button"
                                     className={roomStyles.coinCategoryUnlockButton}
-                                    disabled={coinPurchaseBusy !== null}
+                                    disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
                                     onClick={() => void purchaseCoinUnlock(coinUnlockKey)}
                                   >
                                     🔒 {categoryLabel(category)} – {COIN_UNLOCK_COSTS[coinUnlockKey]} 🪙
@@ -5128,7 +5129,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
                           <button
                             type="button"
                             className={roomStyles.coinFeatureUnlockButton}
-                            disabled={coinPurchaseBusy !== null}
+                            disabled={!coinWalletLoaded || coinPurchaseBusy !== null}
                             onClick={() => void purchaseCoinUnlock("feature_custom_categories")}
                           >
                             🔒 {t("customCategories")} – {COIN_UNLOCK_COSTS.feature_custom_categories} 🪙
