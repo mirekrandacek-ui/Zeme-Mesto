@@ -580,6 +580,7 @@ export default function RoomPage() {
   const [allScores, setAllScores] = useState<ScoreRow[]>([]);
   const [allRoomScores, setAllRoomScores] = useState<ScoreRow[]>([]);
   const [myScoreSubmitted, setMyScoreSubmitted] = useState(false);
+  const [showMyScoringDetails, setShowMyScoringDetails] = useState(true);
   const [selectedScoringCategory, setSelectedScoringCategory] = useState<string | null>(null);
 
   const [rollingLetter, setRollingLetter] = useState("A");
@@ -1758,6 +1759,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     setAllAnswers([]);
     setAllScores([]);
     setMyScoreSubmitted(false);
+    setShowMyScoringDetails(true);
   }, [round?.id, currentRoundCategoriesKey]);
 
   // Při vstupu do bodování nového kola začni vždy s nulovým bodováním
@@ -1766,6 +1768,7 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
     setScores(emptyScores(currentRoundCategories));
     setMyScoreSubmitted(false);
+    setShowMyScoringDetails(true);
   }, [roomStatus, round?.id, currentRoundCategoriesKey]);
 
   async function resetRoomData(rid: string) {
@@ -3017,7 +3020,15 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     }
 
     setMyScoreSubmitted(true);
+    setShowMyScoringDetails(false);
     setMsg("");
+
+    window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    });
 
     // Nejdřív synchronizuj celkové skóre. Free limit se může zobrazit až potom.
     await loadRoomScores(roomId);
@@ -4857,143 +4868,167 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
 
           {activeMyPlayer ? (
             <section className={roomStyles.scoringMine}>
-              <h3>
+              <div className={roomStyles.scoringMineHeader}>
+                <h3>
+                  <button
+                    type="button"
+                    className={roomStyles.scoringMineTitleButton}
+                    onClick={() => {
+                      setSelectedScoringCategory(TOTAL_POINTS_SCORING_KEY);
+
+                      requestAnimationFrame(() => {
+                        const scrollBox = document.getElementById("scoring-table-scroll");
+                        const totalColumn = document.getElementById("score-column-total");
+                        const stickyPlayerColumn =
+                          scrollBox?.querySelector('[data-sticky-player="true"]') as
+                            | HTMLElement
+                            | null;
+
+                        if (!scrollBox || !totalColumn) return;
+
+                        const stickyWidth = stickyPlayerColumn?.offsetWidth ?? 0;
+                        const visibleWidth = scrollBox.clientWidth - stickyWidth;
+                        const centredPosition =
+                          totalColumn.offsetLeft -
+                          stickyWidth -
+                          (visibleWidth - totalColumn.offsetWidth) / 2;
+
+                        scrollBox.scrollTo({
+                          left: Math.max(0, centredPosition),
+                          behavior: "smooth",
+                        });
+                      });
+                    }}
+                  >
+                    {t("myScoring")}
+                  </button>
+                </h3>
+
                 <button
                   type="button"
-                  className={roomStyles.scoringMineTitleButton}
-                  onClick={() => {
-                    setSelectedScoringCategory(TOTAL_POINTS_SCORING_KEY);
-
-                    requestAnimationFrame(() => {
-                      const scrollBox = document.getElementById("scoring-table-scroll");
-                      const totalColumn = document.getElementById("score-column-total");
-                      const stickyPlayerColumn =
-                        scrollBox?.querySelector('[data-sticky-player="true"]') as
-                          | HTMLElement
-                          | null;
-
-                      if (!scrollBox || !totalColumn) return;
-
-                      const stickyWidth = stickyPlayerColumn?.offsetWidth ?? 0;
-                      const visibleWidth = scrollBox.clientWidth - stickyWidth;
-                      const centredPosition =
-                        totalColumn.offsetLeft -
-                        stickyWidth -
-                        (visibleWidth - totalColumn.offsetWidth) / 2;
-
-                      scrollBox.scrollTo({
-                        left: Math.max(0, centredPosition),
-                        behavior: "smooth",
-                      });
-                    });
-                  }}
+                  className={roomStyles.scoringMineToggle}
+                  aria-label={t("myScoring")}
+                  aria-expanded={showMyScoringDetails}
+                  onClick={() => setShowMyScoringDetails((value) => !value)}
                 >
-                  {t("myScoring")}
-                </button>
-              </h3>
-
-              {currentRoundCategories.map((category) => (
-                <label key={category} className={roomStyles.scoringCategoryRow}>
-                  <span
-                    className={roomStyles.scoringCategoryName}
-                    onClick={() => {
-                      setSelectedScoringCategory(category);
-
-                      requestAnimationFrame(() => {
-                        const scrollBox = document.getElementById("scoring-table-scroll");
-                        const columnIndex = currentRoundCategories.indexOf(category);
-                        const column = document.getElementById(`score-column-${columnIndex}`);
-                        const stickyPlayerColumn =
-                          scrollBox?.querySelector('[data-sticky-player="true"]') as
-                            | HTMLElement
-                            | null;
-
-                        if (!scrollBox || !column) return;
-
-                        const stickyWidth = stickyPlayerColumn?.offsetWidth ?? 0;
-                        const visibleWidth = scrollBox.clientWidth - stickyWidth;
-                        const centredPosition =
-                          column.offsetLeft -
-                          stickyWidth -
-                          (visibleWidth - column.offsetWidth) / 2;
-
-                        scrollBox.scrollTo({
-                          left: Math.max(0, centredPosition),
-                          behavior: "smooth",
-                        });
-                      });
-                    }}
+                  <svg
+                    className={`${roomStyles.entryActionChevron} ${
+                      showMyScoringDetails ? roomStyles.entryActionChevronOpen : ""
+                    }`}
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
-                    {categoryLabel(category)}
-                  </span>
-                  <select
-                    value={scores[category] ?? 0}
-                    disabled={myScoreSubmitted}
-                    onFocus={() => {
-                      setSelectedScoringCategory(category);
-
-                      requestAnimationFrame(() => {
-                        const scrollBox = document.getElementById("scoring-table-scroll");
-                        const columnIndex = currentRoundCategories.indexOf(category);
-                        const column = document.getElementById(`score-column-${columnIndex}`);
-                        const stickyPlayerColumn =
-                          scrollBox?.querySelector('[data-sticky-player="true"]') as
-                            | HTMLElement
-                            | null;
-
-                        if (!scrollBox || !column) return;
-
-                        const stickyWidth = stickyPlayerColumn?.offsetWidth ?? 0;
-                        const visibleWidth = scrollBox.clientWidth - stickyWidth;
-                        const centredPosition =
-                          column.offsetLeft -
-                          stickyWidth -
-                          (visibleWidth - column.offsetWidth) / 2;
-
-                        scrollBox.scrollTo({
-                          left: Math.max(0, centredPosition),
-                          behavior: "smooth",
-                        });
-                      });
-                    }}
-                    onChange={(e) =>
-                      setScores((prev) => ({
-                        ...prev,
-                        [category]: Number(e.target.value) as -10 | -5 | 0 | 5 | 10,
-                      }))
-                    }
-                    className={roomStyles.scoringPointsSelect}
-                  >
-                    <option value={0}>
-                      {t("zeroPoints")}
-                    </option>
-                    <option value={5}>
-                      {t("fivePoints")}
-                    </option>
-                    <option value={10}>
-                      {t("tenPoints")}
-                    </option>
-                    <option value={-5}>
-                      {t("minusFivePoints")}
-                    </option>
-                    <option value={-10}>
-                      {t("minusTenPoints")}
-                    </option>
-                  </select>
-                </label>
-              ))}
-
-              {!myScoreSubmitted ? (
-                <button
-                  onClick={submitScores}
-                  className={roomStyles.scoringSubmitButton}
-                >
-                  {t("submitScoring")}
+                    <path d="m5 9 7 7 7-7" />
+                  </svg>
                 </button>
-              ) : (
-                <p className={roomStyles.scoringSubmittedMessage}>
-                  {t("scoringSubmitted")}
-                </p>
+              </div>
+
+              {showMyScoringDetails && (
+                <>
+                  {currentRoundCategories.map((category) => (
+                    <label key={category} className={roomStyles.scoringCategoryRow}>
+                      <span
+                        className={roomStyles.scoringCategoryName}
+                        onClick={() => {
+                          setSelectedScoringCategory(category);
+
+                          requestAnimationFrame(() => {
+                            const scrollBox = document.getElementById("scoring-table-scroll");
+                            const columnIndex = currentRoundCategories.indexOf(category);
+                            const column = document.getElementById(`score-column-${columnIndex}`);
+                            const stickyPlayerColumn =
+                              scrollBox?.querySelector('[data-sticky-player="true"]') as
+                                | HTMLElement
+                                | null;
+
+                            if (!scrollBox || !column) return;
+
+                            const stickyWidth = stickyPlayerColumn?.offsetWidth ?? 0;
+                            const visibleWidth = scrollBox.clientWidth - stickyWidth;
+                            const centredPosition =
+                              column.offsetLeft -
+                              stickyWidth -
+                              (visibleWidth - column.offsetWidth) / 2;
+
+                            scrollBox.scrollTo({
+                              left: Math.max(0, centredPosition),
+                              behavior: "smooth",
+                            });
+                          });
+                        }}
+                      >
+                        {categoryLabel(category)}
+                      </span>
+                      <select
+                        value={scores[category] ?? 0}
+                        disabled={myScoreSubmitted}
+                        onFocus={() => {
+                          setSelectedScoringCategory(category);
+
+                          requestAnimationFrame(() => {
+                            const scrollBox = document.getElementById("scoring-table-scroll");
+                            const columnIndex = currentRoundCategories.indexOf(category);
+                            const column = document.getElementById(`score-column-${columnIndex}`);
+                            const stickyPlayerColumn =
+                              scrollBox?.querySelector('[data-sticky-player="true"]') as
+                                | HTMLElement
+                                | null;
+
+                            if (!scrollBox || !column) return;
+
+                            const stickyWidth = stickyPlayerColumn?.offsetWidth ?? 0;
+                            const visibleWidth = scrollBox.clientWidth - stickyWidth;
+                            const centredPosition =
+                              column.offsetLeft -
+                              stickyWidth -
+                              (visibleWidth - column.offsetWidth) / 2;
+
+                            scrollBox.scrollTo({
+                              left: Math.max(0, centredPosition),
+                              behavior: "smooth",
+                            });
+                          });
+                        }}
+                        onChange={(e) =>
+                          setScores((prev) => ({
+                            ...prev,
+                            [category]: Number(e.target.value) as -10 | -5 | 0 | 5 | 10,
+                          }))
+                        }
+                        className={roomStyles.scoringPointsSelect}
+                      >
+                        <option value={0}>
+                          {t("zeroPoints")}
+                        </option>
+                        <option value={5}>
+                          {t("fivePoints")}
+                        </option>
+                        <option value={10}>
+                          {t("tenPoints")}
+                        </option>
+                        <option value={-5}>
+                          {t("minusFivePoints")}
+                        </option>
+                        <option value={-10}>
+                          {t("minusTenPoints")}
+                        </option>
+                      </select>
+                    </label>
+                  ))}
+
+                  {!myScoreSubmitted ? (
+                    <button
+                      onClick={submitScores}
+                      className={roomStyles.scoringSubmitButton}
+                    >
+                      {t("submitScoring")}
+                    </button>
+                  ) : (
+                    <p className={roomStyles.scoringSubmittedMessage}>
+                      {t("scoringSubmitted")}
+                    </p>
+                  )}
+                </>
               )}
             </section>
           ) : myPlayer?.status === "waiting" ? (
