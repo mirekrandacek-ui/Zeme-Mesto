@@ -3987,13 +3987,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     className={roomStyles.roomCategoriesPanel}
     style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginTop: 16 }}
   >
-              {roomTierForCategoryPreview === "super_premium" && isOrganizer && (
-                <div className={roomStyles.coinBalanceBar}>
-                  <strong>🪙 {coinBalance}</strong>
-                  <span>🏁 {coinQualifyingRounds} · +2 🪙</span>
-                </div>
-              )}
-
               <h4>
                 {t("basicCategories")}
               </h4>
