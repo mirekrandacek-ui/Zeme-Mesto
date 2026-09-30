@@ -307,8 +307,8 @@ const HOME_TEXT = {
       "Kategorie v Super Premium: základní kategorie + Film / Seriál, Sport, Značka, Auto / Moto.",
     creating: "Vytvářím…",
     createRoom: "Vytvořit místnost",
-    hideOtherModes: "Skrýt další režimy",
-    showOtherModes: "Zobrazit další režimy",
+    hideOtherModes: "Skrýt přehled režimů",
+    showOtherModes: "Přehled režimů",
     includedInSuperPremium: "Součást Super Premium",
     upgradeToSuperPremium: "Upgradovat na Super Premium",
     upgradeToSuperPremiumFor: "Upgradovat na Super Premium za",
@@ -351,8 +351,8 @@ const HOME_TEXT = {
       "Categories in Super Premium: basic categories + Film / Series, Sport, Brand, Car / Motorbike.",
     creating: "Creating…",
     createRoom: "Create room",
-    hideOtherModes: "Hide other modes",
-    showOtherModes: "Show other modes",
+    hideOtherModes: "Hide mode overview",
+    showOtherModes: "Mode overview",
     includedInSuperPremium: "Included in Super Premium",
     upgradeToSuperPremium: "Upgrade to Super Premium",
     upgradeToSuperPremiumFor: "Upgrade to Super Premium for",
@@ -396,8 +396,8 @@ const HOME_TEXT = {
       "Categorías en Super Premium: categorías básicas + Película / Serie, Deporte, Marca, Coche / Moto.",
     creating: "Creando…",
     createRoom: "Crear sala",
-    hideOtherModes: "Ocultar otros modos",
-    showOtherModes: "Mostrar otros modos",
+    hideOtherModes: "Ocultar resumen de modos",
+    showOtherModes: "Resumen de modos",
     includedInSuperPremium: "Incluido en Super Premium",
     upgradeToSuperPremium: "Pasar a Super Premium",
     upgradeToSuperPremiumFor: "Pasar a Super Premium por",
@@ -443,8 +443,8 @@ const HOME_TEXT = {
       "Kategorien in Super Premium: Grundkategorien + Film / Serie, Sportart, Marke, Auto / Motorrad.",
     creating: "Wird erstellt…",
     createRoom: "Raum erstellen",
-    hideOtherModes: "Weitere Modi ausblenden",
-    showOtherModes: "Weitere Modi anzeigen",
+    hideOtherModes: "Modusübersicht ausblenden",
+    showOtherModes: "Modusübersicht",
     includedInSuperPremium: "In Super Premium enthalten",
     upgradeToSuperPremium: "Auf Super Premium upgraden",
     upgradeToSuperPremiumFor: "Auf Super Premium upgraden für",
@@ -482,8 +482,8 @@ const HOME_TEXT = {
     superPremiumCategories: "Catégories dans Super Premium : catégories de base + Film / Série, Sport, Marque, Voiture / Moto.",
     creating: "Création…",
     createRoom: "Créer une salle",
-    hideOtherModes: "Masquer les autres modes",
-    showOtherModes: "Afficher les autres modes",
+    hideOtherModes: "Masquer l’aperçu des modes",
+    showOtherModes: "Aperçu des modes",
     includedInSuperPremium: "Inclus dans Super Premium",
     upgradeToSuperPremium: "Passer à Super Premium",
     upgradeToSuperPremiumFor: "Passer à Super Premium pour",
@@ -520,8 +520,8 @@ const HOME_TEXT = {
     superPremiumCategories: "Categorias no Super Premium: categorias básicas + Filme / Série, Esporte, Marca, Carro / Moto.",
     creating: "Criando…",
     createRoom: "Criar sala",
-    hideOtherModes: "Ocultar outros modos",
-    showOtherModes: "Mostrar outros modos",
+    hideOtherModes: "Ocultar visão geral dos modos",
+    showOtherModes: "Visão geral dos modos",
     includedInSuperPremium: "Incluído no Super Premium",
     upgradeToSuperPremium: "Fazer upgrade para Super Premium",
     upgradeToSuperPremiumFor: "Fazer upgrade para Super Premium por",
@@ -557,8 +557,8 @@ const HOME_TEXT = {
     superPremiumCategories: "Kategori di Super Premium: kategori dasar + Film / Serial, Olahraga, Merek, Mobil / Motor.",
     creating: "Membuat…",
     createRoom: "Buat ruang",
-    hideOtherModes: "Sembunyikan mode lain",
-    showOtherModes: "Tampilkan mode lain",
+    hideOtherModes: "Sembunyikan ringkasan mode",
+    showOtherModes: "Ringkasan mode",
     includedInSuperPremium: "Termasuk dalam Super Premium",
     upgradeToSuperPremium: "Tingkatkan ke Super Premium",
     upgradeToSuperPremiumFor: "Tingkatkan ke Super Premium seharga",
@@ -594,8 +594,8 @@ const HOME_TEXT = {
     superPremiumCategories: "Super Premium kategorileri: temel kategoriler + Film / Dizi, Spor, Marka, Araba / Motosiklet.",
     creating: "Oluşturuluyor…",
     createRoom: "Oda oluştur",
-    hideOtherModes: "Diğer modları gizle",
-    showOtherModes: "Diğer modları göster",
+    hideOtherModes: "Mod özetini gizle",
+    showOtherModes: "Mod özeti",
     includedInSuperPremium: "Super Premium'a dahil",
     upgradeToSuperPremium: "Super Premium'a yükselt",
     upgradeToSuperPremiumFor: "Şu fiyata Super Premium'a yükselt",
@@ -631,8 +631,8 @@ const HOME_TEXT = {
     superPremiumCategories: "Kategorie w Super Premium: kategorie podstawowe + Film / Serial, Sport, Marka, Samochód / Motocykl.",
     creating: "Tworzenie…",
     createRoom: "Utwórz pokój",
-    hideOtherModes: "Ukryj pozostałe tryby",
-    showOtherModes: "Pokaż pozostałe tryby",
+    hideOtherModes: "Ukryj przegląd trybów",
+    showOtherModes: "Przegląd trybów",
     includedInSuperPremium: "Wliczone w Super Premium",
     upgradeToSuperPremium: "Przejdź na Super Premium",
     upgradeToSuperPremiumFor: "Przejdź na Super Premium za",
@@ -669,8 +669,8 @@ const HOME_TEXT = {
     superPremiumCategories: "Categorie in Super Premium: categorie base + Film / Serie TV, Sport, Marca, Auto / Moto.",
     creating: "Creazione…",
     createRoom: "Crea stanza",
-    hideOtherModes: "Nascondi le altre modalità",
-    showOtherModes: "Mostra le altre modalità",
+    hideOtherModes: "Nascondi panoramica modalità",
+    showOtherModes: "Panoramica modalità",
     includedInSuperPremium: "Incluso in Super Premium",
     upgradeToSuperPremium: "Passa a Super Premium",
     upgradeToSuperPremiumFor: "Passa a Super Premium per",
@@ -1266,7 +1266,6 @@ export default function Home() {
               </div>
             </details>
           </div>
-          <p className={styles.intro}>{h("intro")}</p>
         </header>
 
         <section className={styles.modeCard}>
@@ -1294,12 +1293,8 @@ export default function Home() {
                 </p>
               )}
             </div>
-          </div>
 
-          <div className={styles.description}>
-            {activeTier === "free" && <p>{h("freeDescription")}</p>}
-            {activeTier === "premium" && <p style={{ marginTop: 8 }}>{getRoomUiText(language, "premiumPurchaseDescription")}</p>}
-            {activeTier === "super_premium" && <><p>{h("superPremiumDescription")}</p><p>{h("superPremiumCategories")}</p></>}
+            <p className={styles.modeIntro}>{h("intro")}</p>
           </div>
 
           <div className={styles.divider} />
@@ -1361,7 +1356,20 @@ export default function Home() {
 
         {!roomCodeOpen && (
           <button type="button" className={styles.optionsButton} onClick={() => setShowOtherModes((value) => !value)}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5l.8 3a8 8 0 0 1 2 1.2l3-.9 2.5 4.4-2.2 2.1v2.4l2.2 2.1-2.5 4.4-3-.9a8 8 0 0 1-2 1.2l-.8 3h-5l-.8-3a8 8 0 0 1-2-1.2l-3 .9-2.5-4.4 2.2-2.1v-2.4L1.2 10.7l2.5-4.4 3 .9a8 8 0 0 1 2-1.2l.8-3Z"/><circle cx="12" cy="14" r="3"/></svg>
+            <span className={styles.optionsGear3d} aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <defs>
+                  <linearGradient id="modeGearMetal" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stopColor="#f1fbff" />
+                    <stop offset=".35" stopColor="#86dfff" />
+                    <stop offset=".68" stopColor="#2f8ec6" />
+                    <stop offset="1" stopColor="#0b3f6c" />
+                  </linearGradient>
+                </defs>
+                <path d="M9.5 3h5l.8 3a8 8 0 0 1 2 1.2l3-.9 2.5 4.4-2.2 2.1v2.4l2.2 2.1-2.5 4.4-3-.9a8 8 0 0 1-2 1.2l-.8 3h-5l-.8-3a8 8 0 0 1-2-1.2l-3 .9-2.5-4.4 2.2-2.1v-2.4L1.2 10.7l2.5-4.4 3 .9a8 8 0 0 1 2-1.2l.8-3Z" fill="url(#modeGearMetal)" />
+                <circle cx="12" cy="14" r="3" />
+              </svg>
+            </span>
             <span>{showOtherModes ? h("hideOtherModes") : h("showOtherModes")}</span>
             <svg
               className={`${styles.dropdownChevron} ${showOtherModes ? styles.dropdownChevronOpen : ""}`}
@@ -1375,6 +1383,11 @@ export default function Home() {
 
         {!roomCodeOpen && showOtherModes && (
           <section className={styles.purchaseOptions}>
+            <article>
+              <h3>Free</h3>
+              <p>{h("freeDescription")}</p>
+              {activeTier === "free" && <span className={styles.modeOverviewActive}>{h("active")}</span>}
+            </article>
             <article><h3>Premium{premiumDisplayPrice ? ` – ${premiumDisplayPrice}` : ""}</h3><p>{getRoomUiText(language, "premiumPurchaseDescription")}</p>
               <button type="button" disabled={activeTier === "premium" || activeTier === "super_premium" || purchaseBusy !== null} onClick={() => void startPlayPurchase("premium")}>
                 {activeTier === "premium" ? h("active") : activeTier === "super_premium" ? h("includedInSuperPremium") : getRoomUiText(language, "freeUpgradeButton")}
