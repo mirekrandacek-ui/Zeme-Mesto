@@ -1356,18 +1356,12 @@ export default function Home() {
 
         {!roomCodeOpen && (
           <button type="button" className={styles.optionsButton} onClick={() => setShowOtherModes((value) => !value)}>
-            <span className={styles.optionsGear3d} aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <defs>
-                  <linearGradient id="modeGearMetal" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stopColor="#7fe1ff" />
-                    <stop offset=".32" stopColor="#35a9dc" />
-                    <stop offset=".68" stopColor="#0f6097" />
-                    <stop offset="1" stopColor="#032b4d" />
-                  </linearGradient>
-                </defs>
-                <path d="M9.5 3h5l.8 3a8 8 0 0 1 2 1.2l3-.9 2.5 4.4-2.2 2.1v2.4l2.2 2.1-2.5 4.4-3-.9a8 8 0 0 1-2 1.2l-.8 3h-5l-.8-3a8 8 0 0 1-2-1.2l-3 .9-2.5-4.4 2.2-2.1v-2.4L1.2 10.7l2.5-4.4 3 .9a8 8 0 0 1 2-1.2l.8-3Z" fill="url(#modeGearMetal)" />
-                <circle cx="12" cy="14" r="3" />
+            <span className={styles.optionsMode3d} aria-hidden="true">
+              <svg viewBox="0 0 28 28">
+                <rect className={styles.modeCardBack} x="4" y="5" width="15" height="10" rx="2.5" />
+                <rect className={styles.modeCardMiddle} x="7" y="9" width="15" height="10" rx="2.5" />
+                <rect className={styles.modeCardFront} x="10" y="13" width="15" height="10" rx="2.5" />
+                <path d="M13.5 17.5h8M13.5 20h5.5" />
               </svg>
             </span>
             <span>{showOtherModes ? h("hideOtherModes") : h("showOtherModes")}</span>
