@@ -16,6 +16,14 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+button,
+input,
+select,
+textarea,
+option {
+  font-family: inherit;
+}
+
 /* Horní hlavička úvodní stránky */
 .home-header {
   display: flex;
