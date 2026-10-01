@@ -1945,26 +1945,36 @@
 
 
 .myAccountBar{
+  position:fixed;
+  left:50%;
+  z-index:90;
   box-sizing:border-box;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
   width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
-  margin:0 auto 9px;
+  margin:0;
   padding:8px 12px;
   border:1.5px solid #ffe06a;
   border-radius:14px;
   color:#fff;
-  background:linear-gradient(135deg,rgba(132,88,0,.94),rgba(65,43,0,.96));
+  background:linear-gradient(135deg,rgba(132,88,0,.98),rgba(65,43,0,.99));
   box-shadow:inset 0 1px 4px #fff0a155,0 0 8px #ffd75d55,0 4px 8px #00162c;
   font-size:13px;
   font-weight:850;
   line-height:1.2;
   text-shadow:0 1px 2px #3d2600;
+  transform:translateX(-50%);
 }
 
 .myAccountBar strong{
   font-size:17px;
   white-space:nowrap;
+}
+
+.myAccountSpacer{
+  width:min(82vw,calc(var(--zm-stable-vh,1lvh) * 34.45),360px);
+  height:43px;
+  margin:0 auto 9px;
 }

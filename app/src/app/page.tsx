@@ -1221,10 +1221,13 @@ export default function Home() {
 
       <div className={styles.content}>
         {activeTier === "super_premium" && homeCoinWalletLoaded && (
-          <div className={styles.myAccountBar}>
-            <span>{h("myAccount")}</span>
-            <strong>🪙 {homeCoinBalance}</strong>
-          </div>
+          <>
+            <div className={styles.myAccountBar}>
+              <span>{h("myAccount")}</span>
+              <strong>🪙 {homeCoinBalance}</strong>
+            </div>
+            <div className={styles.myAccountSpacer} aria-hidden="true" />
+          </>
         )}
 
         <header className={styles.header}>
