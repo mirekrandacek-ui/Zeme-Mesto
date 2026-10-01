@@ -3489,7 +3489,6 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     coinWalletLoaded &&
     roomTierForCategoryPreview === "super_premium" &&
     isOrganizer &&
-    roomStatus !== "playing" &&
     roomStatus !== "drawing";
   const isStyledLobby = Boolean(roomId && myPlayer && roomStatus === "lobby");
   const isStyledFinished = Boolean(roomId && myPlayer && roomStatus === "finished");
@@ -3625,10 +3624,20 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
       )}
 
       {showMyAccount && (
-        <div className={roomStyles.myAccountBar}>
-          <span>{t("myAccount")}</span>
-          <strong>🪙 {coinBalance}</strong>
-        </div>
+        <>
+          <div
+            className={roomStyles.myAccountBar}
+            style={{
+              top: showAdBanner
+                ? "calc(64px + env(safe-area-inset-top))"
+                : "calc(4px + env(safe-area-inset-top))",
+            }}
+          >
+            <span>{t("myAccount")}</span>
+            <strong>🪙 {coinBalance}</strong>
+          </div>
+          <div className={roomStyles.myAccountSpacer} aria-hidden="true" />
+        </>
       )}
 
       {!isActiveGamePhase && (
