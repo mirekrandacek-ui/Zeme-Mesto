@@ -1294,8 +1294,9 @@ export default function Home() {
               )}
             </div>
 
-            <p className={styles.modeIntro}>{h("intro")}</p>
           </div>
+
+          <p className={styles.modeIntro}>{h("intro")}</p>
 
           <div className={styles.divider} />
           <fieldset className={styles.gameLanguage}>
