@@ -1359,10 +1359,12 @@ export default function Home() {
           <button type="button" className={styles.optionsButton} onClick={() => setShowOtherModes((value) => !value)}>
             <span className={styles.optionsMode3d} aria-hidden="true">
               <svg viewBox="0 0 28 28">
-                <rect className={styles.modeCardBack} x="4" y="5" width="15" height="10" rx="2.5" />
-                <rect className={styles.modeCardMiddle} x="7" y="9" width="15" height="10" rx="2.5" />
-                <rect className={styles.modeCardFront} x="10" y="13" width="15" height="10" rx="2.5" />
-                <path d="M13.5 17.5h8M13.5 20h5.5" />
+                <rect className={styles.modeChoiceTop} x="4" y="4" width="20" height="5" rx="2.5" />
+                <rect className={styles.modeChoiceMiddle} x="4" y="11.5" width="20" height="5" rx="2.5" />
+                <rect className={styles.modeChoiceBottom} x="4" y="19" width="20" height="5" rx="2.5" />
+                <circle cx="8" cy="6.5" r="1.2" />
+                <circle cx="8" cy="14" r="1.2" />
+                <circle cx="8" cy="21.5" r="1.2" />
               </svg>
             </span>
             <span>{showOtherModes ? h("hideOtherModes") : h("showOtherModes")}</span>
