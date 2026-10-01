@@ -3489,7 +3489,8 @@ function answerStartsWithLetter(answer: string | undefined, selectedLetter: stri
     coinWalletLoaded &&
     roomTierForCategoryPreview === "super_premium" &&
     isOrganizer &&
-    roomStatus !== "drawing";
+    roomStatus !== "drawing" &&
+    roomStatus !== "playing";
   const isStyledLobby = Boolean(roomId && myPlayer && roomStatus === "lobby");
   const isStyledFinished = Boolean(roomId && myPlayer && roomStatus === "finished");
   const usePhotoRoomChrome =
