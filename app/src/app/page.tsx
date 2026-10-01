@@ -1355,8 +1355,7 @@ export default function Home() {
           </button>
         </section>
 
-        {!roomCodeOpen && (
-          <button type="button" className={styles.optionsButton} onClick={() => setShowOtherModes((value) => !value)}>
+        <button type="button" className={styles.optionsButton} onClick={() => setShowOtherModes((value) => !value)}>
             <span className={styles.optionsMode3d} aria-hidden="true">
               <svg viewBox="0 0 28 28">
                 <rect className={styles.modeChoiceTop} x="4" y="4" width="20" height="5" rx="2.5" />
@@ -1376,9 +1375,8 @@ export default function Home() {
               <path d="m5 9 7 7 7-7"/>
             </svg>
           </button>
-        )}
 
-        {!roomCodeOpen && showOtherModes && (
+        {showOtherModes && (
           <section className={styles.purchaseOptions}>
             <article>
               <h3>Free</h3>
@@ -1426,7 +1424,6 @@ export default function Home() {
             setRoomCodeOpen(isOpen);
 
             if (isOpen) {
-              setShowOtherModes(false);
               window.requestAnimationFrame(() => {
                 event.currentTarget.scrollIntoView({
                   behavior: "smooth",
