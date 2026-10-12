@@ -290,12 +290,12 @@ jobs:
           end
           $$;
 
-          perform public.get_coin_wallet_state(
+          select public.get_coin_wallet_state(
             '66666666-6666-4666-8666-666666666666'::uuid,
             'dry-device-secret-20261012-abcdef'
           );
 
-          perform public.purchase_coin_unlock(
+          select public.purchase_coin_unlock(
             '66666666-6666-4666-8666-666666666666'::uuid,
             'dry-device-secret-20261012-abcdef',
             'category_actor'
