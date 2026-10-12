@@ -286,7 +286,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path = pg_catalog, public, private
-as $
+as $$
 declare
   v_internal boolean :=
     coalesce(current_setting('zm.internal_rpc', true), '') = '1';
@@ -324,7 +324,7 @@ begin
 
   return new;
 end;
-$;
+$$;
 
 drop trigger if exists players_guard_secure_update on public.players;
 create trigger players_guard_secure_update
