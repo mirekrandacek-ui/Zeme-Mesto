@@ -1,0 +1,305 @@
+name: RLS shadow validation
+
+on:
+  push:
+    branches:
+      - fix/supabase-rls-security
+    paths:
+      - "app/supabase/**"
+      - ".github/workflows/rls-shadow-validation.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Create shadow base schema
+        run: psql -v ON_ERROR_STOP=1 -f app/supabase/tests/rls_shadow_base.sql
+
+      - name: Apply repository migrations through current production state
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 -f app/supabase/migrations/20260802_free_round_quota.sql
+          psql -v ON_ERROR_STOP=1 -f app/supabase/migrations/20260803_persistent_letter_decks.sql
+          psql -v ON_ERROR_STOP=1 -f app/supabase/migrations/20260919_prepare_room_access_tokens.sql
+          psql -v ON_ERROR_STOP=1 -f app/supabase/migrations/20260924_round_category_snapshots.sql
+          psql -v ON_ERROR_STOP=1 -f app/supabase/migrations/20260927_restart_room_game.sql
+          psql -v ON_ERROR_STOP=1 -f app/supabase/migrations/20260927_super_premium_coins.sql
+          psql -v ON_ERROR_STOP=1 -f app/supabase/migrations/20260927_super_premium_coin_enforcement.sql
+
+      - name: Apply safe RLS cutover
+        run: psql -v ON_ERROR_STOP=1 -f app/supabase/migrations/20261012_safe_rls_cutover.sql
+
+      - name: Structural security assertions
+        run: |
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          declare
+            v_bad integer;
+          begin
+            if not exists (
+              select 1
+              from public.players
+              where id='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'::uuid
+                and player_token_hash is null
+            ) then
+              raise exception 'Historical no-token player was removed or rewritten';
+            end if;
+
+            if exists (
+              select 1
+              from public.rooms
+              where id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'::uuid
+                and creator_token is not null
+            ) then
+              raise exception 'Raw legacy creator token was not cleared';
+            end if;
+
+            if not exists (
+              select 1
+              from public.rooms
+              where id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'::uuid
+                and creator_token_hash is not null
+            ) then
+              raise exception 'Legacy creator token hash was not preserved';
+            end if;
+
+            select count(*) into v_bad
+            from pg_class c
+            join pg_namespace n on n.oid=c.relnamespace
+            where n.nspname='public'
+              and c.relname in ('rooms','players','rounds','answers','scores')
+              and not c.relrowsecurity;
+
+            if v_bad <> 0 then
+              raise exception 'RLS is still disabled on % core table(s)', v_bad;
+            end if;
+
+            if exists (
+              select 1
+              from pg_proc p
+              join pg_namespace n on n.oid=p.pronamespace
+              where n.nspname='public'
+                and p.proname in (
+                  'begin_free_round',
+                  'unlock_free_rounds',
+                  'draw_room_letter',
+                  'prepare_room_for_join',
+                  'restart_room_game',
+                  'get_coin_wallet_state',
+                  'purchase_coin_unlock',
+                  'claim_coin_round_reward'
+                )
+                and p.prosecdef
+            ) then
+              raise exception 'A public app RPC is still SECURITY DEFINER';
+            end if;
+
+            if exists (
+              select 1
+              from pg_proc p
+              join pg_namespace n on n.oid=p.pronamespace
+              where n.nspname='public'
+                and p.proname='set_round_deadline_at'
+            ) then
+              raise exception 'Old public set_round_deadline_at still exists';
+            end if;
+
+            if (
+              select count(*)
+              from pg_policies
+              where schemaname='public'
+                and tablename in (
+                  'coin_wallets',
+                  'coin_unlocks',
+                  'round_participants',
+                  'coin_round_rewards',
+                  'coin_ledger'
+                )
+                and policyname like '%no_direct_access'
+            ) <> 5 then
+              raise exception 'Direct-access deny policies are incomplete';
+            end if;
+          end
+          $$;
+          SQL
+
+      - name: App-role functional smoke test
+        run: |
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          begin;
+
+          select set_config(
+            'request.headers',
+            '{"x-zm-room-code":"RLS9X","x-zm-creator-token":"dry-creator-token-20261012","x-zm-player-token":"dry-player-token-20261012"}',
+            true
+          );
+
+          set local role anon;
+
+          insert into public.rooms (
+            id, code, status, creator_token_hash, language,
+            creator_tier, max_players, ads_enabled
+          )
+          values (
+            '11111111-1111-4111-8111-111111111111'::uuid,
+            'RLS9X',
+            'lobby',
+            pg_catalog.encode(
+              extensions.digest('dry-creator-token-20261012','sha256'),
+              'hex'
+            ),
+            'cs',
+            'free',
+            3,
+            true
+          );
+
+          do $$
+          begin
+            if (select count(*) from public.rooms where code='RLS9X') <> 1 then
+              raise exception 'Authorized room read failed';
+            end if;
+          end
+          $$;
+
+          select set_config(
+            'request.headers',
+            '{"x-zm-room-code":"WRONG","x-zm-creator-token":"dry-creator-token-20261012","x-zm-player-token":"dry-player-token-20261012"}',
+            true
+          );
+
+          do $$
+          begin
+            if (select count(*) from public.rooms where code='RLS9X') <> 0 then
+              raise exception 'RLS leaked a room with the wrong room code';
+            end if;
+          end
+          $$;
+
+          select set_config(
+            'request.headers',
+            '{"x-zm-room-code":"RLS9X","x-zm-creator-token":"dry-creator-token-20261012","x-zm-player-token":"dry-player-token-20261012"}',
+            true
+          );
+
+          insert into public.players (
+            id, room_id, name, status, player_token_hash, device_id
+          )
+          values (
+            '22222222-2222-4222-8222-222222222222'::uuid,
+            '11111111-1111-4111-8111-111111111111'::uuid,
+            'DryRun',
+            'active',
+            pg_catalog.encode(
+              extensions.digest('dry-player-token-20261012','sha256'),
+              'hex'
+            ),
+            '33333333-3333-4333-8333-333333333333'::uuid
+          );
+
+          update public.rooms
+          set status='drawing', letter=null
+          where id='11111111-1111-4111-8111-111111111111'::uuid;
+
+          insert into public.rounds (
+            id, room_id, round_no, letter, status, categories
+          )
+          values (
+            '44444444-4444-4444-8444-444444444444'::uuid,
+            '11111111-1111-4111-8111-111111111111'::uuid,
+            1,
+            'A',
+            'playing',
+            '["Země"]'::jsonb
+          );
+
+          update public.rooms
+          set status='playing', letter='A'
+          where id='11111111-1111-4111-8111-111111111111'::uuid;
+
+          insert into public.answers (
+            room_id, player_id, round, category, value
+          )
+          values (
+            '11111111-1111-4111-8111-111111111111'::uuid,
+            '22222222-2222-4222-8222-222222222222'::uuid,
+            1,
+            'Země',
+            'Argentina'
+          );
+
+          insert into public.scores (
+            room_id, player_id, round, category, points, value
+          )
+          values (
+            '11111111-1111-4111-8111-111111111111'::uuid,
+            '22222222-2222-4222-8222-222222222222'::uuid,
+            1,
+            'Země',
+            10,
+            10
+          );
+
+          update public.players
+          set device_id='55555555-5555-4555-8555-555555555555'::uuid
+          where id='22222222-2222-4222-8222-222222222222'::uuid;
+
+          select public.restart_room_game(
+            '11111111-1111-4111-8111-111111111111'::uuid,
+            'dry-creator-token-20261012'
+          );
+
+          do $$
+          begin
+            if not exists (
+              select 1
+              from public.rooms
+              where id='11111111-1111-4111-8111-111111111111'::uuid
+                and status='lobby'
+            ) then
+              raise exception 'Restart RPC did not restore lobby state';
+            end if;
+          end
+          $$;
+
+          select public.get_coin_wallet_state(
+            '66666666-6666-4666-8666-666666666666'::uuid,
+            'dry-device-secret-20261012-abcdef'
+          );
+
+          select public.purchase_coin_unlock(
+            '66666666-6666-4666-8666-666666666666'::uuid,
+            'dry-device-secret-20261012-abcdef',
+            'category_actor'
+          );
+
+          rollback;
+          SQL
